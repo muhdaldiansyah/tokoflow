@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TokoFlow
 
-## Getting Started
+A modern inventory and sales management system built with Next.js and Supabase.
 
-First, run the development server:
+## Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+TokoFlow is a web-based application that replaces the traditional spreadsheet-based inventory management system. It provides real-time inventory tracking, sales processing, and comprehensive reporting capabilities.
+
+## Features
+
+- **Product Management**: Track products with SKU, stock levels, and costs
+- **Sales Processing**: Input and process sales transactions with automatic profit calculation
+- **Inventory Control**: Real-time stock updates with negative stock alerts
+- **Bundle Products**: Support for product compositions (bundles/packages)
+- **Multi-Channel Sales**: Different fee structures for various marketplaces
+- **Incoming Goods**: Track and process incoming inventory
+- **Reporting**: Sales by channel, product performance, and stock alerts
+
+## Database Schema
+
+The system uses PostgreSQL (via Supabase) with the following main tables:
+- Products and inventory
+- Sales transactions
+- Incoming goods records
+- Product costs and compositions
+- Marketplace fee configurations
+
+See `DATABASE_SCHEMA.md` for complete details.
+
+## Setup Instructions
+
+1. **Clone the repository**
+   ```bash
+   cd C:\startup\tokoflow
+   ```
+
+2. **Environment Setup**
+   - Copy `.env.example` to `.env.local`
+   - The Supabase credentials are already configured
+
+3. **Database**
+   - Database tables and functions are already set up in Supabase
+   - Sample data has been loaded
+
+4. **Install Dependencies** (when Next.js app is created)
+   ```bash
+   npm install
+   ```
+
+5. **Run Development Server** (when Next.js app is created)
+   ```bash
+   npm run dev
+   ```
+
+## Project Structure
+
+```
+tokoflow/
+├── DATABASE_SCHEMA.md      # Complete database documentation
+├── ERD.md                  # Entity relationship diagram
+├── SETUP_COMPLETE.md       # Setup completion details
+├── supabase-api-examples.js # API usage examples
+├── .env.example            # Environment variables template
+└── README.md              # This file
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## API Examples
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+See `supabase-api-examples.js` for examples of how to:
+- Add sales input
+- Process pending sales
+- Manage inventory
+- Generate reports
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Business Logic
 
-## Learn More
+The system replicates the original spreadsheet logic:
 
-To learn more about Next.js, take a look at the following resources:
+1. **Sales Processing**:
+   - Calculate revenue, costs, and profit
+   - Update inventory (decrease stock)
+   - Update component inventory for bundles
+   - Clear input quantity after processing
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **Inventory Management**:
+   - Track stock levels (can go negative)
+   - Process incoming goods
+   - Alert on low/negative stock
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. **Financial Calculations**:
+   - Modal cost + packing cost
+   - Affiliate commission (percentage of revenue)
+   - Marketplace fees (channel-specific)
+   - Net profit calculation
 
-## Deploy on Vercel
+## Security
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Row Level Security (RLS) enabled on all tables
+- User authentication via Supabase Auth
+- Transactions tracked by user
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Next Steps
+
+- Build Next.js frontend components
+- Implement authentication flow
+- Create user interface for all operations
+- Add real-time updates
+- Implement additional reporting features
+
+## Support
+
+For database-related queries, refer to the Supabase documentation.
+For application issues, check the error logs and database advisors.
