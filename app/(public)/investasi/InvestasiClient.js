@@ -3,11 +3,11 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import PublicNav from '../components/PublicNav';
-import Footer from '../components/Footer';
+import PublicNav from '../../components/PublicNav';
+import Footer from '../../components/Footer';
 
 // UI Components
-import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, Badge, H1, H2, H3, P, Lead } from '../components/ui';
+import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, Badge, H1, H2, H3, P, Lead } from '../../components/ui';
 
 import { 
   Check, 
@@ -34,7 +34,7 @@ import {
 } from 'lucide-react';
 
 // Import WhatsApp Link
-import { WHATSAPP_LINK } from '../page_data';
+import { WHATSAPP_LINK } from '../../page_data';
 
 // Pricing Tiers for Tokoflow
 const pricingTiers = [
