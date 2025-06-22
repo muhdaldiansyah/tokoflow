@@ -10,7 +10,7 @@ const nextConfig = {
     ],
   },
   webpack: (config) => {
-    config.resolve.extensions = ['.js', '.jsx', '.json'];
+    config.resolve.extensions = ['.js', '.jsx', '.ts', '.tsx', '.json'];
     return config;
   },
 };

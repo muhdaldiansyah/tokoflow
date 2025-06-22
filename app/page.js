@@ -50,7 +50,7 @@ export const metadata = {
     siteName: "Tokoflow",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/images/hero.PNG",
         width: 1200,
         height: 630,
         alt: "Tokoflow - Dashboard Inventory & Sales",
@@ -61,7 +61,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Tokoflow - Sistem Inventory & Penjualan",
     description: "Platform manajemen inventory dan penjualan untuk UMKM & online shop.",
-    images: ["/og-image.jpg"],
+    images: ["/images/hero.PNG"],
   },
   alternates: {
     canonical: "https://www.tokoflow.com",
@@ -259,15 +259,14 @@ export default function LandingPage() {
                 <div>
                   <div className="relative w-full aspect-[16/9] bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden shadow-lg image-container">
                     <Image
-                      src="/images/dashboard-hero.png"
+                      src="/images/hero.PNG"
                       alt="Tokoflow - Dashboard Inventory & Sales Management"
                       width={1920}
                       height={1080}
                       priority
                       quality={85}
                       className="absolute inset-0 w-full h-full object-cover"
-                      placeholder="blur"
-                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAf/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                      
                       sizes="(max-width: 768px) 100vw, 50vw"
                     />
                   </div>
