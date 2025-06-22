@@ -5,9 +5,23 @@ import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 import AnalyticsProvider from "./components/analytics/AnalyticsProvider";
 import { Suspense, useEffect } from 'react';
+import { Toaster } from 'sonner';
 
 // Pages that require authentication
-const PROTECTED_PAGES = ['/dashboard', '/admin', '/koreksi'];
+const PROTECTED_PAGES = [
+  '/dashboard', 
+  '/admin', 
+  '/koreksi',
+  '/produk',
+  '/penjualan',
+  '/barang-masuk',
+  '/inventori',
+  '/koreksi-stok',
+  '/rekap-penjualan',
+  '/harga-modal',
+  '/fee-marketplace',
+  '/komposisi-produk'
+];
 
 // Auth redirect logic component
 function AuthRedirect({ children }) {
@@ -46,6 +60,12 @@ export default function ClientLayout({ children }) {
   return (
     <AuthProvider>
       <AnalyticsProvider />
+      <Toaster 
+        position="top-right"
+        richColors
+        closeButton
+        duration={4000}
+      />
       <Suspense fallback={null}>
         <AuthRedirect>
           {children}

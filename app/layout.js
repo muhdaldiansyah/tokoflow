@@ -46,8 +46,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="id" className={inter.variable}>
       <head>
-        {/* Favicon */}
-        <link rel="icon" href="/favicon.ico" sizes="any" />
+        {/* Favicon - ensure proper paths */}
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -56,9 +56,6 @@ export default function RootLayout({ children }) {
         {/* Preconnect to external domains */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
-        {/* Preload critical assets */}
-        <link rel="preload" href="/images/tokoflow-dashboard.png" as="image" />
         
         {/* DNS prefetch for performance */}
         <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />

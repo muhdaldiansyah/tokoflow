@@ -16,7 +16,9 @@ import {
   FileText,
   Settings,
   DollarSign,
-  Store
+  Store,
+  ClipboardList,
+  GitBranch
 } from "lucide-react";
 
 const PrivateNav = () => {
@@ -32,13 +34,15 @@ const PrivateNav = () => {
 
   const navItems = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Input Penjualan", href: "/penjualan", icon: ShoppingCart },
-    { name: "Barang Masuk", href: "/barang-masuk", icon: Package },
-    { name: "Inventori", href: "/inventori", icon: Boxes },
-    { name: "Rekap Penjualan", href: "/rekap-penjualan", icon: FileText },
-    { name: "Komposisi Produk", href: "/komposisi-produk", icon: Settings },
-    { name: "Harga Modal", href: "/harga-modal", icon: DollarSign },
-    { name: "Fee Marketplace", href: "/fee-marketplace", icon: Store },
+    { name: "Products", href: "/produk", icon: Package },
+    { name: "Sales Input", href: "/penjualan", icon: ShoppingCart },
+    { name: "Incoming Goods", href: "/barang-masuk", icon: Boxes },
+    { name: "Inventory", href: "/inventori", icon: ClipboardList },
+    { name: "Stock Adjustment", href: "/koreksi-stok", icon: GitBranch },
+    { name: "Sales History", href: "/rekap-penjualan", icon: FileText },
+    { name: "Product Costs", href: "/harga-modal", icon: DollarSign },
+    { name: "Marketplace Fees", href: "/fee-marketplace", icon: Store },
+    { name: "Product Compositions", href: "/komposisi-produk", icon: Settings },
   ];
 
   return (

@@ -1,7 +1,7 @@
 // app/actions/auth.js
 'use server';
 
-import { createClient } from '../../lib/database/supabase/server';
+import { createClient } from '../../lib/database/supabase-server';
 
 export async function signUp(email, password, metadata = {}) {
   const supabase = await createClient();

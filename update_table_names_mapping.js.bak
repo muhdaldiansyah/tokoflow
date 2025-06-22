@@ -1,0 +1,29 @@
+// Script to update all table references to use tokoflow_ prefix
+const replacements = [
+  // Main tables
+  [".from('products')", ".from('tokoflow_products')"],
+  [".from('product_costs')", ".from('tokoflow_product_costs')"],
+  [".from('product_compositions')", ".from('tokoflow_product_compositions')"],
+  [".from('sales_input')", ".from('tokoflow_sales_input')"],
+  [".from('sales_transactions')", ".from('tokoflow_sales_transactions')"],
+  [".from('incoming_goods')", ".from('tokoflow_incoming_goods')"],
+  [".from('incoming_goods_input')", ".from('tokoflow_incoming_goods_input')"],
+  [".from('marketplace_fees')", ".from('tokoflow_marketplace_fees')"],
+  [".from('av_profiles')", ".from('av_profiles')"], // Keep as is
+  
+  // Foreign key references
+  ["product_costs!product_costs_sku_fkey", "tokoflow_product_costs!tokoflow_product_costs_sku_fkey"],
+  ["products!product_costs_sku_fkey", "tokoflow_products!tokoflow_product_costs_sku_fkey"],
+  ["product_compositions!product_compositions_parent_sku_fkey", "tokoflow_product_compositions!tokoflow_product_compositions_parent_sku_fkey"],
+  ["product_compositions!product_compositions_component_sku_fkey", "tokoflow_product_compositions!tokoflow_product_compositions_component_sku_fkey"],
+  ["products!product_compositions_parent_sku_fkey", "tokoflow_products!tokoflow_product_compositions_parent_sku_fkey"],
+  ["products!product_compositions_component_sku_fkey", "tokoflow_products!tokoflow_product_compositions_component_sku_fkey"],
+  ["products!sales_input_sku_fkey", "tokoflow_products!tokoflow_sales_input_sku_fkey"],
+  ["product_costs!sales_input_sku_fkey", "tokoflow_product_costs!tokoflow_sales_input_sku_fkey"],
+  ["marketplace_fees!sales_input_channel_fkey", "tokoflow_marketplace_fees!tokoflow_sales_input_channel_fkey"],
+  ["products!incoming_goods_input_sku_fkey", "tokoflow_products!tokoflow_incoming_goods_input_sku_fkey"],
+  ["av_profiles!incoming_goods_input_created_by_fkey", "av_profiles!tokoflow_incoming_goods_input_created_by_fkey"],
+  ["av_profiles!sales_input_created_by_fkey", "av_profiles!tokoflow_sales_input_created_by_fkey"],
+];
+
+console.log("Table name update mappings created");

@@ -1,270 +1,363 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createClient } from "../../../lib/database/supabase/client";
+import { Loader2, Save, AlertCircle, Package, DollarSign, Percent, Box } from "lucide-react";
+import { formatCurrency, formatNumber } from "../../../lib/utils/format";
+import { toast } from "sonner";
 
 export default function HargaModalPage() {
-  const [modalList, setModalList] = useState([
-    {
-      id: 1,
-      sku: "#012025",
-      modal: 50000,
-      packing: 2000,
-      komisiAffiliate: 10
-    },
-    {
-      id: 2,
-      sku: "#012026",
-      modal: 50000,
-      packing: 2500,
-      komisiAffiliate: 15
-    },
-    {
-      id: 3,
-      sku: "#012027",
-      modal: 55000,
-      packing: 3000,
-      komisiAffiliate: 15
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [costs, setCosts] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [error, setError] = useState(null);
+  const [modifiedRows, setModifiedRows] = useState(new Set());
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error("No session found");
+      }
+
+      // Fetch products
+      const productsRes = await fetch("/api/products", {
+        headers: { "Authorization": `Bearer ${session.access_token}` }
+      });
+      
+      if (!productsRes.ok) throw new Error("Failed to fetch products");
+      const productsData = await productsRes.json();
+
+      // Fetch product costs
+      const costsRes = await fetch("/api/product-costs", {
+        headers: { "Authorization": `Bearer ${session.access_token}` }
+      });
+      
+      if (!costsRes.ok) throw new Error("Failed to fetch product costs");
+      const costsData = await costsRes.json();
+
+      console.log('Products data structure:', productsData);
+      console.log('Costs data structure:', costsData);
+
+      if (productsData.success) {
+        setProducts(productsData.data.products || []);
+        
+        // Merge products with costs
+        const mergedData = (productsData.data.products || []).map(product => {
+          const cost = (costsData.success && Array.isArray(costsData.data)) 
+            ? costsData.data.find(c => c.sku === product.sku)
+            : null;
+            
+          return {
+            ...product,
+            cost_id: cost?.id || null,
+            modal_cost: cost?.modal_cost || 0,
+            packing_cost: cost?.packing_cost || 0,
+            affiliate_percentage: cost?.affiliate_percentage || 0
+          };
+        });
+        
+        setCosts(mergedData);
+      }
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
 
-  const [formData, setFormData] = useState({
-    sku: "",
-    modal: "",
-    packing: "",
-    komisiAffiliate: ""
-  });
-
-  const [editMode, setEditMode] = useState(false);
-  const [editId, setEditId] = useState(null);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
+  const handleCostChange = (sku, field, value) => {
+    setCosts(costs.map(cost => {
+      if (cost.sku === sku) {
+        setModifiedRows(new Set([...modifiedRows, sku]));
+        return {
+          ...cost,
+          [field]: value
+        };
+      }
+      return cost;
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    if (editMode) {
-      // Update existing
-      setModalList(prev => prev.map(item => 
-        item.id === editId 
-          ? { ...item, ...formData }
-          : item
-      ));
-      setEditMode(false);
-      setEditId(null);
-    } else {
-      // Add new
-      setModalList(prev => [...prev, { ...formData, id: Date.now() }]);
+  const handleSave = async () => {
+    if (modifiedRows.size === 0) {
+      toast.info("No changes to save");
+      return;
     }
     
-    // Reset form
-    setFormData({
-      sku: "",
-      modal: "",
-      packing: "",
-      komisiAffiliate: ""
-    });
-  };
-
-  const handleEdit = (item) => {
-    setFormData({
-      sku: item.sku,
-      modal: item.modal,
-      packing: item.packing,
-      komisiAffiliate: item.komisiAffiliate
-    });
-    setEditMode(true);
-    setEditId(item.id);
-  };
-
-  const handleDelete = (id) => {
-    if (confirm("Apakah Anda yakin ingin menghapus data ini?")) {
-      setModalList(prev => prev.filter(item => item.id !== id));
+    setSaving(true);
+    
+    try {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) throw new Error("No session found");
+      
+      const modifiedCosts = costs.filter(cost => modifiedRows.has(cost.sku));
+      let successCount = 0;
+      let errorCount = 0;
+      
+      for (const cost of modifiedCosts) {
+        try {
+          const method = "POST";
+          const url = "/api/product-costs";
+          
+          const response = await fetch(url, {
+            method,
+            headers: {
+              "Authorization": `Bearer ${session.access_token}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              sku: cost.sku,
+              modal_cost: parseFloat(cost.modal_cost) || 0,
+              packing_cost: parseFloat(cost.packing_cost) || 0,
+              affiliate_percentage: parseFloat(cost.affiliate_percentage) || 0
+            })
+          });
+          
+          const result = await response.json();
+          
+          if (result.success) {
+            successCount++;
+            
+            // Update cost_id if it was a new entry
+            if (!cost.cost_id && result.data?.id) {
+              setCosts(costs.map(c => 
+                c.sku === cost.sku ? { ...c, cost_id: result.data.id } : c
+              ));
+            }
+          } else {
+            errorCount++;
+            console.error(`Failed to save ${cost.sku}:`, result.error);
+          }
+        } catch (err) {
+          errorCount++;
+          console.error(`Error saving ${cost.sku}:`, err);
+        }
+      }
+      
+      if (successCount > 0) {
+        toast.success(`Successfully saved ${successCount} product costs`);
+        setModifiedRows(new Set());
+      }
+      
+      if (errorCount > 0) {
+        toast.error(`Failed to save ${errorCount} product costs`);
+      }
+      
+    } catch (err) {
+      console.error("Error saving costs:", err);
+      toast.error(err.message);
+    } finally {
+      setSaving(false);
     }
   };
 
-  const handleCancel = () => {
-    setEditMode(false);
-    setEditId(null);
-    setFormData({
-      sku: "",
-      modal: "",
-      packing: "",
-      komisiAffiliate: ""
-    });
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="animate-spin h-12 w-12 text-gray-700 mx-auto mb-4" />
+          <p className="text-gray-600">Loading product costs...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <p className="text-red-600">{error}</p>
+          <button
+            onClick={fetchData}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Harga Modal</h1>
-      
-      {/* Form */}
-      <div className="bg-white shadow rounded-lg p-6 mb-6">
-        <h2 className="text-lg font-semibold mb-4">
-          {editMode ? "Edit Harga Modal" : "Tambah Harga Modal"}
-        </h2>
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              SKU
-            </label>
-            <input
-              type="text"
-              name="sku"
-              value={formData.sku}
-              onChange={handleChange}
-              placeholder="#012025"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              required
-              disabled={editMode}
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Modal (Rp)
-            </label>
-            <input
-              type="number"
-              name="modal"
-              value={formData.modal}
-              onChange={handleChange}
-              placeholder="50000"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              required
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Packing (Rp)
-            </label>
-            <input
-              type="number"
-              name="packing"
-              value={formData.packing}
-              onChange={handleChange}
-              placeholder="2000"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              required
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Komisi Affiliate (%)
-            </label>
-            <input
-              type="number"
-              name="komisiAffiliate"
-              value={formData.komisiAffiliate}
-              onChange={handleChange}
-              placeholder="10"
-              min="0"
-              max="100"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              required
-            />
-          </div>
-          
-          <div className="flex items-end gap-2 lg:col-span-4">
-            <button
-              type="submit"
-              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              {editMode ? "Update" : "Tambah"}
-            </button>
-            {editMode && (
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-              >
-                Batal
-              </button>
-            )}
-          </div>
-        </form>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Page Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">Product Costs</h1>
+        <p className="text-gray-600 mt-2">Manage modal cost, packing cost, and affiliate percentage for each product</p>
       </div>
-      
-      {/* List */}
-      <div className="bg-white shadow rounded-lg overflow-hidden">
-        <div className="px-6 py-4 border-b">
-          <h2 className="text-lg font-semibold">Daftar Harga Modal</h2>
+
+      {/* Save Button */}
+      {modifiedRows.size > 0 && (
+        <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <p className="text-yellow-800">
+              You have unsaved changes for {modifiedRows.size} product(s)
+            </p>
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="inline-block w-4 h-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="inline-block w-4 h-4 mr-2" />
+                  Save Changes
+                </>
+              )}
+            </button>
+          </div>
         </div>
+      )}
+
+      {/* Costs Table */}
+      <div className="bg-white rounded-lg shadow">
+        <div className="p-6 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900">Product Cost Configuration</h2>
+        </div>
+
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  SKU
+                  Product
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Modal
+                  <div className="flex items-center">
+                    <DollarSign className="w-4 h-4 mr-1" />
+                    Modal Cost
+                  </div>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Packing
+                  <div className="flex items-center">
+                    <Box className="w-4 h-4 mr-1" />
+                    Packing Cost
+                  </div>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Total HPP
+                  <div className="flex items-center">
+                    <Percent className="w-4 h-4 mr-1" />
+                    Affiliate %
+                  </div>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Komisi Affiliate
+                  Total Cost/Unit
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Aksi
+                  Current Stock
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {modalList.map((item) => (
-                <tr key={item.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {item.sku}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    Rp {item.modal.toLocaleString('id-ID')}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    Rp {item.packing.toLocaleString('id-ID')}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                    Rp {(item.modal + item.packing).toLocaleString('id-ID')}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {item.komisiAffiliate}%
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button
-                      onClick={() => handleEdit(item)}
-                      className="text-indigo-600 hover:text-indigo-900 mr-4"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(item.id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      Hapus
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {modalList.length === 0 && (
+              {costs.length > 0 ? (
+                costs.map((cost) => {
+                  const totalCostPerUnit = 
+                    (parseFloat(cost.modal_cost) || 0) + 
+                    (parseFloat(cost.packing_cost) || 0);
+                  const isModified = modifiedRows.has(cost.sku);
+                  
+                  return (
+                    <tr key={cost.sku} className={isModified ? "bg-yellow-50" : ""}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <Package className="w-5 h-5 text-gray-400 mr-3" />
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{cost.name}</div>
+                            <div className="text-sm text-gray-500">{cost.sku}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <input
+                          type="number"
+                          value={cost.modal_cost}
+                          onChange={(e) => handleCostChange(cost.sku, 'modal_cost', e.target.value)}
+                          className="w-32 px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="0"
+                          min="0"
+                        />
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <input
+                          type="number"
+                          value={cost.packing_cost}
+                          onChange={(e) => handleCostChange(cost.sku, 'packing_cost', e.target.value)}
+                          className="w-32 px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="0"
+                          min="0"
+                        />
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <input
+                          type="number"
+                          value={cost.affiliate_percentage}
+                          onChange={(e) => handleCostChange(cost.sku, 'affiliate_percentage', e.target.value)}
+                          className="w-24 px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="0"
+                          min="0"
+                          max="100"
+                          step="0.1"
+                        />
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm font-medium text-gray-900">
+                          {formatCurrency(totalCostPerUnit)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`text-sm font-medium ${
+                          cost.stock < 0 ? 'text-red-600' :
+                          cost.stock <= 10 ? 'text-orange-600' :
+                          'text-gray-900'
+                        }`}>
+                          {formatNumber(cost.stock)}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
                 <tr>
-                  <td colSpan="6" className="px-6 py-4 text-center text-sm text-gray-500">
-                    Belum ada data harga modal
+                  <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
+                    No products found. Add products first before configuring costs.
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Information */}
+      <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <h3 className="text-sm font-medium text-blue-900 mb-2">About Product Costs</h3>
+        <ul className="text-sm text-blue-700 space-y-1">
+          <li>• <strong>Modal Cost:</strong> The base cost of the product (purchase price)</li>
+          <li>• <strong>Packing Cost:</strong> Additional cost for packaging materials per unit</li>
+          <li>• <strong>Affiliate Percentage:</strong> Commission percentage paid to affiliates (calculated on revenue)</li>
+          <li>• Changes are highlighted in yellow until saved</li>
+          <li>• These costs are used to calculate profit margins when processing sales</li>
+        </ul>
       </div>
     </div>
   );
