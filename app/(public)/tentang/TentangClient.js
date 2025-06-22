@@ -5,17 +5,17 @@ import React from "react";
 import Link from "next/link";
 
 // Import Nav and Footer components
-import PublicNav from "../components/PublicNav";
-import Footer from "../components/Footer";
+import PublicNav from "../../components/PublicNav";
+import Footer from "../../components/Footer";
 
 // UI Components
-import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, Badge, H1, H2, H3, P, Lead } from '../components/ui';
+import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, Badge, H1, H2, H3, P, Lead } from '../../components/ui';
 
 // Icons
 import { Package, TrendingUp, CheckSquare, Heart, RefreshCw, Users, Target, Award, Shield, Globe } from 'lucide-react';
 
 // Import data
-import { coreValues as importedCoreValues, WHATSAPP_LINK } from '../page_data';
+import { coreValues as importedCoreValues, WHATSAPP_LINK } from '../../page_data';
 
 /* --------------------------------------------------------------------- */
 /* 1. DATA */

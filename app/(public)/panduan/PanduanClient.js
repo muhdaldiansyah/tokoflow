@@ -5,11 +5,11 @@
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import PublicNav from '../components/PublicNav';
-import Footer from '../components/Footer';
+import PublicNav from '../../components/PublicNav';
+import Footer from '../../components/Footer';
 
 // UI Components
-import { Button, H1, H2, H3, P, Badge } from '../components/ui';
+import { Button, H1, H2, H3, P, Badge } from '../../components/ui';
 import { 
   Search, 
   Calendar, 
@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 
 // Import panduan data from page_data
-import { panduanPosts as importedPosts } from '../page_data';
+import { panduanPosts as importedPosts } from '../../page_data';
 
 // Additional panduan posts specific to tokoflow
 const additionalPosts = [

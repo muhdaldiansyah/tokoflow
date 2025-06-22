@@ -4,11 +4,11 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import PublicNav from '../components/PublicNav';
-import Footer from '../components/Footer';
+import PublicNav from '../../components/PublicNav';
+import Footer from '../../components/Footer';
 
 // UI Components
-import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, Badge, H1, H2, H3, P, Lead } from '../components/ui';
+import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, Badge, H1, H2, H3, P, Lead } from '../../components/ui';
 
 import {
   // Service Icons
@@ -36,7 +36,7 @@ import {
 } from 'lucide-react';
 
 // Import data
-import { WHATSAPP_LINK } from '../page_data';
+import { WHATSAPP_LINK } from '../../page_data';
 
 // Helper component for section heading using UI components
 const SectionHeading = ({ subtitle, title, description, center = true, dark = false }) => (
