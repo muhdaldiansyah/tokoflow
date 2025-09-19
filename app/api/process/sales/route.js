@@ -1,7 +1,7 @@
 // app/api/process/sales/route.js
-import { createClient } from '@/lib/database/supabase-server';
-import { successResponse, errorResponse } from '@/lib/utils/api-response';
-import { processSalesTransaction, batchProcessSales } from '@/lib/services/sales';
+import { createClient } from '../../../../lib/database/supabase-server';
+import { successResponse, errorResponse } from '../../../../lib/utils/api-response';
+import { processSalesTransaction, batchProcessSales } from '../../../../lib/services/sales';
 
 /**
  * POST /api/process/sales - Process sales transactions
@@ -55,19 +55,19 @@ export async function GET(request) {
     
     // Get all pending sales with status='ok'
     const { data, error } = await supabase
-      .from('tokoflow_sales_input')
+      .from('tf_sales_input')
       .select(`
         *,
-        product:tokoflow_products!tokoflow_sales_input_sku_fkey(
+        product:tf_products!tf_sales_input_sku_fkey(
           name,
           stock
         ),
-        cost:tokoflow_product_costs!tokoflow_product_costs_sku_fkey(
+        cost:tf_product_costs!tf_product_costs_sku_fkey(
           modal_cost,
           packing_cost,
           affiliate_percentage
         ),
-        fee:tokoflow_marketplace_fees!tokoflow_sales_input_channel_fkey(
+        fee:tf_marketplace_fees!tf_sales_input_channel_fkey(
           fee_percentage
         )
       `)

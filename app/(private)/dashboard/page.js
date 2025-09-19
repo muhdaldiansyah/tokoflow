@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClient } from "../../../lib/database/supabase/client";
 import { Loader2, TrendingUp, TrendingDown, AlertTriangle, Package, ShoppingCart, DollarSign, BarChart3 } from "lucide-react";
 import { formatCurrency, formatNumber } from "../../../lib/utils/format";
 import Link from "next/link";
@@ -19,16 +18,7 @@ export default function DashboardPage() {
 
   const fetchPendingSales = async () => {
     try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) return;
-
-      const response = await fetch("/api/sales/input?status=ok", {
-        headers: {
-          "Authorization": `Bearer ${session.access_token}`,
-        },
-      });
+      const response = await fetch("/api/sales/input?status=ok");
 
       if (response.ok) {
         const result = await response.json();
@@ -44,25 +34,14 @@ export default function DashboardPage() {
   const fetchDashboardData = async () => {
     setLoading(true);
     setError(null);
-    
-    try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        throw new Error("No session found");
-      }
 
+    try {
       // Get current month date range for more relevant data
       const now = new Date();
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
       const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
 
-      const response = await fetch(`/api/dashboard?start_date=${startOfMonth}&end_date=${endOfMonth}`, {
-        headers: {
-          "Authorization": `Bearer ${session.access_token}`,
-        },
-      });
+      const response = await fetch(`/api/dashboard?start_date=${startOfMonth}&end_date=${endOfMonth}`);
 
       if (!response.ok) {
         throw new Error("Failed to fetch dashboard data");
@@ -70,7 +49,7 @@ export default function DashboardPage() {
 
       const result = await response.json();
       console.log('Dashboard API response:', result);
-      
+
       if (result.success) {
         setData(result.data);
       } else {
@@ -141,7 +120,7 @@ export default function DashboardPage() {
               </p>
             </div>
             <Link
-              href="/penjualan"
+              href="/sales"
               className="text-yellow-600 hover:text-yellow-700 font-medium"
             >
               Process Now →
@@ -232,7 +211,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900">Today's Sales</h2>
               <Link
-                href="/penjualan"
+                href="/sales"
                 className="text-sm text-blue-600 hover:text-blue-700"
               >
                 View All →
@@ -277,7 +256,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900">Inventory Alerts</h2>
               <Link
-                href="/inventori"
+                href="/inventory"
                 className="text-sm text-blue-600 hover:text-blue-700"
               >
                 View Inventory →

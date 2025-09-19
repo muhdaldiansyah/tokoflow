@@ -3,7 +3,7 @@
 export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from "react";
-import { signIn } from "../../actions/auth";
+import { useAuth } from "../../hooks/useAuthSimple";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
@@ -14,6 +14,7 @@ import { Package } from "lucide-react";
 export default function LoginPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { signIn: signInWithAuth, user } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,6 +27,12 @@ export default function LoginPage() {
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      setLoginSuccess(true);
+    }
+  }, [user]);
 
   // Session cleanup logic
   useEffect(() => {
@@ -68,28 +75,24 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     setError("");
+    setLoginSuccess(false);
 
     try {
-      const { error, data } = await signIn(email, password);
+      const { error: signInError } = await signInWithAuth(email, password);
 
-      if (error) throw error;
-
-      if (data?.user) {
-        setLoginSuccess(true);
-        const redirectTo = searchParams.get('redirect') || '/dashboard';
-        setTimeout(() => router.push(redirectTo), 1000);
+      if (signInError) {
+        throw signInError;
       }
+
+      setLoginSuccess(true);
     } catch (err) {
-      const errorMessage = err.message || "Terjadi kesalahan saat login";
+      const errorMessage = err?.message || "Terjadi kesalahan saat login";
       setError(errorMessage);
       setLoginSuccess(false);
     } finally {
-      if (!loginSuccess) {
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     }
   };
-
   return (
     <>
       <PublicNav />
@@ -225,3 +228,4 @@ export default function LoginPage() {
     </>
   );
 }
+

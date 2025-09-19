@@ -1,6 +1,6 @@
 // app/api/products/route.js
-import { createClient } from '@/lib/database/supabase-server';
-import { successResponse, errorResponse, handleSupabaseError } from '@/lib/utils/api-response';
+import { createClient } from '../../../lib/database/supabase-server';
+import { successResponse, errorResponse, handleSupabaseError } from '../../../lib/utils/api-response';
 
 /**
  * GET /api/products - Get all products with optional filters
@@ -17,7 +17,7 @@ export async function GET(request) {
     const offset = parseInt(searchParams.get('offset') || '0');
 
     let query = supabase
-      .from('tokoflow_products')
+      .from('tf_products')
       .select('*', { count: 'exact' });
 
     // Apply search filter
@@ -75,7 +75,7 @@ export async function POST(request) {
 
     // Start transaction - create product and cost record
     const { data: product, error: productError } = await supabase
-      .from('tokoflow_products')
+      .from('tf_products')
       .insert({
         sku: body.sku,
         name: body.name,
@@ -91,7 +91,7 @@ export async function POST(request) {
     // Create cost record if provided
     if (body.modal_cost !== undefined || body.packing_cost !== undefined || body.affiliate_percentage !== undefined) {
       const { error: costError } = await supabase
-        .from('tokoflow_product_costs')
+        .from('tf_product_costs')
         .insert({
           product_id: product.id,
           sku: body.sku,
@@ -102,7 +102,7 @@ export async function POST(request) {
 
       if (costError) {
         // Rollback by deleting the product
-        await supabase.from('tokoflow_products').delete().eq('id', product.id);
+        await supabase.from('tf_products').delete().eq('id', product.id);
         return handleSupabaseError(costError);
       }
     }
@@ -133,7 +133,7 @@ export async function PUT(request) {
       if (!update.sku) continue;
 
       const { error } = await supabase
-        .from('tokoflow_products')
+        .from('tf_products')
         .update({
           name: update.name,
           stock: update.stock,

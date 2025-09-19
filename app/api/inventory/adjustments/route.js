@@ -1,6 +1,6 @@
 // app/api/inventory/adjustments/route.js
-import { createClient } from '@/lib/database/supabase-server';
-import { successResponse, errorResponse, handleSupabaseError } from '@/lib/utils/api-response';
+import { createClient } from '../../../../lib/database/supabase-server';
+import { successResponse, errorResponse, handleSupabaseError } from '../../../../lib/utils/api-response';
 
 /**
  * GET /api/inventory/adjustments - Get stock adjustment history
@@ -15,10 +15,10 @@ export async function GET(request) {
     const sku = searchParams.get('sku');
 
     let query = supabase
-      .from('tokoflow_stock_adjustments')
+      .from('tf_stock_adjustments')
       .select(`
         *,
-        product:tokoflow_products!tokoflow_stock_adjustments_sku_fkey(
+        product:tf_products!tf_stock_adjustments_sku_fkey(
           name
         )
       `)

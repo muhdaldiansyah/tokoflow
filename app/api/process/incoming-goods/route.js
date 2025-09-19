@@ -1,7 +1,7 @@
 // app/api/process/incoming-goods/route.js
-import { createClient } from '@/lib/database/supabase-server';
-import { successResponse, errorResponse } from '@/lib/utils/api-response';
-import { processIncomingGoods, batchProcessIncomingGoods } from '@/lib/services/incoming-goods';
+import { createClient } from '../../../../lib/database/supabase-server';
+import { successResponse, errorResponse } from '../../../../lib/utils/api-response';
+import { processIncomingGoods, batchProcessIncomingGoods } from '../../../../lib/services/incoming-goods';
 
 /**
  * POST /api/process/incoming-goods - Process incoming goods
@@ -55,10 +55,10 @@ export async function GET(request) {
     
     // Get all pending incoming goods with status='ok'
     const { data, error } = await supabase
-      .from('tokoflow_incoming_goods_input')
+      .from('tf_incoming_goods_input')
       .select(`
         *,
-        product:tokoflow_products!tokoflow_incoming_goods_input_sku_fkey(
+        product:tf_products!tf_incoming_goods_input_sku_fkey(
           name,
           stock
         )

@@ -1,7 +1,7 @@
 // app/api/incoming-goods/history/route.js
-import { createClient } from '@/lib/database/supabase-server';
-import { successResponse, errorResponse, handleSupabaseError } from '@/lib/utils/api-response';
-import { getIncomingGoodsHistory } from '@/lib/services/incoming-goods';
+import { createClient } from '../../../../lib/database/supabase-server';
+import { successResponse, errorResponse, handleSupabaseError } from '../../../../lib/utils/api-response';
+import { getIncomingGoodsHistory } from '../../../../lib/services/incoming-goods';
 
 /**
  * GET /api/incoming-goods/history - Get incoming goods history

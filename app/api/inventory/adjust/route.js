@@ -1,6 +1,6 @@
 // app/api/inventory/adjust/route.js
-import { createClient } from '@/lib/database/supabase-server';
-import { successResponse, errorResponse, handleSupabaseError } from '@/lib/utils/api-response';
+import { createClient } from '../../../../lib/database/supabase-server';
+import { successResponse, errorResponse, handleSupabaseError } from '../../../../lib/utils/api-response';
 
 /**
  * POST /api/inventory/adjust - Single stock adjustment
@@ -23,7 +23,7 @@ export async function POST(request) {
 
     // Get current stock
     const { data: product, error: productError } = await supabase
-      .from('tokoflow_products')
+      .from('tf_products')
       .select('stock')
       .eq('sku', body.sku)
       .single();
@@ -38,7 +38,7 @@ export async function POST(request) {
 
     // Update product stock
     const { error: updateError } = await supabase
-      .from('tokoflow_products')
+      .from('tf_products')
       .update({ 
         stock: newStock,
         updated_at: new Date().toISOString()
@@ -51,7 +51,7 @@ export async function POST(request) {
 
     // Log the adjustment
     const { error: logError } = await supabase
-      .from('tokoflow_stock_adjustments')
+      .from('tf_stock_adjustments')
       .insert({
         sku: body.sku,
         quantity_change: adjustment,

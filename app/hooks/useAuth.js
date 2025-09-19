@@ -14,26 +14,53 @@ export function AuthProvider({ children }) {
   const supabase = createClient();
 
   useEffect(() => {
+    let mounted = true;
+    let timeoutId;
+
+    // Set a timeout to force loading to false after 5 seconds
+    timeoutId = setTimeout(() => {
+      if (mounted) {
+        console.warn("Auth check taking too long, forcing loading to false");
+        setLoading(false);
+      }
+    }, 5000);
+
     // Check active session
     const checkUser = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
-        setUser(session?.user ?? null);
+        if (mounted) {
+          setUser(session?.user ?? null);
+          setLoading(false);
+          clearTimeout(timeoutId);
+        }
       } catch (error) {
         console.error("Error checking auth session:", error);
-      } finally {
-        setLoading(false);
+        if (mounted) {
+          setUser(null);
+          setLoading(false);
+          clearTimeout(timeoutId);
+        }
       }
     };
 
     checkUser();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state change:", event, session?.user?.id);
+      if (mounted) {
+        setUser(session?.user ?? null);
+        setLoading(false);
+        clearTimeout(timeoutId);
+      }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      clearTimeout(timeoutId);
+      subscription.unsubscribe();
+    };
   }, [supabase]);
 
   const signIn = async (email, password) => {

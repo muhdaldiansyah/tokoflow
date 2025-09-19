@@ -2,7 +2,7 @@
 "use client";
 
 import PrivateNav from "../components/PrivateNav";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../hooks/useAuthSimple";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";

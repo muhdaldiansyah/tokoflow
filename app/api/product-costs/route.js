@@ -1,6 +1,6 @@
 // app/api/product-costs/route.js
-import { createClient } from '@/lib/database/supabase-server';
-import { successResponse, errorResponse, handleSupabaseError } from '@/lib/utils/api-response';
+import { createClient } from '../../../lib/database/supabase-server';
+import { successResponse, errorResponse, handleSupabaseError } from '../../../lib/utils/api-response';
 
 /**
  * GET /api/product-costs - Get all product costs
@@ -14,10 +14,10 @@ export async function GET(request) {
     const sku = searchParams.get('sku');
 
     let query = supabase
-      .from('tokoflow_product_costs')
+      .from('tf_product_costs')
       .select(`
         *,
-        product:tokoflow_products!tokoflow_product_costs_sku_fkey(
+        product:tf_products!tf_product_costs_sku_fkey(
           name,
           stock
         )
@@ -60,7 +60,7 @@ export async function POST(request) {
     
     if (!productId) {
       const { data: product, error: productError } = await supabase
-        .from('tokoflow_products')
+        .from('tf_products')
         .select('id')
         .eq('sku', body.sku)
         .single();
@@ -74,7 +74,7 @@ export async function POST(request) {
 
     // Upsert cost data
     const { data, error } = await supabase
-      .from('tokoflow_product_costs')
+      .from('tf_product_costs')
       .upsert({
         product_id: productId,
         sku: body.sku,
@@ -118,7 +118,7 @@ export async function PUT(request) {
 
       // Get product ID
       const { data: product } = await supabase
-        .from('tokoflow_products')
+        .from('tf_products')
         .select('id')
         .eq('sku', cost.sku)
         .single();
@@ -134,7 +134,7 @@ export async function PUT(request) {
 
       // Upsert cost
       const { error } = await supabase
-        .from('tokoflow_product_costs')
+        .from('tf_product_costs')
         .upsert({
           product_id: product.id,
           sku: cost.sku,
@@ -174,7 +174,7 @@ export async function DELETE(request) {
     }
 
     const { error } = await supabase
-      .from('tokoflow_product_costs')
+      .from('tf_product_costs')
       .delete()
       .eq('sku', sku);
 

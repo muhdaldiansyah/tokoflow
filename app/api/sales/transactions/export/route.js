@@ -1,6 +1,6 @@
 // app/api/sales/transactions/export/route.js
-import { createClient } from '@/lib/database/supabase-server';
-import { successResponse, errorResponse, handleSupabaseError } from '@/lib/utils/api-response';
+import { createClient } from '../../../../../lib/database/supabase-server';
+import { successResponse, errorResponse, handleSupabaseError } from '../../../../../lib/utils/api-response';
 
 /**
  * GET /api/sales/transactions/export - Export sales transactions as CSV
@@ -21,7 +21,7 @@ export async function GET(request) {
     }
 
     let query = supabase
-      .from('tokoflow_sales_transactions')
+      .from('tf_sales_transactions')
       .select(`
         transaction_date,
         sku,

@@ -1,6 +1,6 @@
 // app/api/dashboard/analytics/route.js
-import { createClient } from '@/lib/database/supabase-server';
-import { successResponse, errorResponse } from '@/lib/utils/api-response';
+import { createClient } from '../../../../lib/database/supabase-server';
+import { successResponse, errorResponse } from '../../../../lib/utils/api-response';
 
 /**
  * GET /api/dashboard/analytics - Get detailed analytics data
@@ -21,7 +21,7 @@ export async function GET(request) {
 
     // Get sales data for time series
     const { data: salesData, error } = await supabase
-      .from('tokoflow_sales_transactions')
+      .from('tf_sales_transactions')
       .select('transaction_date, revenue, net_profit, quantity, channel')
       .gte('transaction_date', startDate.toISOString().split('T')[0])
       .lte('transaction_date', endDate.toISOString().split('T')[0])
@@ -106,7 +106,7 @@ export async function GET(request) {
 
     // Get product performance
     const { data: productData } = await supabase
-      .from('tokoflow_sales_transactions')
+      .from('tf_sales_transactions')
       .select('sku, product_name, revenue, net_profit, quantity')
       .gte('transaction_date', startDate.toISOString().split('T')[0])
       .lte('transaction_date', endDate.toISOString().split('T')[0]);
@@ -152,7 +152,7 @@ export async function GET(request) {
 
     // Get inventory movement
     const { data: incomingData } = await supabase
-      .from('tokoflow_incoming_goods')
+      .from('tf_incoming_goods')
       .select('transaction_date, quantity')
       .gte('transaction_date', startDate.toISOString().split('T')[0])
       .lte('transaction_date', endDate.toISOString().split('T')[0]);

@@ -30,8 +30,17 @@ export async function middleware(request) {
     }
   );
 
-  // Refresh session if expired
-  const { data: { user } } = await supabase.auth.getUser();
+  // Get authenticated user (this validates the token on server)
+  let user = null;
+  try {
+    const { data: { user: authUser }, error } = await supabase.auth.getUser();
+    if (!error) {
+      user = authUser;
+    }
+  } catch (error) {
+    // AuthSessionMissingError is expected when user is not logged in
+    console.log("Middleware: No auth session found");
+  }
 
   // If user is not authenticated and trying to access private routes
   if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {

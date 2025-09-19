@@ -1,6 +1,6 @@
 // app/api/inventory/movements/route.js
-import { createClient } from '@/lib/database/supabase-server';
-import { successResponse, errorResponse } from '@/lib/utils/api-response';
+import { createClient } from '../../../../lib/database/supabase-server';
+import { successResponse, errorResponse } from '../../../../lib/utils/api-response';
 
 /**
  * GET /api/inventory/movements - Get stock movement history
@@ -18,7 +18,7 @@ export async function GET(request) {
 
     // Get sales (outgoing)
     let salesQuery = supabase
-      .from('tokoflow_sales_transactions')
+      .from('tf_sales_transactions')
       .select('transaction_date, sku, product_name, quantity, channel')
       .order('transaction_date', { ascending: false });
 
@@ -30,7 +30,7 @@ export async function GET(request) {
 
     // Get incoming goods
     let incomingQuery = supabase
-      .from('tokoflow_incoming_goods')
+      .from('tf_incoming_goods')
       .select('transaction_date, sku, product_name, quantity')
       .order('transaction_date', { ascending: false });
 
@@ -75,7 +75,7 @@ export async function GET(request) {
     if (sku && movements.length > 0) {
       // Get current stock
       const { data: product } = await supabase
-        .from('tokoflow_products')
+        .from('tf_products')
         .select('stock')
         .eq('sku', sku)
         .single();

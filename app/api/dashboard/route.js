@@ -1,6 +1,6 @@
 // app/api/dashboard/route.js
-import { createClient } from '@/lib/database/supabase-server';
-import { successResponse, errorResponse } from '@/lib/utils/api-response';
+import { createClient } from '../../../lib/database/supabase-server';
+import { successResponse, errorResponse } from '../../../lib/utils/api-response';
 
 /**
  * GET /api/dashboard - Get dashboard summary data
@@ -20,7 +20,7 @@ export async function GET(request) {
 
     // 1. Sales Summary
     let salesQuery = supabase
-      .from('tokoflow_sales_transactions')
+      .from('tf_sales_transactions')
       .select('revenue, net_profit, quantity');
     
     if (startDate) salesQuery = salesQuery.gte('transaction_date', startDate);
@@ -47,7 +47,7 @@ export async function GET(request) {
 
     // 2. Today's Sales
     const { data: todaySales } = await supabase
-      .from('tokoflow_sales_transactions')
+      .from('tf_sales_transactions')
       .select('revenue, net_profit')
       .eq('transaction_date', today);
     
@@ -59,27 +59,27 @@ export async function GET(request) {
 
     // 3. Inventory Alerts
     const { data: inventoryAlerts } = await supabase
-      .from('tokoflow_products')
+      .from('tf_products')
       .select('sku, name, stock')
       .or('stock.lt.0,stock.eq.0')
       .order('stock');
 
     // 4. Pending Transactions
     const { data: pendingSales } = await supabase
-      .from('tokoflow_sales_input')
+      .from('tf_sales_input')
       .select('id')
       .eq('status', 'ok')
       .not('quantity', 'is', null);
 
     const { data: pendingIncoming } = await supabase
-      .from('tokoflow_incoming_goods_input')
+      .from('tf_incoming_goods_input')
       .select('id')
       .eq('status', 'ok')
       .not('quantity', 'is', null);
 
     // 5. Top Products (by quantity sold)
     const { data: topProducts } = await supabase
-      .from('tokoflow_sales_transactions')
+      .from('tf_sales_transactions')
       .select('sku, product_name, quantity')
       .gte('transaction_date', startDate || '2000-01-01')
       .lte('transaction_date', endDate || '2999-12-31');
@@ -102,7 +102,7 @@ export async function GET(request) {
 
     // 6. Sales by Channel
     const { data: channelData } = await supabase
-      .from('tokoflow_sales_transactions')
+      .from('tf_sales_transactions')
       .select('channel, revenue, net_profit')
       .gte('transaction_date', startDate || '2000-01-01')
       .lte('transaction_date', endDate || '2999-12-31');
@@ -124,14 +124,14 @@ export async function GET(request) {
 
     // 7. Recent Activities - Today's Sales
     const { data: recentSales } = await supabase
-      .from('tokoflow_sales_transactions')
+      .from('tf_sales_transactions')
       .select('id, transaction_date, sku, product_name, revenue, channel, quantity, selling_price')
       .eq('transaction_date', today)
       .order('created_at', { ascending: false })
       .limit(10);
 
     const { data: recentIncoming } = await supabase
-      .from('tokoflow_incoming_goods')
+      .from('tf_incoming_goods')
       .select('id, transaction_date, sku, product_name, quantity')
       .order('created_at', { ascending: false })
       .limit(5);

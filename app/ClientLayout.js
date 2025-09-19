@@ -1,10 +1,11 @@
 // app/ClientLayout.js
 "use client";
 
+import React, { Suspense, useEffect, useState } from 'react';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
-import { AuthProvider, useAuth } from "./hooks/useAuth";
+import { AuthProvider, useAuth } from "./hooks/useAuthSimple";
 import AnalyticsProvider from "./components/analytics/AnalyticsProvider";
-import { Suspense, useEffect } from 'react';
+import AuthLoading from "./components/AuthLoading";
 import { Toaster } from 'sonner';
 
 // Pages that require authentication
@@ -12,15 +13,15 @@ const PROTECTED_PAGES = [
   '/dashboard', 
   '/admin', 
   '/koreksi',
-  '/produk',
-  '/penjualan',
-  '/barang-masuk',
-  '/inventori',
-  '/koreksi-stok',
-  '/rekap-penjualan',
-  '/harga-modal',
-  '/fee-marketplace',
-  '/komposisi-produk'
+  '/products',
+  '/sales',
+  '/incoming-goods',
+  '/inventory',
+  '/stock-adjustments',
+  '/sales-history',
+  '/product-costs',
+  '/marketplace-fees',
+  '/product-compositions'
 ];
 
 // Auth redirect logic component
@@ -29,12 +30,17 @@ function AuthRedirect({ children }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { user, loading } = useAuth();
+  const [isClient, setIsClient] = React.useState(false);
 
   useEffect(() => {
-    if (loading) return;
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (loading || !isClient) return;
 
     // Check if current page requires auth
-    const isProtectedPage = PROTECTED_PAGES.some(page => 
+    const isProtectedPage = PROTECTED_PAGES.some(page =>
       pathname === page || pathname.startsWith(page + '/')
     );
 
@@ -49,7 +55,12 @@ function AuthRedirect({ children }) {
       const redirectTo = searchParams.get('redirect') || '/dashboard';
       router.replace(redirectTo);
     }
-  }, [user, loading, pathname, router, searchParams]);
+  }, [user, loading, pathname, router, searchParams, isClient]);
+
+  // Show loading screen while auth is being checked or client is initializing
+  if (loading || !isClient) {
+    return <AuthLoading />;
+  }
 
   return children;
 }

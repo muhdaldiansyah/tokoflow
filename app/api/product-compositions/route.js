@@ -1,6 +1,6 @@
 // app/api/product-compositions/route.js
-import { createClient } from '@/lib/database/supabase-server';
-import { successResponse, errorResponse, handleSupabaseError } from '@/lib/utils/api-response';
+import { createClient } from '../../../lib/database/supabase-server';
+import { successResponse, errorResponse, handleSupabaseError } from '../../../lib/utils/api-response';
 
 /**
  * GET /api/product-compositions - Get product compositions
@@ -16,15 +16,15 @@ export async function GET(request) {
     const status = searchParams.get('status') || 'aktif';
 
     let query = supabase
-      .from('tokoflow_product_compositions')
+      .from('tf_product_compositions')
       .select(`
         *,
-        parent:tokoflow_products!tokoflow_product_compositions_parent_sku_fkey(
+        parent:tf_products!tf_product_compositions_parent_sku_fkey(
           sku,
           name,
           stock
         ),
-        component:tokoflow_products!tokoflow_product_compositions_component_sku_fkey(
+        component:tf_products!tf_product_compositions_component_sku_fkey(
           sku,
           name,
           stock
@@ -81,7 +81,7 @@ export async function POST(request) {
 
     // Check if both products exist
     const { data: products, error: checkError } = await supabase
-      .from('tokoflow_products')
+      .from('tf_products')
       .select('sku')
       .in('sku', [body.parent_sku, body.component_sku]);
 
@@ -91,7 +91,7 @@ export async function POST(request) {
 
     // Check for duplicate composition
     const { data: existing } = await supabase
-      .from('tokoflow_product_compositions')
+      .from('tf_product_compositions')
       .select('id')
       .eq('parent_sku', body.parent_sku)
       .eq('component_sku', body.component_sku)
@@ -104,7 +104,7 @@ export async function POST(request) {
 
     // Create composition
     const { data, error } = await supabase
-      .from('tokoflow_product_compositions')
+      .from('tf_product_compositions')
       .insert({
         parent_sku: body.parent_sku,
         component_sku: body.component_sku,
@@ -114,11 +114,11 @@ export async function POST(request) {
       })
       .select(`
         *,
-        parent:tokoflow_products!tokoflow_product_compositions_parent_sku_fkey(
+        parent:tf_products!tf_product_compositions_parent_sku_fkey(
           sku,
           name
         ),
-        component:tokoflow_products!tokoflow_product_compositions_component_sku_fkey(
+        component:tf_products!tf_product_compositions_component_sku_fkey(
           sku,
           name
         )
@@ -171,7 +171,7 @@ export async function PATCH(request) {
     updates.updated_at = new Date().toISOString();
 
     const { data, error } = await supabase
-      .from('tokoflow_product_compositions')
+      .from('tf_product_compositions')
       .update(updates)
       .eq('id', id)
       .select()
@@ -202,7 +202,7 @@ export async function DELETE(request) {
     }
 
     const { error } = await supabase
-      .from('tokoflow_product_compositions')
+      .from('tf_product_compositions')
       .delete()
       .eq('id', id);
 

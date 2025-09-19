@@ -1,6 +1,6 @@
 // app/api/product-compositions/[id]/route.js
-import { createClient } from '@/lib/database/supabase-server';
-import { successResponse, errorResponse, handleSupabaseError } from '@/lib/utils/api-response';
+import { createClient } from '../../../../lib/database/supabase-server';
+import { successResponse, errorResponse, handleSupabaseError } from '../../../../lib/utils/api-response';
 
 /**
  * GET /api/product-compositions/[id] - Get specific composition
@@ -11,15 +11,15 @@ export async function GET(request, { params }) {
     const { id } = params;
 
     const { data, error } = await supabase
-      .from('tokoflow_product_compositions')
+      .from('tf_product_compositions')
       .select(`
         *,
-        parent:tokoflow_products!tokoflow_product_compositions_parent_sku_fkey(
+        parent:tf_products!tf_product_compositions_parent_sku_fkey(
           sku,
           name,
           stock
         ),
-        component:tokoflow_products!tokoflow_product_compositions_component_sku_fkey(
+        component:tf_products!tf_product_compositions_component_sku_fkey(
           sku,
           name,
           stock
@@ -53,7 +53,7 @@ export async function PUT(request, { params }) {
 
     // Check if composition exists
     const { data: existing, error: fetchError } = await supabase
-      .from('tokoflow_product_compositions')
+      .from('tf_product_compositions')
       .select('*')
       .eq('id', id)
       .single();
@@ -86,16 +86,16 @@ export async function PUT(request, { params }) {
     updates.updated_at = new Date().toISOString();
 
     const { data, error } = await supabase
-      .from('tokoflow_product_compositions')
+      .from('tf_product_compositions')
       .update(updates)
       .eq('id', id)
       .select(`
         *,
-        parent:tokoflow_products!tokoflow_product_compositions_parent_sku_fkey(
+        parent:tf_products!tf_product_compositions_parent_sku_fkey(
           sku,
           name
         ),
-        component:tokoflow_products!tokoflow_product_compositions_component_sku_fkey(
+        component:tf_products!tf_product_compositions_component_sku_fkey(
           sku,
           name
         )
@@ -123,7 +123,7 @@ export async function DELETE(request, { params }) {
 
     // Check if composition exists
     const { data: existing, error: fetchError } = await supabase
-      .from('tokoflow_product_compositions')
+      .from('tf_product_compositions')
       .select('parent_sku, component_sku')
       .eq('id', id)
       .single();
@@ -136,7 +136,7 @@ export async function DELETE(request, { params }) {
     }
 
     const { error } = await supabase
-      .from('tokoflow_product_compositions')
+      .from('tf_product_compositions')
       .delete()
       .eq('id', id);
 

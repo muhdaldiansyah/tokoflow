@@ -1,7 +1,7 @@
 // app/api/inventory/check/route.js
-import { createClient } from '@/lib/database/supabase-server';
-import { successResponse, errorResponse } from '@/lib/utils/api-response';
-import { checkStockAvailability } from '@/lib/services/inventory';
+import { createClient } from '../../../../lib/database/supabase-server';
+import { successResponse, errorResponse } from '../../../../lib/utils/api-response';
+import { checkStockAvailability } from '../../../../lib/services/inventory';
 
 /**
  * GET /api/inventory/check - Check stock availability

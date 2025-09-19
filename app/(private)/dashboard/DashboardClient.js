@@ -110,7 +110,7 @@ export default function DashboardClient({ user, profile, stats }) {
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Aksi Cepat</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <Link
-            href="/penjualan"
+            href="/sales"
             className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:border-gray-300 hover:shadow-sm transition-all"
           >
             <div className="p-2 bg-blue-50 rounded-lg">
@@ -123,7 +123,7 @@ export default function DashboardClient({ user, profile, stats }) {
           </Link>
 
           <Link
-            href="/barang-masuk"
+            href="/incoming-goods"
             className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:border-gray-300 hover:shadow-sm transition-all"
           >
             <div className="p-2 bg-green-50 rounded-lg">
@@ -136,7 +136,7 @@ export default function DashboardClient({ user, profile, stats }) {
           </Link>
 
           <Link
-            href="/rekap-penjualan"
+            href="/sales-history"
             className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:border-gray-300 hover:shadow-sm transition-all"
           >
             <div className="p-2 bg-purple-50 rounded-lg">

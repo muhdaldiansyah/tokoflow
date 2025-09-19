@@ -1,6 +1,6 @@
 // app/api/incoming-goods/input/route.js
-import { createClient } from '@/lib/database/supabase-server';
-import { successResponse, errorResponse, handleSupabaseError } from '@/lib/utils/api-response';
+import { createClient } from '../../../../lib/database/supabase-server';
+import { successResponse, errorResponse, handleSupabaseError } from '../../../../lib/utils/api-response';
 
 /**
  * GET /api/incoming-goods/input - Get incoming goods input records
@@ -15,10 +15,10 @@ export async function GET(request) {
     const hasQuantity = searchParams.get('has_quantity');
 
     let query = supabase
-      .from('tokoflow_incoming_goods_input')
+      .from('tf_incoming_goods_input')
       .select(`
         *,
-        product:tokoflow_products!tokoflow_incoming_goods_input_sku_fkey(
+        product:tf_products!tf_incoming_goods_input_sku_fkey(
           name,
           stock
         )
@@ -71,7 +71,7 @@ export async function POST(request) {
 
     // Create input record
     const { data, error } = await supabase
-      .from('tokoflow_incoming_goods_input')
+      .from('tf_incoming_goods_input')
       .insert({
         transaction_date: body.transaction_date,
         sku: body.sku,
@@ -107,7 +107,7 @@ export async function PATCH(request) {
     }
 
     const { error } = await supabase
-      .from('tokoflow_incoming_goods_input')
+      .from('tf_incoming_goods_input')
       .update(updates)
       .in('id', ids);
 
@@ -139,7 +139,7 @@ export async function DELETE(request) {
     }
 
     const { error } = await supabase
-      .from('tokoflow_incoming_goods_input')
+      .from('tf_incoming_goods_input')
       .delete()
       .in('id', ids)
       .eq('status', 'pending');

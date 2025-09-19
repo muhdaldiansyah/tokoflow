@@ -1,6 +1,6 @@
 // app/api/incoming-goods/input/[id]/route.js
-import { createClient } from '@/lib/database/supabase-server';
-import { successResponse, errorResponse, handleSupabaseError } from '@/lib/utils/api-response';
+import { createClient } from '../../../../../lib/database/supabase-server';
+import { successResponse, errorResponse, handleSupabaseError } from '../../../../../lib/utils/api-response';
 
 /**
  * DELETE /api/incoming-goods/input/[id] - Delete a single incoming goods input record
@@ -16,7 +16,7 @@ export async function DELETE(request, { params }) {
 
     // Only allow deleting pending records
     const { error } = await supabase
-      .from('tokoflow_incoming_goods_input')
+      .from('tf_incoming_goods_input')
       .delete()
       .eq('id', id)
       .eq('status', 'pending');

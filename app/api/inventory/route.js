@@ -1,7 +1,7 @@
 // app/api/inventory/route.js
-import { createClient } from '@/lib/database/supabase-server';
-import { successResponse, errorResponse, handleSupabaseError } from '@/lib/utils/api-response';
-import { batchUpdateInventory, checkStockAvailability } from '@/lib/services/inventory';
+import { createClient } from '../../../lib/database/supabase-server';
+import { successResponse, errorResponse, handleSupabaseError } from '../../../lib/utils/api-response';
+import { batchUpdateInventory, checkStockAvailability } from '../../../lib/services/inventory';
 
 /**
  * GET /api/inventory - Get inventory status
@@ -18,7 +18,7 @@ export async function GET(request) {
     const offset = parseInt(searchParams.get('offset') || '0');
 
     let query = supabase
-      .from('tokoflow_products')
+      .from('tf_products')
       .select('*', { count: 'exact' });
 
     // Apply filters
@@ -126,7 +126,7 @@ export async function POST(request) {
       // If adjustment type is 'set', calculate the difference
       if (adjustment.type === 'set') {
         const { data: product } = await supabase
-          .from('tokoflow_products')
+          .from('tf_products')
           .select('stock')
           .eq('sku', adjustment.sku)
           .single();

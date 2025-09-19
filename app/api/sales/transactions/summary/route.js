@@ -1,6 +1,6 @@
 // app/api/sales/transactions/summary/route.js
-import { createClient } from '@/lib/database/supabase-server';
-import { successResponse, errorResponse, handleSupabaseError } from '@/lib/utils/api-response';
+import { createClient } from '../../../../../lib/database/supabase-server';
+import { successResponse, errorResponse, handleSupabaseError } from '../../../../../lib/utils/api-response';
 
 /**
  * GET /api/sales/transactions/summary - Get sales summary
@@ -14,7 +14,7 @@ export async function GET(request) {
     const endDate = searchParams.get('end_date');
     const groupBy = searchParams.get('group_by') || 'channel'; // 'channel', 'product', 'date'
 
-    let query = supabase.from('tokoflow_sales_transactions').select('*');
+    let query = supabase.from('tf_sales_transactions').select('*');
 
     if (startDate) {
       query = query.gte('transaction_date', startDate);

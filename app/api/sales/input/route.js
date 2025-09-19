@@ -1,6 +1,6 @@
 // app/api/sales/input/route.js
-import { createClient } from '@/lib/database/supabase-server';
-import { successResponse, errorResponse, handleSupabaseError } from '@/lib/utils/api-response';
+import { createClient } from '../../../../lib/database/supabase-server';
+import { successResponse, errorResponse, handleSupabaseError } from '../../../../lib/utils/api-response';
 
 /**
  * GET /api/sales/input - Get all sales input records
@@ -15,7 +15,7 @@ export async function GET(request) {
     const hasQuantity = searchParams.get('has_quantity'); // 'true', 'false'
 
     let query = supabase
-      .from('tokoflow_sales_input')
+      .from('tf_sales_input')
       .select('*')
       .order('created_at', { ascending: false });
 
@@ -67,7 +67,7 @@ export async function POST(request) {
 
     // Create input record
     const { data, error } = await supabase
-      .from('tokoflow_sales_input')
+      .from('tf_sales_input')
       .insert({
         transaction_date: body.transaction_date,
         sku: body.sku,
@@ -106,7 +106,7 @@ export async function PATCH(request) {
     }
 
     const { error } = await supabase
-      .from('tokoflow_sales_input')
+      .from('tf_sales_input')
       .update(updates)
       .in('id', ids);
 
@@ -138,7 +138,7 @@ export async function DELETE(request) {
     }
 
     const { error } = await supabase
-      .from('tokoflow_sales_input')
+      .from('tf_sales_input')
       .delete()
       .in('id', ids)
       .eq('status', 'pending'); // Only allow deleting pending records

@@ -1,6 +1,6 @@
 // app/api/marketplace-fees/route.js
-import { createClient } from '@/lib/database/supabase-server';
-import { successResponse, errorResponse, handleSupabaseError } from '@/lib/utils/api-response';
+import { createClient } from '../../../lib/database/supabase-server';
+import { successResponse, errorResponse, handleSupabaseError } from '../../../lib/utils/api-response';
 
 /**
  * GET /api/marketplace-fees - Get all marketplace fees
@@ -16,7 +16,7 @@ export async function GET(request) {
     console.log('Auth check - user:', !!user, 'error:', authError?.message);
     
     const { data, error } = await supabase
-      .from('tokoflow_marketplace_fees')
+      .from('tf_marketplace_fees')
       .select('*')
       .order('channel');
 
@@ -58,7 +58,7 @@ export async function POST(request) {
     const normalizedChannel = body.channel.toLowerCase();
 
     const { data, error } = await supabase
-      .from('tokoflow_marketplace_fees')
+      .from('tf_marketplace_fees')
       .insert({
         channel: normalizedChannel,
         fee_percentage: body.fee_percentage || 0
@@ -98,7 +98,7 @@ export async function PUT(request) {
       
       // Try update first
       const { data, error } = await supabase
-        .from('tokoflow_marketplace_fees')
+        .from('tf_marketplace_fees')
         .update({
           fee_percentage: fee.fee_percentage,
           updated_at: new Date().toISOString()
@@ -110,7 +110,7 @@ export async function PUT(request) {
       if (error && error.code === 'PGRST116') {
         // Record doesn't exist, create it
         const { data: newData, error: insertError } = await supabase
-          .from('tokoflow_marketplace_fees')
+          .from('tf_marketplace_fees')
           .insert({
             channel: normalizedChannel,
             fee_percentage: fee.fee_percentage || 0
@@ -158,7 +158,7 @@ export async function DELETE(request) {
 
     // Check if used in any transactions
     const { data: transactions } = await supabase
-      .from('tokoflow_sales_transactions')
+      .from('tf_sales_transactions')
       .select('id')
       .eq('channel', normalizedChannel)
       .limit(1);
@@ -168,7 +168,7 @@ export async function DELETE(request) {
     }
 
     const { error } = await supabase
-      .from('tokoflow_marketplace_fees')
+      .from('tf_marketplace_fees')
       .delete()
       .eq('channel', normalizedChannel);
 

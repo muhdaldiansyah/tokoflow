@@ -1,6 +1,6 @@
 // app/api/products/[param]/route.js
-import { createClient } from '@/lib/database/supabase-server';
-import { successResponse, errorResponse, handleSupabaseError } from '@/lib/utils/api-response';
+import { createClient } from '../../../../lib/database/supabase-server';
+import { successResponse, errorResponse, handleSupabaseError } from '../../../../lib/utils/api-response';
 
 /**
  * Helper function to determine if param is UUID
@@ -23,17 +23,17 @@ export async function GET(request, { params }) {
     const queryField = isId ? 'id' : 'sku';
 
     const { data, error } = await supabase
-      .from('tokoflow_products')
+      .from('tf_products')
       .select(`
         *,
-        cost:tokoflow_product_costs!tokoflow_product_costs_sku_fkey(
+        cost:tf_product_costs!tf_product_costs_sku_fkey(
           modal_cost,
           packing_cost,
           affiliate_percentage
         ),
-        compositions:tokoflow_product_compositions!tokoflow_product_compositions_parent_sku_fkey(
+        compositions:tf_product_compositions!tf_product_compositions_parent_sku_fkey(
           *,
-          component:tokoflow_products!tokoflow_product_compositions_component_sku_fkey(
+          component:tf_products!tf_product_compositions_component_sku_fkey(
             sku,
             name,
             stock
@@ -79,7 +79,7 @@ export async function PATCH(request, { params }) {
 
     // Update product
     const { data: product, error: productError } = await supabase
-      .from('tokoflow_products')
+      .from('tf_products')
       .update({
         name: body.name,
         stock: body.stock !== undefined ? body.stock : undefined,
@@ -103,14 +103,14 @@ export async function PATCH(request, { params }) {
       costUpdate.updated_at = new Date().toISOString();
 
       const { error: costError } = await supabase
-        .from('tokoflow_product_costs')
+        .from('tf_product_costs')
         .update(costUpdate)
         .eq('sku', product.sku);
 
       if (costError && costError.code === 'PGRST116') {
         // Cost record doesn't exist, create it
         const { error: insertError } = await supabase
-          .from('tokoflow_product_costs')
+          .from('tf_product_costs')
           .insert({
             product_id: product.id,
             sku: product.sku,
@@ -125,10 +125,10 @@ export async function PATCH(request, { params }) {
 
     // Fetch updated product with all relations
     const { data: updatedProduct } = await supabase
-      .from('tokoflow_products')
+      .from('tf_products')
       .select(`
         *,
-        cost:tokoflow_product_costs!tokoflow_product_costs_sku_fkey(
+        cost:tf_product_costs!tf_product_costs_sku_fkey(
           modal_cost,
           packing_cost,
           affiliate_percentage
@@ -157,7 +157,7 @@ export async function DELETE(request, { params }) {
     
     // First get the product to retrieve SKU if needed
     const { data: product, error: fetchError } = await supabase
-      .from('tokoflow_products')
+      .from('tf_products')
       .select('id, sku')
       .eq(isId ? 'id' : 'sku', param)
       .single();
@@ -170,7 +170,7 @@ export async function DELETE(request, { params }) {
 
     // Check if product is used in compositions
     const { data: compositions } = await supabase
-      .from('tokoflow_product_compositions')
+      .from('tf_product_compositions')
       .select('id')
       .or(`parent_sku.eq.${sku},component_sku.eq.${sku}`)
       .limit(1);
@@ -181,7 +181,7 @@ export async function DELETE(request, { params }) {
 
     // Check if product has transactions
     const { data: transactions } = await supabase
-      .from('tokoflow_sales_transactions')
+      .from('tf_sales_transactions')
       .select('id')
       .eq('sku', sku)
       .limit(1);
@@ -192,13 +192,13 @@ export async function DELETE(request, { params }) {
 
     // Delete cost record first
     await supabase
-      .from('tokoflow_product_costs')
+      .from('tf_product_costs')
       .delete()
       .eq('sku', sku);
 
     // Delete product
     const { error } = await supabase
-      .from('tokoflow_products')
+      .from('tf_products')
       .delete()
       .eq('id', product.id);
 

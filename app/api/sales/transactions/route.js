@@ -1,6 +1,6 @@
 // app/api/sales/transactions/route.js
-import { createClient } from '@/lib/database/supabase-server';
-import { successResponse, errorResponse, handleSupabaseError } from '@/lib/utils/api-response';
+import { createClient } from '../../../../lib/database/supabase-server';
+import { successResponse, errorResponse, handleSupabaseError } from '../../../../lib/utils/api-response';
 
 /**
  * GET /api/sales/transactions - Get sales transaction history
@@ -20,7 +20,7 @@ export async function GET(request) {
     const offset = parseInt(searchParams.get('offset') || '0');
 
     let query = supabase
-      .from('tokoflow_sales_transactions')
+      .from('tf_sales_transactions')
       .select('*', { count: 'exact' })
       .order('transaction_date', { ascending: false })
       .order('created_at', { ascending: false });

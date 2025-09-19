@@ -1,6 +1,6 @@
 // app/api/marketplace-fees/[id]/route.js
-import { createClient } from '@/lib/database/supabase-server';
-import { successResponse, errorResponse, handleSupabaseError } from '@/lib/utils/api-response';
+import { createClient } from '../../../../lib/database/supabase-server';
+import { successResponse, errorResponse, handleSupabaseError } from '../../../../lib/utils/api-response';
 
 /**
  * GET /api/marketplace-fees/[id] - Get specific marketplace fee
@@ -11,7 +11,7 @@ export async function GET(request, { params }) {
     const { id } = params;
 
     const { data, error } = await supabase
-      .from('tokoflow_marketplace_fees')
+      .from('tf_marketplace_fees')
       .select('*')
       .eq('id', id)
       .single();
@@ -46,7 +46,7 @@ export async function PUT(request, { params }) {
 
     // Check if the fee exists
     const { data: existingFee, error: fetchError } = await supabase
-      .from('tokoflow_marketplace_fees')
+      .from('tf_marketplace_fees')
       .select('*')
       .eq('id', id)
       .single();
@@ -73,7 +73,7 @@ export async function PUT(request, { params }) {
 
     // Update the fee
     const { data, error } = await supabase
-      .from('tokoflow_marketplace_fees')
+      .from('tf_marketplace_fees')
       .update(updateData)
       .eq('id', id)
       .select()
@@ -100,7 +100,7 @@ export async function DELETE(request, { params }) {
 
     // Check if the fee exists and get its channel
     const { data: existingFee, error: fetchError } = await supabase
-      .from('tokoflow_marketplace_fees')
+      .from('tf_marketplace_fees')
       .select('channel')
       .eq('id', id)
       .single();
@@ -114,7 +114,7 @@ export async function DELETE(request, { params }) {
 
     // Check if used in any transactions
     const { data: transactions } = await supabase
-      .from('tokoflow_sales_transactions')
+      .from('tf_sales_transactions')
       .select('id')
       .eq('channel', existingFee.channel)
       .limit(1);
@@ -125,7 +125,7 @@ export async function DELETE(request, { params }) {
 
     // Check if used in any sales input
     const { data: salesInput } = await supabase
-      .from('tokoflow_sales_input')
+      .from('tf_sales_input')
       .select('id')
       .eq('channel', existingFee.channel)
       .limit(1);
@@ -136,7 +136,7 @@ export async function DELETE(request, { params }) {
 
     // Delete the fee
     const { error } = await supabase
-      .from('tokoflow_marketplace_fees')
+      .from('tf_marketplace_fees')
       .delete()
       .eq('id', id);
 
