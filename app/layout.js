@@ -56,9 +56,19 @@ export default function RootLayout({ children }) {
         {/* Preconnect to external domains */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
+
+        {/* Preconnect to Supabase for faster API calls */}
+        {process.env.NEXT_PUBLIC_SUPABASE_URL && (
+          <>
+            <link rel="preconnect" href={process.env.NEXT_PUBLIC_SUPABASE_URL} crossOrigin="anonymous" />
+            <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_SUPABASE_URL} />
+          </>
+        )}
+
         {/* DNS prefetch for performance */}
         <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
+        <meta httpEquiv="x-dns-prefetch-control" content="on" />
+        <meta name="priority" content="high" />
       </head>
       <body className="font-sans antialiased bg-white text-gray-900">
         {/* Critical inline styles to prevent layout shift */}

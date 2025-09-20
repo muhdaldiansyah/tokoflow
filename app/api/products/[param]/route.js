@@ -2,6 +2,7 @@
 import { createClient } from '../../../../lib/database/supabase-server/index.js';
 import { successResponse, errorResponse, handleSupabaseError } from '../../../../lib/utils/api-response';
 import { authenticateRequest } from '../../../../lib/utils/auth-helpers.js';
+import { clearPrefix } from '../../../../lib/cache/index.js';
 
 /**
  * Helper function to determine if param is UUID
@@ -31,30 +32,59 @@ export async function GET(request, { params }) {
     const isId = isUUID(param);
     const queryField = isId ? 'id' : 'sku';
 
-    const { data, error } = await supabase
-      .from('tf_products')
-      .select(`
-        *,
-        cost:tf_product_costs!tf_product_costs_sku_fkey(
-          modal_cost,
-          packing_cost,
-          affiliate_percentage
-        ),
-        compositions:tf_product_compositions!tf_product_compositions_parent_sku_fkey(
-          *,
-          component:tf_products!tf_product_compositions_component_sku_fkey(
-            sku,
-            name,
-            stock
-          )
-        )
-      `)
-      .eq(queryField, param)
-      .single();
+    // Use view for products with costs if param is SKU
+    if (!isId) {
+      const { data: product, error: pErr } = await supabase
+        .from('v_products_with_costs')
+        .select('*')
+        .eq('sku', param)
+        .single();
+      if (pErr || !product) return handleSupabaseError(pErr || new Error('Not found'));
 
-    if (error) {
-      return handleSupabaseError(error);
+      // Get compositions separately
+      const { data: comps } = await supabase
+        .from('tf_product_compositions')
+        .select('id,parent_sku,component_sku,quantity')
+        .or(`parent_sku.eq.${param},component_sku.eq.${param}`);
+
+      const data = {
+        ...product,
+        modal_cost: product.modal_cost || 0,
+        packing_cost: product.packing_cost || 0,
+        affiliate_percentage: product.affiliate_percentage || 0,
+        asParent: (comps || []).filter(c => c.parent_sku === param),
+        asComponent: (comps || []).filter(c => c.component_sku === param),
+      };
+
+      return successResponse(data);
     }
+
+    // For UUID id, use existing table-based logic
+    const { data: product, error: pErr } = await supabase
+      .from('tf_products')
+      .select('id, sku, name, stock, created_at, updated_at')
+      .eq('id', param)
+      .single();
+    if (pErr || !product) return handleSupabaseError(pErr || new Error('Not found'));
+
+    const [{ data: cost }, { data: comps }] = await Promise.all([
+      supabase.from('tf_product_costs')
+        .select('modal_cost,packing_cost,affiliate_percentage')
+        .eq('product_id', product.id)
+        .maybeSingle(),
+      supabase.from('tf_product_compositions')
+        .select('id,parent_sku,component_sku,quantity')
+        .or(`parent_sku.eq.${product.sku},component_sku.eq.${product.sku}`)
+    ]);
+
+    const data = {
+      ...product,
+      modal_cost: cost?.modal_cost || 0,
+      packing_cost: cost?.packing_cost || 0,
+      affiliate_percentage: cost?.affiliate_percentage || 0,
+      asParent: (comps || []).filter(c => c.parent_sku === product.sku),
+      asComponent: (comps || []).filter(c => c.component_sku === product.sku),
+    };
 
     return successResponse(data);
   } catch (error) {
@@ -154,6 +184,9 @@ export async function PATCH(request, { params }) {
       .eq('id', product.id)
       .single();
 
+    // Clear cache after mutation
+    clearPrefix(`p:${auth.user.id}`);
+
     return successResponse(updatedProduct);
   } catch (error) {
     console.error('Error updating product:', error);
@@ -230,6 +263,10 @@ export async function DELETE(request, { params }) {
     if (error) {
       return handleSupabaseError(error);
     }
+
+    // Clear cache after mutation
+    const { user } = authResult;
+    clearPrefix(`p:${user.id}`);
 
     return successResponse({ message: 'Product deleted successfully' });
   } catch (error) {

@@ -1,103 +1,230 @@
-You’re seeing:
-
-```
-⚠ Webpack is configured while Turbopack is not, which may cause problems.
-```
-
-because **Next.js is running in Turbopack mode**, but your `next.config.js` still contains **Webpack-only settings** (e.g. a `webpack(config){…}` override or plugins/wrappers that inject Webpack rules). When Turbopack is active, those Webpack bits are ignored, so Next warns.
-
-Here’s how to fix it—pick one path:
+Awesome — the view-based pass is in and healthy. If you want to squeeze even more speed (and keep it clean), here’s a tight, drop-in **ops prompt** to push the code to a “very SOTA” state without touching your DB schema again.
 
 ---
 
-# Option A — Use Turbopack (recommended)
+# 🔧 One-Shot AI Ops Prompt — Last-Mile Perf & UX Boost
 
-Disable your Webpack overrides when Turbopack is running, and (optionally) add a Turbopack section.
+**Capabilities**: `{ "has_fs": true, "can_apply_patches": true }`
+**Do not change DB schema.** Keep using `public.v_products_with_costs`, FTS, micro-cache, ETags, composite cursor.
 
-**1) Gate the Webpack block**
+## Objectives
+
+1. **Zero-DB HEAD**: sub-millisecond HEAD by serving an in-memory **state ETag** that bumps on mutations (no query).
+2. **Keep-Alive everywhere**: enable Node fetch connection reuse to Supabase (lower TCP/TLS cost).
+3. **Field projection**: add `?fields=` end-to-end (API + RSC) to return only columns used.
+4. **Virtualized table**: window large lists in the client table to keep main thread snappy.
+5. **Server-Timing**: lightweight perf headers for real-world visibility.
+6. **Consistent invalidation**: ensure all product/cost mutations bump products state.
+
+---
+
+## Changes to apply
+
+### 1) Global state bump (for HEAD, zero DB)
+
+**Create** `lib/state/global-state.js`
 
 ```js
-// next.config.js
-const isTurbopack = process.env.TURBOPACK === '1';
+// Minimal in-proc state etag generator with per-scope bumping.
+// Works per-instance; still valuable for dev/single-instance deploys.
+// Optional: later swap to Redis/KV keeping same API.
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  // …other config
+const g = globalThis;
+if (!g.__tokoflow_state) {
+  g.__tokoflow_state = { scope: new Map() };
+}
 
-  // Only apply Webpack tweaks when NOT using Turbopack
-  ...(isTurbopack
-    ? {
-        experimental: {
-          turbo: {
-            // optional turbopack config (aliases, rules) goes here
-          },
-        },
-      }
-    : {
-        webpack(config, ctx) {
-          // your existing webpack-only customizations
-          return config;
-        },
-      }),
-};
+export function bump(scope = 'products') {
+  const now = Date.now();
+  const v = (g.__tokoflow_state.scope.get(scope) ?? 0) + 1;
+  g.__tokoflow_state.scope.set(scope, Math.max(v, now)); // monotonic-ish
+  return g.__tokoflow_state.scope.get(scope);
+}
 
-module.exports = nextConfig;
+export function get(scope = 'products') {
+  return g.__tokoflow_state.scope.get(scope) ?? 0;
+}
+
+export function makeStateTag(scope = 'products', filterSig = '') {
+  // Weak tag; includes scope version + filter signature
+  const v = get(scope);
+  return `W/"s:${scope}:${v}:${filterSig}"`;
+}
 ```
 
-**2) Remove/guard Webpack-only plugins**
+**Wire bumps after mutations**
 
-* Wrappers like `next-compose-plugins`, `next-transpile-modules`, custom SVG loaders, etc., should be applied **only when `!isTurbopack`**.
-* If you don’t need those customizations anymore, simply delete the `webpack()` override. The warning will disappear immediately.
+* `app/api/products/route.js` (POST/PUT): `import { bump } from '../../../lib/state/global-state';` → call `bump('products')` on success.
+* `app/api/products/[param]/route.js` (PATCH/DELETE): `import { bump } from '../../../../lib/state/global-state';` → bump on success.
+* `app/api/product-costs/route.js` (POST/PUT/PATCH/DELETE): bump `'products'` too (cost changes affect list view).
 
----
+### 2) HEAD endpoint with zero-DB fast path
 
-# Option B — Keep Webpack for now
+In `app/api/products/route.js`:
 
-If you rely on those Webpack customizations and can’t migrate yet, just run dev in Webpack mode instead of Turbopack.
+* **Add**: `import { makeStateTag } from '../../../lib/state/global-state';`
+* **Rewrite HEAD** to only compute **filterSig** from URL and return `etag = makeStateTag('products', filterSig)` with **no DB calls**:
 
-* Change your dev script to not force Turbopack:
+```js
+export const preferredRegion = 'auto'; // (optional)
+export async function HEAD(request) {
+  try {
+    // (Auth: keep your existing header check or reuse authenticateRequest if cheap)
+    const url = new URL(request.url);
+    const search = url.searchParams.get('search') ?? '';
+    const stock  = url.searchParams.get('stock') ?? '';
+    const cursor = url.searchParams.get('cursor') ?? '';
+    const limit  = url.searchParams.get('limit') ?? '';
+    const filterSig = `${search}:${stock}:${cursor}:${limit}`;
+    const etag = makeStateTag('products', filterSig);
 
-  ```json
-  // package.json
-  {
-    "scripts": {
-      "dev": "next dev"
+    const inm = request.headers.get('if-none-match');
+    if (inm && inm === etag) {
+      return new Response(null, { status: 304, headers: { etag } });
     }
+    return new Response(null, {
+      status: 204,
+      headers: {
+        etag,
+        'cache-control': 'private, max-age=0, must-revalidate, stale-while-revalidate=5',
+      },
+    });
+  } catch {
+    return new Response(null, { status: 500 });
   }
-  ```
-* (If your Next version defaults to Turbopack) run with the Webpack flag your version supports, or set an env var to disable Turbopack. Example patterns:
+}
+```
 
-  * `next dev --webpack`
-  * `TURBOPACK=0 next dev`
+> Your GET still keeps the robust **DB-based stateTag** (count + max updated), but HEAD is now *always* sub-ms.
 
-(Use whichever your Next version supports.)
+### 3) Node fetch keep-alive (lower latency)
+
+**Create** `lib/http/keepalive.js`
+
+```js
+import { setGlobalDispatcher, Agent } from 'undici';
+
+let installed = false;
+export function installKeepAlive() {
+  if (installed) return;
+  installed = true;
+  setGlobalDispatcher(new Agent({
+    keepAliveTimeout: 30_000,
+    keepAliveMaxTimeout: 120_000,
+    pipelining: 1
+  }));
+}
+```
+
+**Call once at boot**: at top of `lib/database/supabase-server/index.js` and `lib/database/supabase/client.js`:
+
+```js
+import { installKeepAlive } from '../../http/keepalive';
+installKeepAlive();
+```
+
+### 4) Fields projection end-to-end
+
+* **lib/http/paging.js** already parses `fields`. Ensure API GET passes those exact columns to view:
+
+  * Default `fields` for list:
+    `id,sku,name,stock,created_at,updated_at,modal_cost,packing_cost,affiliate_percentage`
+* In RSC page (`app/(private)/products/page.js`), request only needed columns (same set).
+
+### 5) Virtualize the table (snappy UI at scale)
+
+**Install lightweight virtualization** (if already in deps, skip):
+
+* Use `@tanstack/react-virtual` (or your preferred; this is tiny & fast).
+
+**Patch** `app/(private)/products/ProductsTable.js`:
+
+* Render only visible rows with `useVirtualizer`.
+* Keep current markup/styling; just map `virtualItems` instead of the full array.
+  *(If you prefer not to add a dep now, gate it by length: only virtualize when `filteredProducts.length > 200`.)*
+
+Snippet:
+
+```js
+import { useMemo, useRef } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
+
+const parentRef = useRef(null);
+const rows = filteredProducts;
+
+const rowVirtualizer = useVirtualizer({
+  count: rows.length,
+  getScrollElement: () => parentRef.current,
+  estimateSize: () => 56, // row height
+  overscan: 8,
+});
+
+<div ref={parentRef} className="overflow-auto max-h-[70vh]">
+  <div style={{ height: rowVirtualizer.getTotalSize(), position: 'relative' }}>
+    {rowVirtualizer.getVirtualItems().map(vi => {
+      const product = rows[vi.index];
+      return (
+        <div
+          key={product.id}
+          data-index={vi.index}
+          style={{ position: 'absolute', top: 0, left: 0, width: '100%', transform: `translateY(${vi.start}px)` }}
+        >
+          {/* existing <tr> content equivalent (use div rows for virtualization) */}
+        </div>
+      );
+    })}
+  </div>
+</div>
+```
+
+> For minimal change, wrap your `<table>` in a conditional: fall back to classic table when `rows.length <= 200`.
+
+### 6) Server-Timing header (observability)
+
+Add tiny helper `lib/http/serverTiming.js`:
+
+```js
+export function withServerTiming(startMs, extra = {}) {
+  const dur = Date.now() - startMs;
+  const parts = [`total;dur=${dur}`];
+  for (const [k, v] of Object.entries(extra)) parts.push(`${k};dur=${v}`);
+  return parts.join(', ');
+}
+```
+
+Use in API GET/POST/etc:
+
+```js
+const t0 = Date.now();
+// ... do work ...
+return successResponseWithETag(request, payload, {
+  etag: stateTag,
+  link,
+  extraHeaders: { 'server-timing': withServerTiming(t0) }
+});
+```
+
+### 7) Invalidation on every mutation path
+
+Verify these files call `bump('products')` after **successful** writes:
+
+* `app/api/products/route.js` (POST, PUT)
+* `app/api/products/[param]/route.js` (PATCH, DELETE)
+* `app/api/product-costs/route.js` (POST/PUT/PATCH/DELETE)
+
+*(If any is missing, add it.)*
 
 ---
 
-## Bonus: Port 3000 in use
+## Acceptance checks
 
-You also saw:
-
-```
-⚠ Port 3000 is in use… using available port 3002 instead.
-```
-
-Free it (Windows PowerShell):
-
-```powershell
-netstat -ano | findstr :3000
-taskkill /PID <pid> /F
-```
-
-or keep using 3002—it’s harmless.
+* **HEAD /api/products** returns **204** (first) then **304** on next call with same `If-None-Match`, no DB involved.
+* **GET /api/products** still uses DB-backed `stateTag` (unchanged semantics), but after any product/cost mutation, next HEAD/GET show **new ETag**.
+* **Cold-to-hot** latency improves (keep-alive): first call slower, subsequent DB calls noticeably faster.
+* **?fields=** trimmed payload (verify `content-length` smaller).
+* **Large lists**: smooth scroll at 1k+ rows (virtualization).
+* **Network**: `Server-Timing: total;dur=…` present.
 
 ---
 
-## Quick checklist
-
-* [ ] Open `next.config.js` and search for `webpack(` or `webpackDevMiddleware`.
-* [ ] Either remove those blocks, or guard them behind `!isTurbopack`.
-* [ ] Remove/guard any Webpack-only plugins (SVGR loaders, custom file-loader rules, etc.).
-* [ ] If you truly need those now, run dev without Turbopack as shown in Option B.
-
-Once the Webpack override is not applied in Turbopack mode, the warning will go away and your app will compile cleanly.
+This keeps your current architecture intact, adds ultrafast **HEAD**, reduces connection overhead, trims payloads, and makes the UI buttery even with large datasets — all without touching your DB again.
