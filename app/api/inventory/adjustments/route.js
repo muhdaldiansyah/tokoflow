@@ -1,12 +1,24 @@
 // app/api/inventory/adjustments/route.js
 import { createClient } from '../../../../lib/database/supabase-server/index.js';
 import { successResponse, errorResponse, handleSupabaseError } from '../../../../lib/utils/api-response';
+import { authenticateRequest } from '../../../../lib/utils/auth-helpers.js';
+import { makeETag, maybeNotModified } from '../../../../lib/http/jsonETag.js';
+
+export const runtime = 'nodejs';
 
 /**
  * GET /api/inventory/adjustments - Get stock adjustment history
  */
 export async function GET(request) {
   try {
+    const auth = await authenticateRequest(request);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'content-type': 'application/json' },
+      });
+    }
+
     const supabase = await createClient();
     const { searchParams } = new URL(request.url);
     
@@ -50,7 +62,25 @@ export async function GET(request) {
       created_by: adjustment.created_by
     }));
 
-    return successResponse(adjustments);
+    // ETag implementation
+    const body = JSON.stringify({ success: true, data: adjustments });
+    const etag = makeETag(body);
+
+    if (maybeNotModified(request, etag)) {
+      return new Response(null, {
+        status: 304,
+        headers: { etag }
+      });
+    }
+
+    return new Response(body, {
+      status: 200,
+      headers: {
+        'content-type': 'application/json; charset=utf-8',
+        'cache-control': 'private, max-age=0, must-revalidate',
+        etag
+      }
+    });
   } catch (error) {
     console.error('Error fetching adjustments:', error);
     return errorResponse('Failed to fetch adjustments', 500);

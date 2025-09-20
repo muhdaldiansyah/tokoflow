@@ -1,6 +1,7 @@
 // app/api/products/[param]/route.js
 import { createClient } from '../../../../lib/database/supabase-server/index.js';
 import { successResponse, errorResponse, handleSupabaseError } from '../../../../lib/utils/api-response';
+import { authenticateRequest } from '../../../../lib/utils/auth-helpers.js';
 
 /**
  * Helper function to determine if param is UUID
@@ -15,6 +16,14 @@ function isUUID(str) {
  */
 export async function GET(request, { params }) {
   try {
+    const auth = await authenticateRequest(request);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'content-type': 'application/json' },
+      });
+    }
+
     const supabase = await createClient();
     const { param } = await params;
 
@@ -59,6 +68,14 @@ export async function GET(request, { params }) {
  */
 export async function PATCH(request, { params }) {
   try {
+    const auth = await authenticateRequest(request);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'content-type': 'application/json' },
+      });
+    }
+
     const supabase = await createClient();
     const { param } = await params;
     
@@ -149,6 +166,14 @@ export async function PATCH(request, { params }) {
  */
 export async function DELETE(request, { params }) {
   try {
+    const auth = await authenticateRequest(request);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'content-type': 'application/json' },
+      });
+    }
+
     const supabase = await createClient();
     const { param } = await params;
 

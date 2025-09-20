@@ -1,12 +1,21 @@
 // app/api/marketplace-fees/[id]/route.js
 import { createClient } from '../../../../lib/database/supabase-server/index.js';
 import { successResponse, errorResponse, handleSupabaseError } from '../../../../lib/utils/api-response';
+import { authenticateRequest } from '../../../../lib/utils/auth-helpers.js';
 
 /**
  * GET /api/marketplace-fees/[id] - Get specific marketplace fee
  */
 export async function GET(request, { params }) {
   try {
+    const auth = await authenticateRequest(request);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'content-type': 'application/json' },
+      });
+    }
+
     const supabase = await createClient();
     const { id } = params;
 
@@ -35,6 +44,14 @@ export async function GET(request, { params }) {
  */
 export async function PUT(request, { params }) {
   try {
+    const auth = await authenticateRequest(request);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'content-type': 'application/json' },
+      });
+    }
+
     const supabase = await createClient();
     const { id } = params;
     const body = await request.json();
@@ -95,6 +112,14 @@ export async function PUT(request, { params }) {
  */
 export async function DELETE(request, { params }) {
   try {
+    const auth = await authenticateRequest(request);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'content-type': 'application/json' },
+      });
+    }
+
     const supabase = await createClient();
     const { id } = params;
 

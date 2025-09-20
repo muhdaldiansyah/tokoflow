@@ -1,6 +1,10 @@
 // app/api/dashboard/analytics/route.js
 import { createClient } from '../../../../lib/database/supabase-server/index.js';
 import { successResponse, errorResponse } from '../../../../lib/utils/api-response';
+import { authenticateRequest } from '../../../../lib/utils/auth-helpers.js';
+import { makeETag, maybeNotModified } from '../../../../lib/http/jsonETag.js';
+
+export const runtime = 'nodejs';
 
 /**
  * GET /api/dashboard/analytics - Get detailed analytics data
@@ -8,6 +12,14 @@ import { successResponse, errorResponse } from '../../../../lib/utils/api-respon
  */
 export async function GET(request) {
   try {
+    const auth = await authenticateRequest(request);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'content-type': 'application/json' },
+      });
+    }
+
     const supabase = await createClient();
     const { searchParams } = new URL(request.url);
     
@@ -208,7 +220,7 @@ export async function GET(request) {
       }
     }
 
-    return successResponse({
+    const responseData = {
       period: {
         start: startDate.toISOString().split('T')[0],
         end: endDate.toISOString().split('T')[0],
@@ -218,7 +230,7 @@ export async function GET(request) {
         totalRevenue: cumulativeData.revenue,
         totalProfit: cumulativeData.profit,
         totalQuantity: cumulativeData.quantity,
-        averageMargin: cumulativeData.revenue > 0 
+        averageMargin: cumulativeData.revenue > 0
           ? (cumulativeData.profit / cumulativeData.revenue * 100).toFixed(2)
           : 0,
         growthRates
@@ -226,7 +238,7 @@ export async function GET(request) {
       timeSeries: timeSeriesData,
       channelPerformance: Object.values(channelData).map(channel => ({
         ...channel,
-        margin: channel.revenue > 0 
+        margin: channel.revenue > 0
           ? (channel.profit / channel.revenue * 100).toFixed(2)
           : 0
       })),
@@ -235,9 +247,29 @@ export async function GET(request) {
         byQuantity: topByQuantity,
         byMargin: topByMargin
       },
-      inventoryMovement: Object.values(inventoryMovement).sort((a, b) => 
+      inventoryMovement: Object.values(inventoryMovement).sort((a, b) =>
         new Date(a.date) - new Date(b.date)
       )
+    };
+
+    // ETag implementation
+    const body = JSON.stringify({ success: true, data: responseData });
+    const etag = makeETag(body);
+
+    if (maybeNotModified(request, etag)) {
+      return new Response(null, {
+        status: 304,
+        headers: { etag }
+      });
+    }
+
+    return new Response(body, {
+      status: 200,
+      headers: {
+        'content-type': 'application/json; charset=utf-8',
+        'cache-control': 'private, max-age=0, must-revalidate',
+        etag
+      }
     });
   } catch (error) {
     console.error('Error fetching analytics data:', error);

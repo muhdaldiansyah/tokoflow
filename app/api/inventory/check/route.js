@@ -2,6 +2,7 @@
 import { createClient } from '../../../../lib/database/supabase-server/index.js';
 import { successResponse, errorResponse } from '../../../../lib/utils/api-response';
 import { checkStockAvailability } from '../../../../lib/services/inventory';
+import { authenticateRequest } from '../../../../lib/utils/auth-helpers.js';
 
 /**
  * GET /api/inventory/check - Check stock availability
@@ -9,6 +10,14 @@ import { checkStockAvailability } from '../../../../lib/services/inventory';
  */
 export async function GET(request) {
   try {
+    const auth = await authenticateRequest(request);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'content-type': 'application/json' },
+      });
+    }
+
     const supabase = await createClient();
     const { searchParams } = new URL(request.url);
     const sku = searchParams.get('sku');

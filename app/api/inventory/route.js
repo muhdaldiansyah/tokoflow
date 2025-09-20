@@ -2,6 +2,11 @@
 import { createClient } from '../../../lib/database/supabase-server/index.js';
 import { successResponse, errorResponse, handleSupabaseError } from '../../../lib/utils/api-response';
 import { batchUpdateInventory, checkStockAvailability } from '../../../lib/services/inventory';
+import { authenticateRequest } from '../../../lib/utils/auth-helpers.js';
+import { makeETag, maybeNotModified } from '../../../lib/http/jsonETag.js';
+import { parseQuery, buildNextLink } from '../../../lib/http/paging.js';
+
+export const runtime = 'nodejs';
 
 /**
  * GET /api/inventory - Get inventory status
@@ -9,17 +14,22 @@ import { batchUpdateInventory, checkStockAvailability } from '../../../lib/servi
  */
 export async function GET(request) {
   try {
+    const auth = await authenticateRequest(request);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { 'content-type': 'application/json' } });
+    }
+
     const supabase = await createClient();
+    const { url, limit, cursor, select } = parseQuery(request, { maxLimit: 200, defaultLimit: 25 });
     const { searchParams } = new URL(request.url);
-    
+
     const filter = searchParams.get('filter'); // 'negative', 'zero', 'low', 'all'
     const search = searchParams.get('search');
-    const limit = parseInt(searchParams.get('limit') || '100');
-    const offset = parseInt(searchParams.get('offset') || '0');
 
     let query = supabase
       .from('tf_products')
-      .select('*', { count: 'exact' });
+      .select(select)
+      .order('id', { ascending: true });
 
     // Apply filters
     if (filter === 'negative') {
@@ -34,20 +44,25 @@ export async function GET(request) {
       query = query.or(`sku.ilike.%${search}%,name.ilike.%${search}%`);
     }
 
-    // Apply pagination
-    query = query
-      .order('stock')
-      .order('sku')
-      .range(offset, offset + limit - 1);
+    // Apply cursor pagination
+    if (cursor) {
+      query = query.gt('id', cursor);
+    }
+    query = query.limit(limit + 1);
 
-    const { data, error, count } = await query;
+    const { data, error } = await query;
 
     if (error) {
       return handleSupabaseError(error);
     }
 
+    // Handle pagination
+    const hasMore = data.length > limit;
+    const page = hasMore ? data.slice(0, limit) : data;
+    const nextCursor = hasMore ? page[page.length - 1]?.id : null;
+
     // Calculate inventory value for each product
-    const inventoryData = data.map(product => {
+    const inventoryData = page.map(product => {
       const totalCostPerUnit = 0; // Will be fetched separately if needed
       const inventoryValue = totalCostPerUnit * product.stock;
 
@@ -55,8 +70,8 @@ export async function GET(request) {
         ...product,
         totalCostPerUnit,
         inventoryValue,
-        stockStatus: product.stock < 0 ? 'negative' : 
-                    product.stock === 0 ? 'zero' : 
+        stockStatus: product.stock < 0 ? 'negative' :
+                    product.stock === 0 ? 'zero' :
                     product.stock <= 10 ? 'low' : 'normal',
         isComponent: false,
         isBundle: false
@@ -80,16 +95,33 @@ export async function GET(request) {
       lowStock: 0
     });
 
-    return successResponse({
+    const result = {
       inventory: inventoryData,
-      summary,
-      pagination: {
-        total: count,
-        limit,
-        offset,
-        hasMore: offset + limit < count
+      summary
+    };
+
+    // ETag optimization
+    const body = JSON.stringify(result);
+    const etag = makeETag(body);
+    if (maybeNotModified(request, etag)) {
+      return new Response(null, { status: 304, headers: { etag } });
+    }
+
+    const response = new Response(body, {
+      status: 200,
+      headers: {
+        'content-type': 'application/json; charset=utf-8',
+        'cache-control': 'private, max-age=0, must-revalidate',
+        etag
       }
     });
+
+    const link = buildNextLink(url, nextCursor);
+    if (link) {
+      response.headers.set('link', `<${link}>; rel=\"next\"`);
+    }
+
+    return response;
   } catch (error) {
     console.error('Error fetching inventory:', error);
     return errorResponse('Failed to fetch inventory', 500);
@@ -102,12 +134,16 @@ export async function GET(request) {
  */
 export async function POST(request) {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      return errorResponse('Unauthorized', 401);
+    const auth = await authenticateRequest(request);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'content-type': 'application/json' },
+      });
     }
+    const user = auth.user;
+
+    const supabase = await createClient();
 
     const body = await request.json();
 

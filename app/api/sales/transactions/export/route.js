@@ -1,12 +1,21 @@
 // app/api/sales/transactions/export/route.js
 import { createClient } from '../../../../../lib/database/supabase-server/index.js';
 import { successResponse, errorResponse, handleSupabaseError } from '../../../../../lib/utils/api-response';
+import { authenticateRequest } from '../../../../../lib/utils/auth-helpers.js';
 
 /**
  * GET /api/sales/transactions/export - Export sales transactions as CSV
  */
 export async function GET(request) {
   try {
+    const auth = await authenticateRequest(request);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'content-type': 'application/json' },
+      });
+    }
+
     const supabase = await createClient();
     const { searchParams } = new URL(request.url);
     

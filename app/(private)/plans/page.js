@@ -114,7 +114,7 @@ export default function PlansPage() {
         .from('av_profiles')
         .select('subscription_plan, subscription_status, subscription_end_date')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       if (profile) {
         setCurrentPlan(profile.subscription_plan || 'FREE_TRIAL_30');

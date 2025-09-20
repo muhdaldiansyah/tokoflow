@@ -1,12 +1,21 @@
 // app/api/sales/input/[id]/route.js
 import { createClient } from '../../../../../lib/database/supabase-server/index.js';
 import { successResponse, errorResponse, handleSupabaseError } from '../../../../../lib/utils/api-response';
+import { authenticateRequest } from '../../../../../lib/utils/auth-helpers.js';
 
 /**
  * DELETE /api/sales/input/[id] - Delete a single sales input record
  */
 export async function DELETE(request, { params }) {
   try {
+    const auth = await authenticateRequest(request);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'content-type': 'application/json' },
+      });
+    }
+
     const supabase = await createClient();
     const { id } = await params;
 

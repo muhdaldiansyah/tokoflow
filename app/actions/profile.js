@@ -19,7 +19,7 @@ export async function createProfile(profile) {
     .from('av_profiles')
     .upsert([payload], { onConflict: 'id' })
     .select()
-    .single()
+    .maybeSingle()
 
   if (error) return { ok: false, error: error.message }
   return { ok: true, data }
@@ -35,7 +35,7 @@ export async function updateProfile(profile) {
     .update({ ...profile, updated_at: new Date().toISOString() })
     .eq('id', user.id)
     .select()
-    .single()
+    .maybeSingle()
 
   if (error) return { ok: false, error: error.message }
   return { ok: true, data }

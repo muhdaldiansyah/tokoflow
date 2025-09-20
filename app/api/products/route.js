@@ -1,6 +1,9 @@
 // app/api/products/route.js
 import { authenticateRequest } from '../../../lib/utils/auth-helpers';
-import { successResponse, errorResponse, handleSupabaseError } from '../../../lib/utils/api-response';
+import { successResponse, errorResponse, handleSupabaseError, successResponseWithETag } from '../../../lib/utils/api-response';
+import { parseQuery, buildNextLink } from '../../../lib/http/paging.js';
+
+export const runtime = 'nodejs';
 
 /**
  * GET /api/products - Get all products with optional filters
@@ -14,17 +17,17 @@ export async function GET(request) {
     }
 
     const { user, supabase } = authResult;
+    const { url, limit, cursor, select } = parseQuery(request, { maxLimit: 200, defaultLimit: 25 });
     const { searchParams } = new URL(request.url);
-    
+
     // Optional filters
     const search = searchParams.get('search');
     const stockFilter = searchParams.get('stock'); // 'negative', 'zero', 'positive'
-    const limit = parseInt(searchParams.get('limit') || '100');
-    const offset = parseInt(searchParams.get('offset') || '0');
 
     let query = supabase
       .from('tf_products')
-      .select('*', { count: 'exact' });
+      .select(select)
+      .order('id', { ascending: true });
 
     // Apply search filter
     if (search) {
@@ -40,26 +43,36 @@ export async function GET(request) {
       query = query.gt('stock', 0);
     }
 
-    // Apply pagination
-    query = query
-      .order('sku')
-      .range(offset, offset + limit - 1);
+    // Apply cursor pagination
+    if (cursor) {
+      query = query.gt('id', cursor);
+    }
+    query = query.limit(limit + 1);
 
-    const { data, error, count } = await query;
+    const { data, error } = await query;
 
     if (error) {
       return handleSupabaseError(error);
     }
 
-    return successResponse({
-      products: data,
+    // Handle pagination
+    const hasMore = data.length > limit;
+    const page = hasMore ? data.slice(0, limit) : data;
+    const nextCursor = hasMore ? page[page.length - 1]?.id : null;
+
+    // Return data in standard API response format
+    const responseData = {
+      products: page,
       pagination: {
-        total: count,
-        limit,
-        offset,
-        hasMore: offset + limit < count
+        hasMore,
+        nextCursor,
+        total: page.length
       }
-    });
+    };
+
+    // Keep standard shape AND ETag/304 + Link header
+    const link = buildNextLink(url, nextCursor);
+    return successResponseWithETag(request, responseData, { link });
   } catch (error) {
     console.error('Error fetching products:', error);
     return errorResponse('Failed to fetch products', 500);

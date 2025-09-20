@@ -1,6 +1,10 @@
 // app/api/product-costs/route.js
 import { createClient } from '../../../lib/database/supabase-server/index.js';
 import { successResponse, errorResponse, handleSupabaseError } from '../../../lib/utils/api-response';
+import { authenticateRequest } from '../../../lib/utils/auth-helpers.js';
+import { makeETag, maybeNotModified } from '../../../lib/http/jsonETag.js';
+
+export const runtime = 'nodejs';
 
 /**
  * GET /api/product-costs - Get all product costs
@@ -8,6 +12,11 @@ import { successResponse, errorResponse, handleSupabaseError } from '../../../li
  */
 export async function GET(request) {
   try {
+    const auth = await authenticateRequest(request);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { 'content-type': 'application/json' } });
+    }
+
     const supabase = await createClient();
     const { searchParams } = new URL(request.url);
     
@@ -34,7 +43,25 @@ export async function GET(request) {
       return handleSupabaseError(error);
     }
 
-    return successResponse(data);
+    // ETag implementation
+    const body = JSON.stringify({ success: true, data });
+    const etag = makeETag(body);
+
+    if (maybeNotModified(request, etag)) {
+      return new Response(null, {
+        status: 304,
+        headers: { etag }
+      });
+    }
+
+    return new Response(body, {
+      status: 200,
+      headers: {
+        'content-type': 'application/json; charset=utf-8',
+        'cache-control': 'private, max-age=0, must-revalidate',
+        etag
+      }
+    });
   } catch (error) {
     console.error('Error fetching product costs:', error);
     return errorResponse('Failed to fetch product costs', 500);
@@ -47,6 +74,11 @@ export async function GET(request) {
  */
 export async function POST(request) {
   try {
+    const auth = await authenticateRequest(request);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { 'content-type': 'application/json' } });
+    }
+
     const supabase = await createClient();
     const body = await request.json();
 
@@ -104,6 +136,11 @@ export async function POST(request) {
  */
 export async function PUT(request) {
   try {
+    const auth = await authenticateRequest(request);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { 'content-type': 'application/json' } });
+    }
+
     const supabase = await createClient();
     const { costs } = await request.json();
 
@@ -165,6 +202,11 @@ export async function PUT(request) {
  */
 export async function DELETE(request) {
   try {
+    const auth = await authenticateRequest(request);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { 'content-type': 'application/json' } });
+    }
+
     const supabase = await createClient();
     const { searchParams } = new URL(request.url);
     const sku = searchParams.get('sku');

@@ -1,6 +1,7 @@
 // app/api/sales/input/route.js
 import { createClient } from '../../../../lib/database/supabase-server/index.js';
 import { successResponse, errorResponse, handleSupabaseError } from '../../../../lib/utils/api-response';
+import { authenticateRequest } from '../../../../lib/utils/auth-helpers.js';
 
 /**
  * GET /api/sales/input - Get all sales input records
@@ -8,6 +9,14 @@ import { successResponse, errorResponse, handleSupabaseError } from '../../../..
  */
 export async function GET(request) {
   try {
+    const auth = await authenticateRequest(request);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'content-type': 'application/json' },
+      });
+    }
+
     const supabase = await createClient();
     const { searchParams } = new URL(request.url);
     
@@ -51,11 +60,14 @@ export async function POST(request) {
     const supabase = await createClient();
     const body = await request.json();
 
-    // Get current user
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return errorResponse('Unauthorized', 401);
+    const auth = await authenticateRequest(request);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'content-type': 'application/json' },
+      });
     }
+    const user = auth.user;
 
     // Validate required fields
     const required = ['transaction_date', 'sku', 'product_name', 'selling_price', 'channel'];
@@ -98,6 +110,14 @@ export async function POST(request) {
  */
 export async function PATCH(request) {
   try {
+    const auth = await authenticateRequest(request);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'content-type': 'application/json' },
+      });
+    }
+
     const supabase = await createClient();
     const { ids, updates } = await request.json();
 
@@ -129,6 +149,14 @@ export async function PATCH(request) {
  */
 export async function DELETE(request) {
   try {
+    const auth = await authenticateRequest(request);
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'content-type': 'application/json' },
+      });
+    }
+
     const supabase = await createClient();
     const { searchParams } = new URL(request.url);
     const ids = searchParams.get('ids')?.split(',');
