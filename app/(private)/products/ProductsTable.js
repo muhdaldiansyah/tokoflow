@@ -27,8 +27,8 @@ function VirtualizedProductList({ products, searchTerm }) {
 
   return (
     <div className="overflow-x-auto">
-      {/* Header row (non-virtualized) */}
-      <div className="bg-gray-50 px-6 py-3 border-b border-gray-200">
+      {/* Header row (non-virtualized) - Hidden on mobile */}
+      <div className="hidden lg:block bg-gray-50 px-6 py-3 border-b border-gray-200">
         <div className="grid grid-cols-7 gap-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
           <div>SKU</div>
           <div>Product Name</div>
@@ -63,48 +63,101 @@ function VirtualizedProductList({ products, searchTerm }) {
                 }}
                 className="bg-white hover:bg-gray-50 transition-colors duration-200 border-b border-gray-200"
               >
-                <div className="px-6 py-4 grid grid-cols-7 gap-4 items-center min-h-[56px]">
-                  <div className="flex items-center">
-                    <Package className="w-5 h-5 text-gray-400 mr-3" />
-                    <span className="text-sm font-medium text-gray-900">
-                      {product.sku}
-                    </span>
+                {/* Desktop layout */}
+                <div className="hidden lg:block px-6 py-4">
+                  <div className="grid grid-cols-7 gap-4 items-center min-h-[56px]">
+                    <div className="flex items-center">
+                      <Package className="w-5 h-5 text-gray-400 mr-3" />
+                      <span className="text-sm font-medium text-gray-900">
+                        {product.sku}
+                      </span>
+                    </div>
+                    <div className="text-sm text-gray-900 truncate">
+                      {product.name}
+                    </div>
+                    <div>
+                      <span className={`text-sm font-medium ${
+                        stockStatus === 'negative' ? 'text-red-600' :
+                        stockStatus === 'low' ? 'text-orange-600' :
+                        'text-gray-900'
+                      }`}>
+                        {formatNumber(product.stock)}
+                      </span>
+                    </div>
+                    <div className="text-sm text-gray-900">
+                      {formatCurrency(totalCost)}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {formatDate(product.created_at)}
+                    </div>
+                    <div>
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        stockStatus === 'negative' ? 'bg-red-100 text-red-800' :
+                        stockStatus === 'low' ? 'bg-orange-100 text-orange-800' :
+                        'bg-green-100 text-green-800'
+                      }`}>
+                        {stockStatus === 'negative' ? 'Negative' :
+                         stockStatus === 'low' ? 'Low Stock' : 'Normal'}
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <Link
+                        href={`/products/edit/${encodeURIComponent(product.sku)}`}
+                        className="text-blue-600 hover:text-blue-900 transition-all duration-200"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </Link>
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-900 truncate">
-                    {product.name}
-                  </div>
-                  <div>
-                    <span className={`text-sm font-medium ${
-                      stockStatus === 'negative' ? 'text-red-600' :
-                      stockStatus === 'low' ? 'text-orange-600' :
-                      'text-gray-900'
-                    }`}>
-                      {formatNumber(product.stock)}
-                    </span>
-                  </div>
-                  <div className="text-sm text-gray-900">
-                    {formatCurrency(totalCost)}
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    {formatDate(product.created_at)}
-                  </div>
-                  <div>
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      stockStatus === 'negative' ? 'bg-red-100 text-red-800' :
-                      stockStatus === 'low' ? 'bg-orange-100 text-orange-800' :
-                      'bg-green-100 text-green-800'
-                    }`}>
-                      {stockStatus === 'negative' ? 'Negative' :
-                       stockStatus === 'low' ? 'Low Stock' : 'Normal'}
-                    </span>
-                  </div>
-                  <div className="text-right">
-                    <Link
-                      href={`/products/edit/${encodeURIComponent(product.sku)}`}
-                      className="text-blue-600 hover:text-blue-900 transition-all duration-200"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </Link>
+                </div>
+
+                {/* Mobile layout */}
+                <div className="lg:hidden px-4 py-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <Package className="w-5 h-5 text-gray-400" />
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">{product.sku}</div>
+                          <div className="text-xs text-gray-500">{product.name}</div>
+                        </div>
+                      </div>
+                      <Link
+                        href={`/products/edit/${encodeURIComponent(product.sku)}`}
+                        className="text-blue-600 hover:text-blue-900 transition-all duration-200 p-2"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </Link>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="text-gray-500">Stock:</span>
+                        <span className={`ml-2 font-medium ${
+                          stockStatus === 'negative' ? 'text-red-600' :
+                          stockStatus === 'low' ? 'text-orange-600' :
+                          'text-gray-900'
+                        }`}>
+                          {formatNumber(product.stock)}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Cost:</span>
+                        <span className="ml-2 text-gray-900">{formatCurrency(totalCost)}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <span className={`px-2 py-1 text-xs leading-4 font-semibold rounded-full ${
+                        stockStatus === 'negative' ? 'bg-red-100 text-red-800' :
+                        stockStatus === 'low' ? 'bg-orange-100 text-orange-800' :
+                        'bg-green-100 text-green-800'
+                      }`}>
+                        {stockStatus === 'negative' ? 'Negative' :
+                         stockStatus === 'low' ? 'Low Stock' : 'Normal'}
+                      </span>
+                      <span className="text-xs text-gray-500">{formatDate(product.created_at)}</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -144,7 +197,7 @@ export default function ProductsTable({ initialData = [] }) {
   }, [initialData, searchTerm, serverFiltering]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
       {/* Page Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Products</h1>
@@ -182,99 +235,172 @@ export default function ProductsTable({ initialData = [] }) {
         </div>
 
         {filteredProducts.length <= 200 ? (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    SKU
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Product Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Current Stock
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Modal Cost
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Created Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="relative px-6 py-3">
-                    <span className="sr-only">Actions</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredProducts.length > 0 ? (
-                  filteredProducts.map((product) => {
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden lg:block overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      SKU
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Product Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Current Stock
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Modal Cost
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Created Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="relative px-6 py-3">
+                      <span className="sr-only">Actions</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredProducts.length > 0 ? (
+                    filteredProducts.map((product) => {
+                      const stockStatus = product.stock < 0 ? 'negative' :
+                                        product.stock <= 10 ? 'low' : 'normal';
+                      const totalCost = (product.modal_cost || 0) + (product.packing_cost || 0);
+
+                      return (
+                        <tr key={product.id} data-sku={product.sku} className="hover:bg-gray-50 transition-colors duration-200">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <Package className="w-5 h-5 text-gray-400 mr-3" />
+                              <span className="text-sm font-medium text-gray-900">
+                                {product.sku}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {product.name}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`text-sm font-medium ${
+                              stockStatus === 'negative' ? 'text-red-600' :
+                              stockStatus === 'low' ? 'text-orange-600' :
+                              'text-gray-900'
+                            }`}>
+                              {formatNumber(product.stock)}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {formatCurrency(totalCost)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {formatDate(product.created_at)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                              stockStatus === 'negative' ? 'bg-red-100 text-red-800' :
+                              stockStatus === 'low' ? 'bg-orange-100 text-orange-800' :
+                              'bg-green-100 text-green-800'
+                            }`}>
+                              {stockStatus === 'negative' ? 'Negative' :
+                               stockStatus === 'low' ? 'Low Stock' : 'Normal'}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <Link
+                              href={`/products/edit/${encodeURIComponent(product.sku)}`}
+                              className="text-blue-600 hover:text-blue-900 transition-all duration-200"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </Link>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan="7" className="px-6 py-12 text-center text-gray-500">
+                        {searchTerm ? "No products found matching your search" : "No products found. Add your first product above."}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="lg:hidden">
+              {filteredProducts.length > 0 ? (
+                <div className="divide-y divide-gray-200">
+                  {filteredProducts.map((product) => {
                     const stockStatus = product.stock < 0 ? 'negative' :
                                       product.stock <= 10 ? 'low' : 'normal';
                     const totalCost = (product.modal_cost || 0) + (product.packing_cost || 0);
 
                     return (
-                      <tr key={product.id} data-sku={product.sku} className="hover:bg-gray-50 transition-colors duration-200">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <Package className="w-5 h-5 text-gray-400 mr-3" />
-                            <span className="text-sm font-medium text-gray-900">
-                              {product.sku}
-                            </span>
+                      <div key={product.id} data-sku={product.sku} className="bg-white hover:bg-gray-50 transition-colors duration-200">
+                        <div className="px-4 py-4">
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-3 min-w-0 flex-1">
+                                <Package className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                                <div className="min-w-0 flex-1">
+                                  <div className="text-sm font-medium text-gray-900 truncate">{product.sku}</div>
+                                  <div className="text-xs text-gray-500 truncate">{product.name}</div>
+                                </div>
+                              </div>
+                              <Link
+                                href={`/products/edit/${encodeURIComponent(product.sku)}`}
+                                className="text-blue-600 hover:text-blue-900 transition-all duration-200 p-2 flex-shrink-0"
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </Link>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                              <div>
+                                <span className="text-gray-500">Stock:</span>
+                                <span className={`ml-2 font-medium ${
+                                  stockStatus === 'negative' ? 'text-red-600' :
+                                  stockStatus === 'low' ? 'text-orange-600' :
+                                  'text-gray-900'
+                                }`}>
+                                  {formatNumber(product.stock)}
+                                </span>
+                              </div>
+                              <div>
+                                <span className="text-gray-500">Cost:</span>
+                                <span className="ml-2 text-gray-900">{formatCurrency(totalCost)}</span>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center justify-between">
+                              <span className={`px-2 py-1 text-xs leading-4 font-semibold rounded-full ${
+                                stockStatus === 'negative' ? 'bg-red-100 text-red-800' :
+                                stockStatus === 'low' ? 'bg-orange-100 text-orange-800' :
+                                'bg-green-100 text-green-800'
+                              }`}>
+                                {stockStatus === 'negative' ? 'Negative' :
+                                 stockStatus === 'low' ? 'Low Stock' : 'Normal'}
+                              </span>
+                              <span className="text-xs text-gray-500">{formatDate(product.created_at)}</span>
+                            </div>
                           </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {product.name}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`text-sm font-medium ${
-                            stockStatus === 'negative' ? 'text-red-600' :
-                            stockStatus === 'low' ? 'text-orange-600' :
-                            'text-gray-900'
-                          }`}>
-                            {formatNumber(product.stock)}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {formatCurrency(totalCost)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {formatDate(product.created_at)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            stockStatus === 'negative' ? 'bg-red-100 text-red-800' :
-                            stockStatus === 'low' ? 'bg-orange-100 text-orange-800' :
-                            'bg-green-100 text-green-800'
-                          }`}>
-                            {stockStatus === 'negative' ? 'Negative' :
-                             stockStatus === 'low' ? 'Low Stock' : 'Normal'}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <Link
-                            href={`/products/edit/${encodeURIComponent(product.sku)}`}
-                            className="text-blue-600 hover:text-blue-900 transition-all duration-200"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </Link>
-                        </td>
-                      </tr>
+                        </div>
+                      </div>
                     );
-                  })
-                ) : (
-                  <tr>
-                    <td colSpan="7" className="px-6 py-12 text-center text-gray-500">
-                      {searchTerm ? "No products found matching your search" : "No products found. Add your first product above."}
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                  })}
+                </div>
+              ) : (
+                <div className="px-4 py-12 text-center text-gray-500">
+                  {searchTerm ? "No products found matching your search" : "No products found. Add your first product above."}
+                </div>
+              )}
+            </div>
+          </>
         ) : (
           <VirtualizedProductList products={filteredProducts} searchTerm={searchTerm} />
         )}
