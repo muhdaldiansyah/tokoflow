@@ -1,9 +1,10 @@
+// app/(public)/login/page.js
 "use client";
 
 export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from "react";
-import { useAuth } from "../../hooks/useAuthSimple";
+import { signIn } from "../../actions/auth";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
@@ -14,7 +15,6 @@ import { Package } from "lucide-react";
 export default function LoginPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { signIn: signInWithAuth, user } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,26 +28,17 @@ export default function LoginPage() {
     setIsClient(true);
   }, []);
 
-  useEffect(() => {
-    if (user) {
-      setLoginSuccess(true);
-    }
-  }, [user]);
 
   // Session cleanup logic
   useEffect(() => {
     if (isClient && searchParams.get('clearSession') === 'true') {
       if (typeof window !== 'undefined') {
         try {
+          // Only clear Supabase auth cache keys (avoid nuking all cookies)
           Object.keys(localStorage)
             .filter(key => key.startsWith('sb-') || key.includes('supabase'))
             .forEach(key => localStorage.removeItem(key));
-          
-          document.cookie.split(';').forEach(cookie => {
-            const [name] = cookie.trim().split('=');
-            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-          });
-          
+
           const redirect = searchParams.get('redirect') || '/dashboard';
           router.replace(`/login?redirect=${redirect}`);
         } catch (e) {
@@ -78,13 +69,16 @@ export default function LoginPage() {
     setLoginSuccess(false);
 
     try {
-      const { error: signInError } = await signInWithAuth(email, password);
+      const { error: signInError } = await signIn(email, password);
 
       if (signInError) {
         throw signInError;
       }
 
       setLoginSuccess(true);
+      const { safeRedirect } = await import('../../../lib/auth/safeRedirect')
+      const redirectTo = safeRedirect(searchParams.get('redirect'))
+      router.replace(redirectTo)
     } catch (err) {
       const errorMessage = err?.message || "Terjadi kesalahan saat login";
       setError(errorMessage);

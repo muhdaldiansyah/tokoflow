@@ -1,5 +1,5 @@
 // app/api/dashboard/route.js
-import { createClient } from '../../../lib/database/supabase-server';
+import { createClient } from '../../../lib/database/supabase-server/index.js';
 import { successResponse, errorResponse } from '../../../lib/utils/api-response';
 
 /**

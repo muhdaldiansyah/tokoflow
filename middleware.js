@@ -3,29 +3,17 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 
 export async function middleware(request) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  });
+  // Base response that will collect Supabase cookies
+  const response = NextResponse.next()
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
-          supabaseResponse = NextResponse.next({
-            request,
-          });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          );
-        },
+        get: (name) => request.cookies.get(name)?.value,
+        set: (name, value, options) => response.cookies.set(name, value, options),
+        remove: (name, options) => response.cookies.delete({ name, ...options }),
       },
     }
   );
@@ -42,30 +30,57 @@ export async function middleware(request) {
     console.log("Middleware: No auth session found");
   }
 
+  const withCookiesRedirect = (url) => {
+    const r = NextResponse.redirect(url);
+    // carry forward cookies set on `response`
+    response.cookies.getAll().forEach((c) => r.cookies.set(c));
+    return r;
+  };
+
   // If user is not authenticated and trying to access private routes
-  if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
-    const redirectUrl = new URL('/login', request.url);
-    redirectUrl.searchParams.set('redirect', request.nextUrl.pathname);
-    return NextResponse.redirect(redirectUrl);
+  const isPrivateRoute = request.nextUrl.pathname.startsWith('/dashboard') ||
+                         request.nextUrl.pathname.startsWith('/products') ||
+                         request.nextUrl.pathname.startsWith('/sales') ||
+                         request.nextUrl.pathname.startsWith('/inventory') ||
+                         request.nextUrl.pathname.startsWith('/marketplace-fees') ||
+                         request.nextUrl.pathname.startsWith('/incoming-goods') ||
+                         request.nextUrl.pathname.startsWith('/product-costs') ||
+                         request.nextUrl.pathname.startsWith('/product-compositions') ||
+                         request.nextUrl.pathname.startsWith('/stock-adjustments') ||
+                         request.nextUrl.pathname.startsWith('/admin') ||
+                         request.nextUrl.pathname.startsWith('/plans') ||
+                         request.nextUrl.pathname.startsWith('/checkout');
+
+  if (!user && isPrivateRoute) {
+    const redirectUrl = new URL('/login', request.url)
+    const next = request.nextUrl.pathname + (request.nextUrl.search || '')
+    redirectUrl.searchParams.set('redirect', next)
+    return withCookiesRedirect(redirectUrl);
   }
 
   // If user is authenticated and trying to access auth pages
   if (user && (request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/register')) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    return withCookiesRedirect(new URL('/dashboard', request.url));
   }
 
-  return supabaseResponse;
+  return response;
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
-     */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/login',
+    '/register',
+    '/dashboard/:path*',
+    '/products/:path*',
+    '/sales/:path*',
+    '/inventory/:path*',
+    '/marketplace-fees/:path*',
+    '/incoming-goods/:path*',
+    '/product-costs/:path*',
+    '/product-compositions/:path*',
+    '/stock-adjustments/:path*',
+    '/admin/:path*',
+    '/plans/:path*',
+    '/checkout/:path*',
   ],
 };

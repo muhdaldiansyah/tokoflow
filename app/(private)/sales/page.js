@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClient } from "../../../lib/database/supabase/client";
+import { useAuth } from "../../hooks/useAuthSimple";
 import { Loader2, Plus, X, Check, AlertCircle, ShoppingCart, Package, RefreshCw } from "lucide-react";
 import { formatCurrency, formatDate, formatNumber, formatDateForInput } from "../../../lib/utils/format";
 import { toast } from "sonner";
 
 export default function PenjualanPage() {
+  const { session, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -32,17 +33,19 @@ export default function PenjualanPage() {
   const channelsList = Array.isArray(channels) ? channels : ['Shopee', 'Tokopedia', 'TikTok Shop', 'Offline'];
 
   useEffect(() => {
-    fetchInitialData();
-  }, []);
+    if (!authLoading && session) {
+      fetchInitialData();
+    } else if (!authLoading && !session) {
+      setError("Authentication required");
+      setLoading(false);
+    }
+  }, [authLoading, session]);
 
   const fetchInitialData = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      
       if (!session) {
         throw new Error("No session found");
       }
@@ -115,19 +118,16 @@ export default function PenjualanPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validate form
     if (!formData.sku || !formData.quantity || !formData.channel) {
       toast.error("Please fill in all required fields");
       return;
     }
-    
+
     setSubmitting(true);
-    
+
     try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      
       if (!session) throw new Error("No session found");
       
       const response = await fetch("/api/sales/input", {
@@ -178,13 +178,10 @@ export default function PenjualanPage() {
 
   const handleDelete = async (id) => {
     if (!confirm("Are you sure you want to delete this entry?")) return;
-    
+
     setDeletingId(id);
-    
+
     try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      
       if (!session) throw new Error("No session found");
       
       const response = await fetch(`/api/sales/input/${id}`, {
@@ -217,15 +214,12 @@ export default function PenjualanPage() {
       toast.error("No sales to process");
       return;
     }
-    
+
     if (!confirm(`Process ${salesInput.length} sales transactions?`)) return;
-    
+
     setProcessing(true);
-    
+
     try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      
       if (!session) throw new Error("No session found");
       
       const response = await fetch("/api/process/sales", {
@@ -262,7 +256,7 @@ export default function PenjualanPage() {
     }
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

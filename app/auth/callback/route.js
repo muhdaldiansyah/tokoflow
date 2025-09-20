@@ -1,6 +1,6 @@
 // app/auth/callback/route.js
 import { NextResponse } from 'next/server';
-import { createClient } from '../../../lib/database/supabase/server';
+import { createClient } from '../../../lib/database/supabase-server';
 
 export async function GET(request) {
   const requestUrl = new URL(request.url);

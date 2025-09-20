@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../hooks/useAuthSimple";
 import { createClient } from "../../../lib/database/supabase/client";
 import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, Badge, H1, H2, P, Lead } from "../../components/ui";
 import {

@@ -1,5 +1,5 @@
 // app/api/inventory/route.js
-import { createClient } from '../../../lib/database/supabase-server';
+import { createClient } from '../../../lib/database/supabase-server/index.js';
 import { successResponse, errorResponse, handleSupabaseError } from '../../../lib/utils/api-response';
 import { batchUpdateInventory, checkStockAvailability } from '../../../lib/services/inventory';
 

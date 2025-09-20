@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClient } from "../../../lib/database/supabase/client";
+import { useAuth } from "../../hooks/useAuthSimple";
 import { Loader2, AlertCircle, Package, TrendingUp, TrendingDown, AlertTriangle, RefreshCw, History, X } from "lucide-react";
 import { formatNumber, formatDate } from "../../../lib/utils/format";
 import Link from "next/link";
 
 export default function InventoriPage() {
+  const { session, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [inventory, setInventory] = useState([]);
@@ -18,8 +19,13 @@ export default function InventoriPage() {
   const [loadingMovements, setLoadingMovements] = useState(false);
 
   useEffect(() => {
-    fetchInventory();
-  }, []);
+    if (!authLoading && session) {
+      fetchInventory();
+    } else if (!authLoading && !session) {
+      setError("Authentication required");
+      setLoading(false);
+    }
+  }, [authLoading, session]);
 
   const fetchInventory = async (isRefresh = false) => {
     if (isRefresh) {
@@ -28,11 +34,8 @@ export default function InventoriPage() {
       setLoading(true);
     }
     setError(null);
-    
+
     try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      
       if (!session) {
         throw new Error("No session found");
       }
@@ -67,11 +70,8 @@ export default function InventoriPage() {
 
   const fetchMovements = async (sku) => {
     setLoadingMovements(true);
-    
+
     try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      
       if (!session) throw new Error("No session found");
 
       const response = await fetch(`/api/inventory/movements?sku=${sku}`, {
@@ -124,7 +124,7 @@ export default function InventoriPage() {
     normal: inventoryList.filter(i => i.stock > 10).length
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

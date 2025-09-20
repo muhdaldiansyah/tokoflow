@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../hooks/useAuthSimple";
 import { createClient } from "../../../lib/database/supabase/client";
 import { ArrowLeft, CreditCard, CheckCircle, AlertCircle } from "lucide-react";
 

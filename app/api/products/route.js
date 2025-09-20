@@ -1,5 +1,5 @@
 // app/api/products/route.js
-import { createClient } from '../../../lib/database/supabase-server';
+import { authenticateRequest } from '../../../lib/utils/auth-helpers';
 import { successResponse, errorResponse, handleSupabaseError } from '../../../lib/utils/api-response';
 
 /**
@@ -7,7 +7,13 @@ import { successResponse, errorResponse, handleSupabaseError } from '../../../li
  */
 export async function GET(request) {
   try {
-    const supabase = await createClient();
+    // Authenticate the request
+    const authResult = await authenticateRequest(request);
+    if (authResult instanceof Response) {
+      return authResult; // Return error response if auth failed
+    }
+
+    const { user, supabase } = authResult;
     const { searchParams } = new URL(request.url);
     
     // Optional filters
@@ -65,7 +71,13 @@ export async function GET(request) {
  */
 export async function POST(request) {
   try {
-    const supabase = await createClient();
+    // Authenticate the request
+    const authResult = await authenticateRequest(request);
+    if (authResult instanceof Response) {
+      return authResult; // Return error response if auth failed
+    }
+
+    const { user, supabase } = authResult;
     const body = await request.json();
 
     // Validate required fields
@@ -120,7 +132,13 @@ export async function POST(request) {
  */
 export async function PUT(request) {
   try {
-    const supabase = await createClient();
+    // Authenticate the request
+    const authResult = await authenticateRequest(request);
+    if (authResult instanceof Response) {
+      return authResult; // Return error response if auth failed
+    }
+
+    const { user, supabase } = authResult;
     const { updates } = await request.json();
 
     if (!Array.isArray(updates)) {

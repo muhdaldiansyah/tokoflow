@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuth } from "../../../hooks/useAuthSimple";
 import { createClient } from "../../../../lib/database/supabase/client";
 import { 
   CheckCircle, 

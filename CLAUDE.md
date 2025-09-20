@@ -23,7 +23,7 @@ Tokoflow is a Next.js 15 inventory and sales management system with the followin
 ### Database & Authentication
 - **Supabase Integration**: Primary backend using Supabase for database and auth
 - **Database Layer**: Organized in `lib/database/` with client/server separation
-- **Auth Layer**: Google OAuth integration in `lib/auth/` and `lib/googleAuth/`
+- **Auth Layer**: Supabase authentication with email/password
 
 ### Key Directories
 - `app/(private)/` - All authenticated application features (dashboard, inventory, sales, products, etc.)
@@ -36,7 +36,7 @@ Tokoflow is a Next.js 15 inventory and sales management system with the followin
 - **Framework**: Next.js 15 with App Router and Turbopack in development
 - **Styling**: Tailwind CSS with custom configuration
 - **Database**: Supabase (PostgreSQL)
-- **Auth**: Supabase Auth with Google OAuth
+- **Auth**: Supabase Auth with email/password
 - **UI**: Lucide React icons, Framer Motion animations, Sonner for toasts
 - **Language**: Mixed JavaScript/TypeScript (TypeScript config available but not strictly enforced)
 

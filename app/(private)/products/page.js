@@ -1,33 +1,38 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useAuth } from "../../hooks/useAuthSimple";
 import Link from "next/link";
-import { createClient } from "../../../lib/database/supabase/client";
 import { Loader2, Plus, AlertCircle, Package, Edit2, Search } from "lucide-react";
 import { formatNumber, formatCurrency, formatDate } from "../../../lib/utils/format";
 
 export default function ProductsPage() {
+  const { session, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    if (!authLoading && session) {
+      fetchProducts();
+    } else if (!authLoading && !session) {
+      setError("Authentication required");
+      setLoading(false);
+    }
+  }, [authLoading, session]);
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (retryCount = 0) => {
+    if (!session) {
+      setError("No active session");
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-
-      if (!session) {
-        throw new Error("No session found");
-      }
-
       const response = await fetch("/api/products", {
         headers: {
           "Authorization": `Bearer ${session.access_token}`,
@@ -35,43 +40,58 @@ export default function ProductsPage() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to fetch products");
+        if (response.status === 401 && retryCount < 2) {
+          // Session might be stale, retry after a short delay
+          console.log("Retrying request due to authentication error");
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          return fetchProducts(retryCount + 1);
+        }
+        throw new Error(`Failed to fetch products: ${response.status} ${response.statusText}`);
       }
 
       const result = await response.json();
 
       if (result.success) {
-        // Fetch costs for each product
-        const costsRes = await fetch("/api/product-costs", {
-          headers: { "Authorization": `Bearer ${session.access_token}` }
-        });
+        // Fetch costs for each product with retry logic
+        let productsWithCosts = result.data.products;
 
-        if (costsRes.ok) {
-          const costsData = await costsRes.json();
-          if (costsData.success) {
-            // Merge costs with products
-            const productsWithCosts = result.data.products.map(product => {
-              const cost = costsData.data.find(c => c.sku === product.sku);
-              return {
-                ...product,
-                modal_cost: cost?.modal_cost || 0,
-                packing_cost: cost?.packing_cost || 0,
-                affiliate_percentage: cost?.affiliate_percentage || 0
-              };
-            });
-            setProducts(productsWithCosts);
-          } else {
-            setProducts(result.data.products);
+        try {
+          const costsRes = await fetch("/api/product-costs", {
+            headers: { "Authorization": `Bearer ${session.access_token}` }
+          });
+
+          if (costsRes.ok) {
+            const costsData = await costsRes.json();
+            if (costsData.success) {
+              // Merge costs with products
+              productsWithCosts = result.data.products.map(product => {
+                const cost = costsData.data.find(c => c.sku === product.sku);
+                return {
+                  ...product,
+                  modal_cost: cost?.modal_cost || 0,
+                  packing_cost: cost?.packing_cost || 0,
+                  affiliate_percentage: cost?.affiliate_percentage || 0
+                };
+              });
+            }
           }
-        } else {
-          setProducts(result.data.products);
+        } catch (costError) {
+          console.warn("Failed to fetch product costs, using products without costs:", costError);
         }
+
+        setProducts(productsWithCosts);
       } else {
         throw new Error(result.error || "Failed to load products");
       }
     } catch (err) {
       console.error("Error fetching products:", err);
-      setError(err.message);
+
+      // For network errors, suggest retry
+      if (err.name === 'TypeError' || err.message.includes('fetch')) {
+        setError(`Network error: ${err.message}. Please check your connection and try again.`);
+      } else {
+        setError(err.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -83,12 +103,14 @@ export default function ProductsPage() {
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="animate-spin h-12 w-12 text-gray-700 mx-auto mb-4" />
-          <p className="text-gray-600">Loading products...</p>
+          <p className="text-gray-600">
+            {authLoading ? "Authenticating..." : "Loading products..."}
+          </p>
         </div>
       </div>
     );

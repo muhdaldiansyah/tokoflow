@@ -1,7 +1,7 @@
 // app/actions/auth.js
 'use server';
 
-import { createClient } from '../../lib/database/supabase-server';
+import { createClient } from '../../lib/database/supabase-server/index.js';
 
 export async function signUp(email, password, metadata = {}) {
   const supabase = await createClient();
@@ -21,26 +21,6 @@ export async function signUp(email, password, metadata = {}) {
 
     if (authError) throw authError;
     if (!authData.user) throw new Error('User creation failed');
-
-    // 2. Create the profile in av_profiles table
-    const { error: profileError } = await supabase
-      .from('av_profiles')
-      .insert({
-        id: authData.user.id,
-        full_name: metadata.full_name || null,
-        company: metadata.business_name || null,
-        credits_balance: 0,
-        is_verified: false,
-        country: 'Indonesia',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      });
-
-    if (profileError) {
-      console.error('Profile creation error:', profileError);
-      // Note: User is already created in auth.users at this point
-      // You might want to handle this differently in production
-    }
 
     return { data: authData, error: null };
   } catch (error) {

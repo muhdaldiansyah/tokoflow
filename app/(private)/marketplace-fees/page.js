@@ -2,28 +2,31 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { createClient } from "../../../lib/database/supabase/client";
+import { useAuth } from "../../hooks/useAuthSimple";
 import { Loader2, Plus, AlertCircle, ShoppingBag, Edit2, Search } from "lucide-react";
 import { formatPercentage } from "../../../lib/utils/format";
 
 export default function MarketplaceFeesPage() {
+  const { session, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [fees, setFees] = useState([]);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    fetchFees();
-  }, []);
+    if (!authLoading && session) {
+      fetchFees();
+    } else if (!authLoading && !session) {
+      setError("Authentication required");
+      setLoading(false);
+    }
+  }, [authLoading, session]);
 
   const fetchFees = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      
       if (!session) {
         throw new Error("No session found");
       }
@@ -72,7 +75,7 @@ export default function MarketplaceFeesPage() {
     fee.channel.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
