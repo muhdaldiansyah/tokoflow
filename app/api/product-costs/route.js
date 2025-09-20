@@ -3,6 +3,7 @@ import { createClient } from '../../../lib/database/supabase-server/index.js';
 import { successResponse, errorResponse, handleSupabaseError, successResponseWithETag } from '../../../lib/utils/api-response';
 import { authenticateRequest } from '../../../lib/utils/auth-helpers.js';
 import { outputCache, clearPrefix } from '../../../lib/cache/index.js';
+import { bump } from '../../../lib/state/global-state.js';
 
 export const runtime = 'nodejs';
 
@@ -205,8 +206,9 @@ export async function POST(request) {
       return handleSupabaseError(error);
     }
 
-    // Clear products cache after cost mutation
+    // Clear products cache and bump state after cost mutation
     clearPrefix(`p:${auth.user.id}`);
+    bump('products');
 
     return successResponse(data, 201);
   } catch (error) {
@@ -274,8 +276,9 @@ export async function PUT(request) {
       });
     }
 
-    // Clear products cache after cost mutation
+    // Clear products cache and bump state after cost mutation
     clearPrefix(`p:${auth.user.id}`);
+    bump('products');
 
     return successResponse({ results });
   } catch (error) {
@@ -311,8 +314,9 @@ export async function DELETE(request) {
       return handleSupabaseError(error);
     }
 
-    // Clear products cache after cost mutation
+    // Clear products cache and bump state after cost mutation
     clearPrefix(`p:${auth.user.id}`);
+    bump('products');
 
     return successResponse({ message: 'Product cost deleted successfully' });
   } catch (error) {

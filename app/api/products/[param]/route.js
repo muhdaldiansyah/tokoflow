@@ -3,6 +3,7 @@ import { createClient } from '../../../../lib/database/supabase-server/index.js'
 import { successResponse, errorResponse, handleSupabaseError } from '../../../../lib/utils/api-response';
 import { authenticateRequest } from '../../../../lib/utils/auth-helpers.js';
 import { clearPrefix } from '../../../../lib/cache/index.js';
+import { bump } from '../../../../lib/state/global-state.js';
 
 /**
  * Helper function to determine if param is UUID
@@ -184,8 +185,9 @@ export async function PATCH(request, { params }) {
       .eq('id', product.id)
       .single();
 
-    // Clear cache after mutation
+    // Clear cache and bump state after mutation
     clearPrefix(`p:${auth.user.id}`);
+    bump('products');
 
     return successResponse(updatedProduct);
   } catch (error) {
@@ -264,9 +266,10 @@ export async function DELETE(request, { params }) {
       return handleSupabaseError(error);
     }
 
-    // Clear cache after mutation
+    // Clear cache and bump state after mutation
     const { user } = authResult;
     clearPrefix(`p:${user.id}`);
+    bump('products');
 
     return successResponse({ message: 'Product deleted successfully' });
   } catch (error) {

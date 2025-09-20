@@ -4,16 +4,20 @@ import { successResponse, errorResponse, handleSupabaseError, successResponseWit
 import { parseQuery, buildNextLink } from '../../../lib/http/paging.js';
 import { outputCache, clearPrefix } from '../../../lib/cache/index.js';
 import { encodeCursor } from '../../../lib/http/cursor.js';
+import { makeStateTag, bump } from '../../../lib/state/global-state.js';
+import { withServerTiming } from '../../../lib/http/serverTiming.js';
 
 export const runtime = 'nodejs';
 
+export const preferredRegion = 'auto';
+
 /**
- * HEAD /api/products - Ultra-fast state validation on Edge
- * Returns only ETag for cache validation, no payload
+ * HEAD /api/products - Zero-DB ultra-fast state validation
+ * Returns only ETag for cache validation, no DB queries
  */
 export async function HEAD(request) {
   try {
-    // Simple auth check for Edge runtime
+    // Simple auth check
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return new Response(null, { status: 401 });
@@ -21,21 +25,16 @@ export async function HEAD(request) {
 
     const url = new URL(request.url);
     const search = url.searchParams.get('search') ?? '';
-    const stockFilter = url.searchParams.get('stock') ?? '';
+    const stock = url.searchParams.get('stock') ?? '';
     const cursor = url.searchParams.get('cursor') ?? '';
-    const limit = url.searchParams.get('limit') ?? '25';
+    const limit = url.searchParams.get('limit') ?? '';
+    const filterSig = `${search}:${stock}:${cursor}:${limit}`;
+    const etag = makeStateTag('products', filterSig);
 
-    // Build lightweight state tag (in real implementation, this would call a fast state function)
-    // For now, use a timestamp-based approach that changes every ~15 seconds for demo
-    const timeBucket = Math.floor(Date.now() / 15000); // Changes every 15 seconds
-    const state = `p:${search}:${stockFilter}:${cursor}:${limit}`;
-    const etag = `W/"${state}:${timeBucket}"`;
-
-    const ifNoneMatch = request.headers.get('if-none-match');
-    if (ifNoneMatch && ifNoneMatch === etag) {
+    const inm = request.headers.get('if-none-match');
+    if (inm && inm === etag) {
       return new Response(null, { status: 304, headers: { etag } });
     }
-
     return new Response(null, {
       status: 204,
       headers: {
@@ -43,8 +42,7 @@ export async function HEAD(request) {
         'cache-control': 'private, max-age=0, must-revalidate, stale-while-revalidate=5',
       },
     });
-  } catch (error) {
-    console.error('[products] HEAD error', error);
+  } catch {
     return new Response(null, { status: 500 });
   }
 }
@@ -152,9 +150,12 @@ export async function GET(request) {
     }
 
     // HEAVY query path: use view for single-query access to products with costs
+    const defaultSelect = 'id,sku,name,stock,created_at,updated_at,modal_cost,packing_cost,affiliate_percentage';
+    const viewSelect = select === '*' ? defaultSelect : select;
+
     let query = supabase
       .from('v_products_with_costs')
-      .select(select) // view includes: id,sku,name,stock,created_at,updated_at,modal_cost,packing_cost,affiliate_percentage
+      .select(viewSelect) // use field projection for smaller payloads
       .order('updated_at', { ascending: false })
       .order('id', { ascending: true });
 
@@ -204,7 +205,11 @@ export async function GET(request) {
     const ms = Date.now() - t0;
     console.log(`[perf] /api/products ${ms}ms 304=false hit=false`);
 
-    return successResponseWithETag(request, payload, { etag: stateTag, link });
+    return successResponseWithETag(request, payload, {
+      etag: stateTag,
+      link,
+      extraHeaders: { 'server-timing': withServerTiming(t0) }
+    });
   } catch (error) {
     console.error('[products] GET error', error);
     return errorResponse('Failed to fetch products', 500);
@@ -264,8 +269,9 @@ export async function POST(request) {
       }
     }
 
-    // Clear cache after mutation
+    // Clear cache and bump state after mutation
     clearPrefix(`p:${user.id}`);
+    bump('products');
 
     // Return the created product
     return successResponse(product, 201);
@@ -302,9 +308,10 @@ export async function PUT(request) {
       .select('sku');
     if (error) return handleSupabaseError(error);
 
-    // Clear cache after mutation
+    // Clear cache and bump state after mutation
     const { user } = authResult;
     clearPrefix(`p:${user.id}`);
+    bump('products');
 
     return successResponse({ updated: data?.length || 0 });
   } catch (e) {
