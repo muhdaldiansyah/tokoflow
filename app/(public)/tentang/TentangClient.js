@@ -24,38 +24,28 @@ import { coreValues as importedCoreValues, WHATSAPP_LINK } from '../../page_data
 // Timeline milestones
 const milestones = [
   {
-    year: "2019",
-    title: "Awal Perjalanan",
-    description: "Dimulai dari frustrasi pribadi managing inventory toko elektronik dengan Excel yang error-prone.",
-  },
-  {
-    year: "2020",
-    title: "MVP & Early Adopters",
-    description: "Launch beta version dengan 10 UMKM pilot users. Feedback: 'Finally, sistem yang gampang dipakai!'",
-  },
-  {
-    year: "2021",
-    title: "Product-Market Fit",
-    description: "100+ UMKM aktif menggunakan Tokoflow. Integrasi pertama dengan Shopee dan Tokopedia.",
-  },
-  {
-    year: "2023",
-    title: "Scale & Growth",
-    description: "500+ UMKM, 10M+ transaksi/bulan. Launch mobile app dan integrasi TikTok Shop.",
-  },
-  {
     year: "2025",
-    title: "Market Leader",
-    description: "Platform inventory management #1 untuk UMKM Indonesia. Ekspansi ke 34 provinsi.",
+    title: "Lahir dari Kebutuhan",
+    description: "Tokoflow dimulai dari pengalaman nyata mengelola inventory multi-channel yang terlalu kompleks untuk spreadsheet.",
+  },
+  {
+    year: "2026",
+    title: "Early Access Launch",
+    description: "Core features siap: inventory tracking, profit calculation, multi-channel analytics. Membuka akses untuk merchant pertama.",
+  },
+  {
+    year: "Next",
+    title: "Growth & Integration",
+    description: "Integrasi marketplace API, mobile app, dan fitur-fitur baru berdasarkan feedback langsung dari early adopters.",
   },
 ];
 
 // Team stats
 const teamStats = [
-  { number: "15+", label: "Team Members" },
-  { number: "500+", label: "Active Merchants" },
-  { number: "10M+", label: "Monthly Transactions" },
-  { number: "24/7", label: "Support Available" },
+  { number: "Indonesian", label: "Built & Supported" },
+  { number: "Cloud", label: "Infrastructure" },
+  { number: "Early Access", label: "Now Open" },
+  { number: "Direct", label: "Developer Support" },
 ];
 
 /* --------------------------------------------------------------------- */
@@ -138,21 +128,21 @@ export default function TentangClient() {
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
                 <P className="mb-4">
-                  Tahun 2019, founder kami mengelola toko elektronik dengan 500+ SKU menggunakan Excel. 
-                  Setiap hari ada drama: stok tidak match, double selling di marketplace, lupa update harga. 
-                  Profit? Entahlah, terlalu ribet untuk dihitung manual.
+                  Mengelola inventory multi-channel dengan spreadsheet itu menyakitkan.
+                  Stok tidak match, double selling di marketplace, fee berbeda-beda tiap channel.
+                  Profit? Terlalu ribet untuk dihitung manual kalau harus include modal, packing, dan fee.
                 </P>
                 <P className="mb-4">
-                  Cari software inventory yang ada? Terlalu mahal atau terlalu kompleks untuk UMKM. 
+                  Software inventory yang ada? Terlalu mahal atau terlalu kompleks untuk UMKM.
                   Yang affordable? Fiturnya kurang lengkap, tidak support multi-channel Indonesia.
                 </P>
                 <P className="mb-4">
-                  Dari situlah Tokoflow lahir. Dengan misi sederhana: 
+                  Dari situlah Tokoflow lahir. Dengan misi sederhana:
                   <strong> membuat teknologi inventory management yang powerful tapi tetap simple dan affordable untuk UMKM.</strong>
                 </P>
                 <P>
-                  Hari ini, 500+ UMKM dari Sabang sampai Merauke trust Tokoflow untuk kelola bisnis mereka. 
-                  Dan kami baru saja memulai.
+                  Saat ini Tokoflow dalam tahap Early Access — kami sedang onboarding merchant pertama
+                  yang akan membentuk masa depan platform ini bersama kami.
                 </P>
               </div>
 
@@ -292,9 +282,9 @@ export default function TentangClient() {
               <Card className="max-w-2xl mx-auto p-8">
                 <Users className="w-16 h-16 mx-auto mb-4 text-gray-400" />
                 <P className="mb-6">
-                  Tim kami terdiri dari 15+ professionals dengan background diverse: 
-                  software engineers, product designers, customer success, dan yang paling penting - 
-                  mantan pemilik UMKM yang paham pain points Anda.
+                  Tokoflow dibangun oleh tim kecil yang fokus: satu masalah, satu solusi, tanpa birokrasi.
+                  Setiap early adopter berkomunikasi langsung dengan orang yang membangun sistemnya —
+                  bukan bot, bukan CS scripted.
                 </P>
                 <div className="flex flex-wrap justify-center gap-4 text-sm">
                   <Badge variant="outline">Engineering</Badge>
@@ -315,29 +305,29 @@ export default function TentangClient() {
           </div>
         </section>
 
-        {/* Awards & Recognition */}
+        {/* Technology Section */}
         <section className="py-16 md:py-20 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <SectionHeading
-              subtitle="RECOGNITION"
-              title="Pengakuan & Pencapaian"
+              subtitle="TECHNOLOGY"
+              title="Dibangun dengan Stack Modern"
             />
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
               <Card className="text-center p-6">
-                <Award className="w-12 h-12 mx-auto mb-3 text-yellow-600" />
-                <h4 className="font-semibold mb-1">Top 10 Startup</h4>
-                <p className="text-sm text-gray-600">Indonesia Digital Summit 2024</p>
-              </Card>
-              <Card className="text-center p-6">
                 <Shield className="w-12 h-12 mx-auto mb-3 text-green-600" />
-                <h4 className="font-semibold mb-1">ISO 27001 Certified</h4>
-                <p className="text-sm text-gray-600">Information Security</p>
+                <h4 className="font-semibold mb-1">Cloud Infrastructure</h4>
+                <p className="text-sm text-gray-600">Enterprise hosting dengan enkripsi & backup otomatis</p>
               </Card>
               <Card className="text-center p-6">
-                <TrendingUp className="w-12 h-12 mx-auto mb-3 text-blue-600" />
-                <h4 className="font-semibold mb-1">Google for Startups</h4>
-                <p className="text-sm text-gray-600">Accelerator Alumni</p>
+                <Globe className="w-12 h-12 mx-auto mb-3 text-blue-600" />
+                <h4 className="font-semibold mb-1">Modern Web App</h4>
+                <p className="text-sm text-gray-600">Next.js, React — akses dari browser manapun</p>
+              </Card>
+              <Card className="text-center p-6">
+                <TrendingUp className="w-12 h-12 mx-auto mb-3 text-gray-600" />
+                <h4 className="font-semibold mb-1">Real-time Analytics</h4>
+                <p className="text-sm text-gray-600">Dashboard profit & inventory yang selalu up-to-date</p>
               </Card>
             </div>
           </div>
@@ -354,8 +344,8 @@ export default function TentangClient() {
                 Mari Grow Bersama Tokoflow
               </H2>
               <P className="text-white/70 max-w-2xl mx-auto mb-8">
-                Bergabung dengan 500+ UMKM yang sudah merasakan manfaat teknologi inventory management yang proper. 
-                Free trial 14 hari, no credit card required.
+                Bergabung dengan program Early Access Tokoflow.
+                Free trial 14 hari, no credit card required. Harga spesial untuk early adopters.
               </P>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" variant="secondary" asChild>

@@ -34,7 +34,7 @@ import {
 } from "lucide-react";
 
 // Data
-import { testimonials, blogPosts, WHATSAPP_LINK, faqs } from "./page_data";
+import { useCases, blogPosts, WHATSAPP_LINK, faqs } from "./page_data";
 
 // SEO Metadata
 export const metadata = {
@@ -103,70 +103,70 @@ const mainServices = [
   {
     icon: Package,
     title: "Inventory Management",
-    pricing: "Mulai 299rb/bln",
+    pricing: "Early Access",
     description:
-      "Kelola stok multi-SKU dengan tracking real-time, alert stok minimum, dan manajemen bundle/paket produk.",
+      "Kelola stok multi-SKU dengan tracking real-time, catat barang masuk, dan manajemen bundle/paket produk.",
     features: [
       "Real-time Stock Tracking",
-      "Multi-warehouse Support",
-      "Stock Alert & Notification",
+      "Incoming Goods Management",
+      "Stock Adjustment & Audit Trail",
       "Bundle Product Management",
-      "Barcode Scanner (Mobile App)",
+      "SKU-based Product Catalog",
     ],
-    highlight: "Cocok untuk: UMKM dengan 100-1000 SKU",
+    highlight: "Cocok untuk: UMKM dengan 100-1000+ SKU",
   },
   {
     icon: ShoppingCart,
     title: "Multi-channel Sales",
-    pricing: "Mulai 599rb/bln",
+    pricing: "Early Access",
     description:
-      "Sinkronisasi penjualan dari Shopee, Tokopedia, TikTok Shop dalam satu dashboard. Fee otomatis terhitung.",
+      "Catat penjualan dari Shopee, Tokopedia, TikTok Shop dalam satu dashboard. Fee per channel otomatis terhitung.",
     features: [
-      "Marketplace Integration",
-      "Centralized Order Management",
-      "Auto Fee Calculation",
+      "Auto Fee Calculation per Channel",
       "Channel Performance Analytics",
-      "Stock Sync Across Channels",
+      "Per-transaction Profit Tracking",
+      "Sales History & CSV Export",
+      "Marketplace API Sync (Segera Hadir)",
     ],
     highlight: "Cocok untuk: Online shop multi-channel",
   },
   {
     icon: BarChart2,
-    title: "Business Intelligence",
-    pricing: "Custom Pricing",
+    title: "Profit Analytics",
+    pricing: "Early Access",
     description:
-      "Analytics mendalam dengan profit calculation, sales forecast, dan business insights untuk growth optimal.",
+      "Hitung profit bersih otomatis dengan detail: modal, packing, fee marketplace, dan affiliate per transaksi.",
     features: [
       "Real-time Profit Dashboard",
+      "Cost Breakdown per SKU",
+      "Channel Margin Comparison",
+      "Product Performance Ranking",
       "Sales Trend Analysis",
-      "Product Performance Report",
-      "Customer Behavior Analytics",
-      "Predictive Inventory Planning",
     ],
-    highlight: "Cocok untuk: Bisnis dengan omzet 50jt+/bulan",
+    highlight: "Cocok untuk: Bisnis yang mau tahu profit sebenarnya",
   },
 ];
 
 const whyChooseUs = [
   {
     icon: Users,
-    title: "Support Lokal",
-    desc: "Tim Indonesia yang paham konteks bisnis lokal, siap bantu via WhatsApp",
+    title: "Direct Developer Support",
+    desc: "Komunikasi langsung dengan developer via WhatsApp — bukan bot, bukan CS scripted",
   },
   {
     icon: Zap,
     title: "Setup Cepat",
-    desc: "Running dalam 1 hari dengan data import otomatis dan template siap pakai",
+    desc: "Running dalam 1 hari. Import data produk, konfigurasi biaya, langsung pakai",
   },
   {
     icon: Shield,
     title: "Data Aman",
-    desc: "Backup otomatis tiap jam di Google Cloud dengan enkripsi enterprise",
+    desc: "Cloud infrastructure dengan enkripsi standar industri dan backup otomatis",
   },
   {
     icon: Award,
-    title: "Proven System",
-    desc: "Dipercaya 500+ UMKM dengan total GMV 10+ miliar per bulan",
+    title: "Early Access Program",
+    desc: "Bergabung dengan merchant pertama yang membentuk Tokoflow. Harga spesial selamanya",
   },
 ];
 
@@ -283,20 +283,20 @@ export default function LandingPage() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">500+</div>
-                  <div className="text-sm text-gray-600">UMKM Pengguna</div>
+                  <div className="text-2xl font-bold text-gray-900">Early Access</div>
+                  <div className="text-sm text-gray-600">Program Aktif</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">10M+</div>
-                  <div className="text-sm text-gray-600">Transaksi/Bulan</div>
+                  <div className="text-2xl font-bold text-gray-900">Real-time</div>
+                  <div className="text-sm text-gray-600">Profit Tracking</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">99.9%</div>
-                  <div className="text-sm text-gray-600">Uptime System</div>
+                  <div className="text-2xl font-bold text-gray-900">Multi-channel</div>
+                  <div className="text-sm text-gray-600">Fee Otomatis</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">24/7</div>
-                  <div className="text-sm text-gray-600">Support Team</div>
+                  <div className="text-2xl font-bold text-gray-900">Direct</div>
+                  <div className="text-sm text-gray-600">Developer Support</div>
                 </div>
               </div>
             </div>
@@ -355,28 +355,28 @@ export default function LandingPage() {
             <div className="max-w-6xl mx-auto px-4 sm:px-6">
               <div className="text-center mb-10">
                 <Badge variant="secondary" className="mb-3 bg-white/10 text-white border-0">
-                  IMPACT METRICS
+                  KENAPA TOKOFLOW
                 </Badge>
                 <H2 className="text-white mb-4">
-                  Hasil Nyata untuk Bisnis Anda
+                  Dirancang untuk Menyelesaikan Masalah Nyata
                 </H2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="text-center">
-                  <div className="text-4xl font-bold text-white mb-2">40%</div>
-                  <div className="text-lg font-medium text-white/90 mb-1">Peningkatan Sales</div>
-                  <p className="text-sm text-white/70">Average dalam 6 bulan pertama karena stok selalu tersedia</p>
+                  <div className="text-4xl font-bold text-white mb-2">Profit Jelas</div>
+                  <div className="text-lg font-medium text-white/90 mb-1">Cost Breakdown Otomatis</div>
+                  <p className="text-sm text-white/70">Modal, packing, fee marketplace, affiliate — semua terhitung per transaksi</p>
                 </div>
                 <div className="text-center">
-                  <div className="text-4xl font-bold text-white mb-2">70%</div>
-                  <div className="text-lg font-medium text-white/90 mb-1">Hemat Waktu Admin</div>
-                  <p className="text-sm text-white/70">Automasi report dan sync data cross-channel</p>
+                  <div className="text-4xl font-bold text-white mb-2">Hemat Waktu</div>
+                  <div className="text-lg font-medium text-white/90 mb-1">Tidak Perlu Rekap Manual</div>
+                  <p className="text-sm text-white/70">Setiap penjualan otomatis tercatat lengkap dengan profit bersih</p>
                 </div>
                 <div className="text-center">
-                  <div className="text-4xl font-bold text-white mb-2">95%</div>
-                  <div className="text-lg font-medium text-white/90 mb-1">Akurasi Stok</div>
-                  <p className="text-sm text-white/70">Real-time update mencegah overselling</p>
+                  <div className="text-4xl font-bold text-white mb-2">Stok Akurat</div>
+                  <div className="text-lg font-medium text-white/90 mb-1">Real-time Inventory Update</div>
+                  <p className="text-sm text-white/70">Setiap transaksi dan barang masuk langsung update stok otomatis</p>
                 </div>
               </div>
             </div>
@@ -441,10 +441,10 @@ export default function LandingPage() {
           <section className="bg-white py-16 md:py-20">
             <div className="max-w-6xl mx-auto px-4 sm:px-6">
               <H2 className="text-center mb-10">
-                Success Stories dari User Tokoflow
+                Bagaimana Tokoflow Membantu Bisnis Anda
               </H2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {testimonials.map((t, index) => (
+                {useCases.map((t, index) => (
                   <Card key={t.initials} className="p-6 flex flex-col h-full">
                     <MessageCircle className="w-5 h-5 text-gray-300 mb-4 opacity-70" />
                     {/* Result-focused headline */}
@@ -563,8 +563,8 @@ export default function LandingPage() {
                   Siap Scale Up Bisnis Anda?
                 </H2>
                 <P className="text-white/70 max-w-xl mx-auto mb-8">
-                  Join 500+ UMKM yang sudah meningkatkan efisiensi operasional dengan Tokoflow. 
-                  Free trial 14 hari tanpa perlu kartu kredit. Setup cepat, training included.
+                  Bergabung dengan program Early Access Tokoflow. Free trial 14 hari
+                  tanpa perlu kartu kredit. Setup cepat, direct developer support.
                 </P>
               </div>
               <div className="flex flex-col sm:flex-row justify-center gap-4">

@@ -31,33 +31,33 @@ import {
 // --- Constants ---
 export const WHATSAPP_LINK = "https://wa.me/+6282311639949?text=Saya%20tertarik%20dengan%20Tokoflow%20untuk%20bisnis%20saya";
 
-// --- Testimonials (Updated for E-commerce/Retail) ---
-export const testimonials = [
+// --- Use Cases (Skenario Penggunaan) ---
+export const useCases = [
   {
-    name: 'Budi Santoso',
-    role: 'Pemilik Toko Elektronik Jaya Abadi',
-    headline: 'Dari Catat Manual ke Dashboard Real-time!',
+    name: 'Toko Elektronik',
+    role: '500+ SKU, Multi-channel',
+    headline: 'Track stok real-time, hitung profit per channel',
     quote:
-      'Dulu stok berantakan, sering kehabisan barang atau malah overstock. Dengan Tokoflow, saya bisa lihat stok real-time, dapat alert kalau stok menipis, dan laporan profit otomatis. Penjualan naik 40% karena tidak pernah kehabisan stok best seller!',
-    initials: 'BS',
+      'Kelola ratusan produk tanpa spreadsheet. Setiap penjualan otomatis terhitung: modal, packing, fee marketplace. Dashboard menunjukkan produk mana paling untung di channel mana — keputusan restock berdasarkan data, bukan feeling.',
+    initials: 'TE',
     color: 'dark',
   },
   {
-    name: 'Siti Rahayu',
-    role: 'Owner Fashion Online Shop',
-    headline: 'Multi-channel Jadi Mudah: Shopee, Tokped, TikTok!',
+    name: 'Fashion Online Shop',
+    role: '3 Marketplace, Produk Bundle',
+    headline: 'Fee marketplace berbeda? Otomatis terhitung semua',
     quote:
-      'Jualan di 3 marketplace bikin pusing ngatur stok. Tokoflow otomatis sync stok ke semua channel, hitung fee marketplace berbeda, dan rekap untung per channel. Yang tadinya butuh 3 admin, sekarang cukup 1 orang. Hemat biaya operasional 70%!',
-    initials: 'SR',
+      'Shopee, Tokopedia, TikTok Shop — masing-masing fee berbeda. Tokoflow hitung otomatis per transaksi. Ditambah fitur bundle: jual paket produk, stok komponen auto-update. Tahu persis margin bersih setiap channel.',
+    initials: 'FO',
     color: 'green',
   },
   {
-    name: 'Ahmad Wijaya',
-    role: 'Distributor Produk Kesehatan',
-    headline: 'Profit Margin Jelas, Keputusan Bisnis Tepat!',
+    name: 'Distributor & Grosir',
+    role: 'Cost Management, Margin Analysis',
+    headline: 'Detail biaya per produk: modal, packing, affiliate',
     quote:
-      'Tokoflow hitung detail: modal, packing, fee marketplace, bahkan komisi affiliate. Saya jadi tahu produk mana yang untung besar, channel mana yang efisien. Bisa fokus push produk high-margin dan stop produk rugi. Net profit naik 60% dalam 6 bulan!',
-    initials: 'AW',
+      'Set cost breakdown per SKU — modal, biaya packing, persentase affiliate. Setiap penjualan langsung terlihat net profit-nya. Identifikasi produk high-margin untuk di-push, dan produk rugi untuk di-review.',
+    initials: 'DG',
     color: 'dark',
   },
 ];
@@ -201,27 +201,27 @@ export const coreValues = [
 export const faqs = [
   {
     question: 'Apa itu Tokoflow?',
-    answer: 'Tokoflow adalah sistem manajemen inventory dan penjualan terintegrasi untuk UMKM dan online shop. Berbasis Google Sheets dengan automasi canggih, membantu Anda tracking stok real-time, rekap penjualan multi-channel, dan hitung profit otomatis. Solusi affordable untuk bisnis yang sedang growing.',
+    answer: 'Tokoflow adalah sistem manajemen inventory dan penjualan untuk UMKM dan online shop. Membantu Anda tracking stok real-time, rekap penjualan multi-channel, dan hitung profit otomatis dengan detail cost breakdown (modal, packing, fee marketplace, affiliate).',
   },
   {
     question: 'Berapa biaya berlangganan Tokoflow?',
-    answer: 'Tokoflow Starter mulai dari 299rb/bulan untuk hingga 1000 SKU dan 3 user. Ada free trial 14 hari tanpa kartu kredit. Paket Professional 599rb/bulan untuk unlimited SKU dan 10 user. Enterprise custom pricing dengan integrasi API marketplace dan dedicated support.',
+    answer: 'Saat ini Tokoflow dalam program Early Access dengan harga spesial untuk merchant pertama. Hubungi kami via WhatsApp untuk informasi harga early adopter yang akan di-lock selamanya.',
   },
   {
-    question: 'Apakah bisa integrasi dengan marketplace?',
-    answer: 'Ya! Tokoflow support integrasi dengan Shopee, Tokopedia, TikTok Shop, Bukalapak, Lazada, dan marketplace lain via API. Stok sync otomatis, order masuk langsung, fee marketplace dihitung otomatis per channel.',
+    question: 'Bagaimana cara kerja multi-channel di Tokoflow?',
+    answer: 'Anda bisa mencatat penjualan per channel (Shopee, Tokopedia, TikTok Shop, offline, dll), dan Tokoflow otomatis menghitung fee marketplace yang berbeda per channel, lalu menampilkan profit bersih per transaksi dan per channel di dashboard.',
   },
   {
     question: 'Bagaimana dengan keamanan data?',
-    answer: 'Data Anda tersimpan di Google Cloud dengan enkripsi tingkat enterprise. Backup otomatis setiap jam, access control per user, dan audit trail lengkap. Kami juga GDPR compliant dan sudah tersertifikasi ISO 27001.',
+    answer: 'Data Anda tersimpan di cloud infrastructure dengan enkripsi standar industri dan backup otomatis. Akses terlindungi dengan autentikasi per user.',
   },
   {
     question: 'Apakah perlu technical skill untuk pakai Tokoflow?',
-    answer: 'Tidak perlu! Tokoflow didesain user-friendly untuk non-technical user. Ada video tutorial step-by-step, template siap pakai, dan training online gratis. Plus, support team kami siap bantu via WhatsApp.',
+    answer: 'Tidak perlu! Tokoflow didesain user-friendly. Interface-nya intuitif dan support langsung dari developer via WhatsApp — bukan bot atau CS scripted.',
   },
   {
-    question: 'Bisa untuk bisnis offline juga?',
-    answer: 'Tentu! Tokoflow cocok untuk toko offline, online, atau hybrid. Ada fitur POS sederhana, barcode scanning (via mobile app), dan integrasi dengan printer thermal untuk cetak nota.',
+    question: 'Tokoflow masih dalam tahap apa?',
+    answer: 'Tokoflow saat ini dalam program Early Access. Core features (inventory tracking, profit calculation, multi-channel analytics) sudah berjalan. Kami aktif mengembangkan fitur baru berdasarkan feedback langsung dari merchant.',
   },
 ];
 

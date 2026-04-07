@@ -400,8 +400,8 @@ export default function PanduanClient() {
           <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
             <H2 className="mb-4">Stay Updated dengan Tips Terbaru</H2>
             <P className="mb-8 max-w-2xl mx-auto">
-              Dapatkan panduan eksklusif, case study, dan tips praktis langsung ke inbox Anda. 
-              Join 5,000+ UMKM yang sudah subscribe.
+              Dapatkan panduan eksklusif, tips praktis, dan insight inventory management
+              langsung ke inbox Anda.
             </P>
             <form className="max-w-md mx-auto flex gap-3">
               <input

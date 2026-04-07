@@ -108,34 +108,34 @@ const pricingTiers = [
 // Case Studies with ROI - Inventory/Sales Focus
 const caseStudies = [
   {
-    client: 'Toko Elektronik Jaya Abadi',
-    industry: 'Retail Electronics',
-    headline: 'Dari Catat Manual ke Dashboard Real-time!',
-    before: 'Stok berantakan, sering kehabisan barang atau overstock',
-    after: 'Stok real-time, alert otomatis, laporan profit instant',
+    client: 'Skenario: Toko Retail Multi-channel',
+    industry: 'Retail / E-commerce',
+    headline: 'Dari spreadsheet ke dashboard profit otomatis',
+    before: 'Rekap manual di Excel, fee marketplace dihitung satu per satu, tidak tahu profit sebenarnya',
+    after: 'Setiap transaksi otomatis terhitung: modal + packing + fee + affiliate = net profit',
     results: [
-      'Penjualan naik 40%',
-      'Zero stock-out pada best seller',
-      'Akurasi stok 99.5%',
-      'Hemat 10 jam/minggu admin'
+      'Profit per produk per channel terlihat jelas',
+      'Fee marketplace otomatis terhitung',
+      'Stok update real-time setiap transaksi',
+      'Export CSV untuk rekonsiliasi'
     ],
-    investment: 'Professional Plan',
-    roi: 'ROI dalam 3 bulan'
+    investment: 'Early Access',
+    roi: 'Tahu profit sebenarnya dari hari pertama'
   },
   {
-    client: 'Fashion Online Shop',
-    industry: 'E-commerce Fashion',
-    headline: 'Multi-channel Jadi Mudah!',
-    before: 'Butuh 3 admin untuk handle 3 marketplace',
-    after: 'Cukup 1 admin dengan sistem terintegrasi',
+    client: 'Skenario: Online Shop dengan Produk Bundle',
+    industry: 'Fashion / Consumer Goods',
+    headline: 'Kelola bundle & komponen tanpa ribet',
+    before: 'Jual paket produk tapi stok komponen dihitung manual, sering salah',
+    after: 'Bundle terjual → stok semua komponen otomatis berkurang',
     results: [
-      'Hemat biaya operasional 70%',
-      'Order processing 3x lebih cepat',
-      'Sync 5 marketplace otomatis',
-      'Zero double selling'
+      'Product composition otomatis',
+      'Stok komponen selalu akurat',
+      'Cost breakdown per bundle lengkap',
+      'Incoming goods tracking terpusat'
     ],
-    investment: 'Professional Plan',
-    roi: 'Hemat 2 gaji admin/bulan'
+    investment: 'Early Access',
+    roi: 'Eliminasi kesalahan stok manual'
   }
 ];
 
@@ -222,14 +222,14 @@ export default function InvestasiClient() {
         <section className="py-16 md:py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
             <Badge variant="success" className="mb-3">
-              FREE TRIAL 14 HARI
+              EARLY ACCESS
             </Badge>
             <H1 className="mb-4">
-              Pricing Transparan untuk Setiap Skala Bisnis
+              Harga Spesial untuk Early Adopters
             </H1>
             <Lead className="max-w-3xl mx-auto">
-              Mulai dari UMKM hingga enterprise, pilih paket yang sesuai dengan kebutuhan Anda. 
-              Tanpa biaya setup, tanpa hidden cost. Upgrade atau downgrade kapan saja.
+              Bergabung sekarang dan dapatkan harga early adopter yang di-lock selamanya.
+              Tanpa biaya setup, tanpa hidden cost. Hubungi kami untuk detail.
             </Lead>
           </div>
         </section>
@@ -439,8 +439,8 @@ export default function InvestasiClient() {
               <Badge variant="secondary" className="mb-3">
                 SUCCESS STORIES
               </Badge>
-              <H2 className="mb-3">ROI Terbukti dalam Hitungan Bulan</H2>
-              <P>Lihat bagaimana bisnis lain meningkatkan efisiensi dengan Tokoflow</P>
+              <H2 className="mb-3">Skenario Penggunaan Tokoflow</H2>
+              <P>Bagaimana Tokoflow membantu menyelesaikan masalah inventory & profit tracking</P>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -606,8 +606,8 @@ export default function InvestasiClient() {
             </H2>
                 
             <P className="text-white/70 max-w-2xl mx-auto mb-8">
-              Join 500+ UMKM yang sudah menghemat waktu dan meningkatkan profit dengan Tokoflow. 
-              Free trial 14 hari untuk test dengan data real Anda.
+              Bergabung dengan program Early Access Tokoflow.
+              Free trial 14 hari untuk test dengan data real Anda. Harga early adopter di-lock selamanya.
             </P>
             
             <Card className="bg-white/10 border-0 p-6 max-w-md mx-auto mb-8">

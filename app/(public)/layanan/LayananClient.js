@@ -100,105 +100,105 @@ export default function LayananClient() {
     {
       icon: Package,
       title: "Inventory Management",
-      pricing: "Mulai 299rb/bln",
+      pricing: "Early Access",
       description:
-        "Kelola stok multi-SKU dengan tracking real-time, alert stok minimum, dan manajemen bundle produk.",
+        "Kelola stok multi-SKU dengan tracking real-time, catat barang masuk, dan manajemen bundle produk.",
       features: [
         "Real-time Stock Tracking",
-        "Multi-warehouse Support",
-        "Stock Alert & Notification",
+        "Incoming Goods Management",
+        "Stock Adjustment & Audit Trail",
         "Bundle Product Management",
-        "Barcode Scanner (Mobile App)",
+        "SKU-based Product Catalog",
       ],
-      highlight: "Cocok untuk: UMKM dengan 100-1000 SKU",
+      highlight: "Cocok untuk: UMKM dengan 100-1000+ SKU",
     },
     {
       icon: ShoppingCart,
       title: "Multi-channel Sales",
-      pricing: "Mulai 599rb/bln",
+      pricing: "Early Access",
       description:
-        "Sinkronisasi penjualan dari Shopee, Tokopedia, TikTok Shop dalam satu dashboard. Fee otomatis terhitung.",
+        "Catat penjualan dari Shopee, Tokopedia, TikTok Shop dalam satu dashboard. Fee per channel otomatis terhitung.",
       features: [
-        "Marketplace Integration",
-        "Centralized Order Management",
-        "Auto Fee Calculation",
+        "Auto Fee Calculation per Channel",
         "Channel Performance Analytics",
-        "Stock Sync Across Channels",
+        "Per-transaction Profit Tracking",
+        "Sales History & CSV Export",
+        "Marketplace API Sync (Segera Hadir)",
       ],
       highlight: "Cocok untuk: Online shop multi-channel",
     },
     {
       icon: BarChart2,
-      title: "Business Intelligence",
-      pricing: "Custom Pricing",
+      title: "Profit Analytics",
+      pricing: "Early Access",
       description:
-        "Analytics mendalam dengan profit calculation, sales forecast, dan business insights untuk growth optimal.",
+        "Hitung profit bersih otomatis dengan detail: modal, packing, fee marketplace, dan affiliate per transaksi.",
       features: [
         "Real-time Profit Dashboard",
+        "Cost Breakdown per SKU",
+        "Channel Margin Comparison",
+        "Product Performance Ranking",
         "Sales Trend Analysis",
-        "Product Performance Report",
-        "Customer Behavior Analytics",
-        "Predictive Inventory Planning",
       ],
-      highlight: "Cocok untuk: Bisnis dengan omzet 50jt+/bulan",
+      highlight: "Cocok untuk: Bisnis yang mau tahu profit sebenarnya",
     },
   ];
 
   // Portfolio data for Tokoflow implementations
   const portfolioSection = {
-    title: "Success Stories",
-    subtitle: "Implementasi Tokoflow di Berbagai Bisnis",
-    description: "Lihat bagaimana Tokoflow membantu UMKM dan online shop meningkatkan efisiensi operasional.",
+    title: "Skenario Penggunaan",
+    subtitle: "Bagaimana Tokoflow Membantu Berbagai Bisnis",
+    description: "Lihat bagaimana fitur Tokoflow bisa menyelesaikan masalah inventory dan profit tracking di berbagai jenis bisnis.",
     projects: [
       {
-        name: "Toko Elektronik Jaya Abadi",
-        type: "Retail Electronics",
-        category: "Inventory + Multi-channel",
-        headline: "Dari Catat Manual ke Dashboard Real-time!",
-        description: "Transformasi dari pencatatan manual ke sistem inventory otomatis. Stok tersinkronisasi real-time antara toko offline dan 3 marketplace (Shopee, Tokopedia, TikTok Shop). Sales naik 40% karena tidak pernah kehabisan stok produk best seller.",
-        landingImage: "/portfolio/tokoflow-electronics.png",
-        systemImage: "/portfolio/tokoflow-dashboard.png",
+        name: "Toko Retail Multi-channel",
+        type: "Retail / E-commerce",
+        category: "Inventory + Profit Tracking",
+        headline: "Dari spreadsheet ke dashboard profit otomatis",
+        description: "UMKM dengan ratusan SKU yang jualan di beberapa marketplace bisa track stok real-time dan hitung profit bersih per transaksi otomatis. Fee marketplace berbeda per channel? Tokoflow hitung semua — modal, packing, fee, affiliate — jadi profit sebenarnya selalu terlihat.",
+        landingImage: "/images/hero.PNG",
+        systemImage: "/images/hero.PNG",
         landingLabel: "Dashboard Overview",
-        systemLabel: "Real-time Inventory",
-        features: ["Multi-channel Sync", "Stock Alert", "Profit Analytics", "Barcode Scanner"],
+        systemLabel: "Profit Analytics",
+        features: ["Auto Fee Calculation", "Real-time Stock", "Profit per Channel", "CSV Export"],
         results: {
-          salesIncrease: "40%",
-          stockAccuracy: "99.5%",
-          timeReduction: "70%"
+          keuntungan: "Profit terlihat jelas",
+          stok: "Real-time update",
+          waktu: "Rekap otomatis"
         }
       },
       {
-        name: "Fashion Online Shop",
-        type: "Fashion E-commerce",
-        category: "Sales Analytics",
-        headline: "Multi-channel Jadi Mudah: Shopee, Tokped, TikTok!",
-        description: "Sebelumnya butuh 3 admin untuk handle 3 marketplace. Dengan Tokoflow, cukup 1 admin karena semua order masuk ke satu sistem. Fee marketplace otomatis terhitung, profit per channel jelas. Hemat biaya operasional 70%.",
-        landingImage: "/portfolio/tokoflow-fashion.png",
-        systemImage: "/portfolio/tokoflow-multichannel.png",
-        landingLabel: "Order Management",
-        systemLabel: "Channel Analytics",
-        features: ["Centralized Orders", "Auto Fee Calculation", "Channel Comparison", "Bulk Update"],
+        name: "Online Shop dengan Produk Bundle",
+        type: "Fashion / Consumer Goods",
+        category: "Product Compositions",
+        headline: "Kelola bundle & komponen tanpa ribet",
+        description: "Bisnis yang jual produk bundle/paket bisa setup komposisi produk — saat bundle terjual, stok semua komponen otomatis berkurang. Tidak perlu lagi hitung manual stok komponen satu per satu.",
+        landingImage: "/images/hero.PNG",
+        systemImage: "/images/hero.PNG",
+        landingLabel: "Bundle Setup",
+        systemLabel: "Component Tracking",
+        features: ["Product Compositions", "Auto Stock Deduction", "Cost per Bundle", "Incoming Goods"],
         results: {
-          costReduction: "70%",
-          orderProcessing: "3x faster",
-          channels: "5 marketplaces"
+          keuntungan: "Zero kesalahan stok",
+          stok: "Auto-update komponen",
+          waktu: "Setup sekali, jalan terus"
         }
       },
       {
-        name: "Distributor Produk Kesehatan",
-        type: "B2B Distribution",
-        category: "Business Intelligence",
-        headline: "Profit Margin Jelas, Keputusan Bisnis Tepat!",
-        description: "Dengan detail cost breakdown (modal, packing, fee, affiliate), owner bisa identifikasi produk high-margin dan channel paling efisien. Fokus pada produk profitable, stop produk rugi. Net profit naik 60% dalam 6 bulan.",
-        landingImage: "/portfolio/tokoflow-distributor.png",
-        systemImage: "/portfolio/tokoflow-analytics.png",
-        landingLabel: "Profit Analysis",
-        systemLabel: "Product Performance",
-        features: ["Cost Breakdown", "Margin Analysis", "Sales Forecast", "Decision Support"],
+        name: "Distributor & Grosir",
+        type: "B2B / Distribution",
+        category: "Cost Management",
+        headline: "Detail biaya per SKU, margin per channel",
+        description: "Set cost breakdown lengkap per produk — modal, biaya packing, persentase affiliate. Setiap penjualan langsung terlihat margin bersihnya. Identifikasi produk high-margin untuk di-push dan produk yang perlu di-review pricing-nya.",
+        landingImage: "/images/hero.PNG",
+        systemImage: "/images/hero.PNG",
+        landingLabel: "Cost Configuration",
+        systemLabel: "Margin Analysis",
+        features: ["Cost Breakdown per SKU", "Margin Analysis", "Channel Comparison", "Stock Adjustments"],
         results: {
-          profitIncrease: "60%",
-          productOptimization: "25 SKU cut",
-          dataAccuracy: "100%"
+          keuntungan: "Margin per SKU jelas",
+          stok: "Adjustment audit trail",
+          waktu: "Data-driven decisions"
         }
       }
     ]
@@ -459,8 +459,8 @@ export default function LayananClient() {
                 Siap Tingkatkan Efisiensi Operasional Bisnis Anda?
               </H2>
               <P className="text-white/70 max-w-2xl mx-auto mb-8">
-                Free trial 14 hari untuk semua fitur. Konsultasi gratis untuk analisis kebutuhan bisnis Anda. 
-                Tim support lokal siap membantu implementasi.
+                Free trial 14 hari untuk semua fitur. Konsultasi gratis untuk analisis kebutuhan bisnis Anda.
+                Direct support dari developer.
               </P>
             </div>
 
