@@ -345,12 +345,12 @@ export default function TentangClient() {
               </H2>
               <P className="text-white/70 max-w-2xl mx-auto mb-8">
                 Bergabung dengan program Early Access Tokoflow.
-                Free trial 14 hari, no credit card required. Harga spesial untuk early adopters.
+                Gratis selama program berjalan, tanpa kartu kredit. Harga spesial selamanya untuk early adopters.
               </P>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" variant="secondary" asChild>
                   <Link href="/register" className="inline-flex items-center">
-                    Start Free Trial
+                    Daftar Early Access
                   </Link>
                 </Button>
                 <Button size="lg" variant="ghost" asChild className="bg-white/10 hover:bg-white/20">

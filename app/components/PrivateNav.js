@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "../hooks/useAuthSimple";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Bell } from "lucide-react";
 import {
   Menu,
   X,
@@ -18,21 +19,66 @@ import {
   DollarSign,
   Store,
   ClipboardList,
-  GitBranch
+  GitBranch,
+  Users,
+  Shield,
+  Warehouse as WarehouseIcon,
+  ScanLine
 } from "lucide-react";
 
 const PrivateNav = () => {
   const pathname = usePathname();
-  const { user, signOut } = useAuth();
+  const { user, session, profile, signOut } = useAuth();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [unreadAlerts, setUnreadAlerts] = useState(0);
+  const isOwner = profile?.role === 'owner';
+
+  // Poll the alert count every 60s. Cheap call (LEFT JOIN against ~500 rows max)
+  // and ETag-supported, so most requests will 304.
+  useEffect(() => {
+    if (!session?.access_token) return;
+    let cancelled = false;
+    const tick = async () => {
+      try {
+        const res = await fetch("/api/alerts", {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+        if (!res.ok) return;
+        const j = await res.json();
+        if (!cancelled && j.success) {
+          setUnreadAlerts(j.data?.counts?.unread || 0);
+        }
+      } catch {
+        // ignore — bell just stays at last known value
+      }
+    };
+    tick();
+    const id = setInterval(tick, 60_000);
+    return () => { cancelled = true; clearInterval(id); };
+  }, [session?.access_token, pathname]);
 
   const handleSignOut = async () => {
     await signOut();
     router.push("/login");
   };
 
-  const menuStructure = [
+  // Routes that staff shouldn't see in the nav (they can't write to them
+  // anyway — the API gates return 403). Hide them so the UI doesn't dangle.
+  // Matched by startsWith so '/admin/users' is gated by '/admin'.
+  // NOTE: '/marketplace' is the integration page (owner only). Be careful
+  // not to confuse with '/marketplace-fees'.
+  const OWNER_ONLY_PREFIXES = [
+    '/marketplace-fees',
+    '/marketplace',
+    '/product-costs',
+    '/admin',
+    '/warehouses',
+  ];
+  const isOwnerOnly = (href) =>
+    OWNER_ONLY_PREFIXES.some(p => href === p || href.startsWith(p + '/'));
+
+  const rawMenu = [
     {
       type: 'single',
       name: "Dashboard",
@@ -55,8 +101,10 @@ const PrivateNav = () => {
       name: "Sales & Orders",
       icon: ShoppingCart,
       items: [
-        { name: "Sales Input", href: "/sales", icon: ShoppingCart },
-        { name: "Sales History", href: "/sales-history", icon: FileText }
+        { name: "Sales Input",   href: "/sales",         icon: ShoppingCart },
+        { name: "Scanner",       href: "/scanner",       icon: ScanLine },
+        { name: "Sales History", href: "/sales-history", icon: FileText },
+        { name: "Customers",     href: "/customers",     icon: Users }
       ]
     },
     {
@@ -78,8 +126,36 @@ const PrivateNav = () => {
       items: [
         { name: "Marketplace Fees", href: "/marketplace-fees", icon: Store }
       ]
+    },
+    {
+      type: 'category',
+      key: 'admin',
+      name: "Admin",
+      icon: Shield,
+      items: [
+        { name: "Warehouses",      href: "/warehouses",    icon: WarehouseIcon },
+        { name: "Marketplace",     href: "/marketplace",   icon: Store },
+        { name: "User Management", href: "/admin/users",   icon: Users }
+      ]
     }
   ];
+
+  // Filter the menu for the current role. For staff: drop owner-only items
+  // and any category that becomes empty as a result.
+  const menuStructure = isOwner
+    ? rawMenu
+    : rawMenu
+        .map(section => {
+          if (section.type === 'single') {
+            return isOwnerOnly(section.href) ? null : section;
+          }
+          if (section.type === 'category') {
+            const items = section.items.filter(it => !isOwnerOnly(it.href));
+            return items.length > 0 ? { ...section, items } : null;
+          }
+          return section;
+        })
+        .filter(Boolean);
 
   return (
     <>
@@ -93,7 +169,18 @@ const PrivateNav = () => {
             {isSidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
           <h1 className="text-xl font-bold text-gray-900">TokoFlow</h1>
-          <div className="w-10" /> {/* Spacer for centering */}
+          <Link
+            href="/inventory?filter=alert"
+            className="relative p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+            title="Stok perlu perhatian"
+          >
+            <Bell className="h-5 w-5" />
+            {unreadAlerts > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center min-w-[1.1rem] h-[1.1rem] px-1 text-[10px] font-semibold leading-none text-white bg-red-500 rounded-full">
+                {unreadAlerts > 99 ? '99+' : unreadAlerts}
+              </span>
+            )}
+          </Link>
         </div>
       </div>
 
@@ -116,8 +203,20 @@ const PrivateNav = () => {
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="hidden lg:flex items-center justify-center h-16 px-4 border-b border-gray-200">
+          <div className="hidden lg:flex items-center justify-between h-16 px-4 border-b border-gray-200">
             <h1 className="text-2xl font-bold text-gray-900">TokoFlow</h1>
+            <Link
+              href="/inventory?filter=alert"
+              className="relative p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+              title="Stok perlu perhatian"
+            >
+              <Bell className="h-5 w-5" />
+              {unreadAlerts > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center min-w-[1.1rem] h-[1.1rem] px-1 text-[10px] font-semibold leading-none text-white bg-red-500 rounded-full">
+                  {unreadAlerts > 99 ? '99+' : unreadAlerts}
+                </span>
+              )}
+            </Link>
           </div>
 
           {/* Navigation */}

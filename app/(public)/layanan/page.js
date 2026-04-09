@@ -4,12 +4,12 @@ import LayananClient from './LayananClient';
 
 // SEO Metadata with inventory/sales focus
 export const metadata = {
-  title: 'Layanan Sistem Inventory, Sales Dashboard & Multi-channel Integration - Tokoflow',
-  description: 'Solusi lengkap manajemen inventory dan penjualan: Real-time dashboard, integrasi marketplace, laporan profit otomatis. Jakarta, Surabaya, Bandung. Demo gratis!',
-  keywords: 'sistem inventory jakarta, dashboard penjualan indonesia, integrasi marketplace, manajemen stok online, multi-channel selling',
+  title: 'Layanan Sistem Inventory, Sales Dashboard & Multi-channel Tracking - Tokoflow',
+  description: 'Solusi manajemen inventory dan penjualan untuk UMKM Indonesia: real-time dashboard, multi-channel sales tracking, profit calculator otomatis. Sedang dalam program Early Access — demo gratis via WhatsApp.',
+  keywords: 'sistem inventory jakarta, dashboard penjualan indonesia, manajemen stok online, multi-channel selling, profit calculator',
   openGraph: {
-    title: 'Layanan Inventory & Sales Management Lengkap - Tokoflow',
-    description: 'Sistem inventory real-time, dashboard penjualan, integrasi marketplace. Partner digital UMKM Indonesia. ROI terbukti. Free trial!',
+    title: 'Layanan Inventory & Sales Management - Tokoflow',
+    description: 'Sistem inventory real-time, dashboard penjualan multi-channel, profit calculator otomatis. Sedang dalam program Early Access untuk UMKM Indonesia.',
     type: 'website',
   },
 };

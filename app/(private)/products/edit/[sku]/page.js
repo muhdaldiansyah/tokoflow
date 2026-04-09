@@ -13,7 +13,7 @@ export default async function EditProductPage({ params }) {
     // Step 1: Get product ID from SKU (fast with index)
     const { data: productData, error: productError } = await supabase
       .from('tf_products')
-      .select('id, sku, name, stock, created_at, updated_at')
+      .select('id, sku, name, stock, low_stock_threshold, stock_status, created_at, updated_at')
       .eq('sku', decodedSku)
       .single();
 

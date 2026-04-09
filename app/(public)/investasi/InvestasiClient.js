@@ -1,7 +1,7 @@
 // app/investasi/InvestasiClient.js 
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import PublicNav from '../../components/PublicNav';
 import Footer from '../../components/Footer';
@@ -37,65 +37,65 @@ import {
 import { WHATSAPP_LINK } from '../../page_data';
 
 // Pricing Tiers for Tokoflow
+// Tokoflow is currently in Early Access — there is no public pricing yet.
+// This file presents 3 angles on the same offering rather than fictional tiers.
 const pricingTiers = [
   {
-    name: 'Starter',
-    price: 'Rp 299rb',
-    period: '/bulan',
-    description: 'Perfect untuk UMKM dan online shop kecil',
+    name: 'Early Access',
+    price: 'Gratis',
+    period: 'selama program',
+    description: 'Untuk merchant pertama yang membentuk Tokoflow bersama kami',
     features: [
-      'Hingga 1,000 SKU',
-      '3 User Access', 
-      'Dashboard Real-time',
-      'Multi-channel (3 marketplace)',
-      'Laporan Profit Otomatis',
-      'WhatsApp Support',
-      'Training Online',
-      'Backup Harian'
+      'Inventory + multi-warehouse tracking real-time',
+      'Multi-channel sales tracking (Shopee, Tokopedia, TikTok Shop, offline)',
+      'Profit calculator otomatis per transaksi (modal + packing + fee + affiliate)',
+      'Marketplace fee config per channel',
+      'Bundle / product composition (komponen auto-deduct)',
+      'Stock adjustments dengan audit trail',
+      'Stock alert in-app dengan threshold per produk',
+      'Customer directory + per-customer lifetime stats',
+      'Sales history dengan filter date / channel / SKU / customer',
+      'CSV export sales transactions',
+      'RBAC: owner + staff (multi-user dengan role)',
+      'PWA installable + barcode scanner via kamera HP',
+      'Direct developer support via WhatsApp'
     ],
     bgColor: 'bg-white',
     borderColor: 'border-gray-200',
     buttonColor: 'bg-gray-900 hover:bg-black text-white',
-    ctaText: 'Start Free Trial',
-    highlighted: false,
-  },
-  {
-    name: 'Professional',
-    price: 'Rp 599rb',
-    period: '/bulan',
-    description: 'Untuk bisnis yang sedang growing pesat',
-    features: [
-      'Unlimited SKU',
-      '10 User Access',
-      'Advanced Analytics',
-      'All Marketplace Integration',
-      'API Access',
-      'Priority Support',
-      'Custom Reports',
-      'Backup Real-time',
-      'Barcode Scanner App'
-    ],
-    bgColor: 'bg-gray-900',
-    borderColor: 'border-gray-900',
-    textColor: 'text-white',
-    buttonColor: 'bg-white hover:bg-gray-100 text-gray-900',
-    ctaText: 'Start Free Trial',
+    ctaText: 'Daftar Early Access',
     highlighted: true,
   },
   {
-    name: 'Enterprise',
-    price: 'Custom',
-    period: 'pricing',
-    description: 'Solusi lengkap untuk perusahaan besar',
+    name: 'Pasca Early Access',
+    price: 'TBA',
+    period: '',
+    description: 'Setelah program Early Access berakhir',
     features: [
-      'Everything in Professional',
-      'Unlimited Users',
-      'Custom Integration',
-      'Dedicated Account Manager',
-      'On-premise Option',
-      'SLA 99.9% Uptime',
-      'Training On-site',
-      'Custom Development'
+      'Pricing publik akan diumumkan setelah program EA berakhir',
+      'Early adopter akan mendapat harga spesial yang di-lock selamanya',
+      'Tidak ada penalty atau biaya transisi',
+      'Semua fitur Early Access tetap tersedia',
+      'Plus fitur baru yang sedang dikembangkan',
+      'Roadmap fitur dishare ke early adopter'
+    ],
+    bgColor: 'bg-white',
+    borderColor: 'border-gray-200',
+    buttonColor: 'bg-white hover:bg-gray-100 text-gray-900 border border-gray-300',
+    ctaText: 'Daftar Early Access',
+    highlighted: false,
+  },
+  {
+    name: 'Custom',
+    price: 'Hubungi',
+    period: 'kami',
+    description: 'Kebutuhan spesifik di luar fitur standard',
+    features: [
+      'Custom development sesuai kebutuhan',
+      'Konsultasi langsung dengan developer',
+      'Integrasi dengan sistem existing',
+      'Migration data dari sistem lama',
+      'Scope dan harga didiskusikan per project'
     ],
     bgColor: 'bg-white',
     borderColor: 'border-gray-200',
@@ -142,77 +142,108 @@ const caseStudies = [
 // What's Included & Not Included
 const inclusionDetails = {
   included: [
-    'Setup awal & data migration',
-    'Training online untuk tim',
-    'Template laporan siap pakai',
-    'Integrasi marketplace populer',
-    'Mobile app access',
-    'Update fitur reguler',
-    'Support via WhatsApp',
-    'Backup & security'
+    'Setup awal & data migration dari Excel/CSV',
+    'Walkthrough penggunaan via WhatsApp',
+    'Inventory & sales engine lengkap',
+    'Profit calculator otomatis per transaksi',
+    'Multi-channel sales tracking (manual entry per channel)',
+    'Update fitur reguler berdasarkan feedback',
+    'Direct developer support via WhatsApp',
+    'Backup otomatis (Supabase managed)'
   ],
   notIncluded: [
-    'Custom development khusus',
-    'Integrasi ERP/sistem legacy',
-    'Training on-site',
-    'Dedicated server',
-    'Custom report beyond template'
+    'Marketplace API auto-sync (sedang dikembangkan)',
+    'Mobile app native dengan barcode scanner (sedang dikembangkan)',
+    'Multi-warehouse / multi-lokasi (sedang dikembangkan)',
+    'Role-based access untuk multi-user (sedang dikembangkan)',
+    'Custom development di luar fitur standard',
+    'Integrasi ERP / sistem legacy'
   ]
 };
 
 // FAQ Data - Tokoflow Focus
 const pricingFAQ = [
   {
-    question: 'Apa perbedaan utama antara setiap paket?',
-    answer: 'Starter cocok untuk UMKM dengan <1000 SKU dan 1-3 marketplace. Professional untuk bisnis growing dengan unlimited SKU dan semua marketplace. Enterprise untuk perusahaan besar yang butuh custom integration dan dedicated support. Semua paket include core features seperti inventory tracking dan profit calculation.'
+    question: 'Berapa biaya Tokoflow saat ini?',
+    answer: 'Tokoflow saat ini dalam program Early Access — gratis selama program berjalan untuk merchant pertama yang mau membentuk produk ini bersama kami. Pricing publik akan diumumkan setelah program EA berakhir, dan early adopter akan mendapat harga spesial yang di-lock selamanya.'
   },
   {
     question: 'Apakah ada biaya setup atau hidden cost?',
-    answer: 'Tidak ada biaya setup atau hidden cost. Harga yang tertera adalah all-in: software, hosting, support, dan update. Yang tidak termasuk hanya custom development di luar fitur standard dan integrasi dengan sistem legacy yang kompleks.'
+    answer: 'Tidak ada biaya setup atau hidden cost selama Early Access. Software, hosting, support, dan update semuanya included. Yang tidak termasuk hanya custom development di luar fitur standard dan integrasi dengan sistem legacy yang kompleks.'
   },
   {
     question: 'Bagaimana dengan data migration dari sistem lama?',
-    answer: 'Semua paket include data migration gratis untuk format standard (Excel, CSV). Kami bantu import data SKU, stok awal, supplier, dan customer. Untuk migration dari software khusus mungkin ada biaya tambahan tergantung kompleksitas.'
+    answer: 'Migration data dari format standard (Excel, CSV) gratis. Kami bantu import data SKU dan stok awal. Untuk migration dari software khusus mungkin ada effort tambahan tergantung kompleksitas — kita diskusikan langsung via WhatsApp.'
   },
   {
-    question: 'Bisa trial dulu sebelum berlangganan?',
-    answer: 'Ya! Free trial 14 hari untuk semua fitur tanpa perlu kartu kredit. Anda bisa test dengan data real, training tim, dan pastikan cocok dengan workflow bisnis Anda. Setelah trial, baru putuskan untuk lanjut atau tidak.'
+    question: 'Bagaimana cara mulai pakai Tokoflow?',
+    answer: 'Daftar Early Access via halaman register, lalu hubungi kami via WhatsApp untuk onboarding. Tidak perlu kartu kredit. Anda bisa mulai pakai dengan data real Anda, kami bantu setup dan training tim langsung dari developer.'
   },
   {
-    question: 'Apakah bisa upgrade/downgrade paket?',
-    answer: 'Sangat fleksibel! Upgrade bisa kapan saja dan langsung aktif. Downgrade bisa di akhir periode billing. Tidak ada penalty atau biaya tambahan. Data Anda tetap aman saat pindah paket.'
+    question: 'Setelah Early Access selesai, gimana?',
+    answer: 'Early adopter akan diberi notifikasi paling awal sebelum pricing publik diumumkan, dan akan mendapat harga spesial yang di-lock selamanya. Tidak ada penalty atau biaya transisi. Data Anda tetap aman dan tidak ada vendor lock-in.'
   },
   {
     question: 'Bagaimana jika butuh fitur yang belum ada?',
-    answer: 'Kami update fitur setiap bulan berdasarkan request user. Fitur populer biasanya masuk dalam 1-2 bulan. Untuk kebutuhan sangat spesifik, tersedia custom development dengan biaya terpisah atau pertimbangkan paket Enterprise.'
+    answer: 'Kami update fitur secara reguler berdasarkan feedback user Early Access. Roadmap fitur dishare ke early adopter — Anda bisa influence apa yang dibangun duluan. Untuk kebutuhan sangat spesifik, tersedia custom development dengan scope dan harga didiskusikan per project.'
   },
   {
     question: 'Apakah data saya aman di Tokoflow?',
-    answer: 'Keamanan adalah prioritas utama. Data di-encrypt, backup otomatis tiap jam, server di Google Cloud Indonesia, dan comply dengan regulasi data protection. Anda juga bisa export semua data kapan saja - no vendor lock-in.'
+    answer: 'Data di-encrypt, backup otomatis (Supabase managed), dan Anda bisa export semua data kapan saja — no vendor lock-in. Akses terlindungi dengan autentikasi per user.'
   },
   {
     question: 'Support seperti apa yang didapatkan?',
-    answer: 'Starter: WhatsApp support office hours. Professional: Priority support dengan response <2 jam. Enterprise: Dedicated account manager + 24/7 support. Semua paket dapat video tutorial dan knowledge base lengkap.'
+    answer: 'Selama Early Access semua user mendapat direct developer support via WhatsApp — bukan bot, bukan CS scripted. Anda bisa langsung diskusi dengan orang yang membangun Tokoflow.'
   }
 ];
 
 // Feature comparison data
+// Tokoflow is in Early Access — there's only one offering. Each feature is
+// either available now (true), planned (string), or not in scope yet (false).
+// The table renderer below was originally tier-based; we render the same
+// rows but the "Starter / Professional / Enterprise" columns now read as
+// "Tersedia Sekarang / Sedang Dikembangkan / Belum Ada".
 const featureComparison = [
-  { feature: 'SKU Management', starter: 'Up to 1,000', professional: 'Unlimited', enterprise: 'Unlimited' },
-  { feature: 'User Access', starter: '3 users', professional: '10 users', enterprise: 'Unlimited' },
-  { feature: 'Marketplace Integration', starter: '3 channels', professional: 'All channels', enterprise: 'All + Custom' },
-  { feature: 'Report Templates', starter: 'Basic (5)', professional: 'Advanced (20+)', enterprise: 'Custom Reports' },
-  { feature: 'API Access', starter: false, professional: true, enterprise: true },
-  { feature: 'Mobile App', starter: 'View only', professional: 'Full access', enterprise: 'Full + Custom' },
-  { feature: 'Data Backup', starter: 'Daily', professional: 'Real-time', enterprise: 'Real-time + Archive' },
-  { feature: 'Support', starter: 'Office hours', professional: 'Priority', enterprise: '24/7 Dedicated' },
+  // INVENTORY
+  { feature: 'Inventory tracking real-time',                  starter: true,  professional: 'Sudah jalan', enterprise: '—' },
+  { feature: 'Multi-warehouse / cabang',                       starter: true,  professional: 'Sudah jalan (1 produk = 1 warehouse)', enterprise: '—' },
+  { feature: 'Stock alert dengan threshold per produk',        starter: true,  professional: 'Sudah jalan', enterprise: '—' },
+  { feature: 'Stock alert notification (in-app bell)',         starter: true,  professional: 'Sudah jalan', enterprise: '—' },
+  { feature: 'Product compositions / bundle',                  starter: true,  professional: 'Sudah jalan', enterprise: '—' },
+  { feature: 'Stock adjustments + audit trail',                starter: true,  professional: 'Sudah jalan', enterprise: '—' },
+  { feature: 'Incoming goods tracking',                        starter: true,  professional: 'Sudah jalan', enterprise: '—' },
+
+  // SALES & PROFIT
+  { feature: 'Sales input multi-channel',                      starter: true,  professional: 'Sudah jalan', enterprise: '—' },
+  { feature: 'Profit calculator per transaksi (full breakdown)', starter: true, professional: 'Sudah jalan', enterprise: '—' },
+  { feature: 'Marketplace fee config per channel',             starter: true,  professional: 'Sudah jalan', enterprise: '—' },
+  { feature: 'Sales history filter (date/channel/SKU/customer)', starter: true, professional: 'Sudah jalan', enterprise: '—' },
+  { feature: 'Group sales by channel / produk / tanggal',      starter: true,  professional: 'Sudah jalan', enterprise: '—' },
+  { feature: 'CSV export sales',                                starter: true,  professional: 'Sudah jalan', enterprise: '—' },
+
+  // CUSTOMER
+  { feature: 'Customer directory + lifetime stats',            starter: true,  professional: 'Sudah jalan', enterprise: '—' },
+  { feature: 'Per-customer sales history drill-down',          starter: true,  professional: 'Sudah jalan', enterprise: '—' },
+  { feature: 'Top customers card di dashboard',                starter: true,  professional: 'Sudah jalan', enterprise: '—' },
+
+  // MULTI-USER
+  { feature: 'RBAC owner / staff',                              starter: true,  professional: 'Sudah jalan', enterprise: '—' },
+  { feature: 'User management (promote / demote)',             starter: true,  professional: 'Sudah jalan', enterprise: '—' },
+
+  // MOBILE / PWA
+  { feature: 'PWA installable (Add to Home Screen)',           starter: true,  professional: 'Sudah jalan', enterprise: '—' },
+  { feature: 'Barcode scanner via kamera HP',                  starter: true,  professional: 'Sudah jalan (Chrome / Edge / Samsung Internet)', enterprise: '—' },
+
+  // SCAFFOLDED / PIPELINE
+  { feature: 'Marketplace API auto-sync (Shopee/Tokopedia/TikTok)', starter: false, professional: 'Scaffolded — butuh OAuth credentials', enterprise: '—' },
+  { feature: 'Email / WhatsApp alert delivery',                starter: false, professional: 'Pipeline — butuh SMTP/WA provider', enterprise: '—' },
+  { feature: 'Per-warehouse stock per produk (1 SKU, multi lokasi)', starter: false, professional: 'Pipeline (Tier 4)', enterprise: '—' },
+  { feature: 'Payment / Midtrans subscription',                 starter: false, professional: 'Pipeline — feature-flagged off', enterprise: '—' },
+  { feature: 'Multi-tenancy (multiple merchants per install)', starter: false, professional: 'Pipeline (Tier 4)', enterprise: '—' },
 ];
 
 // Main Page Component
 export default function InvestasiClient() {
-  const [billingCycle, setBillingCycle] = useState('monthly');
-  const [selectedFeatures, setSelectedFeatures] = useState([]);
-
   return (
     <div className="min-h-screen flex flex-col bg-white text-gray-700 overflow-x-hidden">
       <PublicNav />
@@ -231,37 +262,6 @@ export default function InvestasiClient() {
               Bergabung sekarang dan dapatkan harga early adopter yang di-lock selamanya.
               Tanpa biaya setup, tanpa hidden cost. Hubungi kami untuk detail.
             </Lead>
-          </div>
-        </section>
-
-        {/* Billing Toggle */}
-        <section className="pb-8 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="flex justify-center">
-              <div className="bg-gray-100 p-1 rounded-lg inline-flex">
-                <button
-                  onClick={() => setBillingCycle('monthly')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    billingCycle === 'monthly' 
-                      ? 'bg-white text-gray-900 shadow-sm' 
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  Bulanan
-                </button>
-                <button
-                  onClick={() => setBillingCycle('annual')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    billingCycle === 'annual' 
-                      ? 'bg-white text-gray-900 shadow-sm' 
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  Tahunan
-                  <Badge variant="success" className="ml-2">Hemat 20%</Badge>
-                </button>
-              </div>
-            </div>
           </div>
         </section>
 
@@ -292,11 +292,7 @@ export default function InvestasiClient() {
                         </span>
                       )}
                     </div>
-                    {billingCycle === 'annual' && tier.price !== 'Custom' && (
-                      <p className="text-xs text-green-600 mt-1">
-                        Save {tier.name === 'Starter' ? 'Rp 719rb' : 'Rp 1.439rb'}/tahun
-                      </p>
-                    )}
+                    {/* Annual savings hint removed — Tokoflow is in Early Access, no billing cycle yet. */}
                   </div>
 
                   <P className={`mb-6 text-sm text-center ${tier.textColor ? 'text-white/80' : ''}`}>
@@ -378,13 +374,10 @@ export default function InvestasiClient() {
               <table className="w-full bg-white rounded-lg overflow-hidden shadow-sm">
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-900">Features</th>
-                    <th className="px-6 py-4 text-center text-sm font-medium text-gray-900">Starter</th>
-                    <th className="px-6 py-4 text-center text-sm font-medium text-gray-900">
-                      Professional
-                      <Badge variant="secondary" className="ml-2">Popular</Badge>
-                    </th>
-                    <th className="px-6 py-4 text-center text-sm font-medium text-gray-900">Enterprise</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-900">Fitur</th>
+                    <th className="px-6 py-4 text-center text-sm font-medium text-gray-900">Tersedia Sekarang</th>
+                    <th className="px-6 py-4 text-center text-sm font-medium text-gray-900">Status</th>
+                    <th className="px-6 py-4 text-center text-sm font-medium text-gray-900">Catatan</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -599,35 +592,35 @@ export default function InvestasiClient() {
           <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
             <Badge className="mb-4 bg-white/10 text-white border-0">
               <MessageSquare className="w-3 h-3 mr-1" />
-              NO CREDIT CARD REQUIRED
+              GRATIS SELAMA EARLY ACCESS
             </Badge>
             <H2 className="text-white mb-4">
               Siap Tingkatkan Efisiensi Bisnis Anda?
             </H2>
-                
+
             <P className="text-white/70 max-w-2xl mx-auto mb-8">
               Bergabung dengan program Early Access Tokoflow.
-              Free trial 14 hari untuk test dengan data real Anda. Harga early adopter di-lock selamanya.
+              Gratis selama program berjalan, tanpa kartu kredit. Harga early adopter di-lock selamanya.
             </P>
-            
+
             <Card className="bg-white/10 border-0 p-6 max-w-md mx-auto mb-8">
-              <p className="text-white mb-4">Dalam free trial, Anda dapat:</p>
+              <p className="text-white mb-4">Dalam program Early Access, Anda dapat:</p>
               <div className="space-y-2 text-left max-w-xs mx-auto">
                 <div className="flex items-center text-sm text-white/80">
                   <Check className="w-4 h-4 text-green-400 mr-2 flex-shrink-0" />
-                  Import semua data SKU & stok
+                  Import data SKU & stok dari Excel
                 </div>
                 <div className="flex items-center text-sm text-white/80">
                   <Check className="w-4 h-4 text-green-400 mr-2 flex-shrink-0" />
-                  Test integrasi marketplace
+                  Pakai semua fitur dengan data real
                 </div>
                 <div className="flex items-center text-sm text-white/80">
                   <Check className="w-4 h-4 text-green-400 mr-2 flex-shrink-0" />
-                  Training untuk seluruh tim
+                  Walkthrough langsung dari developer
                 </div>
                 <div className="flex items-center text-sm text-white/80">
                   <Check className="w-4 h-4 text-green-400 mr-2 flex-shrink-0" />
-                  Akses semua fitur premium
+                  Influence roadmap fitur berikutnya
                 </div>
               </div>
             </Card>
@@ -635,7 +628,7 @@ export default function InvestasiClient() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" variant="outline" asChild className="bg-white text-gray-900 border-white hover:bg-gray-100">
                 <Link href="/register" className="inline-flex items-center">
-                  Start Free Trial
+                  Daftar Early Access
                   <ChevronRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>

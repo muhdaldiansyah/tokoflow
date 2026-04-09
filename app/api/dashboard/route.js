@@ -55,11 +55,11 @@ export async function GET(request) {
         .select('revenue, net_profit')
         .eq('transaction_date', today),
 
-      // 3. Inventory Alerts
+      // 3. Inventory Alerts (negative + zero + low — anything needing attention)
       supabase
         .from('tf_products')
-        .select('sku, name, stock')
-        .or('stock.lt.0,stock.eq.0')
+        .select('sku, name, stock, low_stock_threshold, stock_status')
+        .in('stock_status', ['negative', 'zero', 'low'])
         .order('stock'),
 
       // 4. Pending Sales
@@ -179,9 +179,10 @@ export async function GET(request) {
       salesSummary,
       todaySales: todaySummary,
       inventoryAlerts: {
-        negativeStock: inventoryAlerts?.filter(p => p.stock < 0) || [],
-        zeroStock: inventoryAlerts?.filter(p => p.stock === 0) || [],
-        totalAlerts: inventoryAlerts?.length || 0
+        negativeStock: inventoryAlerts?.filter(p => p.stock_status === 'negative') || [],
+        zeroStock:     inventoryAlerts?.filter(p => p.stock_status === 'zero')     || [],
+        lowStock:      inventoryAlerts?.filter(p => p.stock_status === 'low')      || [],
+        totalAlerts:   inventoryAlerts?.length || 0
       },
       pendingTransactions: {
         sales: pendingSales?.length || 0,

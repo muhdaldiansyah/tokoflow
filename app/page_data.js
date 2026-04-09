@@ -1,4 +1,24 @@
-// app/page_data.js (UPDATED FOR TOKOFLOW)
+// app/page_data.js
+//
+// IN USE (imported and rendered):
+//   - useCases       → app/page.js
+//   - blogPosts      → app/page.js
+//   - faqs           → app/page.js
+//   - WHATSAPP_LINK  → app/page.js, LayananClient, TentangClient, InvestasiClient
+//   - panduanPosts   → PanduanClient
+//   - coreValues     → TentangClient
+//
+// DEAD EXPORTS — not imported anywhere; kept to avoid silent breakage if a
+// future page is wired up to them, but DO NOT render these as-is. They contain
+// pre–Early-Access marketing claims that are no longer accurate:
+//   - workshops              (mentions Google Sheets / Apps Script workshop)
+//   - coreOfferings          ("berbasis Google Sheets", "Coba Gratis 14 Hari")
+//   - platformFeatures       ("manajemen multi-gudang" — not built)
+//   - solutionsCapabilities  ("Sinkronisasi otomatis marketplace" — not built)
+//   - investmentPackages     (fictional Rp 299rb/599rb tiers, "Start Free Trial",
+//                             "SLA 99.9% Uptime", "Barcode Scanner App", etc.)
+// If you wire any of these up, rewrite the strings to match Early Access reality
+// first. See db/schema.sql + app/(private)/* for what actually exists.
 
 import React from 'react';
 import {
@@ -197,31 +217,54 @@ export const coreValues = [
   },
 ];
 
-// --- FAQ (UPDATED - E-commerce Focus) ---
+// --- FAQ ---
+// Note: app/page.js renders only the first 5 entries via .slice(0, 5).
+// The first 5 here are the most impactful for first-time visitors. The rest
+// are still useful for /panduan and AI search engines that fetch the full file.
 export const faqs = [
   {
     question: 'Apa itu Tokoflow?',
-    answer: 'Tokoflow adalah sistem manajemen inventory dan penjualan untuk UMKM dan online shop. Membantu Anda tracking stok real-time, rekap penjualan multi-channel, dan hitung profit otomatis dengan detail cost breakdown (modal, packing, fee marketplace, affiliate).',
+    answer: 'Tokoflow adalah sistem manajemen inventory dan penjualan untuk UMKM dan online shop. Membantu Anda tracking stok real-time multi-warehouse, rekap penjualan multi-channel, hitung profit otomatis dengan cost breakdown lengkap (modal, packing, fee marketplace, affiliate), tracking customer dengan lifetime stats, dan kelola tim dengan role owner / staff.',
+  },
+  {
+    question: 'Tokoflow masih dalam tahap apa? Apa saja yang sudah jalan?',
+    answer: 'Tokoflow saat ini dalam program Early Access. Yang sudah jalan: inventory + multi-warehouse, profit calculation per transaksi, multi-channel sales tracking, customer attribution dengan lifetime stats, RBAC owner/staff, stock alert in-app dengan threshold per produk, PWA installable, dan barcode scanner via kamera HP. Yang masih dalam pipeline: marketplace API auto-sync (Shopee/Tokopedia/TikTok), email/WA notification delivery, dan payment Midtrans. Kami aktif develop fitur baru berdasar feedback merchant.',
+  },
+  {
+    question: 'Apakah Tokoflow support multi-warehouse / cabang?',
+    answer: 'Ya. Anda bisa setup beberapa warehouse / cabang (mis. "Cabang Jakarta", "Cabang Surabaya"). Setiap produk milik satu warehouse — untuk SKU yang sama di 2 cabang, buat 2 produk dengan SKU berbeda (misalnya ABC-JKT dan ABC-SBY). Cocok buat merchant dengan multiple stores atau gudang kecil.',
+  },
+  {
+    question: 'Bisa pakai Tokoflow rame-rame dengan tim?',
+    answer: 'Bisa. Tokoflow punya 2 role: owner (akses penuh — bisa edit cost data, marketplace fees, hapus produk/customer, manage user) dan staff (akses operasional — input penjualan, tambah customer, cek stok, kelola incoming goods). User pertama yang daftar otomatis jadi owner. Owner bisa promote staff jadi owner lewat halaman User Management.',
+  },
+  {
+    question: 'Apakah Tokoflow bisa diakses dari HP?',
+    answer: 'Bisa. Tokoflow adalah PWA (Progressive Web App) — buka di Chrome / Safari di HP, tap "Add to Home Screen", dan Tokoflow muncul sebagai app icon di home screen tanpa perlu download dari Play Store. Sudah include barcode scanner pakai kamera HP buat lookup SKU instant ke inventory.',
   },
   {
     question: 'Berapa biaya berlangganan Tokoflow?',
-    answer: 'Saat ini Tokoflow dalam program Early Access dengan harga spesial untuk merchant pertama. Hubungi kami via WhatsApp untuk informasi harga early adopter yang akan di-lock selamanya.',
+    answer: 'Saat ini Tokoflow dalam program Early Access — gratis selama program berjalan untuk merchant pertama. Hubungi kami via WhatsApp untuk informasi harga early adopter yang akan di-lock selamanya setelah program EA berakhir.',
   },
   {
     question: 'Bagaimana cara kerja multi-channel di Tokoflow?',
-    answer: 'Anda bisa mencatat penjualan per channel (Shopee, Tokopedia, TikTok Shop, offline, dll), dan Tokoflow otomatis menghitung fee marketplace yang berbeda per channel, lalu menampilkan profit bersih per transaksi dan per channel di dashboard.',
+    answer: 'Anda bisa mencatat penjualan per channel (Shopee, Tokopedia, TikTok Shop, offline, dll). Tokoflow otomatis menghitung fee marketplace yang berbeda per channel, lalu menampilkan profit bersih per transaksi, per channel, per produk, dan per customer di dashboard.',
+  },
+  {
+    question: 'Bagaimana Tokoflow alert kalau stok menipis?',
+    answer: 'Anda bisa set threshold low-stock per produk (default 10). Begitu stok turun di bawah threshold, akan muncul notifikasi di bell icon di navigation bar dengan unread count. Anda bisa acknowledge satu per satu atau bulk. Alert otomatis hilang saat stok dikembalikan ke normal — tidak perlu reset manual.',
+  },
+  {
+    question: 'Apakah Tokoflow bisa sync otomatis dengan Shopee / Tokopedia / TikTok Shop?',
+    answer: 'Saat ini sync otomatis ke marketplace API masih dalam tahap scaffolding — schema, OAuth flow, dan UI sudah siap, tapi butuh credentials platform (Shopee partner account, dll) dan implementasi OAuth callback final. Untuk sekarang, penjualan dari marketplace di-input manual lewat halaman /sales atau /scanner.',
   },
   {
     question: 'Bagaimana dengan keamanan data?',
-    answer: 'Data Anda tersimpan di cloud infrastructure dengan enkripsi standar industri dan backup otomatis. Akses terlindungi dengan autentikasi per user.',
+    answer: 'Data Anda tersimpan di Supabase (Postgres) dengan enkripsi at-rest, backup otomatis, dan akses terlindungi dengan Row Level Security plus role-based access control. Anda bisa export semua data kapan saja — no vendor lock-in.',
   },
   {
     question: 'Apakah perlu technical skill untuk pakai Tokoflow?',
     answer: 'Tidak perlu! Tokoflow didesain user-friendly. Interface-nya intuitif dan support langsung dari developer via WhatsApp — bukan bot atau CS scripted.',
-  },
-  {
-    question: 'Tokoflow masih dalam tahap apa?',
-    answer: 'Tokoflow saat ini dalam program Early Access. Core features (inventory tracking, profit calculation, multi-channel analytics) sudah berjalan. Kami aktif mengembangkan fitur baru berdasarkan feedback langsung dari merchant.',
   },
 ];
 

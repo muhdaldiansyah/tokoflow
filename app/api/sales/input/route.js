@@ -87,6 +87,7 @@ export async function POST(request) {
         selling_price: body.selling_price,
         quantity: body.quantity || null,
         channel: body.channel,
+        customer_id: body.customer_id ?? null,
         status: body.status || 'pending',
         created_by: user.id
       })

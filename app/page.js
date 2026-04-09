@@ -39,11 +39,11 @@ import { useCases, blogPosts, WHATSAPP_LINK, faqs } from "./page_data";
 // SEO Metadata
 export const metadata = {
   title: "Sistem Inventory & Penjualan Real-time | Dashboard Analytics - Tokoflow",
-  description: "Platform manajemen inventory dan penjualan untuk UMKM & online shop. Multi-channel marketplace, laporan profit otomatis, stok real-time. Free trial 14 hari!",
+  description: "Platform manajemen inventory dan penjualan untuk UMKM & online shop. Catat penjualan multi-channel, hitung profit otomatis per transaksi, pantau stok real-time. Sedang dalam program Early Access.",
   keywords: "sistem inventory, manajemen stok, dashboard penjualan, multi-channel selling, laporan profit, UMKM software",
   openGraph: {
     title: "Tokoflow - Sistem Inventory & Penjualan Terintegrasi",
-    description: "Kelola inventory dan penjualan multi-channel dengan mudah. Dashboard real-time, laporan profit otomatis, integrasi marketplace.",
+    description: "Kelola inventory dan catat penjualan multi-channel dalam satu dashboard. Profit calculator otomatis. Sedang dalam program Early Access.",
     type: "website",
     locale: "id_ID",
     url: "https://www.tokoflow.com",
@@ -60,7 +60,7 @@ export const metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Tokoflow - Sistem Inventory & Penjualan",
-    description: "Platform manajemen inventory dan penjualan untuk UMKM & online shop.",
+    description: "Platform manajemen inventory dan penjualan untuk UMKM & online shop. Sedang dalam program Early Access.",
     images: ["/images/hero.PNG"],
   },
   alternates: {
@@ -105,13 +105,14 @@ const mainServices = [
     title: "Inventory Management",
     pricing: "Early Access",
     description:
-      "Kelola stok multi-SKU dengan tracking real-time, catat barang masuk, dan manajemen bundle/paket produk.",
+      "Kelola stok multi-SKU + multi-warehouse dengan tracking real-time, alert otomatis stok menipis, dan bundle produk.",
     features: [
-      "Real-time Stock Tracking",
-      "Incoming Goods Management",
-      "Stock Adjustment & Audit Trail",
-      "Bundle Product Management",
-      "SKU-based Product Catalog",
+      "Real-time stock tracking",
+      "Multi-warehouse / cabang",
+      "Stock alert otomatis dengan threshold per produk",
+      "Incoming goods + stock adjustment audit trail",
+      "Bundle product (komponen auto-deduct)",
+      "Barcode scanner via kamera HP",
     ],
     highlight: "Cocok untuk: UMKM dengan 100-1000+ SKU",
   },
@@ -122,11 +123,12 @@ const mainServices = [
     description:
       "Catat penjualan dari Shopee, Tokopedia, TikTok Shop dalam satu dashboard. Fee per channel otomatis terhitung.",
     features: [
-      "Auto Fee Calculation per Channel",
-      "Channel Performance Analytics",
-      "Per-transaction Profit Tracking",
-      "Sales History & CSV Export",
-      "Marketplace API Sync (Segera Hadir)",
+      "Auto fee calculation per channel",
+      "Channel performance analytics",
+      "Per-transaction profit tracking",
+      "Sales history dengan filter date / channel / SKU / customer",
+      "CSV export untuk rekonsiliasi",
+      "Marketplace API sync (scaffolding siap, tinggal plug credentials)",
     ],
     highlight: "Cocok untuk: Online shop multi-channel",
   },
@@ -137,13 +139,30 @@ const mainServices = [
     description:
       "Hitung profit bersih otomatis dengan detail: modal, packing, fee marketplace, dan affiliate per transaksi.",
     features: [
-      "Real-time Profit Dashboard",
-      "Cost Breakdown per SKU",
-      "Channel Margin Comparison",
-      "Product Performance Ranking",
-      "Sales Trend Analysis",
+      "Real-time profit dashboard",
+      "Cost breakdown per SKU",
+      "Channel margin comparison",
+      "Top produk + top customers ranking",
+      "Group sales by channel / produk / tanggal",
+      "Per-customer lifetime value tracking",
     ],
     highlight: "Cocok untuk: Bisnis yang mau tahu profit sebenarnya",
+  },
+  {
+    icon: Users,
+    title: "Customer & Team",
+    pricing: "Early Access",
+    description:
+      "Direktori customer dengan lifetime stats. Multi-user dengan role owner / staff yang gating data sensitif.",
+    features: [
+      "Customer directory dengan total orders + total spent",
+      "Per-customer sales history drill-down",
+      "Top customers card di dashboard",
+      "RBAC: owner (full access) vs staff (operasional)",
+      "Cost data + delete actions terbatas owner",
+      "User management page untuk promote / demote",
+    ],
+    highlight: "Cocok untuk: Toko dengan 2+ orang tim",
   },
 ];
 
@@ -195,18 +214,18 @@ const processSteps = [
 
 const platformFeatures = [
   {
-    title: "Google Sheets Based",
-    desc: "Familiar interface yang mudah dipelajari, powerful automation di belakangnya",
-    icon: Code,
-  },
-  {
-    title: "Mobile Optimized",
-    desc: "Akses dari mana saja: cek stok, input penjualan, lihat report dari HP",
+    title: "Installable PWA",
+    desc: "Buka di browser HP, tap 'Add to Home Screen' — Tokoflow jadi app icon di home screen tanpa perlu install dari Play Store. Service worker bikin halaman cached load instan walau koneksi lemot.",
     icon: Zap,
   },
   {
-    title: "API Integration",
-    desc: "Connect dengan marketplace, payment gateway, shipping, dan tools lain",
+    title: "Barcode Scanner Built-in",
+    desc: "Scan barcode produk pakai kamera HP langsung dari halaman /scanner. Auto-lookup SKU di inventory, lalu langsung ke form input penjualan atau edit produk.",
+    icon: Code,
+  },
+  {
+    title: "Stock Alert Real-time",
+    desc: "Bell icon di nav langsung kasih tau begitu ada produk yang stok-nya turun di bawah threshold per produk. Auto-resolve saat stok kembali normal — tanpa cron, tanpa email setup.",
     icon: Globe,
   },
 ];
@@ -223,7 +242,7 @@ export default function LandingPage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 lg:gap-x-16 gap-y-12 items-center">
                 <div>
                   <Badge variant="secondary" className="mb-4">
-                    FREE TRIAL 14 HARI
+                    EARLY ACCESS PROGRAM
                   </Badge>
                   <H1 className="mb-6">
                     Kelola Inventory & Penjualan dengan Mudah
@@ -240,7 +259,7 @@ export default function LandingPage() {
                         className="inline-flex items-center"
                       >
                         <Package className="w-4 h-4 mr-2" />
-                        Start Free Trial
+                        Daftar Early Access
                       </Link>
                     </Button>
                     <Button variant="outline" asChild>
@@ -311,7 +330,7 @@ export default function LandingPage() {
                 description="Dari inventory management hingga business intelligence, semua fitur yang Anda butuhkan untuk grow your business ada dalam satu platform"
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {mainServices.map((service, index) => {
                   const Icon = service.icon;
                   return (
@@ -557,21 +576,21 @@ export default function LandingPage() {
             <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
               <div>
                 <Badge variant="secondary" className="mb-4 bg-white/10 text-white border-0">
-                  NO CREDIT CARD REQUIRED
+                  GRATIS SELAMA EARLY ACCESS
                 </Badge>
                 <H2 className="text-white mb-4">
                   Siap Scale Up Bisnis Anda?
                 </H2>
                 <P className="text-white/70 max-w-xl mx-auto mb-8">
-                  Bergabung dengan program Early Access Tokoflow. Free trial 14 hari
-                  tanpa perlu kartu kredit. Setup cepat, direct developer support.
+                  Bergabung dengan program Early Access Tokoflow. Gratis selama program berjalan,
+                  tanpa kartu kredit. Setup cepat, direct developer support via WhatsApp.
                 </P>
               </div>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Button variant="outline" size="lg" asChild className="bg-white text-gray-900 border-white hover:bg-gray-100">
                   <Link href="/register" className="inline-flex items-center">
                     <Package className="w-4 h-4 mr-2" />
-                    Start Free Trial
+                    Daftar Early Access
                   </Link>
                 </Button>
                 <Button variant="ghost" size="lg" asChild className="bg-white/10 text-white hover:bg-white/20">

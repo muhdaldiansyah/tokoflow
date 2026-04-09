@@ -2,6 +2,7 @@
 import { createClient } from '../../../../lib/database/supabase-server/index.js';
 import { successResponse, errorResponse, handleSupabaseError } from '../../../../lib/utils/api-response';
 import { authenticateRequest } from '../../../../lib/utils/auth-helpers.js';
+import { getCurrentRole, requireOwner } from '../../../../lib/auth/role.js';
 import { clearPrefix } from '../../../../lib/cache/index.js';
 import { bump } from '../../../../lib/state/global-state.js';
 
@@ -63,7 +64,7 @@ export async function GET(request, { params }) {
     // For UUID id, use existing table-based logic
     const { data: product, error: pErr } = await supabase
       .from('tf_products')
-      .select('id, sku, name, stock, created_at, updated_at')
+      .select('id, sku, name, stock, low_stock_threshold, stock_status, warehouse_id, created_at, updated_at')
       .eq('id', param)
       .single();
     if (pErr || !product) return handleSupabaseError(pErr || new Error('Not found'));
@@ -107,12 +108,16 @@ export async function PATCH(request, { params }) {
       });
     }
 
+    // Staff users may edit basic product info but not cost fields. We
+    // resolve the role once and reject if a staff user is trying to touch
+    // any of the cost columns.
+    const role = await getCurrentRole(auth);
     const supabase = await createClient();
     const { param } = await params;
-    
+
     // Log the param to debug
     console.log('PATCH request for param:', param);
-    
+
     let body;
     try {
       body = await request.json();
@@ -121,18 +126,36 @@ export async function PATCH(request, { params }) {
       return errorResponse('Invalid JSON in request body', 400);
     }
 
+    const isCostFieldPresent =
+      body.modal_cost !== undefined ||
+      body.packing_cost !== undefined ||
+      body.affiliate_percentage !== undefined;
+    if (role !== 'owner' && isCostFieldPresent) {
+      return errorResponse(
+        'Mengubah biaya produk hanya untuk owner.',
+        403
+      );
+    }
+
     // Determine if param is ID or SKU
     const isId = isUUID(param);
     const queryField = isId ? 'id' : 'sku';
 
-    // Update product
+    // Update product. Only forward fields the caller actually sent so we
+    // don't accidentally clobber existing values with undefined.
+    const productUpdate = { updated_at: new Date().toISOString() };
+    if (body.name !== undefined) productUpdate.name = body.name;
+    if (body.stock !== undefined) productUpdate.stock = body.stock;
+    if (body.low_stock_threshold !== undefined) {
+      productUpdate.low_stock_threshold = body.low_stock_threshold;
+    }
+    if (body.warehouse_id !== undefined) {
+      productUpdate.warehouse_id = body.warehouse_id;
+    }
+
     const { data: product, error: productError } = await supabase
       .from('tf_products')
-      .update({
-        name: body.name,
-        stock: body.stock !== undefined ? body.stock : undefined,
-        updated_at: new Date().toISOString()
-      })
+      .update(productUpdate)
       .eq(queryField, param)
       .select()
       .single();
@@ -208,6 +231,8 @@ export async function DELETE(request, { params }) {
         headers: { 'content-type': 'application/json' },
       });
     }
+    const gate = await requireOwner(auth);
+    if (!gate.ok) return gate.response;
 
     const supabase = await createClient();
     const { param } = await params;
@@ -267,8 +292,7 @@ export async function DELETE(request, { params }) {
     }
 
     // Clear cache and bump state after mutation
-    const { user } = authResult;
-    clearPrefix(`p:${user.id}`);
+    clearPrefix(`p:${auth.user.id}`);
     bump('products');
 
     return successResponse({ message: 'Product deleted successfully' });

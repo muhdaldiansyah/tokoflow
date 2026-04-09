@@ -23,21 +23,25 @@ export async function GET(request) {
     const { url, limit, cursor, select } = parseQuery(request, { maxLimit: 200, defaultLimit: 25 });
     const { searchParams } = new URL(request.url);
 
-    const filter = searchParams.get('filter'); // 'negative', 'zero', 'low', 'all'
+    const filter = searchParams.get('filter'); // 'negative' | 'zero' | 'low' | 'normal' | 'alert' | 'all'
     const search = searchParams.get('search');
+
+    // Always project the columns we need for the dashboard's stock alerts.
+    // The 'select' query param can override this for callers that want fewer fields.
+    const defaultSelect = 'id,sku,name,stock,low_stock_threshold,stock_status,created_at,updated_at';
+    const projection = (select && select !== '*') ? select : defaultSelect;
 
     let query = supabase
       .from('tf_products')
-      .select(select)
+      .select(projection)
       .order('id', { ascending: true });
 
-    // Apply filters
-    if (filter === 'negative') {
-      query = query.lt('stock', 0);
-    } else if (filter === 'zero') {
-      query = query.eq('stock', 0);
-    } else if (filter === 'low') {
-      query = query.gte('stock', 0).lte('stock', 10);
+    // Filter by the generated stock_status column. 'alert' = anything that
+    // needs the merchant's attention (negative + zero + low).
+    if (filter === 'negative' || filter === 'zero' || filter === 'low' || filter === 'normal') {
+      query = query.eq('stock_status', filter);
+    } else if (filter === 'alert') {
+      query = query.in('stock_status', ['negative', 'zero', 'low']);
     }
 
     if (search) {
@@ -61,31 +65,25 @@ export async function GET(request) {
     const page = hasMore ? data.slice(0, limit) : data;
     const nextCursor = hasMore ? page[page.length - 1]?.id : null;
 
-    // Calculate inventory value for each product
-    const inventoryData = page.map(product => {
-      const totalCostPerUnit = 0; // Will be fetched separately if needed
-      const inventoryValue = totalCostPerUnit * product.stock;
+    // Map the rows for the client. stockStatus mirrors the DB column for
+    // backwards compatibility with existing UI consumers.
+    const inventoryData = page.map(product => ({
+      ...product,
+      totalCostPerUnit: 0,        // costs come from /api/products view if needed
+      inventoryValue: 0,
+      stockStatus: product.stock_status,
+      isComponent: false,
+      isBundle: false,
+    }));
 
-      return {
-        ...product,
-        totalCostPerUnit,
-        inventoryValue,
-        stockStatus: product.stock < 0 ? 'negative' :
-                    product.stock === 0 ? 'zero' :
-                    product.stock <= 10 ? 'low' : 'normal',
-        isComponent: false,
-        isBundle: false
-      };
-    });
-
-    // Calculate summary statistics
+    // Calculate summary statistics directly from stock_status
     const summary = inventoryData.reduce((acc, product) => ({
       totalProducts: acc.totalProducts + 1,
       totalStock: acc.totalStock + product.stock,
       totalValue: acc.totalValue + product.inventoryValue,
-      negativeStock: acc.negativeStock + (product.stock < 0 ? 1 : 0),
-      zeroStock: acc.zeroStock + (product.stock === 0 ? 1 : 0),
-      lowStock: acc.lowStock + (product.stock > 0 && product.stock <= 10 ? 1 : 0)
+      negativeStock: acc.negativeStock + (product.stock_status === 'negative' ? 1 : 0),
+      zeroStock:     acc.zeroStock     + (product.stock_status === 'zero'     ? 1 : 0),
+      lowStock:      acc.lowStock      + (product.stock_status === 'low'      ? 1 : 0),
     }), {
       totalProducts: 0,
       totalStock: 0,

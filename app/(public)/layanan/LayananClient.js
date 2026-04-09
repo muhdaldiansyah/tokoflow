@@ -102,13 +102,14 @@ export default function LayananClient() {
       title: "Inventory Management",
       pricing: "Early Access",
       description:
-        "Kelola stok multi-SKU dengan tracking real-time, catat barang masuk, dan manajemen bundle produk.",
+        "Kelola stok multi-SKU + multi-warehouse dengan tracking real-time, alert otomatis, dan bundle produk.",
       features: [
-        "Real-time Stock Tracking",
-        "Incoming Goods Management",
-        "Stock Adjustment & Audit Trail",
-        "Bundle Product Management",
-        "SKU-based Product Catalog",
+        "Real-time stock tracking",
+        "Multi-warehouse / cabang",
+        "Stock alert dengan threshold per produk",
+        "Incoming goods + stock adjustment audit trail",
+        "Bundle product (komponen auto-deduct)",
+        "Barcode scanner via kamera HP",
       ],
       highlight: "Cocok untuk: UMKM dengan 100-1000+ SKU",
     },
@@ -119,11 +120,12 @@ export default function LayananClient() {
       description:
         "Catat penjualan dari Shopee, Tokopedia, TikTok Shop dalam satu dashboard. Fee per channel otomatis terhitung.",
       features: [
-        "Auto Fee Calculation per Channel",
-        "Channel Performance Analytics",
-        "Per-transaction Profit Tracking",
-        "Sales History & CSV Export",
-        "Marketplace API Sync (Segera Hadir)",
+        "Auto fee calculation per channel",
+        "Channel performance analytics",
+        "Per-transaction profit tracking",
+        "Sales history dengan filter date / channel / SKU / customer",
+        "CSV export untuk rekonsiliasi",
+        "Marketplace API sync (scaffolding siap, plug credentials)",
       ],
       highlight: "Cocok untuk: Online shop multi-channel",
     },
@@ -134,13 +136,30 @@ export default function LayananClient() {
       description:
         "Hitung profit bersih otomatis dengan detail: modal, packing, fee marketplace, dan affiliate per transaksi.",
       features: [
-        "Real-time Profit Dashboard",
-        "Cost Breakdown per SKU",
-        "Channel Margin Comparison",
-        "Product Performance Ranking",
-        "Sales Trend Analysis",
+        "Real-time profit dashboard",
+        "Cost breakdown per SKU",
+        "Channel margin comparison",
+        "Top produk + top customers ranking",
+        "Group sales by channel / produk / tanggal",
+        "Per-customer lifetime value tracking",
       ],
       highlight: "Cocok untuk: Bisnis yang mau tahu profit sebenarnya",
+    },
+    {
+      icon: Users,
+      title: "Customer & Team",
+      pricing: "Early Access",
+      description:
+        "Direktori customer dengan lifetime stats. Multi-user dengan RBAC owner / staff yang gating data sensitif.",
+      features: [
+        "Customer directory dengan total orders + spent",
+        "Per-customer sales history drill-down",
+        "Top customers card di dashboard",
+        "RBAC: owner (full) vs staff (operasional)",
+        "Cost data + delete actions terbatas owner",
+        "User management page dengan promote/demote",
+      ],
+      highlight: "Cocok untuk: Toko dengan 2+ orang tim",
     },
   ];
 
@@ -209,32 +228,32 @@ export default function LayananClient() {
     {
       icon: Database,
       title: "Data Migration & Setup",
-      description: "Import data dari Excel/CSV, setup awal SKU, konfigurasi marketplace, dan training tim.",
-    },
-    {
-      icon: Settings,
-      title: "Custom Integration",
-      description: "Integrasi dengan sistem POS, ERP, atau aplikasi custom sesuai kebutuhan bisnis.",
+      description: "Import data dari Excel / CSV, setup awal SKU + warehouse, konfigurasi cost per produk, dan walkthrough penggunaan.",
     },
     {
       icon: Smartphone,
-      title: "Mobile App Access",
-      description: "Akses dari mana saja dengan mobile app untuk cek stok, input transaksi, dan monitoring.",
+      title: "PWA + Barcode Scanner",
+      description: "Installable di home screen HP tanpa Play Store. Scan barcode produk pakai kamera HP untuk lookup SKU instant.",
     },
     {
       icon: Users,
-      title: "Multi-user Management",
-      description: "Role-based access control untuk owner, admin, warehouse, dan sales team.",
+      title: "Multi-user (RBAC)",
+      description: "Role owner (full access) + staff (operasional). User pertama otomatis owner, sisanya staff sampai dipromote.",
     },
     {
       icon: Shield,
-      title: "Data Security & Backup",
-      description: "Backup otomatis setiap jam, enkripsi data, dan audit trail lengkap.",
+      title: "Data Security",
+      description: "Supabase Postgres dengan enkripsi at-rest, backup otomatis, dan Row Level Security plus owner/staff role gates.",
+    },
+    {
+      icon: Settings,
+      title: "Marketplace Integration",
+      description: "Schema, OAuth flow, dan UI siap untuk Shopee / Tokopedia / TikTok Shop. Tinggal plug credentials platform.",
     },
     {
       icon: RefreshCw,
       title: "Continuous Updates",
-      description: "Update fitur reguler berdasarkan feedback user dan integrasi marketplace terbaru.",
+      description: "Fitur baru di-develop berdasarkan feedback merchant Early Access. Roadmap dishare ke early adopter.",
     },
   ];
 
@@ -264,7 +283,7 @@ export default function LayananClient() {
         {/* Main Services Section */}
         <section className="bg-white py-16 md:py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {mainServices.map((service, index) => {
                 const Icon = service.icon;
                 return (
@@ -459,7 +478,7 @@ export default function LayananClient() {
                 Siap Tingkatkan Efisiensi Operasional Bisnis Anda?
               </H2>
               <P className="text-white/70 max-w-2xl mx-auto mb-8">
-                Free trial 14 hari untuk semua fitur. Konsultasi gratis untuk analisis kebutuhan bisnis Anda.
+                Gratis selama program Early Access untuk semua fitur. Konsultasi gratis untuk analisis kebutuhan bisnis Anda.
                 Direct support dari developer.
               </P>
             </div>

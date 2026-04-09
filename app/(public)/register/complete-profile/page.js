@@ -34,7 +34,7 @@ export default function CompleteProfilePage() {
     
     // If user already has a profile, redirect to dashboard
     if (mounted && !loading && user && profile) {
-      router.push('/koreksi');
+      router.push('/dashboard');
       return;
     }
     

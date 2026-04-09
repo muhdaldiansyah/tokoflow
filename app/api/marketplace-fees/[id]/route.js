@@ -2,6 +2,7 @@
 import { createClient } from '../../../../lib/database/supabase-server/index.js';
 import { successResponse, errorResponse, handleSupabaseError } from '../../../../lib/utils/api-response';
 import { authenticateRequest } from '../../../../lib/utils/auth-helpers.js';
+import { requireOwner } from '../../../../lib/auth/role.js';
 
 /**
  * GET /api/marketplace-fees/[id] - Get specific marketplace fee
@@ -51,6 +52,8 @@ export async function PUT(request, { params }) {
         headers: { 'content-type': 'application/json' },
       });
     }
+    const gate = await requireOwner(auth);
+    if (!gate.ok) return gate.response;
 
     const supabase = await createClient();
     const { id } = params;
@@ -119,6 +122,8 @@ export async function DELETE(request, { params }) {
         headers: { 'content-type': 'application/json' },
       });
     }
+    const gate = await requireOwner(auth);
+    if (!gate.ok) return gate.response;
 
     const supabase = await createClient();
     const { id } = params;

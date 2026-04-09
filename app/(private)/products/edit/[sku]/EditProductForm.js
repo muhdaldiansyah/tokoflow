@@ -6,17 +6,21 @@ import Link from "next/link";
 import { createClient } from "../../../../../lib/database/supabase/client";
 import { Loader2, Save, ArrowLeft, Trash2, Package } from "lucide-react";
 import { formatDate, formatNumber, formatCurrency } from "../../../../../lib/utils/format";
+import { useAuth } from "../../../../hooks/useAuthSimple";
 import { toast } from "sonner";
 
 export default function EditProductForm({ product }) {
   const router = useRouter();
+  const { profile } = useAuth();
+  const isOwner = profile?.role === 'owner';
   const [submitting, setSubmitting] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
     sku: product.sku,
-    name: product.name
+    name: product.name,
+    low_stock_threshold: product.low_stock_threshold ?? 10,
   });
 
   // Cost form state
@@ -44,7 +48,13 @@ export default function EditProductForm({ product }) {
 
       if (!session) throw new Error("No session found");
 
-      const payload = { name: formData.name };
+      const parsedThreshold = parseInt(formData.low_stock_threshold, 10);
+      const payload = {
+        name: formData.name,
+        low_stock_threshold: Number.isFinite(parsedThreshold) && parsedThreshold >= 0
+          ? parsedThreshold
+          : 10,
+      };
 
       const response = await fetch(`/api/products/${encodeURIComponent(product.sku)}`, {
         method: "PATCH",
@@ -163,8 +173,15 @@ export default function EditProductForm({ product }) {
     router.push("/products");
   };
 
-  const stockStatus = product.stock < 0 ? 'negative' :
-                    product.stock <= 10 ? 'low' : 'normal';
+  // Prefer the DB-computed status; fall back for older payloads.
+  const stockStatus = product.stock_status
+    ?? (product.stock < 0
+          ? 'negative'
+          : product.stock === 0
+            ? 'zero'
+            : product.stock <= (product.low_stock_threshold ?? 10)
+              ? 'low'
+              : 'normal');
 
   // Real-time calculations based on current form data
   const currentModalCost = parseFloat(costData.modal_cost) || 0;
@@ -194,7 +211,7 @@ export default function EditProductForm({ product }) {
           <h2 className="text-lg font-semibold text-gray-900">Product Overview</h2>
         </div>
         <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className={`grid grid-cols-1 md:grid-cols-2 ${isOwner ? 'lg:grid-cols-5' : 'lg:grid-cols-3'} gap-6`}>
             <div>
               <label className="block text-sm font-medium text-gray-500 mb-1">SKU</label>
               <div className="flex items-center">
@@ -212,14 +229,18 @@ export default function EditProductForm({ product }) {
                 {formatNumber(product.stock)}
               </span>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Modal Cost</label>
-              <span className="text-sm font-medium text-gray-900">{formatCurrency(currentModalCost)}</span>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Total Cost</label>
-              <span className="text-sm font-medium text-blue-600">{formatCurrency(totalCost)}</span>
-            </div>
+            {isOwner && (
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1">Modal Cost</label>
+                <span className="text-sm font-medium text-gray-900">{formatCurrency(currentModalCost)}</span>
+              </div>
+            )}
+            {isOwner && (
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1">Total Cost</label>
+                <span className="text-sm font-medium text-blue-600">{formatCurrency(totalCost)}</span>
+              </div>
+            )}
             <div>
               <label className="block text-sm font-medium text-gray-500 mb-1">Created</label>
               <span className="text-sm text-gray-500">{formatDate(product.created_at)}</span>
@@ -234,7 +255,7 @@ export default function EditProductForm({ product }) {
           <h2 className="text-lg font-semibold text-gray-900">Basic Information</h2>
         </div>
         <form onSubmit={handleSubmit} className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 SKU
@@ -262,6 +283,24 @@ export default function EditProductForm({ product }) {
                 disabled={submitting || deleting}
               />
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Stock Alert Threshold
+              </label>
+              <input
+                type="number"
+                value={formData.low_stock_threshold}
+                onChange={(e) => setFormData({ ...formData, low_stock_threshold: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                placeholder="10"
+                min="0"
+                disabled={submitting || deleting}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Stok di bawah angka ini akan ditandai &quot;low&quot; di dashboard.
+              </p>
+            </div>
           </div>
 
           <div className="mt-6 flex justify-end">
@@ -286,7 +325,8 @@ export default function EditProductForm({ product }) {
         </form>
       </div>
 
-      {/* Product Costs Form */}
+      {/* Product Costs Form — owner only */}
+      {isOwner && (
       <div className="bg-white rounded-lg shadow mb-8">
         <div className="p-6 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900">Product Costs</h2>
@@ -387,6 +427,7 @@ export default function EditProductForm({ product }) {
           </div>
         </div>
       </div>
+      )}
 
       {/* Bundle Information */}
       {(product.asParent?.length > 0 || product.asComponent?.length > 0) && (
@@ -459,25 +500,27 @@ export default function EditProductForm({ product }) {
           <h2 className="text-lg font-semibold text-gray-900">Actions</h2>
         </div>
         <div className="p-6">
-          <div className="flex justify-between">
-            <button
-              type="button"
-              onClick={handleDelete}
-              disabled={submitting || deleting || savingCosts}
-              className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-            >
-              {deleting ? (
-                <>
-                  <Loader2 className="inline-block w-4 h-4 mr-2 animate-spin" />
-                  Deleting...
-                </>
-              ) : (
-                <>
-                  <Trash2 className="inline-block w-4 h-4 mr-2" />
-                  Delete Product
-                </>
-              )}
-            </button>
+          <div className={`flex ${isOwner ? 'justify-between' : 'justify-end'}`}>
+            {isOwner && (
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={submitting || deleting || savingCosts}
+                className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              >
+                {deleting ? (
+                  <>
+                    <Loader2 className="inline-block w-4 h-4 mr-2 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="inline-block w-4 h-4 mr-2" />
+                    Delete Product
+                  </>
+                )}
+              </button>
+            )}
 
             <button
               type="button"

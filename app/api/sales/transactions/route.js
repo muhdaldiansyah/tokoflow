@@ -27,6 +27,7 @@ export async function GET(request) {
     const endDate = searchParams.get('end_date');
     const channel = searchParams.get('channel');
     const sku = searchParams.get('sku');
+    const customerId = searchParams.get('customer_id');
 
     let query = supabase
       .from('tf_sales_transactions')
@@ -45,6 +46,14 @@ export async function GET(request) {
     }
     if (sku) {
       query = query.eq('sku', sku);
+    }
+    if (customerId) {
+      // Special token to filter rows with no customer attributed
+      if (customerId === 'none' || customerId === 'null') {
+        query = query.is('customer_id', null);
+      } else {
+        query = query.eq('customer_id', customerId);
+      }
     }
 
     // Apply cursor pagination

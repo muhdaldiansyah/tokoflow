@@ -37,16 +37,35 @@ export async function middleware(request) {
     return r;
   };
 
+  // Payment is feature-flagged off during Early Access. The /checkout and
+  // /plans pages reference /api/payment/* endpoints that don't exist yet,
+  // so they currently 404 on submit. Until the Midtrans backend is built,
+  // bounce both routes to /dashboard. Set NEXT_PUBLIC_PAYMENT_ENABLED=true
+  // in .env to re-enable.
+  const paymentEnabled = process.env.NEXT_PUBLIC_PAYMENT_ENABLED === 'true';
+  if (!paymentEnabled) {
+    if (request.nextUrl.pathname.startsWith('/checkout') ||
+        request.nextUrl.pathname.startsWith('/plans')) {
+      const target = new URL('/dashboard', request.url);
+      target.searchParams.set('notice', 'payment-disabled');
+      return withCookiesRedirect(target);
+    }
+  }
+
   // If user is not authenticated and trying to access private routes
   const isPrivateRoute = request.nextUrl.pathname.startsWith('/dashboard') ||
                          request.nextUrl.pathname.startsWith('/products') ||
                          request.nextUrl.pathname.startsWith('/sales') ||
+                         request.nextUrl.pathname.startsWith('/scanner') ||
+                         request.nextUrl.pathname.startsWith('/customers') ||
                          request.nextUrl.pathname.startsWith('/inventory') ||
                          request.nextUrl.pathname.startsWith('/marketplace-fees') ||
+                         request.nextUrl.pathname.startsWith('/marketplace') ||
                          request.nextUrl.pathname.startsWith('/incoming-goods') ||
                          request.nextUrl.pathname.startsWith('/product-costs') ||
                          request.nextUrl.pathname.startsWith('/product-compositions') ||
                          request.nextUrl.pathname.startsWith('/stock-adjustments') ||
+                         request.nextUrl.pathname.startsWith('/warehouses') ||
                          request.nextUrl.pathname.startsWith('/admin') ||
                          request.nextUrl.pathname.startsWith('/plans') ||
                          request.nextUrl.pathname.startsWith('/checkout');
@@ -73,12 +92,16 @@ export const config = {
     '/dashboard/:path*',
     '/products/:path*',
     '/sales/:path*',
+    '/scanner/:path*',
+    '/customers/:path*',
     '/inventory/:path*',
     '/marketplace-fees/:path*',
+    '/marketplace/:path*',
     '/incoming-goods/:path*',
     '/product-costs/:path*',
     '/product-compositions/:path*',
     '/stock-adjustments/:path*',
+    '/warehouses/:path*',
     '/admin/:path*',
     '/plans/:path*',
     '/checkout/:path*',

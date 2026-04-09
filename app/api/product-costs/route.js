@@ -2,6 +2,7 @@
 import { createClient } from '../../../lib/database/supabase-server/index.js';
 import { successResponse, errorResponse, handleSupabaseError, successResponseWithETag } from '../../../lib/utils/api-response';
 import { authenticateRequest } from '../../../lib/utils/auth-helpers.js';
+import { requireOwner } from '../../../lib/auth/role.js';
 import { outputCache, clearPrefix } from '../../../lib/cache/index.js';
 import { bump } from '../../../lib/state/global-state.js';
 
@@ -160,6 +161,8 @@ export async function POST(request) {
     if (!auth.ok) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { 'content-type': 'application/json' } });
     }
+    const gate = await requireOwner(auth);
+    if (!gate.ok) return gate.response;
 
     const supabase = await createClient();
     const body = await request.json();
@@ -226,6 +229,8 @@ export async function PUT(request) {
     if (!auth.ok) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { 'content-type': 'application/json' } });
     }
+    const gate = await requireOwner(auth);
+    if (!gate.ok) return gate.response;
 
     const supabase = await createClient();
     const { costs } = await request.json();
@@ -296,6 +301,8 @@ export async function DELETE(request) {
     if (!auth.ok) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { 'content-type': 'application/json' } });
     }
+    const gate = await requireOwner(auth);
+    if (!gate.ok) return gate.response;
 
     const supabase = await createClient();
     const { searchParams } = new URL(request.url);

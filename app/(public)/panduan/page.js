@@ -9,7 +9,7 @@ export const metadata = {
   keywords: 'panduan inventory management, tips manajemen stok, strategi multi-channel, optimasi profit, scale up bisnis UMKM',
   openGraph: {
     title: 'Tokoflow Blog - Panduan & Tips Bisnis UMKM',
-    description: 'Resource lengkap untuk UMKM: inventory management, sales analytics, marketplace integration. Update mingguan dari praktisi.',
+    description: 'Resource untuk UMKM: inventory management, multi-channel sales tracking, profit analysis. Tips dari praktisi.',
     type: 'website',
   },
 };

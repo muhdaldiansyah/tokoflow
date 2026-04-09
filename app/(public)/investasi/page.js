@@ -4,12 +4,12 @@ import InvestasiClient from './InvestasiClient';
 
 // SEO Metadata
 export const metadata = {
-  title: 'Harga Sistem Inventory & Dashboard Penjualan 2025 | Transparan - Tokoflow',
-  description: 'Investasi sistem inventory mulai 299rb/bulan. Paket dashboard penjualan, integrasi marketplace, business analytics dengan harga transparan. Free trial 14 hari!',
+  title: 'Harga Sistem Inventory & Dashboard Penjualan | Early Access - Tokoflow',
+  description: 'Tokoflow sedang dalam program Early Access — gratis selama program berjalan untuk merchant pertama. Pricing publik akan diumumkan setelah program berakhir.',
   keywords: 'harga sistem inventory, biaya dashboard penjualan, investasi software UMKM, paket manajemen stok, pricing tokoflow',
   openGraph: {
-    title: 'Pricing Tokoflow - Sistem Inventory & Sales | Mulai 299rb/bulan',
-    description: 'Pilih paket sesuai skala bisnis. Starter, Professional, Enterprise. Free trial 14 hari tanpa kartu kredit. ROI dalam 3 bulan!',
+    title: 'Pricing Tokoflow - Early Access Program',
+    description: 'Gratis selama program Early Access. Bergabung dengan merchant pertama yang membentuk Tokoflow. Tanpa kartu kredit, direct developer support.',
     type: 'website',
   },
 };

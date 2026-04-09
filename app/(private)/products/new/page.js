@@ -15,7 +15,8 @@ export default function NewProductPage() {
   const [formData, setFormData] = useState({
     sku: "",
     name: "",
-    initial_stock: "0"
+    initial_stock: "0",
+    low_stock_threshold: "10"
   });
 
   const handleSubmit = async (e) => {
@@ -37,7 +38,10 @@ export default function NewProductPage() {
       const payload = {
         sku: formData.sku,
         name: formData.name,
-        stock: parseInt(formData.initial_stock) || 0
+        stock: parseInt(formData.initial_stock) || 0,
+        low_stock_threshold: Number.isFinite(parseInt(formData.low_stock_threshold))
+          ? parseInt(formData.low_stock_threshold)
+          : 10,
       };
 
       const response = await fetch("/api/products", {
@@ -129,7 +133,7 @@ export default function NewProductPage() {
               />
             </div>
 
-            <div className="md:col-span-2">
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Initial Stock
               </label>
@@ -143,6 +147,24 @@ export default function NewProductPage() {
                 disabled={submitting}
               />
               <p className="text-xs text-gray-500 mt-1">Starting inventory quantity</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Stock Alert Threshold
+              </label>
+              <input
+                type="number"
+                value={formData.low_stock_threshold}
+                onChange={(e) => setFormData({ ...formData, low_stock_threshold: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                placeholder="10"
+                min="0"
+                disabled={submitting}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Stok di bawah angka ini akan ditandai sebagai &quot;low&quot; di dashboard. Default 10.
+              </p>
             </div>
           </div>
 

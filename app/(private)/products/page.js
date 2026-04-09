@@ -12,7 +12,7 @@ export default async function ProductsPage({ searchParams }) {
 
   let q = supabase
     .from('v_products_with_costs')
-    .select('id, sku, name, stock, created_at, updated_at, modal_cost, packing_cost, affiliate_percentage')
+    .select('id, sku, name, stock, low_stock_threshold, stock_status, warehouse_id, warehouse_name, created_at, updated_at, modal_cost, packing_cost, affiliate_percentage')
     .order('updated_at', { ascending: false })
     .order('id', { ascending: true })   // tie-breaker to match index
     .range(0, 49);

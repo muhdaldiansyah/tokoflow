@@ -14,9 +14,10 @@ export default function PenjualanPage() {
   const [salesInput, setSalesInput] = useState([]);
   const [products, setProducts] = useState([]);
   const [channels, setChannels] = useState([]);
+  const [customers, setCustomers] = useState([]);
   const [error, setError] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
-  
+
   // Form state
   const [formData, setFormData] = useState({
     transaction_date: formatDateForInput(new Date()),
@@ -25,12 +26,15 @@ export default function PenjualanPage() {
     selling_price: "",
     quantity: "",
     channel: "",
+    customer_id: "",
     status: "ok"
   });
-  
+
   // Ensure arrays are always arrays
   const productsList = Array.isArray(products) ? products : [];
   const channelsList = Array.isArray(channels) ? channels : ['Shopee', 'Tokopedia', 'TikTok Shop', 'Offline'];
+  const customersList = Array.isArray(customers) ? customers : [];
+  const customerById = new Map(customersList.map(c => [c.id, c]));
 
   useEffect(() => {
     if (!authLoading && session) {
@@ -62,22 +66,29 @@ export default function PenjualanPage() {
       const feesRes = await fetch("/api/marketplace-fees", {
         headers: { "Authorization": `Bearer ${session.access_token}` }
       });
-      
+
       if (!feesRes.ok) throw new Error("Failed to fetch marketplace fees");
       const feesData = await feesRes.json();
-      
+
       // Fetch pending sales input
       const salesRes = await fetch("/api/sales/input?status=ok", {
         headers: { "Authorization": `Bearer ${session.access_token}` }
       });
-      
+
       if (!salesRes.ok) throw new Error("Failed to fetch sales input");
       const salesData = await salesRes.json();
-      
+
+      // Fetch customers (without stats — we just need the dropdown list)
+      const customersRes = await fetch("/api/customers?with_stats=0", {
+        headers: { "Authorization": `Bearer ${session.access_token}` }
+      });
+      const customersData = customersRes.ok ? await customersRes.json() : { success: false };
+
       // Debug logs
       console.log('Products response:', productsData);
       console.log('Fees response:', feesData);
       console.log('Sales response:', salesData);
+      console.log('Customers response:', customersData);
       
       if (productsData.success) {
         setProducts(productsData.data.products || []);
@@ -96,7 +107,13 @@ export default function PenjualanPage() {
       } else {
         setSalesInput([]);
       }
-      
+
+      if (customersData.success && Array.isArray(customersData.data)) {
+        setCustomers(customersData.data);
+      } else {
+        setCustomers([]);
+      }
+
     } catch (err) {
       console.error("Error fetching data:", err);
       setError(err.message);
@@ -140,19 +157,20 @@ export default function PenjualanPage() {
           ...formData,
           selling_price: parseFloat(formData.selling_price) || 0,
           quantity: parseInt(formData.quantity) || 0,
+          customer_id: formData.customer_id ? Number(formData.customer_id) : null,
         })
       });
-      
+
       const result = await response.json();
-      
+
       if (result.success) {
         toast.success("Sales input added successfully");
-        
+
         // Optimistic update - add to list immediately
         if (result.data) {
           setSalesInput(prev => [result.data, ...prev]);
         }
-        
+
         // Reset form
         setFormData({
           transaction_date: formatDateForInput(new Date()),
@@ -161,6 +179,7 @@ export default function PenjualanPage() {
           selling_price: "",
           quantity: "",
           channel: "",
+          customer_id: "",
           status: "ok"
         });
         
@@ -385,6 +404,32 @@ export default function PenjualanPage() {
               </select>
             </div>
 
+            {/* Customer (optional) */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Customer <span className="text-gray-400 font-normal">(opsional)</span>
+              </label>
+              <select
+                value={formData.customer_id}
+                onChange={(e) => setFormData({ ...formData, customer_id: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                disabled={submitting}
+              >
+                <option value="">— Tanpa customer —</option>
+                {customersList.map(c => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}{c.phone ? ` · ${c.phone}` : ""}
+                  </option>
+                ))}
+              </select>
+              {customersList.length === 0 && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Belum ada customer.{" "}
+                  <a href="/customers" className="text-blue-600 hover:underline">Tambah di sini</a>
+                </p>
+              )}
+            </div>
+
             {/* Status */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -484,6 +529,9 @@ export default function PenjualanPage() {
                   Channel
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Customer
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
                 <th className="relative px-6 py-3">
@@ -493,50 +541,56 @@ export default function PenjualanPage() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {salesInput.length > 0 ? (
-                salesInput.map((sale) => (
-                  <tr key={sale.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatDate(sale.transaction_date)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{sale.product_name}</div>
-                      <div className="text-sm text-gray-500">{sale.sku}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatCurrency(sale.selling_price)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {sale.quantity}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {formatCurrency(sale.selling_price * sale.quantity)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {sale.channel}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                        {sale.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button
-                        onClick={() => handleDelete(sale.id)}
-                        disabled={deletingId === sale.id}
-                        className="text-red-600 hover:text-red-900 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {deletingId === sale.id ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <X className="w-4 h-4" />
-                        )}
-                      </button>
-                    </td>
-                  </tr>
-                ))
+                salesInput.map((sale) => {
+                  const cust = sale.customer_id != null ? customerById.get(sale.customer_id) : null;
+                  return (
+                    <tr key={sale.id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatDate(sale.transaction_date)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">{sale.product_name}</div>
+                        <div className="text-sm text-gray-500">{sale.sku}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatCurrency(sale.selling_price)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {sale.quantity}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {formatCurrency(sale.selling_price * sale.quantity)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {sale.channel}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        {cust ? cust.name : <span className="text-gray-400">—</span>}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                          {sale.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button
+                          onClick={() => handleDelete(sale.id)}
+                          disabled={deletingId === sale.id}
+                          className="text-red-600 hover:text-red-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {deletingId === sale.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <X className="w-4 h-4" />
+                          )}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
-                  <td colSpan="8" className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan="9" className="px-6 py-12 text-center text-gray-500">
                     No pending sales to process
                   </td>
                 </tr>

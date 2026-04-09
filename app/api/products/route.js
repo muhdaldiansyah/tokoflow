@@ -1,5 +1,6 @@
 // app/api/products/route.js
 import { authenticateRequest } from '../../../lib/utils/auth-helpers';
+import { getCurrentRole } from '../../../lib/auth/role.js';
 import { successResponse, errorResponse, handleSupabaseError, successResponseWithETag } from '../../../lib/utils/api-response';
 import { parseQuery, buildNextLink } from '../../../lib/http/paging.js';
 import { outputCache, clearPrefix } from '../../../lib/cache/index.js';
@@ -150,7 +151,7 @@ export async function GET(request) {
     }
 
     // HEAVY query path: use view for single-query access to products with costs
-    const defaultSelect = 'id,sku,name,stock,created_at,updated_at,modal_cost,packing_cost,affiliate_percentage';
+    const defaultSelect = 'id,sku,name,stock,low_stock_threshold,stock_status,warehouse_id,warehouse_name,created_at,updated_at,modal_cost,packing_cost,affiliate_percentage';
     const viewSelect = select === '*' ? defaultSelect : select;
 
     let query = supabase
@@ -228,11 +229,32 @@ export async function POST(request) {
     }
 
     const { user, supabase } = authResult;
+    const role = await getCurrentRole(authResult);
     const body = await request.json();
 
     // Validate required fields
     if (!body.sku || !body.name) {
       return errorResponse('SKU and name are required');
+    }
+
+    // Staff can create products but not set cost fields
+    const wantsCostInsert =
+      body.modal_cost !== undefined ||
+      body.packing_cost !== undefined ||
+      body.affiliate_percentage !== undefined;
+    if (role !== 'owner' && wantsCostInsert) {
+      return errorResponse('Mengatur biaya produk hanya untuk owner.', 403);
+    }
+
+    // Resolve warehouse: caller-provided OR default
+    let warehouseId = body.warehouse_id;
+    if (!warehouseId) {
+      const { data: defaultWh } = await supabase
+        .from('tf_warehouses')
+        .select('id')
+        .eq('is_default', true)
+        .maybeSingle();
+      warehouseId = defaultWh?.id ?? null;
     }
 
     // Start transaction - create product and cost record
@@ -241,7 +263,9 @@ export async function POST(request) {
       .insert({
         sku: body.sku,
         name: body.name,
-        stock: body.stock || 0
+        stock: body.stock || 0,
+        low_stock_threshold: body.low_stock_threshold ?? 10,
+        warehouse_id: warehouseId,
       })
       .select()
       .single();
@@ -294,12 +318,18 @@ export async function PUT(request) {
 
     const rows = updates
       .filter(u => u && u.sku)
-      .map(u => ({
-        sku: u.sku,
-        name: u.name,
-        stock: u.stock,
-        updated_at: new Date().toISOString(),
-      }));
+      .map(u => {
+        const row = {
+          sku: u.sku,
+          name: u.name,
+          stock: u.stock,
+          updated_at: new Date().toISOString(),
+        };
+        if (u.low_stock_threshold !== undefined) {
+          row.low_stock_threshold = u.low_stock_threshold;
+        }
+        return row;
+      });
     if (!rows.length) return successResponse({ updated: 0 });
 
     const { data, error } = await supabase
