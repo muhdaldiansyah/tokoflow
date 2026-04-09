@@ -5,8 +5,34 @@
   "functions": {
     "app/**/*.js": {
       "maxDuration": 30
+    },
+    "app/api/marketplace/sync/[id]/route.js": {
+      "maxDuration": 60
+    },
+    "app/api/cron/marketplace-sync/route.js": {
+      "maxDuration": 300
+    },
+    "app/api/cron/webhook-events-process/route.js": {
+      "maxDuration": 300
+    },
+    "app/api/cron/marketplace-fee-reconcile/route.js": {
+      "maxDuration": 300
     }
   },
+  "crons": [
+    {
+      "path": "/api/cron/marketplace-sync",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/webhook-events-process",
+      "schedule": "*/2 * * * *"
+    },
+    {
+      "path": "/api/cron/marketplace-fee-reconcile",
+      "schedule": "0 3 * * *"
+    }
+  ],
   "env": {
     "NODE_OPTIONS": "--max-old-space-size=4096"
   }

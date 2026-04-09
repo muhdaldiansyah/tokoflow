@@ -1,42 +1,36 @@
 // app/api/marketplace/connect/[provider]/route.js
 //
-// SCAFFOLDING — not yet wired to a real marketplace OAuth flow.
+// Start the OAuth flow for a marketplace provider.
 //
-// What this endpoint will eventually do (per provider):
+// The merchant clicks "Connect Shopee" / "Connect TikTok Shop" in the UI,
+// which POSTs here. This route:
 //
-//   shopee
-//     1. Redirect merchant to https://partner.shopeemobile.com/api/v2/shop/auth_partner
-//        with partner_id, redirect URL, and HMAC-SHA256 signed timestamp.
-//     2. On callback, exchange the temporary code for an access_token + refresh_token
-//        via /api/v2/auth/token/get (signed request, expires in 4 hours).
-//     3. Persist into tf_marketplace_connections (channel='shopee', shop_id, ...).
-//     4. Schedule first sync.
-//   tokopedia
-//     Tokopedia uses Mitra/Partner OAuth — flow is similar but different endpoints.
-//     See https://developer.tokopedia.com/openapi for the v1 spec.
-//   tiktok-shop
-//     TikTok Shop Partner Center OAuth.
-//     See https://partner.tiktokshop.com/docv2/page/authorization
+//   1. Validates the provider and env vars.
+//   2. Generates a signed `state` token (HMAC-SHA256(CRON_SECRET, user_id + ts))
+//      that the callback will verify — prevents cross-session CSRF and lets
+//      us tie the callback back to the user who initiated it.
+//   3. Builds the provider-specific OAuth URL via the signer modules.
+//   4. Returns { redirect_url } so the client can navigate to it.
 //
-// Required env vars (NONE of these are set yet):
-//   SHOPEE_PARTNER_ID, SHOPEE_PARTNER_KEY, SHOPEE_REDIRECT_URI
-//   TOKOPEDIA_CLIENT_ID, TOKOPEDIA_CLIENT_SECRET, TOKOPEDIA_REDIRECT_URI
-//   TIKTOKSHOP_APP_KEY, TIKTOKSHOP_APP_SECRET, TIKTOKSHOP_REDIRECT_URI
+// Owner-only: only the merchant owner can connect a new marketplace.
+// Staff see a read-only view of existing connections.
 //
-// For now this endpoint:
-//   1. Creates a "stub" tf_marketplace_connections row marked is_active=false
-//      so the merchant can see it in /marketplace as "Pending — needs OAuth".
-//   2. Returns a 501 NOT IMPLEMENTED with a clear message about what's missing.
-//
-// This deliberately does NOT call any external API. We refuse to fake working
-// integration — that would mislead merchants into thinking their stock is sync'd.
+// Tokopedia is intentionally not supported — it's being absorbed into
+// TikTok Shop Partner Center (see research in project memory). The route
+// returns a 410 Gone for 'tokopedia' with a clear explanation.
+
+import crypto from 'node:crypto';
+
 import { authenticateRequest } from '../../../../../lib/utils/auth-helpers';
 import { requireOwner } from '../../../../../lib/auth/role.js';
-import { successResponse, errorResponse, handleSupabaseError } from '../../../../../lib/utils/api-response';
+import { successResponse, errorResponse } from '../../../../../lib/utils/api-response';
+
+import { buildAuthorizeUrl as buildTikTokAuthorizeUrl } from '../../../../../lib/services/marketplace/tiktok-shop/auth.js';
+import { buildAuthorizeUrl as buildShopeeAuthorizeUrl } from '../../../../../lib/services/marketplace/shopee/auth.js';
 
 export const runtime = 'nodejs';
 
-const VALID_PROVIDERS = new Set(['shopee', 'tokopedia', 'tiktok-shop']);
+const SUPPORTED_PROVIDERS = new Set(['shopee', 'tiktok-shop']);
 
 export async function POST(request, { params }) {
   try {
@@ -46,71 +40,106 @@ export async function POST(request, { params }) {
     if (!gate.ok) return gate.response;
 
     const { provider } = await params;
-    if (!VALID_PROVIDERS.has(provider)) {
-      return errorResponse(`Provider tidak dikenal: ${provider}`, 400);
-    }
 
-    // Check if real credentials are configured for this provider
-    const envChecks = {
-      'shopee':      ['SHOPEE_PARTNER_ID', 'SHOPEE_PARTNER_KEY', 'SHOPEE_REDIRECT_URI'],
-      'tokopedia':   ['TOKOPEDIA_CLIENT_ID', 'TOKOPEDIA_CLIENT_SECRET', 'TOKOPEDIA_REDIRECT_URI'],
-      'tiktok-shop': ['TIKTOKSHOP_APP_KEY', 'TIKTOKSHOP_APP_SECRET', 'TIKTOKSHOP_REDIRECT_URI'],
-    };
-    const required = envChecks[provider];
-    const missing = required.filter(k => !process.env[k]);
-
-    if (missing.length > 0) {
-      // Create the stub row so the merchant can see it in the UI as "pending"
-      const { data: existing } = await auth.supabase
-        .from('tf_marketplace_connections')
-        .select('id')
-        .eq('channel', provider)
-        .is('shop_id', null)
-        .maybeSingle();
-
-      if (!existing) {
-        const { error: insertError } = await auth.supabase
-          .from('tf_marketplace_connections')
-          .insert({
-            channel: provider,
-            shop_id: null,
-            shop_name: null,
-            last_sync_status: 'failed',
-            last_sync_error: `Missing env vars: ${missing.join(', ')}. Konfigurasi credentials di .env dulu.`,
-            is_active: false,
-            created_by: auth.user.id,
-          });
-        if (insertError) return handleSupabaseError(insertError);
-      }
-
+    // Tokopedia is gone — TikTok Shop covers it now.
+    if (provider === 'tokopedia') {
       return errorResponse(
-        `OAuth ${provider} belum dikonfigurasi. Tambahkan env vars: ${missing.join(', ')} ` +
-        `lalu restart server. Lihat dokumentasi: docs/marketplace-integration.md`,
-        501
+        'Integrasi Tokopedia sudah diabsorpsi ke TikTok Shop Partner Center. ' +
+          'Gunakan "Connect TikTok Shop" — satu koneksi menutupi toko Tokopedia dan TikTok Shop.',
+        410
       );
     }
 
-    // ===================================================================
-    // TODO: Real OAuth implementation goes here.
-    //
-    // For Shopee:
-    //   const timestamp = Math.floor(Date.now() / 1000);
-    //   const sign = crypto.createHmac('sha256', process.env.SHOPEE_PARTNER_KEY)
-    //     .update(`${process.env.SHOPEE_PARTNER_ID}/api/v2/shop/auth_partner${timestamp}`)
-    //     .digest('hex');
-    //   const authUrl = `https://partner.shopeemobile.com/api/v2/shop/auth_partner` +
-    //     `?partner_id=${process.env.SHOPEE_PARTNER_ID}` +
-    //     `&redirect=${encodeURIComponent(process.env.SHOPEE_REDIRECT_URI)}` +
-    //     `&timestamp=${timestamp}` +
-    //     `&sign=${sign}`;
-    //   return successResponse({ redirect_url: authUrl });
-    // ===================================================================
-    return errorResponse(
-      'OAuth flow scaffolded but not yet implemented. See TODO comment in route file.',
-      501
-    );
+    if (!SUPPORTED_PROVIDERS.has(provider)) {
+      return errorResponse(`Provider tidak dikenal: ${provider}`, 400);
+    }
+
+    // Build a signed state token that the callback will verify.
+    const state = buildState(auth.user.id);
+
+    let redirectUrl;
+
+    if (provider === 'tiktok-shop') {
+      const appKey = process.env.TIKTOKSHOP_APP_KEY;
+      if (!appKey) {
+        return errorResponse(
+          'TIKTOKSHOP_APP_KEY belum dikonfigurasi. Set env var lalu restart server.',
+          501
+        );
+      }
+      redirectUrl = buildTikTokAuthorizeUrl({ appKey, state });
+    } else if (provider === 'shopee') {
+      const partnerId = process.env.SHOPEE_PARTNER_ID;
+      const partnerKey = process.env.SHOPEE_PARTNER_KEY;
+      const redirect = resolveShopeeRedirect(request);
+      if (!partnerId || !partnerKey) {
+        return errorResponse(
+          'SHOPEE_PARTNER_ID / SHOPEE_PARTNER_KEY belum dikonfigurasi.',
+          501
+        );
+      }
+      // Append state as a query param on the redirect URL so we can verify
+      // it in the callback. Shopee itself doesn't pass `state` through.
+      const redirectWithState = appendQuery(redirect, { state });
+      redirectUrl = buildShopeeAuthorizeUrl({
+        partnerId,
+        partnerKey,
+        redirect: redirectWithState,
+        environment: process.env.SHOPEE_ENVIRONMENT,
+      });
+    }
+
+    return successResponse({ redirect_url: redirectUrl });
   } catch (err) {
     console.error('[marketplace/connect] error', err);
-    return errorResponse('Failed to start connection', 500);
+    return errorResponse('Failed to start OAuth flow', 500);
   }
+}
+
+// ---------------------------------------------------------------------------
+// State token (CSRF protection)
+// ---------------------------------------------------------------------------
+
+/**
+ * Build a signed state token: base64url(user_id).base64url(ts).hex_hmac
+ * Verified in the callback route before accepting the OAuth code.
+ */
+function buildState(userId) {
+  const secret = process.env.CRON_SECRET || process.env.MARKETPLACE_ENCRYPTION_KEY || 'dev-state-secret';
+  const ts = Math.floor(Date.now() / 1000);
+  const payload = `${userId}.${ts}`;
+  const sig = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+  return `${Buffer.from(payload, 'utf8').toString('base64url')}.${sig}`;
+}
+
+// ---------------------------------------------------------------------------
+// Shopee redirect URL resolver
+// ---------------------------------------------------------------------------
+
+/**
+ * Resolve the Shopee OAuth redirect URL. Prefer SHOPEE_REDIRECT_URI if set,
+ * otherwise derive from the current request host (development).
+ */
+function resolveShopeeRedirect(request) {
+  if (process.env.SHOPEE_REDIRECT_URI) return process.env.SHOPEE_REDIRECT_URI;
+  const origin = getOrigin(request);
+  return `${origin}/api/marketplace/callback/shopee`;
+}
+
+function getOrigin(request) {
+  const env = process.env.NEXT_PUBLIC_SITE_URL;
+  if (env) return env.replace(/\/$/, '');
+  try {
+    return new URL(request.url).origin;
+  } catch {
+    return 'http://localhost:3000';
+  }
+}
+
+function appendQuery(url, extras) {
+  const u = new URL(url);
+  for (const [k, v] of Object.entries(extras)) {
+    u.searchParams.set(k, String(v));
+  }
+  return u.toString();
 }

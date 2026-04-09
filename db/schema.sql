@@ -243,6 +243,124 @@ create table if not exists public.tf_marketplace_connections (
 create index if not exists tf_marketplace_connections_channel_idx
   on public.tf_marketplace_connections (channel);
 
+-- Idempotent migration: add the columns a real marketplace integration needs.
+-- These extend the Phase 9 scaffolding with:
+--   shop_cipher             — TikTok Shop per-shop scoped identifier (opaque,
+--                             required on every API call after OAuth)
+--   access_token_enc        — app-layer AES-GCM ciphertext, base64(iv|ct|tag)
+--   refresh_token_enc       — same format; replaces the plaintext refresh_token
+--   refresh_token_expires_at — separate from access_token_expires_at (the
+--                             existing token_expires_at column is reused as
+--                             the access-token expiry)
+--   last_sync_cursor        — watermark for incremental poll (update_time_ge)
+--   last_webhook_at         — last time we received any push for this shop
+--   seller_type             — 'TikTok Shop' | 'Tokopedia Shop' | 'Shopee' etc;
+--                             populated from TikTok Shop's /authorization/
+--                             202309/shops response so we can distinguish
+--                             migrated Tokopedia storefronts in the UI.
+--   connection_meta         — jsonb stash for provider-specific extras
+--                             (open_id, granted_scopes, shop_region, etc.)
+--   encryption_key_version  — lets us rotate MARKETPLACE_ENCRYPTION_KEY later
+--                             by running a migration that re-encrypts per-row.
+--   deactivated_at / reason — set when a shop revokes us (SELLER_DEAUTHORIZATION
+--                             for TikTok Shop, code 10 for Shopee).
+do $$
+begin
+  if not exists (select 1 from information_schema.columns
+                 where table_schema='public' and table_name='tf_marketplace_connections' and column_name='shop_cipher') then
+    alter table public.tf_marketplace_connections add column shop_cipher text;
+  end if;
+  if not exists (select 1 from information_schema.columns
+                 where table_schema='public' and table_name='tf_marketplace_connections' and column_name='access_token_enc') then
+    alter table public.tf_marketplace_connections add column access_token_enc text;
+  end if;
+  if not exists (select 1 from information_schema.columns
+                 where table_schema='public' and table_name='tf_marketplace_connections' and column_name='refresh_token_enc') then
+    alter table public.tf_marketplace_connections add column refresh_token_enc text;
+  end if;
+  if not exists (select 1 from information_schema.columns
+                 where table_schema='public' and table_name='tf_marketplace_connections' and column_name='refresh_token_expires_at') then
+    alter table public.tf_marketplace_connections add column refresh_token_expires_at timestamptz;
+  end if;
+  if not exists (select 1 from information_schema.columns
+                 where table_schema='public' and table_name='tf_marketplace_connections' and column_name='last_sync_cursor') then
+    alter table public.tf_marketplace_connections add column last_sync_cursor timestamptz;
+  end if;
+  if not exists (select 1 from information_schema.columns
+                 where table_schema='public' and table_name='tf_marketplace_connections' and column_name='last_webhook_at') then
+    alter table public.tf_marketplace_connections add column last_webhook_at timestamptz;
+  end if;
+  if not exists (select 1 from information_schema.columns
+                 where table_schema='public' and table_name='tf_marketplace_connections' and column_name='seller_type') then
+    alter table public.tf_marketplace_connections add column seller_type text;
+  end if;
+  if not exists (select 1 from information_schema.columns
+                 where table_schema='public' and table_name='tf_marketplace_connections' and column_name='connection_meta') then
+    alter table public.tf_marketplace_connections add column connection_meta jsonb default '{}'::jsonb;
+  end if;
+  if not exists (select 1 from information_schema.columns
+                 where table_schema='public' and table_name='tf_marketplace_connections' and column_name='encryption_key_version') then
+    alter table public.tf_marketplace_connections add column encryption_key_version smallint default 1;
+  end if;
+  if not exists (select 1 from information_schema.columns
+                 where table_schema='public' and table_name='tf_marketplace_connections' and column_name='deactivated_at') then
+    alter table public.tf_marketplace_connections add column deactivated_at timestamptz;
+  end if;
+  if not exists (select 1 from information_schema.columns
+                 where table_schema='public' and table_name='tf_marketplace_connections' and column_name='deactivated_reason') then
+    alter table public.tf_marketplace_connections add column deactivated_reason text;
+  end if;
+end$$;
+
+create index if not exists tf_marketplace_connections_active_idx
+  on public.tf_marketplace_connections (is_active, last_sync_cursor)
+  where is_active = true;
+
+-- ---------------------------------------------------------------------------
+-- tf_webhook_events — inbox for marketplace webhook deliveries.
+--
+-- Shopee and TikTok Shop push order/status events to endpoints we register at
+-- their partner center. Their delivery guarantees are "eventually, usually,
+-- with retries for ~24h" — not exactly-once. To stay safe:
+--
+--   1. The webhook HTTP endpoint verifies the signature, writes one row here
+--      (signature_verified = true), and returns 200 as fast as possible
+--      (every platform times out the webhook in ~5s).
+--   2. A separate cron job picks pending rows, fetches full order detail from
+--      the platform API, and writes to tf_sales_input with the external_*
+--      columns — which are protected by a partial unique index, so retries
+--      are safe.
+--   3. status transitions: pending → processing → processed (or failed).
+--
+-- Dedup strategy: we rely on the partial unique index on tf_sales_input for
+-- the hard dedup guarantee at the sales layer. The inbox can hold duplicates
+-- (e.g. webhook retry) and the processor will skip them thanks to the unique
+-- constraint on (external_source, external_order_id, external_item_id).
+-- ---------------------------------------------------------------------------
+create table if not exists public.tf_webhook_events (
+  id                  bigserial primary key,
+  source              text not null,                  -- 'shopee' | 'tiktok-shop'
+  event_type          text,                           -- provider-native event code/name
+  shop_id             text,                           -- platform shop identifier from payload
+  connection_id       bigint references public.tf_marketplace_connections(id) on delete set null,
+  external_order_id   text,                           -- extracted for quick lookup
+  raw_body            jsonb not null,
+  signature           text,
+  signature_verified  boolean not null default false,
+  status              text not null default 'pending', -- pending | processing | processed | failed
+  attempts            integer not null default 0,
+  last_error          text,
+  received_at         timestamptz not null default now(),
+  processed_at        timestamptz
+);
+create index if not exists tf_webhook_events_status_idx
+  on public.tf_webhook_events (status, received_at);
+create index if not exists tf_webhook_events_source_idx
+  on public.tf_webhook_events (source, received_at desc);
+create index if not exists tf_webhook_events_order_idx
+  on public.tf_webhook_events (source, external_order_id)
+  where external_order_id is not null;
+
 -- ---------------------------------------------------------------------------
 -- tf_alert_acks — per-user acknowledgement of stock alerts.
 --
@@ -315,6 +433,51 @@ begin
   end if;
 end$$;
 
+-- Idempotent migration: marketplace idempotency columns.
+-- When a sync job pulls an order from Shopee/TikTok Shop, we write one row per
+-- line item into tf_sales_input. The same order may arrive multiple times
+-- (webhook retry, poller overlap window), so the partial unique index below
+-- is the hard dedup boundary. Rows with external_order_id IS NULL (manual
+-- entry via /sales) are unaffected.
+--
+--   external_source      — 'shopee' | 'tiktok-shop' | null for manual
+--   external_order_id    — platform order identifier (order_sn / order.id)
+--   external_item_id     — platform line item identifier (order_item_id / line_items[].id)
+--   external_update_time — Unix seconds from the platform; lets the processor
+--                          ignore stale webhook replays if a newer event for
+--                          the same line already processed.
+--   marketplace_raw      — snapshot of the platform response (or the subset
+--                          we care about) for debugging and replay.
+do $$
+begin
+  if not exists (select 1 from information_schema.columns
+                 where table_schema='public' and table_name='tf_sales_input' and column_name='external_source') then
+    alter table public.tf_sales_input add column external_source text;
+  end if;
+  if not exists (select 1 from information_schema.columns
+                 where table_schema='public' and table_name='tf_sales_input' and column_name='external_order_id') then
+    alter table public.tf_sales_input add column external_order_id text;
+  end if;
+  if not exists (select 1 from information_schema.columns
+                 where table_schema='public' and table_name='tf_sales_input' and column_name='external_item_id') then
+    alter table public.tf_sales_input add column external_item_id text;
+  end if;
+  if not exists (select 1 from information_schema.columns
+                 where table_schema='public' and table_name='tf_sales_input' and column_name='external_update_time') then
+    alter table public.tf_sales_input add column external_update_time bigint;
+  end if;
+  if not exists (select 1 from information_schema.columns
+                 where table_schema='public' and table_name='tf_sales_input' and column_name='marketplace_raw') then
+    alter table public.tf_sales_input add column marketplace_raw jsonb;
+  end if;
+end$$;
+
+-- Hard dedup boundary for marketplace sync. Manual /sales input has all three
+-- NULL so the partial predicate preserves unconstrained manual entry.
+create unique index if not exists tf_sales_input_external_uniq
+  on public.tf_sales_input (external_source, external_order_id, external_item_id)
+  where external_order_id is not null;
+
 -- ---------------------------------------------------------------------------
 -- tf_sales_transactions — finalized sales with full financial breakdown
 -- ---------------------------------------------------------------------------
@@ -356,8 +519,37 @@ begin
   end if;
 end$$;
 
+-- Idempotent migration: marketplace back-reference columns.
+-- When a marketplace sale is finalized into tf_sales_transactions, we keep
+-- the platform identifiers so the daily fee-reconciliation job can find the
+-- row and update marketplace_fee + net_profit with authoritative settlement
+-- numbers (Shopee get_escrow_detail / TikTok Shop statement_transactions).
+-- fee_reconciled_at is set when we've written the real settlement number.
+do $$
+begin
+  if not exists (select 1 from information_schema.columns
+                 where table_schema='public' and table_name='tf_sales_transactions' and column_name='external_source') then
+    alter table public.tf_sales_transactions add column external_source text;
+  end if;
+  if not exists (select 1 from information_schema.columns
+                 where table_schema='public' and table_name='tf_sales_transactions' and column_name='external_order_id') then
+    alter table public.tf_sales_transactions add column external_order_id text;
+  end if;
+  if not exists (select 1 from information_schema.columns
+                 where table_schema='public' and table_name='tf_sales_transactions' and column_name='external_item_id') then
+    alter table public.tf_sales_transactions add column external_item_id text;
+  end if;
+  if not exists (select 1 from information_schema.columns
+                 where table_schema='public' and table_name='tf_sales_transactions' and column_name='fee_reconciled_at') then
+    alter table public.tf_sales_transactions add column fee_reconciled_at timestamptz;
+  end if;
+end$$;
+
 create index if not exists tf_sales_transactions_customer_idx
   on public.tf_sales_transactions (customer_id);
+create index if not exists tf_sales_transactions_external_idx
+  on public.tf_sales_transactions (external_source, external_order_id)
+  where external_order_id is not null;
 
 -- ---------------------------------------------------------------------------
 -- tf_incoming_goods_input — staging for incoming goods
@@ -575,6 +767,7 @@ alter table public.tf_product_compositions enable row level security;
 alter table public.tf_customers           enable row level security;
 alter table public.tf_warehouses          enable row level security;
 alter table public.tf_marketplace_connections enable row level security;
+alter table public.tf_webhook_events      enable row level security;
 alter table public.tf_alert_acks          enable row level security;
 alter table public.kn_membership_plans    enable row level security;
 alter table public.kn_transactions        enable row level security;
@@ -595,7 +788,8 @@ begin
     'tf_sales_input','tf_sales_transactions',
     'tf_incoming_goods_input','tf_incoming_goods',
     'tf_stock_adjustments','tf_product_compositions',
-    'tf_customers','tf_warehouses','tf_marketplace_connections'
+    'tf_customers','tf_warehouses','tf_marketplace_connections',
+    'tf_webhook_events'
   ])
   loop
     foreach op in array array['select','insert','update','delete'] loop

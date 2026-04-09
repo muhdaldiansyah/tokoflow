@@ -59,10 +59,38 @@ pertama yang membentuk produk ini bersama kami.
 - ✅ Barcode scanner page dengan kamera HP (`BarcodeDetector` API)
 
 ### Marketplace Integration
-- ⚠️ **Scaffolding only** — schema, OAuth flow, dan UI sudah siap.
-  Real sync ke Shopee / Tokopedia / TikTok Shop butuh credentials platform
-  + implementasi OAuth callback. Lihat `app/api/marketplace/connect/[provider]/route.js`
-  untuk spec lengkap.
+- ✅ **TikTok Shop Partner Center** — OAuth connect, per-shop token
+  encryption (AES-256-GCM), order search + detail, webhook verification
+  (ORDER_STATUS_UPDATE, SELLER_DEAUTHORIZATION, etc). Covers both TikTok Shop
+  Indonesia AND migrated Tokopedia storefronts — one OAuth connection surfaces
+  as `seller_type: "TikTok Shop"` or `"Tokopedia Shop"` depending on which
+  storefront the merchant authorized.
+- ✅ **Shopee Open Platform v2** — OAuth connect, token refresh (4h access /
+  30d refresh), `get_order_list` / `get_order_detail` / `get_escrow_detail`
+  for authoritative commission + service fees. Webhook signature verification
+  supports both the `Authorization` header and `X-Shopee-Signature` header
+  variants Shopee has shipped.
+- ✅ **ISV pattern** — one set of developer credentials for Tokoflow, every
+  merchant OAuths their own shop. Merchants never see a developer portal.
+- ✅ **Idempotent sync** — partial unique index on
+  `(external_source, external_order_id, external_item_id)` means duplicate
+  webhook deliveries / poll overlaps upsert cleanly with no double-counting.
+- ✅ **Webhook inbox** (`tf_webhook_events`) + cron drain — webhooks return
+  200 in <100ms, actual order processing happens via the drain cron every
+  2 min. Failed events retry up to 5 times with exponential backoff.
+- ✅ **Fee reconciliation** — daily cron pulls real escrow settlement from
+  Shopee and rewrites `marketplace_fee` + `net_profit` on finalized
+  transactions. TikTok Shop finance-API reconciliation is scaffolded (WIP).
+- ✅ **81 unit tests** proving signer + webhook-verifier correctness. Run
+  with `node --test lib/services/marketplace/**/*.test.js`.
+- ⚠️ **Tokopedia (standalone)** — intentionally not supported. The legacy
+  `developer.tokopedia.com` OpenAPI is being terminated and storefronts are
+  absorbed into TikTok Shop Partner Center. Use the TikTok Shop connection.
+- ⚠️ **Production verification pending** — code is complete and unit-tested
+  but end-to-end OAuth flow against real TikTok Shop / Shopee credentials
+  has not been run yet. Requires registering a Custom App at
+  [partner.tiktokshop.com](https://partner.tiktokshop.com) (2-3 day review)
+  and an app at [open.shopee.com](https://open.shopee.com).
 
 ---
 
@@ -70,7 +98,8 @@ pertama yang membentuk produk ini bersama kami.
 
 | Feature | Kenapa belum | Effort kalau mau dibangun |
 |---|---|---|
-| Real marketplace sync | Butuh Shopee partner account + sandbox creds | 3–5 hari per platform |
+| Lazada / Blibli integration | TikTok Shop + Shopee cover ~85-90% GMV Indonesia. Scope ditahan di dua platform dulu. Plumbing di `lib/services/marketplace/` sudah reusable. | ~1-2 hari per platform |
+| TikTok Shop finance-API reconciliation | Shopee escrow reconciliation sudah jalan; TikTok Shop statement_transactions endpoint masih scaffolded (TODO di `app/api/cron/marketplace-fee-reconcile/route.js`) | 1 hari |
 | Per-warehouse stok per produk (one SKU, multiple locations) | Tier 4 — butuh `tf_product_inventory` pivot table dan rewrite semua inventory queries | 2–3 hari |
 | Email/WhatsApp delivery untuk stock alerts | Butuh SMTP/WA provider + cron config. In-app notification sudah jalan | 1 hari |
 | Payment / Midtrans | `/checkout` page sudah ada tapi `/api/payment/*` belum dibangun. Feature-flagged off | 1–2 hari |
@@ -99,12 +128,33 @@ cp .env.example .env.local
 Edit `.env.local`:
 
 ```env
+# Core — required
 NEXT_PUBLIC_SUPABASE_URL=https://<your-project>.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-anon-key>
+SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>   # server-only, RLS bypass
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 NEXT_PUBLIC_APP_NAME=Tokoflow
 NEXT_PUBLIC_APP_DESCRIPTION=Inventory and Sales Management System
+
+# Marketplace — required for TikTok Shop / Shopee integration
+# Generate both with: node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+MARKETPLACE_ENCRYPTION_KEY=<32 raw bytes base64>    # AES-GCM token encryption
+CRON_SECRET=<any random string>                      # protects /api/cron/*
+
+# Marketplace — fill after app registration at partner.tiktokshop.com / open.shopee.com
+TIKTOKSHOP_APP_KEY=
+TIKTOKSHOP_APP_SECRET=
+TIKTOKSHOP_REDIRECT_URI=https://<your-domain>/api/marketplace/callback/tiktok-shop
+SHOPEE_PARTNER_ID=
+SHOPEE_PARTNER_KEY=
+SHOPEE_REDIRECT_URI=https://<your-domain>/api/marketplace/callback/shopee
+SHOPEE_ENVIRONMENT=test    # 'test' for UAT, 'live' for production
 ```
+
+**Note on marketplace testing:** TikTok Shop and Shopee OAuth flows both
+require HTTPS publicly-reachable redirect URIs. `http://localhost:3000` won't
+work — either deploy to Vercel first to get a public URL, or use a tunneling
+tool like `cloudflared tunnel` during development.
 
 ### Apply database schema
 
@@ -168,7 +218,7 @@ Or deploy to Vercel — `vercel.json` is configured.
 │   │   ├── marketplace-fees/      # Per-channel fee config (owner)
 │   │   ├── product-costs/         # Per-SKU cost config (owner)
 │   │   ├── warehouses/            # Warehouse management (owner)
-│   │   ├── marketplace/           # Marketplace integration scaffolding (owner)
+│   │   ├── marketplace/           # Marketplace integration management (owner only)
 │   │   ├── scanner/               # Barcode scanner using BarcodeDetector API
 │   │   └── admin/users/           # User management with role promotion (owner)
 │   ├── (public)/                  # Marketing + auth pages
@@ -183,8 +233,18 @@ Or deploy to Vercel — `vercel.json` is configured.
 │   │   ├── customers/             # Customer CRUD + lifetime stats
 │   │   ├── dashboard/             # Summary + analytics
 │   │   ├── inventory/             # Stock + adjustments + movements
-│   │   ├── marketplace/           # Connection mgmt (scaffolding)
+│   │   ├── marketplace/           # List / disconnect connections
+│   │   │   ├── connect/[provider]/  # POST — build signed OAuth redirect URL
+│   │   │   ├── callback/[provider]/ # GET — OAuth callback, token exchange, encrypted persist
+│   │   │   └── sync/[id]/         # POST — manual sync trigger (owner only)
 │   │   ├── marketplace-fees/      # Fee CRUD (owner-gated mutations)
+│   │   ├── webhooks/
+│   │   │   ├── tiktok-shop/       # POST — verify Authorization HMAC, insert into inbox
+│   │   │   └── shopee/            # POST — dual variant signature verification
+│   │   ├── cron/
+│   │   │   ├── marketplace-sync/              # */15 min — poll all active connections
+│   │   │   ├── webhook-events-process/        # */2 min — drain tf_webhook_events inbox
+│   │   │   └── marketplace-fee-reconcile/     # daily @ 03:00 — authoritative fee settlement
 │   │   ├── product-compositions/  # Bundle CRUD
 │   │   ├── product-costs/         # Cost CRUD (owner-gated)
 │   │   ├── products/              # Product CRUD with view-based GET
@@ -197,9 +257,16 @@ Or deploy to Vercel — `vercel.json` is configured.
 ├── lib/
 │   ├── auth/role.js               # requireOwner / getCurrentRole gates
 │   ├── cache/                     # LRU output cache
-│   ├── database/                  # Supabase clients (server + browser)
+│   ├── database/                  # Supabase clients (server + browser + service-role)
 │   ├── http/                      # ETag, paging, cursor, server-timing
-│   ├── services/                  # Business logic (sales, inventory, etc.)
+│   ├── services/                  # Business logic (sales, inventory, composition, etc.)
+│   │   └── marketplace/           # Marketplace integration (TikTok Shop + Shopee)
+│   │       ├── crypto.js          #   AES-256-GCM token encryption + HMAC helpers
+│   │       ├── errors.js          #   MarketplaceError taxonomy + provider classifiers
+│   │       ├── http.js            #   fetch wrapper: retry, backoff, timeout, logging
+│   │       ├── connections.js     #   Token-aware tf_marketplace_connections accessors
+│   │       ├── tiktok-shop/       #   signer, auth, orders, webhooks, sync + .test.js
+│   │       └── shopee/            #   same structure for Shopee v2
 │   ├── state/                     # Global state tags for cache invalidation
 │   └── utils/                     # api-response, auth-helpers, format
 ├── db/
@@ -221,25 +288,40 @@ Or deploy to Vercel — `vercel.json` is configured.
 
 ## Environment variables
 
+### Core
+
 | Var | Required | Default | Purpose |
 |---|---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | ✅ | — | Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ✅ | — | Supabase anon key |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ✅ | — | Supabase anon key (client-exposed) |
+| `SUPABASE_SERVICE_ROLE_KEY` | ✅ for marketplace | — | Server-only. Used by webhook handlers and cron jobs to bypass RLS. Never expose to the browser. |
 | `NEXT_PUBLIC_SITE_URL` | ✅ | — | Base URL for OG tags + email links |
 | `NEXT_PUBLIC_APP_NAME` | — | `TokoFlow` | App title |
 | `NEXT_PUBLIC_APP_DESCRIPTION` | — | — | Meta description |
 | `NEXT_PUBLIC_GA_MEASUREMENT_ID` | — | — | Google Analytics |
 | `NEXT_PUBLIC_PAYMENT_ENABLED` | — | `false` | Set to `true` to un-feature-flag `/checkout` and `/plans` (only after the Midtrans backend is built) |
 | `NEXT_PUBLIC_MIDTRANS_CLIENT_KEY` | — | — | Midtrans Snap client key (when enabled) |
-| `SHOPEE_PARTNER_ID` | — | — | Shopee Open Platform partner ID |
-| `SHOPEE_PARTNER_KEY` | — | — | Shopee partner key (HMAC signing) |
-| `SHOPEE_REDIRECT_URI` | — | — | Shopee OAuth callback URL |
-| `TOKOPEDIA_CLIENT_ID` | — | — | Tokopedia Mitra client ID |
-| `TOKOPEDIA_CLIENT_SECRET` | — | — | Tokopedia client secret |
-| `TOKOPEDIA_REDIRECT_URI` | — | — | Tokopedia OAuth callback URL |
-| `TIKTOKSHOP_APP_KEY` | — | — | TikTok Shop app key |
-| `TIKTOKSHOP_APP_SECRET` | — | — | TikTok Shop app secret |
-| `TIKTOKSHOP_REDIRECT_URI` | — | — | TikTok Shop OAuth callback URL |
+
+### Marketplace
+
+| Var | Required | Default | Purpose |
+|---|---|---|---|
+| `MARKETPLACE_ENCRYPTION_KEY` | ✅ | — | **32 raw bytes base64-encoded.** AES-256-GCM key used to encrypt OAuth tokens in `tf_marketplace_connections`. Generate with `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`. **Losing this key makes every stored token unrecoverable** — merchants must re-OAuth. Back it up before rotating. |
+| `CRON_SECRET` | ✅ | — | Shared secret for `/api/cron/*` endpoints. Vercel Cron sends `Authorization: Bearer $CRON_SECRET` automatically for scheduled invocations. |
+| `TIKTOKSHOP_APP_KEY` | — | — | TikTok Shop Partner Center Custom App key |
+| `TIKTOKSHOP_APP_SECRET` | — | — | TikTok Shop Custom App secret |
+| `TIKTOKSHOP_REDIRECT_URI` | — | — | Must match the Redirect URL configured in Partner Center. Typically `https://<domain>/api/marketplace/callback/tiktok-shop` |
+| `SHOPEE_PARTNER_ID` | — | — | Shopee Open Platform partner ID (integer) |
+| `SHOPEE_PARTNER_KEY` | — | — | Shopee partner key (HMAC-SHA256 signing key) |
+| `SHOPEE_REDIRECT_URI` | — | — | Typically `https://<domain>/api/marketplace/callback/shopee` |
+| `SHOPEE_ENVIRONMENT` | — | `test` | `test` → `partner.test-stable.shopeemobile.com` (UAT), `live` → `partner.shopeemobile.com` |
+
+### Deprecated / Not used
+
+- `TOKOPEDIA_CLIENT_ID` / `TOKOPEDIA_CLIENT_SECRET` / `TOKOPEDIA_REDIRECT_URI` —
+  Tokopedia legacy OpenAPI is being terminated. Tokopedia storefronts are now
+  accessible via TikTok Shop Partner Center under `seller_type: "Tokopedia Shop"`.
+  Don't re-add a separate Tokopedia integration.
 
 ---
 
@@ -291,11 +373,28 @@ via `/admin/users`.
 
 ### Running tests
 
-There are currently no automated tests. The validation strategy is:
+**Marketplace modules** have 81 passing unit tests covering HMAC signers,
+webhook signature verification, and AES-GCM crypto round-trip. They use
+Node's built-in test runner (zero dependencies):
 
-1. `node --check <file>` for route files (real parser)
+```bash
+# All marketplace tests
+node --test lib/services/marketplace/**/*.test.js
+
+# A single file
+node --test lib/services/marketplace/tiktok-shop/signer.test.js
+```
+
+The signer test files are the **specification** for the HMAC formulas — any
+change to `signer.js` must keep the tests green. They're hand-verified
+against open-source SDK references (`EcomPHP/tiktokshop-php` for TikTok Shop,
+documented vectors for Shopee v2).
+
+**Other validation:**
+1. `node --check <file>` for route files (real parser, catches syntax errors)
 2. End-to-end SQL probe via the Supabase Management API after schema changes
-3. Manual smoke test in `npm run dev`
+3. `npm run build` catches compile-time issues (TypeScript, import errors)
+4. Manual smoke test in `npm run dev`
 
 ### Deployment
 
@@ -324,11 +423,14 @@ dashboard before deploying.
 | 2 | User management UI | ✅ |
 | 2 | Stock alert in-app notifications | ✅ |
 | 3 | Multi-warehouse (single warehouse per product) | ✅ |
-| 3 | Marketplace API connection scaffolding | ✅ |
 | 3 | PWA + barcode scanner | ✅ |
-| 3 | Real Shopee OAuth implementation | ⏳ needs partner creds |
+| 3 | Marketplace integration plumbing (signers, crypto, webhooks, cron, UI) | ✅ |
+| 3 | TikTok Shop OAuth + sync + webhook verification | ✅ code, ⏳ credentials |
+| 3 | Shopee v2 OAuth + sync + webhook + escrow fee reconciliation | ✅ code, ⏳ credentials |
 | 3 | Email/WhatsApp alert delivery | ⏳ needs SMTP/WA provider |
 | 3 | Midtrans payment backend | ⏳ feature-flagged off |
+| 4 | TikTok Shop finance-API fee reconciliation | ⏳ scaffolded, Shopee done |
+| 4 | Lazada integration | ⏳ plumbing reusable, ~1-2 days |
 | 4 | Per-warehouse stock per product (`tf_product_inventory` pivot) | ⏳ |
 | 4 | Multi-tenancy (multiple merchants per install) | ⏳ |
 | 4 | iOS Safari barcode polyfill | ⏳ |

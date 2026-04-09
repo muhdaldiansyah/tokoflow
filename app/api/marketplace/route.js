@@ -7,22 +7,41 @@ import { successResponse, errorResponse, handleSupabaseError } from '../../../li
 
 export const runtime = 'nodejs';
 
-const VALID_CHANNELS = new Set(['shopee', 'tokopedia', 'tiktok-shop']);
+// Tokopedia is NOT in the supported list: its OpenAPI was absorbed into
+// TikTok Shop Partner Center in 2025 and new integrations must use the
+// TikTok Shop app. See docs/marketplace-integration.md.
+const VALID_CHANNELS = new Set(['tiktok-shop', 'shopee']);
 
 export async function GET(request) {
   try {
     const auth = await authenticateRequest(request);
     if (!auth.ok) return errorResponse(auth.error || 'Unauthorized', auth.status || 401);
 
+    // Explicit column list — NEVER include access_token_enc / refresh_token_enc
+    // / shop_cipher / scope in the response. Those are server-only.
     const { data, error } = await auth.supabase
       .from('tf_marketplace_connections')
-      .select('id, channel, shop_id, shop_name, last_sync_at, last_sync_status, last_sync_error, is_active, created_at, updated_at')
+      .select([
+        'id',
+        'channel',
+        'shop_id',
+        'shop_name',
+        'seller_type',
+        'last_sync_at',
+        'last_sync_cursor',
+        'last_sync_status',
+        'last_sync_error',
+        'last_webhook_at',
+        'is_active',
+        'deactivated_at',
+        'deactivated_reason',
+        'created_at',
+        'updated_at',
+      ].join(', '))
       .order('channel', { ascending: true });
 
     if (error) return handleSupabaseError(error);
 
-    // Never expose tokens to the client. The columns above already exclude
-    // access_token / refresh_token / scope, but be explicit about it.
     return successResponse({
       connections: data || [],
       supported_channels: Array.from(VALID_CHANNELS),
