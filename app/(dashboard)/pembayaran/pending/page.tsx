@@ -14,13 +14,13 @@ export default function PaymentPendingPage() {
           Waiting for payment
         </h1>
         <p className="text-sm text-gray-500 mb-6">
-          Pembayaranmu sedang diproses. Paket akan aktif setelah pembayaran dikonfirmasi.
+          Your payment is being processed. The plan will activate once payment is confirmed.
         </p>
         <Link
           href="/orders"
           className="inline-flex h-11 items-center justify-center px-6 bg-gray-900 text-white rounded-xl hover:bg-gray-800 active:bg-gray-700 transition-colors text-sm font-medium"
         >
-          Kembali ke Dashboard
+          Back to dashboard
         </Link>
       </div>
     </div>

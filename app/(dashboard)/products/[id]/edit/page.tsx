@@ -36,9 +36,9 @@ export default function EditProductPage({
   if (!product) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground mb-4">Produk tidak ditemukan</p>
+        <p className="text-muted-foreground mb-4">Product not found</p>
         <Link href="/products" className="text-foreground underline">
-          Kembali ke daftar produk
+          Back to products
         </Link>
       </div>
     );

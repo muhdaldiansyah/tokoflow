@@ -429,14 +429,14 @@ export default function CustomerDetailPage({
                   onClick={() => setIsEditing(false)}
                   className="flex-1 h-11 rounded-lg bg-card border border-border shadow-sm text-xs font-medium text-foreground hover:bg-muted transition-colors"
                 >
-                  Batal
+                  Cancel
                 </button>
                 <button
                   onClick={handleSave}
                   disabled={isSaving}
                   className="flex-1 h-11 rounded-lg bg-warm-green text-white text-xs font-medium hover:bg-warm-green-hover active:bg-warm-green-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  {isSaving ? "Saving..." : "Simpan"}
+                  {isSaving ? "Saving..." : "Save"}
                 </button>
               </div>
 

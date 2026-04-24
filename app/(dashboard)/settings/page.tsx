@@ -356,7 +356,7 @@ export default function SettingsPage() {
       <div className="flex items-center min-h-9">
         <div>
           <h1 className="text-lg font-semibold text-foreground">Settings</h1>
-          <p className="text-xs text-muted-foreground">Profil toko, link pesanan, dan preferensi</p>
+          <p className="text-xs text-muted-foreground">Store profile, order link, and preferences</p>
         </div>
       </div>
 
@@ -379,7 +379,7 @@ export default function SettingsPage() {
                 {profile?.business_name || profile?.full_name || "Not set"}
               </p>
               <p className="text-xs text-muted-foreground truncate">
-                {[profile?.business_phone, profile?.email].filter(Boolean).join(" \u00b7 ") || "Lengkapi profil bisnis"}
+                {[profile?.business_phone, profile?.email].filter(Boolean).join(" \u00b7 ") || "Complete your business profile"}
               </p>
             </div>
             <Link
@@ -423,7 +423,7 @@ export default function SettingsPage() {
                   setSlugInput(val);
                   setSlugError("");
                 }}
-                placeholder="nama-bisnis"
+                placeholder="business-name"
                 maxLength={50}
                 className="flex-1 min-w-0 bg-transparent outline-none text-foreground placeholder:text-muted-foreground"
               />
@@ -433,7 +433,7 @@ export default function SettingsPage() {
                 disabled={isSavingSlug || slugInput === profile?.slug}
                 className="shrink-0 h-9 px-3 mr-1 rounded-md bg-warm-green text-white text-xs font-medium hover:bg-warm-green-hover disabled:opacity-50 transition-colors"
               >
-                {isSavingSlug ? <Loader2 className="w-4 h-4 animate-spin" /> : "Simpan"}
+                {isSavingSlug ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save"}
               </button>
             </div>
             {slugError && <p className="text-xs text-warm-rose">{slugError}</p>}
@@ -447,7 +447,7 @@ export default function SettingsPage() {
                 className="h-9 px-3 flex items-center gap-1.5 rounded-lg border border-border text-xs font-medium hover:bg-muted transition-colors"
               >
                 {copied ? <Check className="w-3.5 h-3.5 text-warm-green" /> : <Copy className="w-3.5 h-3.5" />}
-                {copied ? "Disalin" : "Salin"}
+                {copied ? "Copied" : "Copy"}
               </button>
               <Link
                 href={`/${profile?.slug}`}
@@ -466,7 +466,7 @@ export default function SettingsPage() {
 
           {/* Booking time toggle */}
           <label className="flex items-center justify-between py-1">
-            <span className="text-xs text-muted-foreground">Tampilkan pilihan waktu (booking)</span>
+            <span className="text-xs text-muted-foreground">Show time selection (booking)</span>
             <button
               type="button"
               onClick={async () => {
@@ -486,11 +486,11 @@ export default function SettingsPage() {
 
           {/* Daily capacity */}
           <div className="flex items-center gap-3">
-            <label className="text-xs text-muted-foreground whitespace-nowrap">Lindungi waktu istirahat</label>
+            <label className="text-xs text-muted-foreground whitespace-nowrap">Daily order cap</label>
             <input
               type="number"
               min={1}
-              placeholder="Maks/hari"
+              placeholder="Max/day"
               value={profile?.daily_order_capacity ?? ""}
               onChange={async (e) => {
                 const val = e.target.value ? parseInt(e.target.value) : null;
@@ -505,7 +505,7 @@ export default function SettingsPage() {
 
           {/* Quiet hours / rest mode */}
           <div className="flex items-center gap-3">
-            <label className="text-xs text-muted-foreground whitespace-nowrap">Mode istirahat</label>
+            <label className="text-xs text-muted-foreground whitespace-nowrap">Quiet hours</label>
             <div className="flex items-center gap-1.5">
               <input
                 type="time"
@@ -536,7 +536,7 @@ export default function SettingsPage() {
 
           {/* Overhead estimate */}
           <div className="flex items-center gap-3 pt-2 border-t border-dashed">
-            <label className="text-xs text-muted-foreground whitespace-nowrap">Estimasi overhead</label>
+            <label className="text-xs text-muted-foreground whitespace-nowrap">Overhead estimate</label>
             <div className="flex items-center gap-1">
               <input
                 type="number"
@@ -556,14 +556,14 @@ export default function SettingsPage() {
               <span className="text-xs text-muted-foreground">%</span>
             </div>
           </div>
-          <p className="text-[10px] text-muted-foreground -mt-1">Biaya operasional selain bahan baku (transport, sewa, listrik, kemasan). Dipakai untuk hitung margin riil di halaman produk.</p>
+          <p className="text-[10px] text-muted-foreground -mt-1">Operating costs beyond raw materials (transport, rent, utilities, packaging). Used to calculate real margin on product pages.</p>
         </div>
 
         {/* Incomplete items — only show when something is missing */}
         {hasSlug && missingItems.length > 0 && (
           <div className="border-t px-4 py-3">
             <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
-              Lengkapi toko ({missingItems.length} tersisa)
+              Complete your store ({missingItems.length} remaining)
             </p>
             <div className="space-y-1">
               {missingItems.map((item) => (
@@ -589,7 +589,7 @@ export default function SettingsPage() {
         {unlimited ? (
           <div className="text-center my-3">
             <p className="text-3xl font-bold text-foreground leading-none">&infin;</p>
-            <p className="text-xs text-muted-foreground mt-0.5">pesanan unlimited sisa bulan ini</p>
+            <p className="text-xs text-muted-foreground mt-0.5">unlimited orders left this month</p>
           </div>
         ) : (
           <>
@@ -597,7 +597,7 @@ export default function SettingsPage() {
               <p className="text-3xl font-bold text-foreground leading-none">
                 {totalRemaining === Infinity ? "\u221e" : totalRemaining}
               </p>
-              <p className="text-xs text-muted-foreground mt-0.5">pesanan tersisa</p>
+              <p className="text-xs text-muted-foreground mt-0.5">orders remaining</p>
             </div>
 
             <div className="space-y-1.5 mb-4">
@@ -614,7 +614,7 @@ export default function SettingsPage() {
               </div>
               {orderCredits > 0 && (
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Dari paket (tidak kadaluarsa)</span>
+                  <span className="text-muted-foreground">From pack (never expires)</span>
                   <span className="font-medium text-foreground">{orderCredits}</span>
                 </div>
               )}
@@ -625,7 +625,7 @@ export default function SettingsPage() {
         {(nudgeLevel === "soft" || nudgeLevel === "medium") && (
           <div className="rounded-lg bg-blue-50 border border-blue-200 px-3 py-2 text-center mb-3">
             <p className="text-xs font-medium text-blue-800">
-              Bisnis lagi rame! Tambah pesanan mulai RM {Math.round(PACK_PRICE / PACK_ORDERS).toLocaleString("en-MY")}/orders.
+              Business is picking up! Top up orders from RM {Math.round(PACK_PRICE / PACK_ORDERS).toLocaleString("en-MY")}/order.
             </p>
           </div>
         )}
@@ -633,7 +633,7 @@ export default function SettingsPage() {
         {nudgeLevel === "urgent" && (
           <div className="rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-center mb-3">
             <p className="text-xs font-medium text-amber-800">
-              {FREE_MONTHLY_ORDERS - freeUsed} pesanan gratis tersisa. Tambah mulai RM {PACK_PRICE} supaya tidak terhenti.
+              {FREE_MONTHLY_ORDERS - freeUsed} free orders left. Top up from RM {PACK_PRICE} to avoid disruption.
             </p>
           </div>
         )}
@@ -641,7 +641,7 @@ export default function SettingsPage() {
         {quotaExhausted && (
           <div className="rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-center mb-3">
             <p className="text-xs font-medium text-amber-800">
-              Quota exhausted — new orders menunggu. Tambah mulai RM {PACK_PRICE} untuk {PACK_ORDERS} pesanan.
+              Quota exhausted — new orders on hold. Top up from RM {PACK_PRICE} for {PACK_ORDERS} orders.
             </p>
           </div>
         )}
@@ -661,7 +661,7 @@ export default function SettingsPage() {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-foreground">{PACK_ORDERS} Order top-up</p>
-                    <p className="text-[10px] text-muted-foreground">RM {Math.round(PACK_PRICE / PACK_ORDERS).toLocaleString("en-MY")}/orders · tidak kadaluarsa</p>
+                    <p className="text-[10px] text-muted-foreground">RM {Math.round(PACK_PRICE / PACK_ORDERS).toLocaleString("en-MY")}/order · never expires</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -690,7 +690,7 @@ export default function SettingsPage() {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-foreground">{MEDIUM_PACK_ORDERS} Order top-up</p>
-                    <p className="text-[10px] text-muted-foreground">RM {Math.round(MEDIUM_PACK_PRICE / MEDIUM_PACK_ORDERS).toLocaleString("en-MY")}/orders · tidak kadaluarsa</p>
+                    <p className="text-[10px] text-muted-foreground">RM {Math.round(MEDIUM_PACK_PRICE / MEDIUM_PACK_ORDERS).toLocaleString("en-MY")}/order · never expires</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -978,7 +978,7 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <KeyRound className="w-4 h-4 text-muted-foreground shrink-0" />
-              <span className="text-sm font-medium text-foreground">Ganti Password</span>
+              <span className="text-sm font-medium text-foreground">Change password</span>
             </div>
             {isSendingReset && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />}
           </div>
@@ -989,7 +989,7 @@ export default function SettingsPage() {
             className="w-full px-4 py-3 text-left hover:bg-red-50 active:bg-red-100 transition-colors"
           >
             <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-red-600">Keluar</span>
+              <span className="text-sm font-medium text-red-600">Sign out</span>
             </div>
           </button>
         </form>
@@ -1000,7 +1000,7 @@ export default function SettingsPage() {
         >
           <div className="flex items-center gap-3">
             <Trash2 className="w-4 h-4 text-red-400 shrink-0" />
-            <span className="text-sm font-medium text-red-500">Hapus Akun</span>
+            <span className="text-sm font-medium text-red-500">Delete account</span>
           </div>
         </button>
         {profile?.role === "admin" && (
@@ -1021,20 +1021,20 @@ export default function SettingsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
           <div className="w-full max-w-sm rounded-xl bg-white p-5 shadow-xl space-y-4">
             <div>
-              <h3 className="text-base font-semibold text-foreground">Hapus Akun?</h3>
+              <h3 className="text-base font-semibold text-foreground">Delete account?</h3>
               <p className="text-xs text-muted-foreground mt-1">
-                Semua data akan dihapus permanen: pesanan, produk, pelanggan, faktur, dan profil. This cannot be undone.
+                All data will be permanently removed: orders, products, customers, invoices, and profile. This cannot be undone.
               </p>
             </div>
             <div>
               <label className="text-xs text-muted-foreground">
-                Ketik <span className="font-semibold text-foreground">HAPUS</span> untuk konfirmasi
+                Type <span className="font-semibold text-foreground">DELETE</span> to confirm
               </label>
               <input
                 type="text"
                 value={deleteConfirmText}
                 onChange={(e) => setDeleteConfirmText(e.target.value)}
-                placeholder="HAPUS"
+                placeholder="DELETE"
                 className="w-full h-10 px-3 mt-1 bg-card border rounded-lg text-sm focus:ring-2 focus:ring-red-200 focus:border-red-300 transition-colors"
               />
             </div>
@@ -1044,11 +1044,11 @@ export default function SettingsPage() {
                 onClick={() => { setShowDeleteConfirm(false); setDeleteConfirmText(""); }}
                 className="flex-1 h-9 rounded-lg border border-border text-sm font-medium hover:bg-muted transition-colors"
               >
-                Batal
+                Cancel
               </button>
               <button
                 type="button"
-                disabled={deleteConfirmText !== "HAPUS" || isDeletingAccount}
+                disabled={deleteConfirmText !== "DELETE" || isDeletingAccount}
                 onClick={async () => {
                   setIsDeletingAccount(true);
                   try {
@@ -1066,7 +1066,7 @@ export default function SettingsPage() {
                 }}
                 className="flex-1 h-9 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 disabled:opacity-50 transition-colors"
               >
-                {isDeletingAccount ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : "Hapus Permanen"}
+                {isDeletingAccount ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : "Delete permanently"}
               </button>
             </div>
           </div>

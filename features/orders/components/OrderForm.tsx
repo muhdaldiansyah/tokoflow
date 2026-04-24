@@ -456,7 +456,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
       toast.success("Order cancelled", { duration: 5000 });
       router.push(`/orders/${initialOrder.id}`);
     } else {
-      toast.error("Gagal membatalkan pesanan");
+      toast.error("Failed to cancel order");
     }
     setIsDestructing(false);
     setConfirmModal(null);
@@ -471,7 +471,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
       toast.success("Order deleted", { duration: 5000 });
       router.push("/orders");
     } else {
-      toast.error("Gagal menghapus pesanan");
+      toast.error("Failed to delete order");
     }
     setIsDestructing(false);
     setConfirmModal(null);
@@ -802,7 +802,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
           ) : (
             <div>
               <h1 className="text-lg font-semibold text-foreground">Orders</h1>
-              <p className="text-xs text-muted-foreground">Catat new orders dari pelanggan</p>
+              <p className="text-xs text-muted-foreground">Log new orders from customers</p>
             </div>
           )}
         </div>
@@ -814,7 +814,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                 className="h-9 px-3 flex items-center gap-1.5 rounded-lg text-xs font-medium bg-card border border-border shadow-sm hover:bg-muted transition-colors"
               >
                 <FileText className="w-3.5 h-3.5" />
-                {hasInvoice ? "Lihat Faktur" : "Buat Faktur"}
+                {hasInvoice ? "View Invoice" : "Create Invoice"}
               </Link>
               <div ref={waMenuRef} className="relative">
                 <button
@@ -840,7 +840,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                         onClick={() => { sendPaymentReminder(); setShowWAMenu(false); }}
                         className="w-full text-left px-3 py-2.5 text-sm hover:bg-muted active:bg-muted/80 border-t transition-colors"
                       >
-                        Ingatkan Bayar
+                        Payment reminder
                       </button>
                     )}
                   </div>
@@ -855,12 +855,12 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
               className="h-9 px-3 flex items-center gap-1.5 rounded-lg text-xs font-medium bg-card border border-border shadow-sm hover:bg-muted cursor-pointer transition-colors"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              Isi Otomatis
+              Auto-fill
             </button>
           )}
           <Link href="/orders" className="h-9 px-3 flex items-center gap-1.5 rounded-lg text-xs font-medium bg-card border border-border shadow-sm hover:bg-muted transition-colors">
             <ArrowLeft className="w-3.5 h-3.5" />
-            Kembali
+            Back
           </Link>
         </div>
       </div>
@@ -886,7 +886,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
           isPreorder ? "bg-amber-50 text-amber-700 border border-amber-200" :
           "bg-orange-50 text-orange-700 border border-orange-200"
         }`}>
-          {isLangganan && "Mode Langganan — tanggal opsional, bayar belakangan"}
+          {isLangganan && "Subscription mode — date optional, pay later"}
           {isPreorder && !isLangganan && "Pre-order mode — delivery date is required"}
           {isDineIn && "Mode Langsung"}
         </div>
@@ -1128,7 +1128,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                     <input
                       ref={itemNameRef}
                       type="text"
-                      placeholder="Name item"
+                      placeholder="Item name"
                       value={itemName}
                       onChange={(e) => setItemName(e.target.value)}
                       className="w-full lg:flex-1 h-10 px-3 text-sm bg-background border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-warm-green/30"
@@ -1137,7 +1137,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                       <input
                         type="text"
                         inputMode="numeric"
-                        placeholder="Price (Rp)"
+                        placeholder="Price (RM)"
                         value={itemPrice}
                         onChange={(e) => setItemPrice(e.target.value.replace(/\D/g, ""))}
                         className="flex-1 lg:w-28 h-10 px-3 text-sm bg-background border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-warm-green/30"
@@ -1166,7 +1166,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
           ) : (
             <div className="space-y-3">
               <div className="rounded-xl border border-dashed border-border bg-muted/20 p-4 text-center">
-                <p className="text-sm text-muted-foreground mb-3">Ketik item langsung, atau tempel chat WA</p>
+                <p className="text-sm text-muted-foreground mb-3">Type items directly, or paste a WA chat</p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
                   <button
                     type="button"
@@ -1174,7 +1174,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                     className="h-9 px-4 inline-flex items-center gap-1.5 rounded-lg text-xs font-medium bg-warm-green text-white hover:bg-warm-green-hover transition-colors"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    Ketik Item
+                    Type Item
                   </button>
                   <button
                     type="button"
@@ -1182,11 +1182,11 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                     className="h-9 px-4 inline-flex items-center gap-1.5 rounded-lg text-xs font-medium bg-card border border-border shadow-sm hover:bg-muted transition-colors"
                   >
                     <Sparkles className="w-3.5 h-3.5" />
-                    Tempel WhatsApp chat
+                    Paste WhatsApp chat
                   </button>
                 </div>
                 <p className="text-[11px] text-muted-foreground mt-3">
-                  Mau pakai katalog? <Link href="/products/new" className="text-warm-green font-medium hover:underline">Tambah produk</Link>
+                  Want a catalog? <Link href="/products/new" className="text-warm-green font-medium hover:underline">Add a product</Link>
                 </p>
               </div>
               {showManualInput && (
@@ -1195,7 +1195,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                     <input
                       ref={itemNameRef}
                       type="text"
-                      placeholder="Name item"
+                      placeholder="Item name"
                       value={itemName}
                       onChange={(e) => setItemName(e.target.value)}
                       className="w-full lg:flex-1 h-10 px-3 text-sm bg-background border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-warm-green/30"
@@ -1204,7 +1204,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                       <input
                         type="text"
                         inputMode="numeric"
-                        placeholder="Price (Rp)"
+                        placeholder="Price (RM)"
                         value={itemPrice}
                         onChange={(e) => setItemPrice(e.target.value.replace(/\D/g, ""))}
                         className="flex-1 lg:w-28 h-10 px-3 text-sm bg-background border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-warm-green/30"
@@ -1236,7 +1236,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
         {/* Dine-in: Table number */}
         {isDineIn && (
           <div className={`space-y-1.5${isFormLocked ? ' pointer-events-none opacity-60' : ''}`}>
-            <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">Nomor Meja</p>
+            <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">Table number</p>
             <input
               type="text"
               inputMode="numeric"
@@ -1256,7 +1256,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
               onClick={() => setShowCustomer(!showCustomer)}
               className="text-xs font-medium text-warm-green hover:underline"
             >
-              {showCustomer ? "Sembunyikan pelanggan" : "+ Tambah pelanggan (opsional)"}
+              {showCustomer ? "Hide customer" : "+ Add customer (optional)"}
             </button>
             {showCustomer && (
               <div className="mt-1.5">
@@ -1337,7 +1337,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
 
           return (
             <div className={`space-y-2${isFormLocked ? ' pointer-events-none opacity-60' : ''}`}>
-              <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">Pengiriman</p>
+              <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">Delivery</p>
               <div className="flex items-center gap-1.5">
                 <button
                   type="button"
@@ -1348,7 +1348,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                       : "bg-muted/50 border-border text-foreground/70 hover:bg-muted hover:text-foreground"
                   }`}
                 >
-                  Hari Ini
+                  Today
                 </button>
                 <button
                   type="button"
@@ -1359,7 +1359,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                       : "bg-muted/50 border-border text-foreground/70 hover:bg-muted hover:text-foreground"
                   }`}
                 >
-                  Besok
+                  Tomorrow
                 </button>
                 <button
                   type="button"
@@ -1370,7 +1370,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                       : "bg-muted/50 border-border text-foreground/70 hover:bg-muted hover:text-foreground"
                   }`}
                 >
-                  Lusa
+                  In 2 days
                 </button>
                 <button
                   type="button"
@@ -1479,7 +1479,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
 
         {/* Note + Discount — combined row */}
         <div className={`space-y-1.5${isFormLocked ? ' pointer-events-none opacity-60' : ''}`}>
-          <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">Detail Tambahan</p>
+          <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">Additional Details</p>
           <div className="flex gap-2">
             <div className="flex-1 rounded-lg border bg-muted/50 transition-colors focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/30 focus-within:bg-background">
               <label className="block px-3 pt-1.5 text-[10px] font-medium text-muted-foreground">Note</label>
@@ -1487,14 +1487,14 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                 type="text"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Cth: tidak pedas, kirim sore..."
+                placeholder="e.g. no spice, deliver in the evening..."
                 className="w-full px-3 pb-2 pt-0 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none"
               />
             </div>
             <div className="w-32 shrink-0 rounded-lg border bg-muted/50 transition-colors focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/30 focus-within:bg-background">
               <label className="block px-3 pt-1.5 text-[10px] font-medium text-muted-foreground">Discount</label>
               <div className="flex items-center px-3 pb-2 pt-0 gap-1">
-                <span className="text-sm text-muted-foreground shrink-0 select-none">Rp</span>
+                <span className="text-sm text-muted-foreground shrink-0 select-none">RM</span>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -1507,7 +1507,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
             </div>
           </div>
           {discountAmount > subtotal && subtotal > 0 && (
-            <p className="text-xs text-warm-rose">Diskon melebihi subtotal</p>
+            <p className="text-xs text-warm-rose">Discount exceeds subtotal</p>
           )}
         </div>
 
@@ -1518,9 +1518,9 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
             onClick={() => setShowPhotoAttach(!showPhotoAttach)}
             className="text-xs font-bold text-foreground/80 uppercase tracking-wider flex items-center gap-1.5"
           >
-            Foto Referensi
+            Reference Photos
             <span className="text-muted-foreground font-normal normal-case tracking-normal">
-              {imageUrls.length > 0 ? `(${imageUrls.length})` : "(opsional)"}
+              {imageUrls.length > 0 ? `(${imageUrls.length})` : "(optional)"}
             </span>
           </button>
           {showPhotoAttach && (
@@ -1533,11 +1533,11 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                   const file = e.target.files?.[0];
                   if (!file) return;
                   if (file.size > 2 * 1024 * 1024) {
-                    toast.error("Ukuran file maksimal 2MB");
+                    toast.error("Max file size is 2MB");
                     return;
                   }
                   if (imageUrls.length >= 3) {
-                    toast.error("Maksimal 3 foto");
+                    toast.error("Max 3 photos");
                     return;
                   }
                   setIsUploadingPhoto(true);
@@ -1555,9 +1555,9 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                       .from("order-images")
                       .getPublicUrl(path);
                     setImageUrls(prev => [...prev, urlData.publicUrl]);
-                    toast.success("Foto ditambahkan");
+                    toast.success("Photo added");
                   } catch {
-                    toast.error("Gagal mengupload foto");
+                    toast.error("Failed to upload photo");
                   }
                   setIsUploadingPhoto(false);
                   if (photoInputRef.current) photoInputRef.current.value = "";
@@ -1567,7 +1567,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
               <div className="flex gap-2 flex-wrap">
                 {imageUrls.map((url, i) => (
                   <div key={url} className="relative w-20 h-20 rounded-lg overflow-hidden border border-border">
-                    <img src={url} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
+                    <img src={url} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
                     <button
                       type="button"
                       onClick={() => setImageUrls(prev => prev.filter((_, j) => j !== i))}
@@ -1592,7 +1592,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                   </button>
                 )}
               </div>
-              <p className="text-[11px] text-muted-foreground">Foto desain, kartu ucapan, atau referensi. Maks 3 foto.</p>
+              <p className="text-[11px] text-muted-foreground">Design photos, greeting cards, or references. Max 3 photos.</p>
             </div>
           )}
         </div>
@@ -1627,8 +1627,8 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
 
         {/* Status Pembayaran — always visible */}
         <div className={`space-y-1.5${isPaymentLocked ? ' pointer-events-none opacity-60' : ''}`}>
-          <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">Status Pembayaran</p>
-          <InlineHint hintId="payment-toggle" text="Atur status bayar pesanan ini" />
+          <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">Payment Status</p>
+          <InlineHint hintId="payment-toggle" text="Set the payment status for this order" />
           <div className="flex items-center gap-1.5">
             <button
               type="button"
@@ -1661,7 +1661,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                   : "bg-muted/50 border-border text-foreground/70 hover:bg-muted hover:text-foreground"
               }`}
             >
-              Belum Bayar
+              Unpaid
             </button>
           </div>
           {paymentMode === "dp" && (
@@ -1669,7 +1669,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
               type="number"
               value={dpAmount}
               onChange={(e) => setDpAmount(e.target.value)}
-              placeholder="Quantity DP (Rp)"
+              placeholder="Down payment (RM)"
               autoFocus
               className="w-full h-11 px-3 bg-muted/50 border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary/30 focus:bg-background transition-colors placeholder:text-muted-foreground"
             />
@@ -1756,7 +1756,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                 <Trash2 className="w-6 h-6 text-warm-rose" />
               </div>
               <h2 className="text-base font-semibold text-foreground mb-1">
-                {confirmModal === "cancel" ? "Batalkan pesanan?" : "Hapus pesanan?"}
+                {confirmModal === "cancel" ? "Cancel this order?" : "Delete this order?"}
               </h2>
               <p className="text-sm text-muted-foreground mb-5">
                 {confirmModal === "cancel"
@@ -1770,7 +1770,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                   disabled={isDestructing}
                   className="flex-1 h-11 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted transition-colors disabled:opacity-50"
                 >
-                  Batal
+                  Cancel
                 </button>
                 <button
                   type="button"
@@ -1782,7 +1782,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                     ? "Processing..."
                     : confirmModal === "cancel"
                       ? "Ya, Batalkan"
-                      : "Ya, Hapus"}
+                      : "Yes, delete"}
                 </button>
               </div>
             </div>
@@ -1808,7 +1808,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
               {/* Business name prompt — only if not set */}
               {!savedBusinessName && (
                 <div className="w-full mb-4">
-                  <label className="text-xs text-muted-foreground text-left block mb-1.5">Nama bisnis (untuk WA signature)</label>
+                  <label className="text-xs text-muted-foreground text-left block mb-1.5">Business name (for WA signature)</label>
                   <input
                     type="text"
                     placeholder="cth: Katering Bu Ani"

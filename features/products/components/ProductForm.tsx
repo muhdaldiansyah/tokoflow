@@ -99,7 +99,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
     if (!file) return;
 
     if (file.size > 1024 * 1024) {
-      toast.error("Ukuran file maksimal 1MB");
+      toast.error("Max file size is 1MB");
       return;
     }
 
@@ -129,16 +129,16 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
         const updated = await updateProduct(initialProduct.id, { image_url: url });
         if (updated) {
           setImageUrl(url);
-          toast.success("Foto produk berhasil diupload");
+          toast.success("Product photo uploaded");
         } else {
-          toast.error("Gagal menyimpan foto produk");
+          toast.error("Failed to save product photo");
         }
       } else {
         setImageUrl(url);
-        toast.success("Foto berhasil diupload");
+        toast.success("Photo uploaded");
       }
     } catch {
-      toast.error("Gagal mengupload foto produk");
+      toast.error("Failed to upload product photo");
     }
     setIsUploading(false);
     if (imageInputRef.current) imageInputRef.current.value = "";
@@ -149,9 +149,9 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
       const updated = await updateProduct(initialProduct.id, { image_url: null });
       if (updated) {
         setImageUrl(null);
-        toast.success("Foto produk dihapus");
+        toast.success("Product photo removed");
       } else {
-        toast.error("Gagal menghapus foto");
+        toast.error("Failed to remove photo");
       }
     } else {
       setImageUrl(null);
@@ -180,10 +180,10 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
       if (updated) {
         clearItemSuggestionsCache();
         track("product_updated", { name: updated.name, price: updated.price });
-        toast.success("Produk berhasil diperbarui");
+        toast.success("Product updated");
         router.push("/products");
       } else {
-        toast.error("Gagal memperbarui produk");
+        toast.error("Failed to update product");
       }
     } else {
       const product = await createProduct({
@@ -204,10 +204,10 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
         }
         clearItemSuggestionsCache();
         track("product_added", { name: product.name, price: product.price });
-        toast.success("Produk berhasil ditambahkan");
+        toast.success("Product added");
         router.push("/products");
       } else {
-        toast.error("Gagal menambahkan produk");
+        toast.error("Failed to add product");
       }
     }
 
@@ -223,10 +223,10 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
     if (success) {
       clearItemSuggestionsCache();
       track("product_deleted", { name: initialProduct.name });
-      toast.success("Produk dihapus");
+      toast.success("Product deleted");
       router.push("/products");
     } else {
-      toast.error("Gagal menghapus produk");
+      toast.error("Failed to delete product");
     }
     setIsDeleting(false);
   }
@@ -236,10 +236,10 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
     const updated = await toggleAvailability(initialProduct.id, false);
     if (updated) {
       clearItemSuggestionsCache();
-      toast.success("Produk dinonaktifkan");
+      toast.success("Product deactivated");
       router.push("/products");
     } else {
-      toast.error("Gagal menonaktifkan produk");
+      toast.error("Failed to deactivate product");
     }
   }
 
@@ -253,7 +253,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
       <div className="flex items-center justify-between gap-2 mb-5">
         <div>
           <h1 className="text-lg font-semibold text-foreground">
-            {isEdit ? initialProduct.name : "Produk Baru"}
+            {isEdit ? initialProduct.name : "New Product"}
           </h1>
           {isEdit && initialProduct.category && (
             <p className="text-xs text-muted-foreground">{initialProduct.category}</p>
@@ -264,7 +264,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
           className="h-9 px-3 flex items-center gap-1.5 rounded-lg text-xs font-medium bg-card border border-border shadow-sm hover:bg-muted transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          Kembali
+          Back
         </Link>
       </div>
 
@@ -279,7 +279,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
 
       {/* Form card */}
       <div className="rounded-lg border bg-card px-4 py-4 space-y-4 shadow-sm">
-        <p className="text-xs font-medium text-muted-foreground">Informasi Produk</p>
+        <p className="text-xs font-medium text-muted-foreground">Product information</p>
 
         {/* Top row: buttons right, photo left */}
         <div className="flex items-start justify-between">
@@ -307,7 +307,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
                 className="h-8 px-2.5 rounded-lg border border-border text-xs font-medium text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 disabled:opacity-50"
               >
                 <Camera className="w-3.5 h-3.5" />
-                {imageUrl ? "Ganti Foto" : "Upload Foto"}
+                {imageUrl ? "Change photo" : "Upload photo"}
               </button>
               <button
                 type="button"
@@ -319,7 +319,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
                 }`}
               >
                 {isAvailable ? <CircleCheck className="w-3.5 h-3.5" /> : <CircleMinus className="w-3.5 h-3.5" />}
-                <span className="text-xs font-medium">{isAvailable ? "Aktif" : "Nonaktif"}</span>
+                <span className="text-xs font-medium">{isAvailable ? "Active" : "Inactive"}</span>
               </button>
             </div>
             {imageUrl && (
@@ -329,7 +329,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
                 className="h-8 px-2.5 rounded-lg text-xs font-medium text-warm-rose hover:bg-warm-rose-light transition-colors flex items-center gap-1.5"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                Hapus Foto
+                Remove photo
               </button>
             )}
           </div>
@@ -338,25 +338,25 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
         {/* Required fields */}
         <div className="space-y-3">
             <div className={wrapperClass}>
-              <label className={labelClass}>Nama produk <span className="text-warm-rose">*</span></label>
-              <input ref={nameInputRef} type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="cth: Nasi Box Ayam" className={inputClass} />
+              <label className={labelClass}>Product name <span className="text-warm-rose">*</span></label>
+              <input ref={nameInputRef} type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Chicken Rice Box" className={inputClass} />
             </div>
             <div className={wrapperClass}>
-              <label className={labelClass}>Harga <span className="text-warm-rose">*</span></label>
+              <label className={labelClass}>Price <span className="text-warm-rose">*</span></label>
               <div className="flex items-center px-3 pb-2 pt-0 gap-1.5">
-                <span className="text-sm text-muted-foreground shrink-0 select-none">Rp</span>
-                <input type="text" inputMode="numeric" value={price ? parseInt(price).toLocaleString("en-MY") : ""} onChange={(e) => setPrice(e.target.value.replace(/\D/g, ""))} placeholder="25.000" className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none" />
+                <span className="text-sm text-muted-foreground shrink-0 select-none">RM</span>
+                <input type="text" inputMode="numeric" value={price ? parseInt(price).toLocaleString("en-MY") : ""} onChange={(e) => setPrice(e.target.value.replace(/\D/g, ""))} placeholder="25" className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none" />
               </div>
             </div>
         </div>
 
         {/* Detail fields */}
         <div className="space-y-1.5">
-          <p className="text-xs font-medium text-muted-foreground">Lainnya</p>
+          <p className="text-xs font-medium text-muted-foreground">More details</p>
           <div className="space-y-3">
             <div className={wrapperClass}>
-              <label className={labelClass}>Deskripsi</label>
-              <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="cth: Nasi + ayam geprek + lalapan + sambal" className={inputClass} />
+              <label className={labelClass}>Description</label>
+              <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="e.g. Rice + fried chicken + veggies + sambal" className={inputClass} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="relative">
@@ -368,7 +368,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
                     onChange={(e) => setCategory(e.target.value)}
                     onFocus={() => setShowCategorySuggestions(true)}
                     onBlur={() => setTimeout(() => setShowCategorySuggestions(false), 150)}
-                    placeholder="cth: Nasi Box"
+                    placeholder="e.g. Rice Box"
                     className={inputClass}
                   />
                 </div>
@@ -388,13 +388,13 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
                 )}
               </div>
               <div className={wrapperClass}>
-                <label className={labelClass}>Satuan</label>
+                <label className={labelClass}>Unit</label>
                 <select
                   value={unit}
                   onChange={(e) => setUnit(e.target.value)}
                   className="w-full px-3 pb-2 pt-0 bg-transparent text-sm text-foreground focus:outline-none"
                 >
-                  <option value="">Pilih satuan</option>
+                  <option value="">Select unit</option>
                   {unitOptions.map((opt) => (
                     <option key={opt.id} value={opt.id}>{opt.label}</option>
                   ))}
@@ -404,7 +404,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
             <div className="grid grid-cols-2 gap-3">
               <div className={wrapperClass}>
                 <label className={labelClass}>Stock</label>
-                <input type="number" value={stock} onChange={(e) => setStock(e.target.value)} placeholder="Kosongkan = unlimited" className={inputClass} />
+                <input type="number" value={stock} onChange={(e) => setStock(e.target.value)} placeholder="Leave blank = unlimited" className={inputClass} />
               </div>
               <div className={wrapperClass}>
                 <label className={labelClass}>Min. order</label>
@@ -417,18 +417,18 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
         {/* Biaya & Untung */}
         {price && parseInt(price) > 0 && (
           <div className="space-y-1.5">
-            <p className="text-xs font-medium text-muted-foreground">Biaya &amp; Untung</p>
+            <p className="text-xs font-medium text-muted-foreground">Cost &amp; Profit</p>
             <div className="space-y-3">
               <div className={wrapperClass}>
-                <label className={labelClass}>HPP per porsi</label>
+                <label className={labelClass}>Cost per unit</label>
                 <div className="flex items-center px-3 pb-2 pt-0 gap-1.5">
-                  <span className="text-sm text-muted-foreground shrink-0 select-none">Rp</span>
+                  <span className="text-sm text-muted-foreground shrink-0 select-none">RM</span>
                   <input
                     type="text"
                     inputMode="numeric"
                     value={costPrice ? parseInt(costPrice).toLocaleString("en-MY") : ""}
                     onChange={(e) => setCostPrice(e.target.value.replace(/\D/g, ""))}
-                    placeholder="10.000"
+                    placeholder="10"
                     className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none"
                   />
                 </div>
@@ -457,7 +457,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
                       <span className={color}>{lightLabel}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Untung bahan</span>
+                      <span className="text-muted-foreground">Gross margin</span>
                       <span className="font-semibold text-foreground">RM {profit.toLocaleString("en-MY")}</span>
                     </div>
                     <div className="flex justify-between text-sm">
@@ -465,15 +465,15 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
                       <span className={`font-semibold ${color}`}>{foodCost}%</span>
                     </div>
                     <div className="flex justify-between text-sm pt-1 border-t border-current/10">
-                      <span className="text-muted-foreground">Estimasi overhead ({overheadPct}%)</span>
+                      <span className="text-muted-foreground">Overhead estimate ({overheadPct}%)</span>
                       <span className="text-muted-foreground">−RM {overheadEstimate.toLocaleString("en-MY")}</span>
                     </div>
                     <div className="flex justify-between text-sm font-semibold">
-                      <span className="text-foreground">Margin riil</span>
+                      <span className="text-foreground">Net margin</span>
                       <span className={color}>{netMargin}% (RM {netProfit.toLocaleString("en-MY")})</span>
                     </div>
                     <p className="text-[10px] text-muted-foreground/70 pt-0.5">
-                      *Overhead = biaya operasional selain bahan (transport, sewa, listrik, kemasan). Ubah di Pengaturan.
+                      *Overhead = operating costs beyond raw materials (transport, rent, utilities, packaging). Edit in Settings.
                     </p>
                   </div>
                 );
@@ -486,7 +486,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
         {benchmark && parseInt(price) > 0 && (
           <div className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2.5 space-y-1">
             <p className="text-xs font-medium text-blue-700">
-              📊 Benchmark {category || "produk"} di {benchmark.city} ({benchmark.usersInCluster} usaha)
+              📊 Benchmark {category || "product"} in {benchmark.city} ({benchmark.usersInCluster} businesses)
             </p>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Average</span>
@@ -534,7 +534,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
             onClick={() => setPrice(String(benchmark.price.median))}
             className="w-full text-left rounded-lg border border-dashed border-blue-300 bg-blue-50/50 px-3 py-2 text-xs text-blue-600 hover:bg-blue-50 transition-colors"
           >
-            💡 Saran harga berdasarkan {benchmark.usersInCluster} usaha di {benchmark.city}: <span className="font-semibold">RM {benchmark.price.median.toLocaleString("en-MY")}</span> — tap untuk pakai
+            💡 Suggested price based on {benchmark.usersInCluster} businesses in {benchmark.city}: <span className="font-semibold">RM {benchmark.price.median.toLocaleString("en-MY")}</span> — tap to apply
           </button>
         )}
 
@@ -547,7 +547,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
               className="text-xs text-warm-rose hover:text-warm-rose active:text-warm-rose/80 flex items-center gap-1 transition-colors"
             >
               <Trash2 className="w-3 h-3" />
-              Hapus Produk
+              Delete product
             </button>
           </div>
         )}
@@ -562,7 +562,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
                 <Trash2 className="w-6 h-6 text-warm-rose" />
               </div>
               <h2 className="text-base font-semibold text-foreground mb-1">
-                Hapus produk?
+                Delete product?
               </h2>
               <p className="text-sm text-muted-foreground mb-5">
                 &ldquo;{initialProduct!.name}&rdquo; will be removed from the list. Existing orders are unaffected.
@@ -574,7 +574,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
                   disabled={isDeleting}
                   className="flex-1 h-11 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted transition-colors disabled:opacity-50"
                 >
-                  Batal
+                  Cancel
                 </button>
                 <button
                   type="button"
@@ -582,7 +582,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
                   disabled={isDeleting}
                   className="flex-1 h-11 rounded-lg bg-warm-rose text-white text-sm font-medium hover:bg-warm-rose/90 active:bg-warm-rose/80 transition-colors disabled:opacity-50"
                 >
-                  {isDeleting ? "Menghapus..." : "Ya, Hapus"}
+                  {isDeleting ? "Deleting..." : "Yes, delete"}
                 </button>
               </div>
             </div>
@@ -599,7 +599,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
             disabled={!name.trim() || !price || isSaving}
             className="h-10 px-5 rounded-lg bg-warm-green text-white text-xs font-medium hover:bg-warm-green-hover active:bg-warm-green-hover disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
-            {isSaving ? "Saving..." : isEdit ? "Save changes" : "Simpan"}
+            {isSaving ? "Saving..." : isEdit ? "Save changes" : "Save"}
           </button>
         </div>
       </div>

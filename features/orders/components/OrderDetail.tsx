@@ -139,7 +139,7 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
       <div className="text-center py-12">
         <p className="text-muted-foreground mb-4">Order not found</p>
         <Link href="/orders" className="text-foreground underline">
-          Kembali ke daftar pesanan
+          Back to orders
         </Link>
       </div>
     );
@@ -166,7 +166,7 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
         <div className="flex items-center gap-2">
           <Link href="/orders" className="h-9 px-3 flex items-center gap-1.5 rounded-lg text-xs font-medium bg-card border border-border shadow-sm hover:bg-muted transition-colors">
             <ArrowLeft className="w-3.5 h-3.5" />
-            Kembali
+            Back
           </Link>
         </div>
       </div>
@@ -240,7 +240,7 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
       {/* Table Number (Dine-in) */}
       {order.is_dine_in && order.table_number && (
         <div className="space-y-1">
-          <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">Nomor Meja</p>
+          <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">Table number</p>
           <p className="text-sm text-foreground">Meja {order.table_number}</p>
         </div>
       )}
@@ -345,11 +345,11 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
       {/* Photo Attachments */}
       {order.image_urls && order.image_urls.length > 0 && (
         <div className="space-y-1.5">
-          <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">Foto Referensi</p>
+          <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">Reference Photos</p>
           <div className="flex gap-2 flex-wrap">
             {order.image_urls.map((url, i) => (
               <a key={url} href={url} target="_blank" rel="noopener noreferrer" className="block w-20 h-20 rounded-lg overflow-hidden border border-border">
-                <img src={url} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
+                <img src={url} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
               </a>
             ))}
           </div>
@@ -375,7 +375,7 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
               {order.status !== "cancelled" && (
                 <label className="flex items-center gap-2 cursor-pointer text-sm text-muted-foreground hover:text-foreground">
                   <Camera className="w-4 h-4" />
-                  <span>Ganti bukti</span>
+                  <span>Change proof</span>
                   <input
                     type="file"
                     accept="image/*"
@@ -394,7 +394,7 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
         <div className="space-y-1">
           {proofPreview ? (
             <div className="space-y-3">
-              <img src={proofPreview} alt="Preview bukti" className="w-full rounded-lg" />
+              <img src={proofPreview} alt="Payment proof preview" className="w-full rounded-lg" />
               <div className="flex gap-2">
                 <button
                   type="button"
@@ -402,14 +402,14 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
                   disabled={isUploadingProof}
                   className="flex-1 h-11 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50 transition-colors"
                 >
-                  {isUploadingProof ? "Mengunggah..." : "Simpan Bukti"}
+                  {isUploadingProof ? "Uploading..." : "Save proof"}
                 </button>
                 <button
                   type="button"
                   onClick={() => { setProofFile(null); setProofPreview(null); }}
                   className="h-11 px-4 text-sm text-muted-foreground hover:text-foreground"
                 >
-                  Batal
+                  Cancel
                 </button>
               </div>
             </div>
@@ -450,7 +450,7 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
               <p className="text-sm text-muted-foreground mb-5">
                 {confirmAction === "markpaid"
                   ? `Pembayaran RM ${((order?.total || 0) - (order?.paid_amount || 0)).toLocaleString("en-MY")} akan dicatat sebagai lunas.`
-                  : `Status pesanan will change to "${nextStatus ? ORDER_STATUS_LABELS[nextStatus] : ""}".`}
+                  : `Order status will change to "${nextStatus ? ORDER_STATUS_LABELS[nextStatus] : ""}".`}
               </p>
               <div className="flex gap-3 w-full">
                 <button
@@ -459,7 +459,7 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
                   disabled={isQuickUpdating}
                   className="flex-1 h-11 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted transition-colors disabled:opacity-50"
                 >
-                  Batal
+                  Cancel
                 </button>
                 <button
                   type="button"

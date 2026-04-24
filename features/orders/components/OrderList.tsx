@@ -315,7 +315,7 @@ export function OrderList() {
     const cleanup = startAutoSync((syncedCount) => {
       if (syncedCount > 0) {
         track("offline_orders_synced", { count: syncedCount });
-        toast.success(`${syncedCount} pesanan berhasil disinkronkan`);
+        toast.success(`${syncedCount} order${syncedCount === 1 ? "" : "s"} synced`);
         loadOrders();
       }
     });
@@ -552,7 +552,7 @@ export function OrderList() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      toast.success("Data pesanan berhasil diunduh");
+      toast.success("Orders downloaded");
     } catch (err) {
       console.error("Export error:", err);
       toast.error("Gagal mengunduh data");
@@ -590,12 +590,12 @@ export function OrderList() {
                   </span>
                 )}
               </div>
-              <p className="text-xs text-muted-foreground">Semua orders received dari pelanggan</p>
+              <p className="text-xs text-muted-foreground">All orders received from customers</p>
             </div>
             {isPeak && (
               <span className="inline-flex h-6 px-2 text-[11px] font-medium rounded-full bg-warm-amber-light text-warm-amber border border-warm-amber/20 items-center gap-1">
                 <Flame className="w-3 h-3" />
-                Mode Ramai
+                Busy
               </span>
             )}
             <div className="flex items-center gap-1.5">
@@ -628,7 +628,7 @@ export function OrderList() {
           >
             <div className="min-w-0">
               <p className="text-sm font-medium text-foreground">
-                Hari ini: {deliverySummary.count} pesanan · RM {deliverySummary.revenue.toLocaleString("en-MY")}
+                Today: {deliverySummary.count} order{deliverySummary.count === 1 ? "" : "s"} · RM {deliverySummary.revenue.toLocaleString("en-MY")}
               </p>
               <p className="text-xs text-muted-foreground truncate">
                 {deliverySummary.items.slice(0, 3).map(i => `${i.name} (${i.qty})`).join(", ")}
@@ -667,7 +667,7 @@ export function OrderList() {
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-emerald-600 shrink-0" />
               <p className="text-xs text-emerald-800">
-                <span className="font-semibold">~{timeStr} dihemat</span> bulan ini dari {linkOrders} pesanan via Link Toko
+                <span className="font-semibold">~{timeStr} saved</span> this month from {linkOrders} order{linkOrders === 1 ? "" : "s"} via Store Link
               </p>
             </div>
           </div>
@@ -949,18 +949,18 @@ export function OrderList() {
           {search || statusFilter || preorderFilter || dineInFilter || dateFilter ? (
             <p className="text-muted-foreground text-sm">
               No orders
-              {preorderFilter ? " pesanan" : ""}
-              {dineInFilter ? " langsung" : ""}
-              {statusFilter ? ` ${STATUS_CHIPS.find((c) => c.value === statusFilter)?.label.toLowerCase()}` : ""}
-              {search ? " ditemukan" : ""}
+              {preorderFilter ? " (preorder)" : ""}
+              {dineInFilter ? " (direct)" : ""}
+              {statusFilter ? ` · ${STATUS_CHIPS.find((c) => c.value === statusFilter)?.label.toLowerCase()}` : ""}
+              {search ? " found" : ""}
             </p>
           ) : (
             <>
               <div className="w-16 h-16 mx-auto rounded-2xl bg-muted flex items-center justify-center mb-4">
                 <ShoppingBag className="w-7 h-7 text-muted-foreground" />
               </div>
-              <h2 className="text-base font-semibold text-foreground mb-1">None yet pesanan</h2>
-              <p className="text-sm text-muted-foreground mb-6">Catat first order — cuma 30 detik</p>
+              <h2 className="text-base font-semibold text-foreground mb-1">No orders yet</h2>
+              <p className="text-sm text-muted-foreground mb-6">Log your first order — takes 30 seconds</p>
               <div className="flex flex-col items-center gap-3">
                 <Link
                   href="/orders/new"
@@ -973,7 +973,7 @@ export function OrderList() {
                   href="/orders/new?contoh=1"
                   className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Coba dengan contoh
+                  Try with a sample
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>

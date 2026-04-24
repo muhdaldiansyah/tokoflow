@@ -125,7 +125,7 @@ export function ProductList() {
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <h1 className="text-lg font-semibold text-foreground">Produk</h1>
+            <h1 className="text-lg font-semibold text-foreground">Products</h1>
           </div>
           <div className="flex items-center gap-1">
             <div className="h-9 w-32 rounded-lg bg-muted animate-pulse" />
@@ -153,7 +153,7 @@ export function ProductList() {
       <div className="flex items-center justify-between min-h-9">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-lg font-semibold text-foreground">Produk</h1>
+            <h1 className="text-lg font-semibold text-foreground">Products</h1>
             {products.length > 0 && (
               <span className="inline-flex h-5 min-w-5 px-1.5 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
                 {products.length}
@@ -167,7 +167,7 @@ export function ProductList() {
           className="h-9 px-3 flex items-center gap-1.5 rounded-lg text-xs font-medium bg-warm-green text-white hover:bg-warm-green-hover active:bg-warm-green-hover transition-colors"
         >
           <Plus className="w-3.5 h-3.5" />
-          Tambah Produk
+          Add Product
         </Link>
       </div>
 
@@ -190,13 +190,13 @@ export function ProductList() {
       {products.length > 0 && (
         <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-hide">
           <button type="button" onClick={() => cycleSortMode("name")} className={`${chipBase} ${sortKey === "name" ? chipActive : chipInactive}`}>
-            Nama {sortKey === "name" ? (sortDir === "asc" ? "↑" : "↓") : ""}
+            Name {sortKey === "name" ? (sortDir === "asc" ? "↑" : "↓") : ""}
           </button>
           <button type="button" onClick={() => cycleSortMode("price")} className={`${chipBase} ${sortKey === "price" ? chipActive : chipInactive}`}>
-            Harga {sortKey === "price" ? (sortDir === "asc" ? "↑" : "↓") : ""}
+            Price {sortKey === "price" ? (sortDir === "asc" ? "↑" : "↓") : ""}
           </button>
           <button type="button" onClick={() => cycleSortMode("sold")} className={`${chipBase} ${sortKey === "sold" ? chipActive : chipInactive}`}>
-            Terlaris {sortKey === "sold" ? (sortDir === "asc" ? "↑" : "↓") : ""}
+            Best sellers {sortKey === "sold" ? (sortDir === "asc" ? "↑" : "↓") : ""}
           </button>
         </div>
       )}
@@ -207,16 +207,16 @@ export function ProductList() {
           <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
             <Package className="w-7 h-7 text-muted-foreground" />
           </div>
-          <h2 className="text-base font-semibold text-foreground mb-1">None yet produk</h2>
+          <h2 className="text-base font-semibold text-foreground mb-1">No products yet</h2>
           <p className="text-sm text-muted-foreground mb-6">
-            Tambah produk supaya muncul di link toko dan pelanggan bisa pesan sendiri.
+            Add products so they show up on your store link and customers can order on their own.
           </p>
           <Link
             href="/products/new"
             className="h-9 px-4 bg-warm-green text-white rounded-lg text-xs font-medium inline-flex items-center gap-1.5 hover:bg-warm-green-hover transition-colors"
           >
             <Plus className="w-4 h-4" />
-            Tambah Produk Pertama
+            Add your first product
           </Link>
         </div>
       ) : grouped.length === 0 || (grouped.length === 1 && grouped[0].products.length === 0) ? (
@@ -224,9 +224,9 @@ export function ProductList() {
           <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
             <Search className="w-6 h-6 text-muted-foreground" />
           </div>
-          <p className="text-sm font-medium text-foreground mb-1">Tidak ditemukan</p>
+          <p className="text-sm font-medium text-foreground mb-1">Nothing found</p>
           <p className="text-xs text-muted-foreground">
-            No products yang cocok dengan &ldquo;{debouncedSearch}&rdquo;
+            No products match &ldquo;{debouncedSearch}&rdquo;
           </p>
         </div>
       ) : (
@@ -235,7 +235,7 @@ export function ProductList() {
             <div key={group.category || "__uncategorized"}>
               {(grouped.length > 1 || group.category) && (
                 <p className="text-xs font-medium text-muted-foreground mb-2 px-1">
-                  {group.category || "Lainnya"}
+                  {group.category || "Other"}
                 </p>
               )}
 
@@ -277,12 +277,12 @@ export function ProductList() {
                           {product.is_available ? (
                             <span className="inline-flex items-center gap-1 text-xs">
                               <CircleCheck className="w-3.5 h-3.5 text-warm-green" />
-                              <span className="text-warm-green font-medium">Aktif</span>
+                              <span className="text-warm-green font-medium">Active</span>
                             </span>
                           ) : (
                             <span className="inline-flex items-center gap-1 text-xs">
                               <CircleMinus className="w-3.5 h-3.5 text-muted-foreground" />
-                              <span className="text-muted-foreground font-medium">Nonaktif</span>
+                              <span className="text-muted-foreground font-medium">Inactive</span>
                             </span>
                           )}
                           {product.min_order_qty > 1 && (

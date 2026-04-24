@@ -87,7 +87,7 @@ export default function ProfileEditPage() {
     if (!file) return;
 
     if (file.size > 2 * 1024 * 1024) {
-      toast.error("Ukuran file maksimal 2MB");
+      toast.error("Max file size is 2MB");
       return;
     }
 
@@ -114,12 +114,12 @@ export default function ProfileEditPage() {
       const updated = await updateProfile({ logo_url: url });
       if (updated) {
         setLogoUrl(url);
-        toast.success("Foto profil berhasil diupload");
+        toast.success("Profile photo uploaded");
       } else {
-        toast.error("Gagal menyimpan foto profil");
+        toast.error("Failed to save profile photo");
       }
     } catch {
-      toast.error("Gagal mengupload foto profil");
+      toast.error("Failed to upload profile photo");
     }
     setIsUploadingLogo(false);
     if (logoInputRef.current) logoInputRef.current.value = "";
@@ -131,12 +131,12 @@ export default function ProfileEditPage() {
       const updated = await updateProfile({ logo_url: "" as string });
       if (updated) {
         setLogoUrl(null);
-        toast.success("Foto profil berhasil dihapus");
+        toast.success("Profile photo removed");
       } else {
-        toast.error("Gagal menghapus foto profil");
+        toast.error("Failed to remove profile photo");
       }
     } catch {
-      toast.error("Gagal menghapus foto profil");
+      toast.error("Failed to remove profile photo");
     }
     setIsUploadingLogo(false);
   }
@@ -168,12 +168,12 @@ export default function ProfileEditPage() {
       const updated = await updateProfile({ qris_url: url });
       if (updated) {
         setQrisUrl(url);
-        toast.success("QRIS berhasil diupload");
+        toast.success("DuitNow QR uploaded");
       } else {
-        toast.error("Gagal menyimpan QRIS");
+        toast.error("Failed to save DuitNow QR");
       }
     } catch {
-      toast.error("Gagal mengupload QRIS");
+      toast.error("Failed to upload DuitNow QR");
     }
     setIsUploadingQris(false);
     if (qrisInputRef.current) qrisInputRef.current.value = "";
@@ -185,12 +185,12 @@ export default function ProfileEditPage() {
       const updated = await updateProfile({ qris_url: "" as string });
       if (updated) {
         setQrisUrl(null);
-        toast.success("QRIS berhasil dihapus");
+        toast.success("DuitNow QR removed");
       } else {
-        toast.error("Gagal menghapus QRIS");
+        toast.error("Failed to remove DuitNow QR");
       }
     } catch {
-      toast.error("Gagal menghapus QRIS");
+      toast.error("Failed to remove DuitNow QR");
     }
     setIsUploadingQris(false);
   }
@@ -216,10 +216,10 @@ export default function ProfileEditPage() {
       ...(hasHours && { operating_hours: operatingHours }),
     });
     if (updated) {
-      toast.success("Profil berhasil disimpan");
+      toast.success("Profile saved");
       router.push("/settings");
     } else {
-      toast.error("Gagal menyimpan profil");
+      toast.error("Failed to save profile");
     }
     setIsSaving(false);
   };
@@ -236,10 +236,10 @@ export default function ProfileEditPage() {
     <div className="max-w-2xl mx-auto space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-foreground">Edit Profil</h1>
+        <h1 className="text-lg font-semibold text-foreground">Edit Profile</h1>
         <Link href="/settings" className="h-9 px-3 flex items-center gap-1.5 rounded-lg text-xs font-medium bg-card border border-border shadow-sm hover:bg-muted transition-colors">
           <ArrowLeft className="w-3.5 h-3.5" />
-          Kembali
+          Back
         </Link>
       </div>
 
@@ -247,7 +247,7 @@ export default function ProfileEditPage() {
       <div className="rounded-lg border bg-card shadow-sm p-4 space-y-3">
         {/* Logo Upload */}
         <div>
-          <label className="text-xs text-muted-foreground mb-1 block">Foto Profil / Logo</label>
+          <label className="text-xs text-muted-foreground mb-1 block">Profile photo / Logo</label>
           <input
             ref={logoInputRef}
             type="file"
@@ -277,7 +277,7 @@ export default function ProfileEditPage() {
                     className="h-9 px-3 flex items-center gap-1.5 rounded-lg text-xs font-medium bg-card border border-border shadow-sm hover:bg-muted transition-colors disabled:opacity-50"
                   >
                     {isUploadingLogo ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
-                    Ganti
+                    Change
                   </button>
                   <button
                     type="button"
@@ -286,7 +286,7 @@ export default function ProfileEditPage() {
                     className="h-9 px-3 flex items-center gap-1.5 rounded-lg text-xs font-medium text-red-600 bg-card border border-border shadow-sm hover:bg-red-50 transition-colors disabled:opacity-50"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
-                    Hapus
+                    Remove
                   </button>
                 </div>
               </>
@@ -309,43 +309,43 @@ export default function ProfileEditPage() {
             )}
           </div>
           <p className="text-[11px] text-muted-foreground/70 mt-1.5">
-            Tampil di halaman pesanan publik dan pengaturan. Maks 2MB.
+            Shown on your public order page and settings. Max 2MB.
           </p>
         </div>
 
         <div className="rounded-lg border bg-card shadow-sm transition-colors focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/30">
-          <label className="block px-3 pt-1.5 text-[10px] font-medium text-muted-foreground">Nama Lengkap</label>
-          <input type="text" value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} placeholder="Name lengkap" className="w-full px-3 pb-2 pt-0 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none" />
+          <label className="block px-3 pt-1.5 text-[10px] font-medium text-muted-foreground">Full name</label>
+          <input type="text" value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} placeholder="Full name" className="w-full px-3 pb-2 pt-0 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none" />
         </div>
         <div className="rounded-lg border bg-card shadow-sm transition-colors focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/30">
-          <label className="block px-3 pt-1.5 text-[10px] font-medium text-muted-foreground">Nama Bisnis</label>
+          <label className="block px-3 pt-1.5 text-[10px] font-medium text-muted-foreground">Business name</label>
           <input type="text" value={form.business_name} onChange={(e) => setForm({ ...form, business_name: e.target.value })} placeholder="Your business name" className="w-full px-3 pb-2 pt-0 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none" />
         </div>
         <div className="rounded-lg border bg-card shadow-sm transition-colors focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/30">
-          <label className="block px-3 pt-1.5 text-[10px] font-medium text-muted-foreground">Alamat Bisnis</label>
-          <textarea value={form.business_address} onChange={(e) => setForm({ ...form, business_address: e.target.value })} rows={2} placeholder="Address bisnis" className="w-full px-3 pb-2 pt-0 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 resize-none focus:outline-none" />
+          <label className="block px-3 pt-1.5 text-[10px] font-medium text-muted-foreground">Business address</label>
+          <textarea value={form.business_address} onChange={(e) => setForm({ ...form, business_address: e.target.value })} rows={2} placeholder="Business address" className="w-full px-3 pb-2 pt-0 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 resize-none focus:outline-none" />
         </div>
         <div className="rounded-lg border bg-card shadow-sm transition-colors focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/30">
-          <label className="block px-3 pt-1.5 text-[10px] font-medium text-muted-foreground">No. WhatsApp Bisnis</label>
+          <label className="block px-3 pt-1.5 text-[10px] font-medium text-muted-foreground">Business WhatsApp number</label>
           <div className="flex items-center px-3 pb-2 pt-0 gap-2">
-            <span className="text-sm text-muted-foreground shrink-0 select-none mr-2">🇮🇩 +62</span>
+            <span className="text-sm text-muted-foreground shrink-0 select-none mr-2">🇲🇾 +60</span>
             <span className="w-px h-4 bg-border shrink-0 mr-2" />
             <input
               type="tel"
-              value={(() => { const d = (form.business_phone || "").replace(/\D/g, ""); return d.startsWith("62") ? d.slice(2) : d.startsWith("0") ? d.slice(1) : d; })()}
-              onChange={(e) => { const d = e.target.value.replace(/\D/g, ""); setForm({ ...form, business_phone: d.startsWith("0") ? d.slice(1) : d.startsWith("62") ? d.slice(2) : d }); }}
+              value={(() => { const d = (form.business_phone || "").replace(/\D/g, ""); return d.startsWith("60") ? d.slice(2) : d.startsWith("0") ? d.slice(1) : d; })()}
+              onChange={(e) => { const d = e.target.value.replace(/\D/g, ""); setForm({ ...form, business_phone: d.startsWith("0") ? d.slice(1) : d.startsWith("60") ? d.slice(2) : d }); }}
               className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
-              placeholder="812 3456 7890"
+              placeholder="12 345 6789"
             />
           </div>
         </div>
 
         {/* Marketplace fields */}
         <div className="pt-2 border-t border-border">
-          <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider mb-3">Profil Toko Online</p>
+          <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider mb-3">Online store profile</p>
         </div>
         <SearchableSelect
-          label="Provinsi"
+          label="State"
           placeholder="Choose state"
           options={provinces.map((p) => ({ id: String(p.id), label: p.name }))}
           value={selectedProvinceId ? String(selectedProvinceId) : ""}
@@ -353,32 +353,32 @@ export default function ProfileEditPage() {
         />
         <div>
           <SearchableSelect
-            label="Kota / Kabupaten"
-            placeholder={selectedProvinceId ? "Choose city" : "Choose state dulu"}
+            label="City"
+            placeholder={selectedProvinceId ? "Choose city" : "Choose a state first"}
             options={cities.map((c) => ({ id: String(c.id), label: c.name }))}
             value={selectedCityId ? String(selectedCityId) : ""}
             onChange={(val) => setSelectedCityId(val ? parseInt(val, 10) : "")}
             disabled={!selectedProvinceId}
           />
-          <p className="text-[11px] text-muted-foreground/70 mt-1">Kota tempat usahamu beroperasi</p>
+          <p className="text-[11px] text-muted-foreground/70 mt-1">City where your business operates</p>
         </div>
         <SearchableSelect
-          label="Kategori Bisnis"
+          label="Business category"
           placeholder="Choose category"
           options={categories.map((c) => ({ id: c.id, label: c.label }))}
           value={form.business_category}
           onChange={(val) => setForm({ ...form, business_category: val })}
         />
         <div>
-          <label className="text-xs text-muted-foreground mb-1 block">Deskripsi Toko</label>
+          <label className="text-xs text-muted-foreground mb-1 block">Store description</label>
           <textarea
             value={form.business_description}
             onChange={(e) => setForm({ ...form, business_description: e.target.value.slice(0, 160) })}
             rows={3}
             className="w-full px-3 py-2.5 bg-card border rounded-lg shadow-sm text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary/30 focus:bg-card resize-none transition-colors placeholder:text-muted-foreground"
-            placeholder="Ceritakan singkat tentang usahamu..."
+            placeholder="Briefly describe your business..."
           />
-          <p className="text-[11px] text-muted-foreground/70 mt-1">{form.business_description.length}/160 karakter</p>
+          <p className="text-[11px] text-muted-foreground/70 mt-1">{form.business_description.length}/160 characters</p>
         </div>
         {/* Jam Operasi — hidden for launch (katering/bakery don't have fixed hours) */}
 
@@ -403,7 +403,7 @@ export default function ProfileEditPage() {
                 onClick={() => setPreviewImage(qrisUrl)}
                 className="relative w-28 h-28 rounded-lg border border-border bg-white p-1 flex-shrink-0 hover:border-primary/30 transition-colors cursor-zoom-in"
               >
-                <Image src={qrisUrl} alt="QRIS" fill className="object-contain rounded" sizes="112px" />
+                <Image src={qrisUrl} alt="DuitNow QR" fill className="object-contain rounded" sizes="112px" />
               </button>
               <div className="flex flex-col gap-2 pt-1">
                 <button
@@ -413,7 +413,7 @@ export default function ProfileEditPage() {
                   className="h-9 px-3 flex items-center gap-1.5 rounded-lg text-xs font-medium bg-card border border-border shadow-sm hover:bg-muted transition-colors disabled:opacity-50"
                 >
                   {isUploadingQris ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
-                  Ganti
+                  Change
                 </button>
                 <button
                   type="button"
@@ -422,7 +422,7 @@ export default function ProfileEditPage() {
                   className="h-9 px-3 flex items-center gap-1.5 rounded-lg text-xs font-medium text-red-600 bg-card border border-border shadow-sm hover:bg-red-50 transition-colors disabled:opacity-50"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
-                  Hapus
+                  Remove
                 </button>
               </div>
             </div>
@@ -439,7 +439,7 @@ export default function ProfileEditPage() {
                 <QrCode className="w-5 h-5 text-muted-foreground" />
               )}
               <span className="text-xs text-muted-foreground">
-                {isUploadingQris ? "Mengupload..." : "Upload QRIS"}
+                {isUploadingQris ? "Uploading..." : "Upload DuitNow QR"}
               </span>
             </button>
           )}
@@ -451,7 +451,7 @@ export default function ProfileEditPage() {
           className="w-full h-11 flex items-center justify-center gap-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50 transition-colors"
         >
           {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-          Simpan
+          Save
         </button>
       </div>
 

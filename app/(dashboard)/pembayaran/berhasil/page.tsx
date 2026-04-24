@@ -11,16 +11,16 @@ export default function PaymentSuccessPage() {
           <CheckCircle className="w-8 h-8 text-green-500" />
         </div>
         <h1 className="text-xl font-semibold text-gray-900 mb-2">
-          Pembayaran Berhasil!
+          Payment successful!
         </h1>
         <p className="text-sm text-gray-500 mb-6">
-          Paket langgananmu sudah aktif. Terima kasih telah upgrade!
+          Your plan is now active. Thanks for upgrading!
         </p>
         <Link
           href="/orders"
           className="inline-flex h-11 items-center justify-center px-6 bg-gray-900 text-white rounded-xl hover:bg-gray-800 active:bg-gray-700 transition-colors text-sm font-medium"
         >
-          Kembali ke Dashboard
+          Back to dashboard
         </Link>
       </div>
     </div>
