@@ -1,27 +1,264 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "tw-animate-css";
+@plugin "@tailwindcss/typography";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Backgrounds */
+  --background: 35 20% 97%;
+  --foreground: 220 13% 13%;
+
+  /* Cards */
+  --card: 36 15% 99%;
+  --card-foreground: 220 13% 13%;
+
+  /* Popover */
+  --popover: 36 15% 99%;
+  --popover-foreground: 220 13% 13%;
+
+  /* Primary - Black */
+  --primary: 0 0% 9%;
+  --primary-foreground: 0 0% 100%;
+
+  /* Secondary */
+  --secondary: 220 14% 96%;
+  --secondary-foreground: 220 13% 13%;
+
+  /* Muted */
+  --muted: 220 14% 96%;
+  --muted-foreground: 220 9% 46%;
+
+  /* Accent */
+  --accent: 220 14% 96%;
+  --accent-foreground: 220 13% 13%;
+
+  /* Destructive */
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+
+  /* Borders & Inputs */
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 0 0% 9%;
+
+  /* Border radius */
+  --radius: 0.75rem;
+
+  /* Sidebar */
+  --sidebar: 36 15% 99%;
+  --sidebar-foreground: 220 13% 13%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-accent: 220 14% 93%;
+  --sidebar-accent-foreground: 220 13% 13%;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Dark mode disabled — dashboard is light-only */
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-sidebar: hsl(var(--sidebar));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* Warm card shadows — brown tint matches warm background */
+  --shadow-sm: 0 1px 2px rgba(101, 67, 33, 0.04);
+
+  /* Warm UMKM palette */
+  --color-warm-green: #2D6A4F;
+  --color-warm-green-light: #D8F3DC;
+  --color-warm-green-hover: #245840;
+  --color-warm-rose: #C4705A;
+  --color-warm-rose-light: #FDDDD6;
+  --color-warm-amber: #E07B39;
+  --color-warm-amber-light: #FDE8D0;
+  --color-warm-blue: #4A7FB5;
+  --color-warm-blue-light: #DCEEFB;
+  --color-warm-purple: #7C5CBF;
+  --color-warm-purple-light: #EDE5FB;
+}
+
+@layer base {
+  * {
+    @apply border-border;
   }
-}
 
-body {
-  color: rgb(var(--foreground));
-  background: rgb(var(--background));
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .touch-pan-y {
+    touch-action: pan-y;
   }
+
+  .glass {
+    @apply bg-background/60 backdrop-blur-md border-b border-border/40 supports-[backdrop-filter]:bg-background/60;
+  }
+
+  .glass-premium {
+    @apply bg-white/60 backdrop-blur-2xl border border-white/50 shadow-sm supports-[backdrop-filter]:bg-white/60;
+  }
+
+  /* Hide scrollbar but keep scroll functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Safe area for bottom-fixed elements on notched devices */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Dynamic viewport height */
+  .h-dvh {
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  /* Animations */
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.8s ease-out forwards;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.2) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes slide-up {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.3s ease-out forwards;
+  }
+
+  @keyframes pulse-mic {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.3); }
+    50% { transform: scale(1.05); box-shadow: 0 0 0 12px rgba(220, 38, 38, 0); }
+  }
+
+  .animate-pulse-mic {
+    animation: pulse-mic 1.5s ease-in-out infinite;
+  }
+
+  /* Beres! celebration */
+  @keyframes beres-wash {
+    0% { opacity: 0; }
+    15% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  @keyframes beres-scale {
+    0% { transform: scale(0.8); opacity: 0; }
+    40% { transform: scale(1.05); opacity: 1; }
+    60% { transform: scale(1); }
+    100% { transform: scale(1); opacity: 0; }
+  }
+
+  /* Squishy press — spring feel */
+  .squish-press:active {
+    transform: scale(0.96);
+    transition: transform 0.08s ease-out;
+  }
+  .squish-press {
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Idle pulse on FAB and primary CTAs */
+  @keyframes idle-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(45,106,79, 0.3); }
+    50% { box-shadow: 0 0 0 8px rgba(45,106,79, 0); }
+  }
+  .animate-idle-pulse {
+    animation: idle-pulse 2.5s ease-in-out infinite;
+  }
+
+  /* Check pop on selected product cards */
+  @keyframes check-pop {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .animate-check-pop {
+    animation: check-pop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  /* Price auto-fill flash — WA bubble green (#DCF8C6) */
+  .price-flash {
+    background-color: #DCF8C6 !important;
+  }
+
+  /* Stagger delays */
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
+  .delay-600 { animation-delay: 600ms; }
+  .delay-700 { animation-delay: 700ms; }
 }

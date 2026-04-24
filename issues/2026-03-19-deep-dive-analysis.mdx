@@ -1,0 +1,209 @@
+# Deep Dive Analysis — Semua Potensi Masalah Tokoflow
+
+> Audit mendalam seluruh sistem: Mobile App, Web API, Database
+> Tanggal: 19 Maret 2026
+
+**Total: 34 issues — 3 CRITICAL, 7 HIGH, 15 MEDIUM, 9 LOW**
+
+---
+
+## CRITICAL (3) — Harus diperbaiki segera
+
+### C1. AI Parse routes pakai cookie-only auth (broken di mobile)
+`/api/voice/parse` dan `/api/image/parse` pakai `createClient()` bukan `getAuthenticatedClient()`. Mobile kirim Bearer token → selalu 401.
+- **File:** `app/api/voice/parse/route.ts:23`, `app/api/image/parse/route.ts:23`
+- **Fix:** Ganti ke `getAuthenticatedClient(request)`
+
+### C2. Reminders route pakai cookie-only auth (broken di mobile)
+GET/POST/DELETE di `/api/reminders` semua pakai `createClient()`.
+- **File:** `app/api/reminders/route.ts:10,54,193`
+- **Fix:** Ganti ke `getAuthenticatedClient(request)`
+
+### C3. Billing payments route pakai cookie-only auth (broken di mobile)
+POST `/api/billing/payments` pakai `createClient()`. Mobile `useBuyPlan` → selalu 401.
+- **File:** `app/api/billing/payments/route.ts:8`
+- **Fix:** Ganti ke `getAuthenticatedClient(request)`
+
+---
+
+## HIGH (7) — Perbaiki secepatnya
+
+### H1. Customer stats trigger tidak exclude soft-deleted orders
+Trigger `recalculate_customer_stats` hanya filter `status != 'cancelled'`, tidak ada `AND deleted_at IS NULL`. Order yang dihapus (soft-delete) masih dihitung di stats.
+- **File:** `supabase/migrations/053_customer_stats_trigger.sql`
+- **Fix:** Tambah `AND deleted_at IS NULL` di semua WHERE clause trigger
+
+### H2. Order deletion tidak update customer stats dan quota
+DELETE handler set `deleted_at` tapi tidak: (1) recalculate customer stats, (2) decrement `orders_used`.
+- **File:** `app/api/orders/[id]/route.ts:196-224`
+- **Fix:** Trigger sudah handle stats jika H1 diperbaiki. Perlu tambah `decrement_orders_used`.
+
+### H3. Race condition di stock decrement public order
+Stock divalidasi → order dibuat → stock didecrement. Concurrent requests bisa lolos semua, over-selling.
+- **File:** `lib/services/public-order.service.ts:233-257`
+- **Fix:** Supabase RPC function yang atomic check+decrement dengan `SELECT FOR UPDATE`
+
+### H4. WhatsApp connect pakai cookie-only auth
+`/api/whatsapp/connect` pakai `createClient()`.
+- **File:** `app/api/whatsapp/connect/route.ts:9`
+- **Fix:** Ganti ke `getAuthenticatedClient(request)`
+
+### H5. SQL injection risk di search `.or()` filters
+Search string di-interpolasi langsung ke PostgREST filter. Special characters bisa corrupt filter syntax.
+```typescript
+// Vulnerable:
+query = query.or(`name.ilike.%${search}%,phone.ilike.%${search}%`)
+```
+- **File:** `app/api/orders/route.ts:43`, `app/api/customers/route.ts:23`
+- **Fix:** Sanitize: escape `,`, `.`, `(`, `)` dalam search string
+
+### H6. Push notification token tidak pernah didaftarkan
+CLAUDE.md bilang pakai Expo Push Service + `profiles.push_token`, tapi tidak ada kode yang:
+1. Request permission notifikasi
+2. Get Expo Push Token
+3. Kirim token ke server
+- **Fix:** Implementasi `registerPushToken()` di `AuthProvider`
+
+### H7. Server tidak enforce order quota
+POST `/api/orders` hanya `increment_orders_used`, tidak pernah check limit. Quota hanya dicek di client (mobile UI). Offline sync bisa bypass.
+- **File:** `app/api/orders/route.ts:191`
+- **Fix:** Tambah server-side check: jika exceed, return 402
+
+---
+
+## MEDIUM (15)
+
+### M1. Customer name dedup `.maybeSingle()` bisa error
+Jika 2 customer punya nama sama (case-insensitive), `.maybeSingle()` throw error karena >1 row match.
+- **Fix:** Pakai `.order('created_at').limit(1)` sebelum `.maybeSingle()`
+
+### M2. Public capacity endpoint expose user ID
+`/api/public/capacity?userId=xxx` — public endpoint yang terima internal UUID.
+- **Fix:** Terima `slug` bukan `userId`, resolve internal
+
+### M3. Rate limiter per-instance di serverless
+In-memory `Map` untuk rate limit → reset setiap cold start, tidak shared antar instances.
+- **Fix:** Pakai Upstash Redis atau Supabase-based rate limiting
+
+### M4. Customers list tidak paginated
+GET `/api/customers` return semua customer tanpa limit. Bisnis dengan 1000+ pelanggan → slow.
+- **Fix:** Tambah `limit`/`offset` support, pakai `useInfiniteQuery` di mobile
+
+### M5. Invoices list tidak paginated di mobile
+`useInvoices` fetch semua faktur tanpa pagination.
+- **Fix:** Sama seperti M4
+
+### M6. Sync lock race condition
+`acquireSyncLock()` pakai AsyncStorage (non-atomic check-and-set). Dua call bersamaan bisa lolos.
+- **Fix:** Pakai in-memory boolean flag (single JS thread di mobile)
+
+### M7. Tidak ada duplicate detection saat offline sync
+Jika app crash setelah API sukses tapi sebelum `removePendingOrder`, order di-sync ulang = duplikat.
+- **Fix:** Kirim `tempId` sebagai idempotency key, server check existing
+
+### M8. Offline orders kehilangan banyak field
+`PendingOrder` hanya simpan: items, customerName, customerPhone, notes. Tidak ada: delivery_date, payment_status, discount, is_preorder, dll.
+- **Fix:** Expand `PendingOrder` interface sesuai `CreateOrderInput`
+
+### M9. N+1 queries di bulk operations
+Bulk status update dan bulk paid loop per-order individual UPDATE.
+- **Fix:** Batch update pakai `.in('id', ids)`, hapus manual stats (trigger handle)
+
+### M10. Admin dashboard fetch semua rows
+Revenue calculation load ALL orders, ALL transactions, ALL products.
+- **Fix:** Supabase RPC/view untuk aggregated metrics
+
+### M11. AI-parsed items silently dropped jika tidak di katalog
+`matchItemsToProducts()` drop items tanpa match. User tidak tahu kenapa item hilang.
+- **Fix:** Keep unmatched items dengan `price: 0`, tampilkan warning ke user
+
+### M12. Deep link sebelum auth resolved
+`setupDeepLinking()` jalan di mount, sebelum `getSession()` selesai. Cold start + deep link = flash login screen.
+- **Fix:** Queue URL, process setelah `isLoading = false`
+
+### M13. SecureStore 2048 byte limit risk
+Supabase JWT bisa 1000-1500 bytes. Dengan metadata, bisa exceed 2048 limit di beberapa platform.
+- **Fix:** Pakai `LargeSecureStore` adapter dari Supabase Expo guide
+
+### M14. Session refresh race condition
+API client manual `refreshSession()` + Supabase SDK `autoRefreshToken` bisa conflict. Refresh token single-use → kedua gagal → user logged out.
+- **Fix:** Jangan manual refresh. Tunggu + re-call `getSession()`, atau listen `onAuthStateChange`
+
+### M15. Image base64 bisa exceed API timeout
+Foto 3-5MB → base64 4-7MB → JSON body besar → slow upload → Vercel timeout (10s hobby, 60s pro).
+- **Fix:** Compress/resize image sebelum base64 (target <500KB). Atau upload via signed URL dulu.
+
+---
+
+## LOW (9)
+
+### L1. Duplicate customer stats recalc (trigger + application code)
+Order PUT handler manual recalc stats + trigger juga fire. Double work, tapi harmless.
+- **Fix:** Hapus manual recalc dari PUT handler (setelah H1 fixed)
+
+### L2. Mobile Customer type missing `npwp` field
+DB punya `npwp` di customers (migration 049), mobile type tidak include.
+- **Fix:** Tambah `npwp?: string` ke `Customer` interface
+
+### L3. Products list tidak paginated
+GET `/api/products` return semua. Low impact karena UMKM biasanya 10-50 produk.
+- **Fix:** Tambah limit jika perlu
+
+### L4. Auto-sync unnecessary re-run
+`useOnlineStatus` effect re-trigger saat `pendingCount` berubah setelah sync (tapi no-op).
+- **Fix:** Pakai ref untuk track sync attempt
+
+### L5. staleTime terlalu pendek untuk mobile
+30 detik untuk semua query. Products/profile jarang berubah → terlalu sering refetch.
+- **Fix:** Per-query staleTime: products 5min, profile 10min, orders 30s
+
+### L6. Zero products masih bisa buat order via AI
+User tanpa produk bisa paste chat → AI return items dengan `price: 0` → submit order Rp0.
+- **Fix:** Validasi server: minimal 1 item dengan `price > 0`
+
+### L7. Zero-total orders selalu "unpaid"
+`derivePaymentStatus(0, 0)` return "unpaid" padahal total Rp0 tidak perlu bayar.
+- **Fix:** Jika `total === 0`, return "paid"
+
+### L8. Past delivery dates diterima tanpa warning
+Tidak ada validasi delivery_date >= today di server maupun client.
+- **Fix:** Server validate, atau client warning
+
+### L9. StatusBar hardcoded "light"
+`<StatusBar style="light" />` — di light mode, status bar content invisible.
+- **Fix:** Ganti ke `<StatusBar style="auto" />`
+
+---
+
+## Priority Implementation Order
+
+### Sprint 1 (Urgent — Security & Auth)
+1. C1, C2, C3, H4 — Fix semua cookie-only auth routes → `getAuthenticatedClient`
+2. H5 — Sanitize search `.or()` filters
+3. H7 — Server-side quota enforcement
+
+### Sprint 2 (Data Integrity)
+4. H1 — Fix trigger: tambah `deleted_at IS NULL`
+5. H2 — Order deletion: decrement quota
+6. H3 — Atomic stock decrement
+7. M1 — Customer dedup `.limit(1)`
+8. L1 — Hapus manual stats recalc dari PUT handler
+
+### Sprint 3 (Offline & Mobile)
+9. M8 — Expand PendingOrder fields
+10. M7 — Idempotency key untuk sync
+11. M6 — Fix sync lock
+12. M14 — Fix session refresh race
+13. M12 — Deep link after auth
+14. H6 — Push notification registration
+
+### Sprint 4 (Performance & Polish)
+15. M4, M5 — Paginate customers/invoices
+16. M9 — Batch bulk operations
+17. M15 — Image compression before parse
+18. L5 — Per-query staleTime
+19. L9 — StatusBar auto
+
+---
+
+*Analysis by Claude Opus 4.6 — 19 Maret 2026*

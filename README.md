@@ -1,444 +1,126 @@
 # Tokoflow
 
-Inventory dan sales management untuk UMKM Indonesia. Catat penjualan
-multi-channel, hitung profit otomatis per transaksi, pantau stok real-time.
+**LHDN-ready WhatsApp storefront for Malaysian SMBs.** Share an order link, customers self-order, every paid order becomes a MyInvois-compliant e-Invoice automatically.
 
-**Status:** Early Access — gratis selama program berjalan untuk merchant
-pertama yang membentuk produk ini bersama kami.
+**Status:** Phase 1 + MyInvois/Billplz scaffold complete. Pre-launch — awaiting Phase 0 sandbox validation and ~80-120h of Phase 2 code (InvoiceForm UI + tax engine + staff/customer accounts). See [HANDOFF.md](./HANDOFF.md).
 
----
+**Target market:** Malaysia — RM 1M–5M turnover merchants facing the LHDN e-Invoice Phase 4 mandate (enforcement 1 Jan 2027).
 
-## Apa yang bisa dilakukan hari ini
+**Codebase:** ~44.4K LOC across 319 TS/TSX files. 0 user-visible Bahasa Indonesia strings.
 
-### Inventory & Produk
-- ✅ CRUD produk dengan SKU, nama, stok, threshold low-stock per produk
-- ✅ Multi-warehouse — setiap produk milik satu cabang/lokasi
-- ✅ Bundle / komposisi produk dengan auto-deduct stok komponen
-- ✅ Stok status auto-categorized (negative / zero / low / normal)
-- ✅ Stock adjustments dengan audit trail (alasan + catatan)
-- ✅ Incoming goods tracking dengan staging→finalize flow
+## What it does
 
-### Penjualan & Profit
-- ✅ Input penjualan multi-channel (Shopee, Tokopedia, TikTok Shop, offline, dll)
-- ✅ Profit calculator otomatis: revenue − (modal + packing) × qty − affiliate − marketplace fee
-- ✅ Per-channel marketplace fee config
-- ✅ Sales history dengan filter date / channel / SKU / customer
-- ✅ Summary toggle: per channel / per produk / per tanggal, dengan kolom sortable
-- ✅ CSV export
+Malaysian small businesses take orders on WhatsApp — chat piles up, orders slip, LHDN deadlines loom. Tokoflow gives merchants a **store link** — customers order themselves, every order lands tidy, and (on the Pro tier) auto-submits a UBL 2.1 JSON e-Invoice to MyInvois. DuitNow QR settles payment. No commission. Customers stay yours.
 
-### Customer Attribution
-- ✅ Customer directory dengan lifetime stats (orders, total spent, total profit)
-- ✅ Per-customer detail page dengan riwayat penjualan
-- ✅ Customer dropdown di sales input form
-- ✅ Customer filter di sales history
-- ✅ Top customers card di dashboard
+## Core wedge
 
-### Dashboard
-- ✅ Real-time metrics: revenue, profit, margin, units sold, today's sales
-- ✅ Channel breakdown dengan margin per channel
-- ✅ Top produk + top customers
-- ✅ Stok perlu perhatian (negatif + kosong + low)
-- ✅ Pending sales / incoming
-- ✅ Recent activity feed
+1. **Compliance (urgent, dated):** native LHDN MyInvois integration. Orderla.my has zero e-Invoice support; Niagawan is building but not shipped. RM 10K individual-invoice rule live 1 Jan 2026; Phase 4 enforcement 1 Jan 2027.
+2. **AI-native:** paste WhatsApp chat → order, voice → order, screenshot → order (Gemini Flash Lite via OpenRouter).
+3. **Community data (Phase 4):** merchant group-buy + peer benchmarks — defensible moat, ported from CatatOrder after beachhead.
 
-### Stock Alerts
-- ✅ Auto-detection berdasarkan per-produk threshold
-- ✅ Bell icon notification dengan unread count (polls 60s)
-- ✅ Acknowledge per-SKU atau bulk
-- ✅ Auto-resolve saat stok kembali normal
-
-### Multi-user
-- ✅ RBAC dengan 2 role: **owner** (full access) dan **staff** (operational)
-- ✅ User pertama otomatis jadi owner
-- ✅ User management page (owner only) untuk promote/demote
-- ✅ Last-owner safeguard: tidak bisa demote owner terakhir
-
-### Mobile / PWA
-- ✅ PWA installable — buka di browser HP, "Add to Home Screen"
-- ✅ Service worker untuk offline shell caching
-- ✅ Barcode scanner page dengan kamera HP (`BarcodeDetector` API)
-
-### Marketplace Integration
-- ✅ **TikTok Shop Partner Center** — OAuth connect, per-shop token
-  encryption (AES-256-GCM), order search + detail, webhook verification
-  (ORDER_STATUS_UPDATE, SELLER_DEAUTHORIZATION, etc). Covers both TikTok Shop
-  Indonesia AND migrated Tokopedia storefronts — one OAuth connection surfaces
-  as `seller_type: "TikTok Shop"` or `"Tokopedia Shop"` depending on which
-  storefront the merchant authorized.
-- ✅ **Shopee Open Platform v2** — OAuth connect, token refresh (4h access /
-  30d refresh), `get_order_list` / `get_order_detail` / `get_escrow_detail`
-  for authoritative commission + service fees. Webhook signature verification
-  supports both the `Authorization` header and `X-Shopee-Signature` header
-  variants Shopee has shipped.
-- ✅ **ISV pattern** — one set of developer credentials for Tokoflow, every
-  merchant OAuths their own shop. Merchants never see a developer portal.
-- ✅ **Idempotent sync** — partial unique index on
-  `(external_source, external_order_id, external_item_id)` means duplicate
-  webhook deliveries / poll overlaps upsert cleanly with no double-counting.
-- ✅ **Webhook inbox** (`tf_webhook_events`) + cron drain — webhooks return
-  200 in <100ms, actual order processing happens via the drain cron every
-  2 min. Failed events retry up to 5 times with exponential backoff.
-- ✅ **Fee reconciliation** — daily cron pulls real escrow settlement from
-  Shopee and rewrites `marketplace_fee` + `net_profit` on finalized
-  transactions. TikTok Shop finance-API reconciliation is scaffolded (WIP).
-- ✅ **81 unit tests** proving signer + webhook-verifier correctness. Run
-  with `node --test lib/services/marketplace/**/*.test.js`.
-- ⚠️ **Tokopedia (standalone)** — intentionally not supported. The legacy
-  `developer.tokopedia.com` OpenAPI is being terminated and storefronts are
-  absorbed into TikTok Shop Partner Center. Use the TikTok Shop connection.
-- ⚠️ **Production verification pending** — code is complete and unit-tested
-  but end-to-end OAuth flow against real TikTok Shop / Shopee credentials
-  has not been run yet. Requires registering a Custom App at
-  [partner.tiktokshop.com](https://partner.tiktokshop.com) (2-3 day review)
-  and an app at [open.shopee.com](https://open.shopee.com).
-
----
-
-## Belum ada (intentionally)
-
-| Feature | Kenapa belum | Effort kalau mau dibangun |
-|---|---|---|
-| Lazada / Blibli integration | TikTok Shop + Shopee cover ~85-90% GMV Indonesia. Scope ditahan di dua platform dulu. Plumbing di `lib/services/marketplace/` sudah reusable. | ~1-2 hari per platform |
-| TikTok Shop finance-API reconciliation | Shopee escrow reconciliation sudah jalan; TikTok Shop statement_transactions endpoint masih scaffolded (TODO di `app/api/cron/marketplace-fee-reconcile/route.js`) | 1 hari |
-| Per-warehouse stok per produk (one SKU, multiple locations) | Tier 4 — butuh `tf_product_inventory` pivot table dan rewrite semua inventory queries | 2–3 hari |
-| Email/WhatsApp delivery untuk stock alerts | Butuh SMTP/WA provider + cron config. In-app notification sudah jalan | 1 hari |
-| Payment / Midtrans | `/checkout` page sudah ada tapi `/api/payment/*` belum dibangun. Feature-flagged off | 1–2 hari |
-| Multi-tenancy (multiple merchants share 1 install) | Strategi sekarang "1 install per merchant" | 1–3 hari standalone |
-| Mobile app native + Play Store | PWA approach memberikan 80% value tanpa overhead | — |
-| AI insights / forecasting | Out of scope untuk v0.1 | — |
-
----
-
-## Setup
-
-### Prerequisites
-
-- Node.js 18+ (lihat `.nvmrc`)
-- Supabase project (free tier cukup)
-
-### Install
-
-```bash
-git clone <repo>
-cd tokoflow
-npm install
-cp .env.example .env.local
-```
-
-Edit `.env.local`:
-
-```env
-# Core — required
-NEXT_PUBLIC_SUPABASE_URL=https://<your-project>.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-anon-key>
-SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>   # server-only, RLS bypass
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
-NEXT_PUBLIC_APP_NAME=Tokoflow
-NEXT_PUBLIC_APP_DESCRIPTION=Inventory and Sales Management System
-
-# Marketplace — required for TikTok Shop / Shopee integration
-# Generate both with: node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
-MARKETPLACE_ENCRYPTION_KEY=<32 raw bytes base64>    # AES-GCM token encryption
-CRON_SECRET=<any random string>                      # protects /api/cron/*
-
-# Marketplace — fill after app registration at partner.tiktokshop.com / open.shopee.com
-TIKTOKSHOP_APP_KEY=
-TIKTOKSHOP_APP_SECRET=
-TIKTOKSHOP_REDIRECT_URI=https://<your-domain>/api/marketplace/callback/tiktok-shop
-SHOPEE_PARTNER_ID=
-SHOPEE_PARTNER_KEY=
-SHOPEE_REDIRECT_URI=https://<your-domain>/api/marketplace/callback/shopee
-SHOPEE_ENVIRONMENT=test    # 'test' for UAT, 'live' for production
-```
-
-**Note on marketplace testing:** TikTok Shop and Shopee OAuth flows both
-require HTTPS publicly-reachable redirect URIs. `http://localhost:3000` won't
-work — either deploy to Vercel first to get a public URL, or use a tunneling
-tool like `cloudflared tunnel` during development.
-
-### Apply database schema
-
-The full schema is in `db/schema.sql`, the seed data in `db/seed.sql`. Both
-are idempotent.
-
-```bash
-SUPABASE_PROJECT=<your-project-ref>
-SUPABASE_TOKEN=<your-management-api-token>     # from supabase.com/dashboard
-
-# Apply schema
-node -e "process.stdout.write(JSON.stringify({query:require('fs').readFileSync('db/schema.sql','utf8')}))" \
-  | curl -X POST "https://api.supabase.com/v1/projects/$SUPABASE_PROJECT/database/query" \
-      -H "Authorization: Bearer $SUPABASE_TOKEN" \
-      -H "Content-Type: application/json" \
-      --data-binary @-
-
-# Apply seed (default channels + early-access plan + default warehouse)
-node -e "process.stdout.write(JSON.stringify({query:require('fs').readFileSync('db/seed.sql','utf8')}))" \
-  | curl -X POST "https://api.supabase.com/v1/projects/$SUPABASE_PROJECT/database/query" \
-      -H "Authorization: Bearer $SUPABASE_TOKEN" \
-      -H "Content-Type: application/json" \
-      --data-binary @-
-```
-
-### Run
-
-```bash
-npm run dev          # http://localhost:3000
-```
-
-Open `/register`, sign up. **Your first signup auto-becomes owner.** Subsequent
-signups default to staff and need an owner to promote them via `/admin/users`.
-
-### Production build
-
-```bash
-npm run build
-npm run start
-```
-
-Or deploy to Vercel — `vercel.json` is configured.
-
----
-
-## Project structure
-
-```
-.
-├── app/
-│   ├── (private)/                # Authenticated pages
-│   │   ├── dashboard/             # Real metrics + channel/product/customer rankings
-│   │   ├── products/              # Product CRUD with cost editing (owner)
-│   │   ├── sales/                 # Sales input form + pending list
-│   │   ├── sales-history/         # Filterable transaction list + summary toggle
-│   │   ├── customers/             # Customer directory + per-customer detail
-│   │   ├── inventory/             # Stock list with status filters + threshold
-│   │   ├── incoming-goods/        # Stock receipt staging
-│   │   ├── stock-adjustments/     # Manual corrections with audit trail
-│   │   ├── product-compositions/  # Bundle definitions
-│   │   ├── marketplace-fees/      # Per-channel fee config (owner)
-│   │   ├── product-costs/         # Per-SKU cost config (owner)
-│   │   ├── warehouses/            # Warehouse management (owner)
-│   │   ├── marketplace/           # Marketplace integration management (owner only)
-│   │   ├── scanner/               # Barcode scanner using BarcodeDetector API
-│   │   └── admin/users/           # User management with role promotion (owner)
-│   ├── (public)/                  # Marketing + auth pages
-│   │   ├── login/
-│   │   ├── register/
-│   │   ├── tentang/
-│   │   ├── layanan/
-│   │   ├── investasi/
-│   │   └── panduan/
-│   ├── api/                       # API routes
-│   │   ├── alerts/                # Stock alert feed + acknowledge
-│   │   ├── customers/             # Customer CRUD + lifetime stats
-│   │   ├── dashboard/             # Summary + analytics
-│   │   ├── inventory/             # Stock + adjustments + movements
-│   │   ├── marketplace/           # List / disconnect connections
-│   │   │   ├── connect/[provider]/  # POST — build signed OAuth redirect URL
-│   │   │   ├── callback/[provider]/ # GET — OAuth callback, token exchange, encrypted persist
-│   │   │   └── sync/[id]/         # POST — manual sync trigger (owner only)
-│   │   ├── marketplace-fees/      # Fee CRUD (owner-gated mutations)
-│   │   ├── webhooks/
-│   │   │   ├── tiktok-shop/       # POST — verify Authorization HMAC, insert into inbox
-│   │   │   └── shopee/            # POST — dual variant signature verification
-│   │   ├── cron/
-│   │   │   ├── marketplace-sync/              # */15 min — poll all active connections
-│   │   │   ├── webhook-events-process/        # */2 min — drain tf_webhook_events inbox
-│   │   │   └── marketplace-fee-reconcile/     # daily @ 03:00 — authoritative fee settlement
-│   │   ├── product-compositions/  # Bundle CRUD
-│   │   ├── product-costs/         # Cost CRUD (owner-gated)
-│   │   ├── products/              # Product CRUD with view-based GET
-│   │   ├── sales/                 # Sales input + transactions + summary + export
-│   │   ├── incoming-goods/        # Receipt CRUD
-│   │   ├── process/               # Batch processors (sales, incoming-goods)
-│   │   ├── users/                 # User mgmt API (owner-only)
-│   │   └── warehouses/            # Warehouse CRUD (owner-gated mutations)
-│   └── components/                # Shared UI (PrivateNav, Footer, etc.)
-├── lib/
-│   ├── auth/role.js               # requireOwner / getCurrentRole gates
-│   ├── cache/                     # LRU output cache
-│   ├── database/                  # Supabase clients (server + browser + service-role)
-│   ├── http/                      # ETag, paging, cursor, server-timing
-│   ├── services/                  # Business logic (sales, inventory, composition, etc.)
-│   │   └── marketplace/           # Marketplace integration (TikTok Shop + Shopee)
-│   │       ├── crypto.js          #   AES-256-GCM token encryption + HMAC helpers
-│   │       ├── errors.js          #   MarketplaceError taxonomy + provider classifiers
-│   │       ├── http.js            #   fetch wrapper: retry, backoff, timeout, logging
-│   │       ├── connections.js     #   Token-aware tf_marketplace_connections accessors
-│   │       ├── tiktok-shop/       #   signer, auth, orders, webhooks, sync + .test.js
-│   │       └── shopee/            #   same structure for Shopee v2
-│   ├── state/                     # Global state tags for cache invalidation
-│   └── utils/                     # api-response, auth-helpers, format
-├── db/
-│   ├── schema.sql                 # Single source of truth — idempotent
-│   └── seed.sql                   # Default marketplace channels + plan + warehouse
-├── public/
-│   ├── site.webmanifest           # PWA manifest
-│   ├── sw.js                      # Service worker
-│   └── images/
-├── docs/
-│   ├── feature-audit.md           # Feature inventory
-│   └── strategic-analysis.md      # Product strategy + CatatOrder relationship
-├── middleware.js                  # Auth gate + payment feature flag
-├── CLAUDE.md                      # AI agent guidance (read this first if using Claude Code)
-└── README.md                      # You are here
-```
-
----
-
-## Environment variables
-
-### Core
-
-| Var | Required | Default | Purpose |
-|---|---|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | ✅ | — | Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ✅ | — | Supabase anon key (client-exposed) |
-| `SUPABASE_SERVICE_ROLE_KEY` | ✅ for marketplace | — | Server-only. Used by webhook handlers and cron jobs to bypass RLS. Never expose to the browser. |
-| `NEXT_PUBLIC_SITE_URL` | ✅ | — | Base URL for OG tags + email links |
-| `NEXT_PUBLIC_APP_NAME` | — | `TokoFlow` | App title |
-| `NEXT_PUBLIC_APP_DESCRIPTION` | — | — | Meta description |
-| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | — | — | Google Analytics |
-| `NEXT_PUBLIC_PAYMENT_ENABLED` | — | `false` | Set to `true` to un-feature-flag `/checkout` and `/plans` (only after the Midtrans backend is built) |
-| `NEXT_PUBLIC_MIDTRANS_CLIENT_KEY` | — | — | Midtrans Snap client key (when enabled) |
-
-### Marketplace
-
-| Var | Required | Default | Purpose |
-|---|---|---|---|
-| `MARKETPLACE_ENCRYPTION_KEY` | ✅ | — | **32 raw bytes base64-encoded.** AES-256-GCM key used to encrypt OAuth tokens in `tf_marketplace_connections`. Generate with `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`. **Losing this key makes every stored token unrecoverable** — merchants must re-OAuth. Back it up before rotating. |
-| `CRON_SECRET` | ✅ | — | Shared secret for `/api/cron/*` endpoints. Vercel Cron sends `Authorization: Bearer $CRON_SECRET` automatically for scheduled invocations. |
-| `TIKTOKSHOP_APP_KEY` | — | — | TikTok Shop Partner Center Custom App key |
-| `TIKTOKSHOP_APP_SECRET` | — | — | TikTok Shop Custom App secret |
-| `TIKTOKSHOP_REDIRECT_URI` | — | — | Must match the Redirect URL configured in Partner Center. Typically `https://<domain>/api/marketplace/callback/tiktok-shop` |
-| `SHOPEE_PARTNER_ID` | — | — | Shopee Open Platform partner ID (integer) |
-| `SHOPEE_PARTNER_KEY` | — | — | Shopee partner key (HMAC-SHA256 signing key) |
-| `SHOPEE_REDIRECT_URI` | — | — | Typically `https://<domain>/api/marketplace/callback/shopee` |
-| `SHOPEE_ENVIRONMENT` | — | `test` | `test` → `partner.test-stable.shopeemobile.com` (UAT), `live` → `partner.shopeemobile.com` |
-
-### Deprecated / Not used
-
-- `TOKOPEDIA_CLIENT_ID` / `TOKOPEDIA_CLIENT_SECRET` / `TOKOPEDIA_REDIRECT_URI` —
-  Tokopedia legacy OpenAPI is being terminated. Tokopedia storefronts are now
-  accessible via TikTok Shop Partner Center under `seller_type: "Tokopedia Shop"`.
-  Don't re-add a separate Tokopedia integration.
-
----
-
-## RBAC quick reference
-
-| Action | Staff | Owner |
-|---|---|---|
-| Login + use dashboard | ✅ | ✅ |
-| View / search / create products | ✅ | ✅ |
-| Edit product cost fields | ❌ 403 | ✅ |
-| Delete products | ❌ 403 | ✅ |
-| View marketplace fees | ✅ (read) | ✅ |
-| Edit marketplace fees | ❌ 403 | ✅ |
-| Input sales / process sales | ✅ | ✅ |
-| Create / edit customers | ✅ | ✅ |
-| Delete customers | ❌ 403 | ✅ |
-| Add incoming goods / stock adjustments | ✅ | ✅ |
-| Manage warehouses | ❌ | ✅ |
-| Connect marketplace | ❌ | ✅ |
-| Manage users / change roles | ❌ | ✅ |
-
-The first user to register at `/register` is auto-promoted to **owner**.
-Every subsequent signup defaults to **staff**. The owner can promote staff
-via `/admin/users`.
-
----
+MVP for launch = wedge 1 only. 2–3 are post-beta differentiators.
 
 ## Tech stack
 
-- **Framework:** Next.js 15 (App Router, Turbopack)
-- **Language:** Mixed JavaScript + TypeScript
-- **Styling:** Tailwind CSS
-- **Database:** Supabase (Postgres + auth + storage)
-- **UI:** lucide-react, framer-motion, sonner
-- **PWA:** native service worker + manifest
-- **Barcode:** native `BarcodeDetector` API (Chrome/Edge/Samsung Internet)
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 16 · React 19 · TypeScript |
+| Styling | Tailwind CSS 4 · shadcn/ui |
+| Database | Supabase (Singapore region planned) · 77 migrations |
+| Payment | Billplz — FPX / DuitNow QR / cards (`lib/billplz/`, zero-SDK) |
+| Tax / e-Invoice | LHDN MyInvois UBL 2.1 JSON (`lib/myinvois/`) |
+| AI | Gemini Flash Lite via OpenRouter |
+| Deploy | Vercel |
 
----
+## Pricing (MYR)
 
-## Development
+| Tier | Price | Included |
+|---|---|---|
+| Free | — | 50 orders/month, all core features |
+| Top-up pack | RM 5 / 50 orders | Never expires |
+| Top-up saver | RM 8 / 100 orders | 20% off per order |
+| Unlimited | RM 13 / month | Unlimited orders, no MyInvois |
+| **Pro — LHDN-ready** | **RM 49 / month** | Everything + MyInvois e-Invoice + auto SST + >RM 10K rule |
+| Business | RM 99 / month | Franchise · API · white-label (Phase 4) |
 
-### Adding a new feature
+MDEC Digitalisation Partner grant (RM 5,000 matching) halves Pro cost for eligible MSMEs.
 
-1. Read `CLAUDE.md` first — it documents the conventions
-2. Schema changes go in `db/schema.sql` (always idempotent)
-3. New API routes use `authenticateRequest` + `successResponse`/`errorResponse`
-4. Owner-only mutations gate via `requireOwner(auth)` from `lib/auth/role.js`
-5. New private pages need entries in **both** `middleware.js` and `app/components/PrivateNav.js`
-
-### Running tests
-
-**Marketplace modules** have 81 passing unit tests covering HMAC signers,
-webhook signature verification, and AES-GCM crypto round-trip. They use
-Node's built-in test runner (zero dependencies):
+## Getting started (local dev)
 
 ```bash
-# All marketplace tests
-node --test lib/services/marketplace/**/*.test.js
-
-# A single file
-node --test lib/services/marketplace/tiktok-shop/signer.test.js
+npm install
+cp .env.example .env.local      # fill in Supabase + Billplz + MyInvois creds
+npm run dev                     # http://localhost:3000
 ```
 
-The signer test files are the **specification** for the HMAC formulas — any
-change to `signer.js` must keep the tests green. They're hand-verified
-against open-source SDK references (`EcomPHP/tiktokshop-php` for TikTok Shop,
-documented vectors for Shopee v2).
+### Phase 0 sandbox spikes (before first deploy)
 
-**Other validation:**
-1. `node --check <file>` for route files (real parser, catches syntax errors)
-2. End-to-end SQL probe via the Supabase Management API after schema changes
-3. `npm run build` catches compile-time issues (TypeScript, import errors)
-4. Manual smoke test in `npm run dev`
+```bash
+cp scripts/phase-0/.env.phase-0.example scripts/phase-0/.env.phase-0
+# Fill in LHDN preprod + Billplz sandbox creds, then:
+npx tsx --env-file=scripts/phase-0/.env.phase-0 scripts/phase-0/myinvois-spike.ts
+npx tsx --env-file=scripts/phase-0/.env.phase-0 scripts/phase-0/billplz-spike.ts
+```
 
-### Deployment
+Both must pass before Phase 2 implementation. Also interview 10 merchants using `scripts/phase-0/merchant-interview.md`. See [HANDOFF.md](./HANDOFF.md) for full validation gates.
 
-Push to a Vercel-connected branch. `vercel.json` sets `maxDuration: 30` for
-all API routes, and the build runs `prebuild.js` to clean caches.
+## What's remaining
 
-Make sure all required env vars from the table above are set in the Vercel
-dashboard before deploying.
+### Launch-blocking (Phase 2 — ~80-120h)
 
----
-
-## Roadmap
-
-| Tier | Item | Status |
+| # | Task | Scope |
 |---|---|---|
-| 0 | Database rebuild from code | ✅ |
-| 0 | Honest marketing copy | ✅ |
-| 1 | Dashboard wired to real data | ✅ |
-| 1 | Stock alert visibility | ✅ |
-| 1 | Per-product profit drill-down | ✅ |
-| 1 | Customer filter in sales history | ✅ |
-| 2 | Customer directory + attribution | ✅ |
-| 2 | Customer detail page | ✅ |
-| 2 | Top customers on dashboard | ✅ |
-| 2 | Basic RBAC (owner / staff) | ✅ |
-| 2 | User management UI | ✅ |
-| 2 | Stock alert in-app notifications | ✅ |
-| 3 | Multi-warehouse (single warehouse per product) | ✅ |
-| 3 | PWA + barcode scanner | ✅ |
-| 3 | Marketplace integration plumbing (signers, crypto, webhooks, cron, UI) | ✅ |
-| 3 | TikTok Shop OAuth + sync + webhook verification | ✅ code, ⏳ credentials |
-| 3 | Shopee v2 OAuth + sync + webhook + escrow fee reconciliation | ✅ code, ⏳ credentials |
-| 3 | Email/WhatsApp alert delivery | ⏳ needs SMTP/WA provider |
-| 3 | Midtrans payment backend | ⏳ feature-flagged off |
-| 4 | TikTok Shop finance-API fee reconciliation | ⏳ scaffolded, Shopee done |
-| 4 | Lazada integration | ⏳ plumbing reusable, ~1-2 days |
-| 4 | Per-warehouse stock per product (`tf_product_inventory` pivot) | ⏳ |
-| 4 | Multi-tenancy (multiple merchants per install) | ⏳ |
-| 4 | iOS Safari barcode polyfill | ⏳ |
+| 1 | `features/invoices/components/InvoiceForm.tsx` rewrite | 353 lines — replace NPWP/NITKU/PPN with TIN/BRN/SST + "Submit to MyInvois" button |
+| 2 | `features/invoices/components/InvoiceDetail.tsx` rewrite | 383 lines — MyInvois UUID/QR/longId + cancel (72h window) |
+| 3 | Tax engine refactor | 3 routes (`pph-calculation`, `rekap`, `omzet-summary`) — drop PPh monthly, add SST annual |
+| 4 | Staff accounts + assignment | New feature, 0 existing files. Orderla complaint #1. |
+| 5 | Customer accounts + 1-tap reorder | New feature, 0 existing files. Orderla founder-admitted gap. |
+| 6 | Delete `lib/efaktur/` | Unblocked after tasks 1 + 2 (3 files still import) |
+| 7 | Clean 20 NPWP/NITKU references | Service-layer cleanup after migration 078 drops cols |
+| 8 | Private beta prep | Analytics, onboarding, Pro tier gates |
 
----
+### Route rename (separate risky PR — ~20-30h)
 
-## Support
+42 internal link sites + 9 directory renames (`/pesanan` → `/orders` etc.) + 301 redirects + grep audit.
 
-- **Bug reports / feature requests:** WhatsApp the dev team (link in app footer)
-- **Documentation:** `CLAUDE.md` for technical conventions, `docs/strategic-analysis.md` for product strategy
-- **Database schema:** `db/schema.sql` is the single source of truth
+### Phase 4 deferred (post-launch — ~320h total)
+
+Komunitas/group-buy port (40h) · AI order parsing port (16h) · peer benchmark port (24h) · TikTok Shop MY sync (40h) · BM localization (40h) · native accounting sync (60h) · franchise mode (60h) · Singapore + Brunei expansion (40h).
+
+### Real-world ops (your action — code can't do)
+
+Sdn Bhd registration · Malaysian bank account · Billplz merchant KYB · MyInvois production certification · MDEC DP certification · 10 merchant interviews · Domain + Vercel deployment.
+
+## Project layout
+
+```
+app/
+├── (marketing)/      # Landing, pricing, features, about, contact, blog, toko, mitra
+├── (auth)/           # /login, /register, /forgot-password, /reset-password
+├── (onboarding)/     # /setup — 3-step first-run
+├── (public)/         # /[slug] customer order form, /r/[id] receipt
+├── (dashboard)/      # pesanan, produk, pelanggan, faktur, pengaturan, komunitas, pajak, profil
+├── (admin)/          # Internal tools
+└── api/              # ~60 routes inc. /invoices/[id]/myinvois-{submit,status,cancel}
+
+lib/
+├── billplz/          # Zero-SDK adapter (types, client, verify)
+├── myinvois/         # UBL 2.1 builder + OAuth client + submit/status/cancel
+├── efaktur/          # LEGACY — delete after Phase 2 task 1+2
+└── supabase/, voice/, offline/, pdf/, utils/
+
+features/             # orders, products, customers, invoices, recap, referral, auth
+config/               # plans, site, my-cities, business-types, navigation
+scripts/phase-0/      # Sandbox spikes + merchant interview script
+supabase/migrations/  # 001–077 (077 = MY tax schema)
+```
+
+## Documentation
+
+- [CLAUDE.md](./CLAUDE.md) — full technical spec (stack, schema, patterns, env vars, remaining work)
+- [HANDOFF.md](./HANDOFF.md) — status, open work, Phase 0 gates, deployment checklist
+- [scripts/phase-0/merchant-interview.md](./scripts/phase-0/merchant-interview.md) — 10-merchant validation script
+
+## License
+
+Private — all rights reserved.

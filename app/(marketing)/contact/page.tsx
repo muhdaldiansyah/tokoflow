@@ -1,0 +1,182 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import {
+  Home,
+  ChevronRight,
+  Mail,
+  MessageSquare,
+  Clock,
+  HelpCircle,
+} from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Contact Tokoflow — Support for Malaysian SMBs",
+  description:
+    "Reach Tokoflow via WhatsApp or email. Help with your store link, orders, DuitNow QR, MyInvois e-Invoice, and more.",
+  alternates: {
+    canonical: "https://tokoflow.com/contact",
+  },
+};
+
+const faqs = [
+  {
+    question: "Is Tokoflow free?",
+    answer:
+      "Tokoflow is free forever — 50 orders per month includes every feature: store link, receipts, AI (paste chat, photo, voice), recap, and payment tracking. Need more? Top up from RM 5 / 50 orders or RM 8 / 100 orders via DuitNow QR. Or go Unlimited at RM 13/mo. Pro (RM 49/mo) adds MyInvois e-Invoice and SST handling.",
+  },
+  {
+    question: "Do I need to install an app?",
+    answer:
+      "No. Tokoflow works directly in your mobile browser or laptop — no install required. You can also add it to your home screen as a PWA for offline support.",
+  },
+  {
+    question: "Is my data secure?",
+    answer:
+      "Data is stored on encrypted servers. Each user can only access their own data — no one else can see your business records.",
+  },
+  {
+    question: "How do I delete my account?",
+    answer:
+      "Email hello@tokoflow.com to request account deletion. Your data will be permanently removed in line with PDPA 2010.",
+  },
+];
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((faq) => ({
+    "@type": "Question",
+    name: faq.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: faq.answer,
+    },
+  })),
+};
+
+export default function ContactPage() {
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+
+      <div className="border-b pt-24 lg:pt-28">
+        <div className="max-w-5xl mx-auto px-4 py-6 lg:py-10">
+          <nav className="mb-3 flex items-center gap-1.5 text-sm">
+            <Link href="/" className="flex items-center gap-1 text-[#475569] transition-colors hover:text-[#1E293B]">
+              <Home className="h-3.5 w-3.5" />
+              <span>Home</span>
+            </Link>
+            <ChevronRight className="h-3.5 w-3.5 text-[#475569]/40" />
+            <span className="font-medium text-[#1E293B]">Contact</span>
+          </nav>
+
+          <h1 className="text-2xl lg:text-3xl font-semibold tracking-tight text-[#1E293B]">
+            Contact Tokoflow
+          </h1>
+          <p className="mt-1 text-sm lg:text-base text-[#475569]">
+            Questions, issues, or feedback? Reach us directly on WhatsApp or email.
+          </p>
+        </div>
+      </div>
+
+      <section className="py-12 lg:py-16">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="grid gap-8 lg:gap-12 lg:grid-cols-12">
+            <div className="lg:col-span-5 space-y-4">
+              <div className="flex items-start gap-4 rounded-[2rem] border border-[#E2E8F0] bg-white p-6 shadow-sm">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#E8F6F0]">
+                  <MessageSquare className="h-6 w-6 text-[#05A660]" strokeWidth={1.5} />
+                </div>
+                <div>
+                  <h3 className="text-base lg:text-lg font-bold text-[#1E293B]">WhatsApp</h3>
+                  <p className="mt-0.5 text-sm text-[#475569]">Chat us for quick help.</p>
+                  <div className="mt-1.5 flex items-center gap-1 text-xs text-[#475569]">
+                    <Clock className="h-3 w-3" strokeWidth={1.5} />
+                    <span>Reply within 24 hours</span>
+                  </div>
+                  <a
+                    href="https://wa.me/60123456789?text=Hi%20Tokoflow%2C%20I%20have%20a%20question"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-flex items-center justify-center rounded-lg bg-[#05A660] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#048C51]"
+                  >
+                    WhatsApp chat
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4 rounded-[2rem] border border-[#E2E8F0] bg-white p-6 shadow-sm">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#E8F6F0]">
+                  <Mail className="h-6 w-6 text-[#05A660]" strokeWidth={1.5} />
+                </div>
+                <div>
+                  <h3 className="text-base lg:text-lg font-bold text-[#1E293B]">Email</h3>
+                  <p className="mt-0.5 text-sm text-[#475569]">For detailed questions or partnerships.</p>
+                  <div className="mt-1.5 flex items-center gap-1 text-xs text-[#475569]">
+                    <Clock className="h-3 w-3" strokeWidth={1.5} />
+                    <span>Reply within 1-2 business days</span>
+                  </div>
+                  <a
+                    href="mailto:hello@tokoflow.com"
+                    className="mt-3 inline-flex items-center justify-center rounded-lg border border-[#E2E8F0] bg-white px-4 py-2 text-sm font-semibold text-[#1E293B] transition-colors hover:bg-[#E8F6F0] hover:border-[#05A660]/30"
+                  >
+                    hello@tokoflow.com
+                  </a>
+                </div>
+              </div>
+
+              <div className="rounded-[2rem] border border-[#E2E8F0] bg-slate-50 p-6">
+                <h3 className="text-sm lg:text-base font-bold text-[#1E293B]">Other pages</h3>
+                <div className="mt-3 flex flex-col gap-2">
+                  <Link href="/features" className="text-sm text-[#475569] hover:text-[#1E293B] transition-colors">
+                    Features →
+                  </Link>
+                  <Link href="/pricing" className="text-sm text-[#475569] hover:text-[#1E293B] transition-colors">
+                    Pricing →
+                  </Link>
+                  <Link href="/about" className="text-sm text-[#475569] hover:text-[#1E293B] transition-colors">
+                    About Tokoflow →
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-7">
+              <div className="rounded-[2rem] border border-[#E2E8F0] bg-white p-6 sm:p-8 lg:p-10 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#E8F6F0]">
+                    <HelpCircle className="h-6 w-6 text-[#05A660]" strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <h2 className="text-lg lg:text-xl font-bold text-[#1E293B]">
+                      Common questions
+                    </h2>
+                    <p className="text-sm text-[#475569]">
+                      Answers to things merchants ask most.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-6 space-y-5">
+                  {faqs.map((faq) => (
+                    <div key={faq.question} className="border-b border-[#E2E8F0] pb-5 last:border-0 last:pb-0">
+                      <h3 className="text-sm lg:text-base font-semibold text-[#1E293B]">
+                        {faq.question}
+                      </h3>
+                      <p className="mt-1.5 text-sm lg:text-base leading-relaxed text-[#475569]">
+                        {faq.answer}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}

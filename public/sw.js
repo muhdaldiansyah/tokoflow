@@ -1,111 +1,75 @@
-// public/sw.js
-//
-// Tokoflow service worker — minimal offline shell.
-//
-// Strategy:
-//   - API requests (/api/*)            → network-first, cache as fallback
-//   - Navigations (HTML)               → network-first, cache as fallback
-//   - Static assets (/_next/static/*)  → cache-first (immutable)
-//   - Images / icons                   → stale-while-revalidate
-//
-// This isn't a full offline-first implementation (that needs a sync queue,
-// IndexedDB for mutations, conflict resolution — see lib/services/offline-queue.js
-// in CatatOrder for the reference design). It IS enough to keep the app
-// usable on a flaky mobile connection: previously-loaded pages render
-// instantly, and stale data is shown if the network drops mid-fetch.
+const CACHE_NAME = "catatorder-v2";
+const OFFLINE_URL = "/offline";
+const PRECACHE_URLS = [OFFLINE_URL, "/pesanan", "/pesanan/baru"];
 
-const CACHE_VERSION = 'tokoflow-v1';
-const STATIC_CACHE = `${CACHE_VERSION}-static`;
-const API_CACHE = `${CACHE_VERSION}-api`;
-const PAGE_CACHE = `${CACHE_VERSION}-pages`;
-
-const PRECACHE = [
-  '/dashboard',
-  '/inventory',
-  '/sales',
-  '/scanner',
-  '/site.webmanifest',
-];
-
-self.addEventListener('install', (event) => {
+// Pre-cache offline page + dashboard shells on install
+self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(STATIC_CACHE)
-      .then((cache) => cache.addAll(PRECACHE).catch(() => {/* don't block install */}))
-      .then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then((cache) =>
+      Promise.all(
+        PRECACHE_URLS.map((url) =>
+          cache.add(url).catch(() => {
+            // Non-critical — page may require auth; will be cached on first visit
+          })
+        )
+      )
+    )
   );
+  self.skipWaiting();
 });
 
-self.addEventListener('activate', (event) => {
+// Clean old caches on activate
+self.addEventListener("activate", (event) => {
   event.waitUntil(
-    (async () => {
-      const keys = await caches.keys();
-      await Promise.all(
-        keys
-          .filter((k) => !k.startsWith(CACHE_VERSION))
-          .map((k) => caches.delete(k))
-      );
-      await self.clients.claim();
-    })()
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+      )
+    )
   );
+  self.clients.claim();
 });
 
-self.addEventListener('fetch', (event) => {
+// Fetch strategy
+self.addEventListener("fetch", (event) => {
   const { request } = event;
 
-  // Only handle GETs — POST/PATCH/DELETE need to fail loudly when offline
-  // so the user knows their action didn't go through.
-  if (request.method !== 'GET') return;
+  // Skip non-GET, API routes, and non-http(s)
+  if (request.method !== "GET") return;
+  if (new URL(request.url).pathname.startsWith("/api/")) return;
+  if (!request.url.startsWith("http")) return;
 
   const url = new URL(request.url);
+  const isStaticAsset = /\.(js|css|png|jpg|jpeg|svg|ico|woff2?|ttf|webp)$/.test(url.pathname);
 
-  // Same-origin only
-  if (url.origin !== self.location.origin) return;
-
-  // API: network-first
-  if (url.pathname.startsWith('/api/')) {
-    event.respondWith(networkFirst(request, API_CACHE));
-    return;
-  }
-
-  // Navigation requests: network-first with cached fallback
-  if (request.mode === 'navigate') {
-    event.respondWith(networkFirst(request, PAGE_CACHE));
-    return;
-  }
-
-  // Static assets: cache-first
-  if (
-    url.pathname.startsWith('/_next/static/') ||
-    url.pathname.startsWith('/images/') ||
-    /\.(png|jpg|jpeg|svg|webp|woff2?|ttf|css|js)$/i.test(url.pathname)
-  ) {
-    event.respondWith(cacheFirst(request, STATIC_CACHE));
-    return;
+  if (isStaticAsset) {
+    // Cache-first for static assets
+    event.respondWith(
+      caches.match(request).then((cached) => {
+        if (cached) return cached;
+        return fetch(request).then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return response;
+        });
+      })
+    );
+  } else {
+    // Network-first for HTML pages
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return response;
+        })
+        .catch(() =>
+          caches.match(request).then((cached) => cached || caches.match(OFFLINE_URL))
+        )
+    );
   }
 });
-
-async function networkFirst(request, cacheName) {
-  try {
-    const response = await fetch(request);
-    if (response.ok) {
-      const cache = await caches.open(cacheName);
-      cache.put(request, response.clone());
-    }
-    return response;
-  } catch (err) {
-    const cached = await caches.match(request);
-    if (cached) return cached;
-    throw err;
-  }
-}
-
-async function cacheFirst(request, cacheName) {
-  const cached = await caches.match(request);
-  if (cached) return cached;
-  const response = await fetch(request);
-  if (response.ok) {
-    const cache = await caches.open(cacheName);
-    cache.put(request, response.clone());
-  }
-  return response;
-}
