@@ -8,7 +8,7 @@ export async function GET() {
 
   const supabase = await createServiceClient();
 
-  const [usersRes, ordersRes, orderRevenueRes, catatorderRevenueRes, customersRes, pageViewsRes, recentSignupsRes, recentOrdersRes, featureRes] =
+  const [usersRes, ordersRes, orderRevenueRes, tokoflowRevenueRes, customersRes, pageViewsRes, recentSignupsRes, recentOrdersRes, featureRes] =
     await Promise.all([
       supabase.from("profiles").select("id", { count: "exact", head: true }),
       supabase.from("orders").select("id", { count: "exact", head: true }),
@@ -38,7 +38,7 @@ export async function GET() {
   );
 
   // Tokoflow subscription revenue
-  const totalTokoflowRevenue = (catatorderRevenueRes.data || []).reduce(
+  const totalTokoflowRevenue = (tokoflowRevenueRes.data || []).reduce(
     (sum: number, t: { gross_amount: number | null }) => sum + (t.gross_amount || 0),
     0
   );
@@ -47,12 +47,12 @@ export async function GET() {
   const profiles = featureRes.data || [];
   const totalProfiles = profiles.length;
   const adoption = {
-    linkTokoAktif: profiles.filter(p => p.order_form_enabled !== false && p.slug).length,
-    qrisUploaded: profiles.filter(p => !!p.qris_url).length,
-    modePesanan: profiles.filter(p => p.preorder_enabled === true || p.preorder_enabled === null).length,
-    modeLangganan: profiles.filter(p => p.langganan_enabled === true).length,
-    modeDefault: profiles.filter(p => p.preorder_enabled === false && !p.langganan_enabled).length,
-    punyaViews: profiles.filter(p => (p.total_views || 0) > 0).length,
+    storeLinkActive: profiles.filter(p => p.order_form_enabled !== false && p.slug).length,
+    qrUploaded: profiles.filter(p => !!p.qris_url).length,
+    preorderMode: profiles.filter(p => p.preorder_enabled === true || p.preorder_enabled === null).length,
+    subscriptionMode: profiles.filter(p => p.langganan_enabled === true).length,
+    defaultMode: profiles.filter(p => p.preorder_enabled === false && !p.langganan_enabled).length,
+    withViews: profiles.filter(p => (p.total_views || 0) > 0).length,
     total: totalProfiles,
   };
 
@@ -75,7 +75,7 @@ export async function GET() {
   }
 
   const usersWithProducts = new Set((productUsersRes.data || []).map(p => p.user_id)).size;
-  const usersWithHpp = new Set((hppProductsRes.data || []).map(p => p.user_id)).size;
+  const usersWithCostPrice = new Set((hppProductsRes.data || []).map(p => p.user_id)).size;
   const trendOrders = trendOrdersRes.data;
 
   const dailyTrends: { date: string; orders: number; revenue: number }[] = [];
@@ -111,7 +111,7 @@ export async function GET() {
   const profilesWithCity = profiles.filter(p => !!p.city).length;
   const profilesWithCategory = profiles.filter(p => !!p.business_category).length;
 
-  const menungguCount = menungguRes.count;
+  const pendingCount = menungguRes.count;
 
   return NextResponse.json({
     totalUsers: usersRes.count || 0,
@@ -120,7 +120,7 @@ export async function GET() {
     totalTokoflowRevenue,
     totalCustomers: customersRes.count || 0,
     totalPageViews: pageViewsRes.count || 0,
-    adoption: { ...adoption, usersWithProducts, usersWithHpp },
+    adoption: { ...adoption, usersWithProducts, usersWithCostPrice },
     sourceBreakdown,
     dailyTrends,
     marketplace: {
@@ -128,7 +128,7 @@ export async function GET() {
       categoryBreakdown,
       profilesWithCity,
       profilesWithCategory,
-      menungguCount: menungguCount || 0,
+      pendingCount: pendingCount || 0,
     },
     recentSignups: (recentSignupsRes.data || []).map((p) => ({
       id: p.id,

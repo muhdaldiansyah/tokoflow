@@ -1,6 +1,6 @@
-const CACHE_NAME = "catatorder-v2";
+const CACHE_NAME = "tokoflow-v1";
 const OFFLINE_URL = "/offline";
-const PRECACHE_URLS = [OFFLINE_URL, "/pesanan", "/pesanan/baru"];
+const PRECACHE_URLS = [OFFLINE_URL, "/orders", "/orders/new"];
 
 // Pre-cache offline page + dashboard shells on install
 self.addEventListener("install", (event) => {

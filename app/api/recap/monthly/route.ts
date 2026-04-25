@@ -17,11 +17,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Invalid month or year" }, { status: 400 });
     }
 
-    // WIB (UTC+7) boundaries for the month
-    const startDate = `${year}-${String(month).padStart(2, "0")}-01T00:00:00.000+07:00`;
+    // MYT (UTC+8) boundaries for the month
+    const startDate = `${year}-${String(month).padStart(2, "0")}-01T00:00:00.000+08:00`;
     const endMonth = month === 12 ? 1 : month + 1;
     const endYear = month === 12 ? year + 1 : year;
-    const endDate = `${endYear}-${String(endMonth).padStart(2, "0")}-01T00:00:00.000+07:00`;
+    const endDate = `${endYear}-${String(endMonth).padStart(2, "0")}-01T00:00:00.000+08:00`;
 
     // Wave 1: orders + products
     const { data: orders, error } = await supabase
@@ -146,8 +146,8 @@ export async function GET(request: NextRequest) {
       existing.totalSpent += paidAmount;
       customerMap.set(custKey, existing);
 
-      // Daily breakdown — convert UTC timestamp to WIB date
-      const day = new Date(order.created_at).toLocaleDateString("en-CA", { timeZone: "Asia/Jakarta" });
+      // Daily breakdown — convert UTC timestamp to MYT date
+      const day = new Date(order.created_at).toLocaleDateString("en-CA", { timeZone: "Asia/Kuala_Lumpur" });
       const dayData = dailyMap.get(day) || {
         date: day,
         orders: 0,
@@ -173,8 +173,8 @@ export async function GET(request: NextRequest) {
     const activeOrderCount = ordersList.length - cancelledCount;
 
     // Wave 2: Piutang aging, new customers, stock alerts, late orders
-    const nowWib = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Jakarta" });
-    const todayStartIso = `${nowWib}T00:00:00.000+07:00`;
+    const nowMyt = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kuala_Lumpur" });
+    const todayStartIso = `${nowMyt}T00:00:00.000+08:00`;
 
     const [
       { data: allUnpaidOrders },

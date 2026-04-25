@@ -7,7 +7,7 @@ interface UnlockState {
   advancedFilters: boolean;
 }
 
-const STORAGE_KEY = "catatorder_feature_unlock";
+const STORAGE_KEY = "tokoflow_feature_unlock";
 
 export function useFeatureUnlock(ordersUsed: number): UnlockState {
   const [state, setState] = useState<UnlockState>({

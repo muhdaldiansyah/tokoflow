@@ -27,7 +27,7 @@ function rm(n: number) {
   return `RM ${n.toLocaleString("en-MY", { maximumFractionDigits: 2 })}`;
 }
 
-export default function PajakPage() {
+export default function TaxPage() {
   const [year, setYear] = useState(new Date().getFullYear());
   const [summary, setSummary] = useState<TaxSummary | null>(null);
   const [sstMonth, setSstMonth] = useState(() => {

@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
       title: `${unsubmitted} invoice${unsubmitted > 1 ? "s" : ""} awaiting MyInvois submission`,
       body: `Submit to LHDN within 72 hours of issue to stay compliant. Tap to review.`,
       sound: "default",
-      data: { screen: "faktur" },
+      data: { screen: "invoices" },
     });
 
     updates.push({ id: profile.id, drip: { ...drip, [monthKey]: now.toISOString() } });

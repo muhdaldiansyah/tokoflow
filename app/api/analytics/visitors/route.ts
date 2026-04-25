@@ -28,39 +28,39 @@ export async function GET(request: NextRequest) {
       const prevMonth = m === 1 ? 12 : m - 1;
       const prevYear = m === 1 ? y - 1 : y;
 
-      periodStart = `${y}-${String(m).padStart(2, "0")}-01T00:00:00.000+07:00`;
-      periodEnd = `${endYear}-${String(endMonth).padStart(2, "0")}-01T00:00:00.000+07:00`;
-      prevStart = `${prevYear}-${String(prevMonth).padStart(2, "0")}-01T00:00:00.000+07:00`;
+      periodStart = `${y}-${String(m).padStart(2, "0")}-01T00:00:00.000+08:00`;
+      periodEnd = `${endYear}-${String(endMonth).padStart(2, "0")}-01T00:00:00.000+08:00`;
+      prevStart = `${prevYear}-${String(prevMonth).padStart(2, "0")}-01T00:00:00.000+08:00`;
       prevEnd = periodStart;
       trendStart = periodStart;
 
-      const MONTH_NAMES = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+      const MONTH_NAMES = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
       periodLabel = `${MONTH_NAMES[m]} ${y}`;
       previousLabel = `${MONTH_NAMES[prevMonth]} ${prevYear}`;
     } else {
-      const targetStr = dateParam || now.toLocaleDateString("en-CA", { timeZone: "Asia/Jakarta" });
-      const targetDate = new Date(targetStr + "T12:00:00+07:00");
+      const targetStr = dateParam || now.toLocaleDateString("en-CA", { timeZone: "Asia/Kuala_Lumpur" });
+      const targetDate = new Date(targetStr + "T12:00:00+08:00");
       const prevDate = new Date(targetDate);
       prevDate.setDate(prevDate.getDate() - 1);
-      const prevStr = prevDate.toLocaleDateString("en-CA", { timeZone: "Asia/Jakarta" });
+      const prevStr = prevDate.toLocaleDateString("en-CA", { timeZone: "Asia/Kuala_Lumpur" });
       const weekAgo = new Date(targetDate);
       weekAgo.setDate(weekAgo.getDate() - 7);
-      const weekAgoStr = weekAgo.toLocaleDateString("en-CA", { timeZone: "Asia/Jakarta" });
+      const weekAgoStr = weekAgo.toLocaleDateString("en-CA", { timeZone: "Asia/Kuala_Lumpur" });
 
-      periodStart = `${targetStr}T00:00:00.000+07:00`;
-      periodEnd = `${targetStr}T23:59:59.999+07:00`;
-      prevStart = `${prevStr}T00:00:00.000+07:00`;
-      prevEnd = `${prevStr}T23:59:59.999+07:00`;
-      trendStart = `${weekAgoStr}T00:00:00.000+07:00`;
+      periodStart = `${targetStr}T00:00:00.000+08:00`;
+      periodEnd = `${targetStr}T23:59:59.999+08:00`;
+      prevStart = `${prevStr}T00:00:00.000+08:00`;
+      prevEnd = `${prevStr}T23:59:59.999+08:00`;
+      trendStart = `${weekAgoStr}T00:00:00.000+08:00`;
 
-      const todayStr = now.toLocaleDateString("en-CA", { timeZone: "Asia/Jakarta" });
+      const todayStr = now.toLocaleDateString("en-CA", { timeZone: "Asia/Kuala_Lumpur" });
       if (targetStr === todayStr) {
         periodLabel = "hari ini";
         previousLabel = "kemarin";
       } else {
-        const d = new Date(targetStr + "T12:00:00+07:00");
-        periodLabel = d.toLocaleDateString("en-MY", { day: "numeric", month: "short", timeZone: "Asia/Jakarta" });
-        previousLabel = prevDate.toLocaleDateString("en-MY", { day: "numeric", month: "short", timeZone: "Asia/Jakarta" });
+        const d = new Date(targetStr + "T12:00:00+08:00");
+        periodLabel = d.toLocaleDateString("en-MY", { day: "numeric", month: "short", timeZone: "Asia/Kuala_Lumpur" });
+        previousLabel = prevDate.toLocaleDateString("en-MY", { day: "numeric", month: "short", timeZone: "Asia/Kuala_Lumpur" });
       }
     }
 
@@ -98,8 +98,8 @@ export async function GET(request: NextRequest) {
 
     for (const v of views) {
       const d = new Date(v.created_at);
-      const ds = d.toLocaleDateString("en-CA", { timeZone: "Asia/Jakarta" });
-      const hour = parseInt(d.toLocaleString("en-US", { timeZone: "Asia/Jakarta", hour: "numeric", hour12: false }));
+      const ds = d.toLocaleDateString("en-CA", { timeZone: "Asia/Kuala_Lumpur" });
+      const hour = parseInt(d.toLocaleString("en-US", { timeZone: "Asia/Kuala_Lumpur", hour: "numeric", hour12: false }));
 
       const ref = v.referrer || "langsung";
       referrerMap.set(ref, (referrerMap.get(ref) || 0) + 1);
@@ -110,7 +110,7 @@ export async function GET(request: NextRequest) {
     if (period === "daily" && trendViews) {
       dailyMap.clear();
       for (const v of trendViews) {
-        const ds = new Date(v.created_at).toLocaleDateString("en-CA", { timeZone: "Asia/Jakarta" });
+        const ds = new Date(v.created_at).toLocaleDateString("en-CA", { timeZone: "Asia/Kuala_Lumpur" });
         dailyMap.set(ds, (dailyMap.get(ds) || 0) + 1);
       }
     }

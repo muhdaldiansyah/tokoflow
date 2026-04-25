@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthenticatedClient } from "@/lib/supabase/api";
+import { aiRateLimitResponseInit, checkAiRateLimit } from "@/lib/rate-limit/ai";
+
+// Image is data URL or base64; cap at ~6 MB worth of base64 (~4.5 MB binary).
+const MAX_IMAGE_PAYLOAD_CHARS = 6 * 1024 * 1024;
 
 interface ParsedItem {
   name: string;
@@ -26,12 +30,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const limit = checkAiRateLimit(user.id);
+    if (!limit.allowed) {
+      return NextResponse.json(
+        {
+          error:
+            limit.reason === "day"
+              ? "Daily AI usage limit reached. Try again tomorrow."
+              : "Too many AI requests. Slow down for a moment.",
+        },
+        aiRateLimitResponseInit(limit),
+      );
+    }
+
     const { image, products } = await request.json();
 
     if (!image || typeof image !== "string") {
       return NextResponse.json(
         { error: "image is required" },
         { status: 400 }
+      );
+    }
+
+    if (image.length > MAX_IMAGE_PAYLOAD_CHARS) {
+      return NextResponse.json(
+        { error: "Image too large (max ~4.5 MB). Compress and retry." },
+        { status: 413 },
       );
     }
 

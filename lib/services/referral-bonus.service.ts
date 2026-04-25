@@ -2,7 +2,7 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { REFERRAL_SIGNUP_BONUS } from "@/lib/utils/constants";
 
 /**
- * Credit referrer Rp5.000 when a referred user makes their first order.
+ * Credit referrer RM 2 when a referred user makes their first order.
  * Called after order creation — best-effort, never blocks order flow.
  *
  * Guards:

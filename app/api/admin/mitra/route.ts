@@ -72,7 +72,7 @@ export async function PATCH(request: NextRequest) {
   }
 
   if (amount > (profile.referral_balance || 0)) {
-    return NextResponse.json({ error: `Saldo tidak cukup (saldo: RM ${profile.referral_balance?.toLocaleString()})` }, { status: 400 });
+    return NextResponse.json({ error: `Insufficient balance (balance: RM ${profile.referral_balance?.toLocaleString()})` }, { status: 400 });
   }
 
   const { error } = await supabase

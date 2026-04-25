@@ -47,12 +47,12 @@ export function OnboardingChecklist() {
   const hasCityCategory = !!(profile.city && profile.business_category);
 
   const steps: Step[] = [
-    { label: "Daftar akun", done: true },
-    { label: "Tambah produk ke katalog", done: hasProducts, href: "/products" },
-    { label: "Lengkapi profil toko", done: hasProfileComplete, href: "/profil/edit" },
-    { label: "Isi kota & kategori bisnis", done: hasCityCategory, href: "/profil/edit" },
-    { label: "Catat pesanan pertama", done: profile.orders_used > 0, href: "/orders/new?contoh=1" },
-    { label: "Kirim konfirmasi ke pelanggan via WA", done: !!profile.first_wa_sent_at },
+    { label: "Sign up", done: true },
+    { label: "Add products to your catalog", done: hasProducts, href: "/products" },
+    { label: "Complete your store profile", done: hasProfileComplete, href: "/profil/edit" },
+    { label: "Set city and business category", done: hasCityCategory, href: "/profil/edit" },
+    { label: "Record your first order", done: profile.orders_used > 0, href: "/orders/new?contoh=1" },
+    { label: "Send a WhatsApp confirmation to a customer", done: !!profile.first_wa_sent_at },
   ];
 
   const completedCount = steps.filter((s) => s.done).length;

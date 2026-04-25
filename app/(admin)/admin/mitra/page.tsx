@@ -35,7 +35,7 @@ export default function AdminMitraPage() {
   async function handlePayout(userId: string) {
     const amount = parseInt(payoutAmount);
     if (!amount || amount <= 0) {
-      toast.error("Masukkan jumlah yang valid");
+      toast.error("Enter a valid amount");
       return;
     }
 
@@ -63,11 +63,11 @@ export default function AdminMitraPage() {
             : m
         )
       );
-      toast.success(`Payout ${formatRupiah(amount)} berhasil`);
+      toast.success(`Payout ${formatRupiah(amount)} processed`);
       setPayoutId(null);
       setPayoutAmount("");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Gagal memproses payout");
+      toast.error(e instanceof Error ? e.message : "Failed to process payout");
     }
   }
 
@@ -81,11 +81,11 @@ export default function AdminMitraPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold text-foreground">Mitra & Referral</h1>
+      <h1 className="text-xl font-semibold text-foreground">Partners & referrals</h1>
 
       {mitras.length === 0 ? (
         <p className="text-center py-8 text-sm text-muted-foreground">
-          Belum ada mitra atau referral aktif.
+          No active partners or referrals yet.
         </p>
       ) : (
         <>
@@ -95,13 +95,13 @@ export default function AdminMitraPage() {
               <thead>
                 <tr className="border-b border-border bg-muted/30">
                   <th className="text-left px-4 py-3 font-medium text-muted-foreground">Name</th>
-                  <th className="text-left px-4 py-3 font-medium text-muted-foreground">Kode</th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground">Code</th>
                   <th className="text-left px-4 py-3 font-medium text-muted-foreground">Role</th>
                   <th className="text-right px-4 py-3 font-medium text-muted-foreground">Referred</th>
-                  <th className="text-right px-4 py-3 font-medium text-muted-foreground">Total Komisi</th>
-                  <th className="text-right px-4 py-3 font-medium text-muted-foreground">Saldo</th>
+                  <th className="text-right px-4 py-3 font-medium text-muted-foreground">Total commission</th>
+                  <th className="text-right px-4 py-3 font-medium text-muted-foreground">Balance</th>
                   <th className="text-right px-4 py-3 font-medium text-muted-foreground">Paid</th>
-                  <th className="text-center px-4 py-3 font-medium text-muted-foreground">Aksi</th>
+                  <th className="text-center px-4 py-3 font-medium text-muted-foreground">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -116,7 +116,7 @@ export default function AdminMitraPage() {
                       <span className={`inline-flex h-6 px-2 text-[10px] font-medium rounded-full items-center ${
                         m.role === "mitra" ? "bg-violet-50 text-violet-700" : "bg-muted text-muted-foreground"
                       }`}>
-                        {m.role === "mitra" ? "Mitra" : "User"}
+                        {m.role === "mitra" ? "Partner" : "User"}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right text-muted-foreground">{m.referred_count}</td>
@@ -176,7 +176,7 @@ export default function AdminMitraPage() {
                   <span className={`inline-flex h-6 px-2 text-[10px] font-medium rounded-full items-center shrink-0 ${
                     m.role === "mitra" ? "bg-violet-50 text-violet-700" : "bg-muted text-muted-foreground"
                   }`}>
-                    {m.role === "mitra" ? "Mitra" : "User"}
+                    {m.role === "mitra" ? "Partner" : "User"}
                   </span>
                 </div>
                 <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
@@ -191,7 +191,7 @@ export default function AdminMitraPage() {
                   </div>
                   <div className="rounded-lg bg-muted/50 p-2">
                     <p className="text-xs font-medium text-foreground">{formatRupiah(m.referral_balance)}</p>
-                    <p className="text-[10px] text-muted-foreground">Saldo</p>
+                    <p className="text-[10px] text-muted-foreground">Balance</p>
                   </div>
                   <div className="rounded-lg bg-muted/50 p-2">
                     <p className="text-xs font-medium text-foreground">{formatRupiah(m.referral_total_paid)}</p>

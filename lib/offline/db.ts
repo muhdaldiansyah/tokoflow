@@ -1,6 +1,6 @@
 import type { Order, OrderItem, OrderStatus, PaymentStatus } from "@/features/orders/types/order.types";
 
-const DB_NAME = "catatorder-offline";
+const DB_NAME = "tokoflow-offline";
 const DB_VERSION = 1;
 const ORDERS_STORE = "orders";
 const PENDING_STORE = "pendingOrders";

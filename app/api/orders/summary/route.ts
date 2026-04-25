@@ -9,13 +9,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Use WIB (UTC+7) for "today" to match monthly recap
+    // Use MYT (UTC+8) for "today" to match monthly recap
     const now = new Date();
-    const wibOffset = 7 * 60 * 60 * 1000;
-    const wibNow = new Date(now.getTime() + wibOffset);
-    const wibDate = `${wibNow.getUTCFullYear()}-${String(wibNow.getUTCMonth() + 1).padStart(2, "0")}-${String(wibNow.getUTCDate()).padStart(2, "0")}`;
-    const startOfDay = `${wibDate}T00:00:00.000+07:00`;
-    const endOfDay = `${wibDate}T23:59:59.999+07:00`;
+    const mytOffset = 8 * 60 * 60 * 1000;
+    const mytNow = new Date(now.getTime() + mytOffset);
+    const mytDate = `${mytNow.getUTCFullYear()}-${String(mytNow.getUTCMonth() + 1).padStart(2, "0")}-${String(mytNow.getUTCDate()).padStart(2, "0")}`;
+    const startOfDay = `${mytDate}T00:00:00.000+08:00`;
+    const endOfDay = `${mytDate}T23:59:59.999+08:00`;
 
     // Fetch orders created today + orders with delivery today + all unpaid
     const [createdResult, deliveryResult, unpaidResult] = await Promise.all([

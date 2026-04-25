@@ -12,7 +12,7 @@ export function InlineHint({ hintId, text, maxShows = 3 }: InlineHintProps) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const key = `catatorder_hint_${hintId}`;
+    const key = `tokoflow_hint_${hintId}`;
     const count = parseInt(localStorage.getItem(key) || "0");
     if (count < maxShows) {
       setVisible(true);

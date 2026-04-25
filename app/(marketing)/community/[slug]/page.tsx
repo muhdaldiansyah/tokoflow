@@ -75,14 +75,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const community = await getCommunity(slug);
-  if (!community) return { title: "Komunitas — Tokoflow" };
+  if (!community) return { title: "Community — Tokoflow" };
 
   return {
-    title: `${community.name} — ${community.member_count} UMKM | Tokoflow`,
-    description: community.description || `${community.member_count} UMKM sudah bergabung di ${community.name}. Gabung sekarang — gratis.`,
+    title: `${community.name} — ${community.member_count} SMBs | Tokoflow`,
+    description: community.description || `${community.member_count} SMBs already in ${community.name}. Join now — free.`,
     openGraph: {
       title: `${community.name} | Tokoflow`,
-      description: `${community.member_count} UMKM sudah bergabung. Dari chat jadi catatan.`,
+      description: `${community.member_count} SMBs already joined. From chats to records.`,
       url: `https://tokoflow.com/community/${slug}`,
     },
     alternates: {
@@ -131,7 +131,7 @@ export default async function CommunityPage({
           <div className="max-w-2xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 rounded-full bg-white border border-[#05A660]/20 px-3 py-1 text-sm font-medium text-[#05A660] shadow-sm mb-6">
               <Users className="w-4 h-4" />
-              {community.member_count} UMKM bergabung
+              {community.member_count} SMBs joined
             </div>
 
             <h1 className="text-3xl lg:text-4xl font-bold text-[#1E293B] tracking-tight">

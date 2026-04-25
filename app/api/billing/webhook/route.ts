@@ -112,13 +112,26 @@ export async function POST(request: Request) {
         .eq("id", transaction.id);
     }
 
-    await supabase
+    // Atomic check-and-set on the status transition. Two concurrent webhook
+    // deliveries both pass the read above — without this guard, both would
+    // run the activation RPCs. With the .eq("status", previousStatus)
+    // predicate the second UPDATE matches zero rows, so only the first
+    // delivery proceeds to plan activation.
+    const previousStatus = paymentOrder.status;
+    const { data: claimed } = await supabase
       .from("payment_orders")
       .update({
         status: mappedStatus,
         ...(paidAt ? { billplz_paid_at: paidAt } : {}),
       })
-      .eq("id", paymentOrder.id);
+      .eq("id", paymentOrder.id)
+      .eq("status", previousStatus)
+      .select("id")
+      .maybeSingle();
+
+    if (!claimed) {
+      return NextResponse.json({ message: "Already processed (race)" });
+    }
 
     // On successful payment, activate the plan and credit the referrer.
     if (mappedStatus === "completed") {
@@ -146,13 +159,27 @@ export async function POST(request: Request) {
         rpcError = error;
       }
       if (rpcError) {
-        console.error(
-          "Plan activation failed:",
-          rpcError,
-          "user:",
-          paymentOrder.user_id,
-          "plan:",
-          paymentOrder.plan_code,
+        const errMessage =
+          rpcError instanceof Error ? rpcError.message : String(rpcError);
+        await supabase.from("webhook_logs").insert({
+          order_id: billId,
+          event_type: "plan_activation_failed",
+          payload: {
+            user_id: paymentOrder.user_id,
+            plan_code: paymentOrder.plan_code,
+            paid_amount: paidAmount,
+          },
+          status: "failed",
+          error_message: errMessage,
+        });
+        // Return 500 so Billplz retries. The previousStatus check above will
+        // re-attempt activation on the next delivery rather than short-circuit
+        // on "Already processed" — note that the row is now "completed" so a
+        // simple retry will skip. Treat this as ops-paged: an admin must
+        // resolve from webhook_logs.
+        return NextResponse.json(
+          { error: "Plan activation failed", details: errMessage },
+          { status: 500 },
         );
       }
 

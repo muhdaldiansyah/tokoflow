@@ -26,7 +26,7 @@ export function HeroSummaryCell({ refreshKey, onAllDone }: HeroSummaryCellProps)
     parts.push(`${summary.pendingCount} perlu diproses`);
   }
   if (summary.unpaidCount > 0) {
-    parts.push(`${summary.unpaidCount} belum bayar`);
+    parts.push(`${summary.unpaidCount} unpaid`);
   }
 
   if (parts.length === 0) return null;
@@ -40,7 +40,7 @@ export function HeroSummaryCell({ refreshKey, onAllDone }: HeroSummaryCellProps)
         <span className="text-muted-foreground/50"> · </span>
       )}
       {summary.unpaidCount > 0 && (
-        <span className="font-medium text-amber-600">{summary.unpaidCount} belum bayar</span>
+        <span className="font-medium text-amber-600">{summary.unpaidCount} unpaid</span>
       )}
     </p>
   );

@@ -32,7 +32,7 @@ export function PiutangDashboard() {
   if (!summary || summary.totalOutstanding === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-sm text-muted-foreground">Tidak ada piutang faktur saat ini.</p>
+        <p className="text-sm text-muted-foreground">No outstanding invoices right now.</p>
       </div>
     );
   }

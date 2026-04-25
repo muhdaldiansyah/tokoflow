@@ -15,9 +15,18 @@ import { normalizePhone } from "@/lib/utils/phone";
  */
 
 const rateLimit = new Map<string, { count: number; resetAt: number }>();
+const MAX_ENTRIES = 10_000;
 
 function checkRateLimit(ip: string): boolean {
   const now = Date.now();
+  // Cap memory: when the map gets large, drop expired entries. Worst case it
+  // runs O(n) once per ~10K unique IPs — cheap and bounds growth on a
+  // long-lived function instance.
+  if (rateLimit.size > MAX_ENTRIES) {
+    for (const [k, v] of rateLimit) {
+      if (v.resetAt < now) rateLimit.delete(k);
+    }
+  }
   const entry = rateLimit.get(ip);
   if (!entry || now > entry.resetAt) {
     rateLimit.set(ip, { count: 1, resetAt: now + 60_000 }); // 60s window

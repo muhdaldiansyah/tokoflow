@@ -35,10 +35,10 @@ type InputMode = "paste" | "image" | "voice";
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 const ERROR_MESSAGES: Record<string, string> = {
-  "not-allowed": "Mikrofon diblokir. Izinkan akses di pengaturan browser.",
-  "no-speech": "Tidak ada suara terdeteksi. Coba bicara lebih jelas.",
-  "network": "Butuh koneksi internet untuk pengenalan suara.",
-  aborted: "Pengenalan suara dihentikan.",
+  "not-allowed": "Microphone blocked. Allow access in browser settings.",
+  "no-speech": "No speech detected. Try speaking more clearly.",
+  "network": "Voice recognition needs an internet connection.",
+  aborted: "Voice recognition stopped.",
 };
 
 export function AIOrderSheet({
@@ -323,7 +323,7 @@ export function AIOrderSheet({
                   <textarea
                     value={text}
                     onChange={(e) => setText(e.target.value)}
-                    placeholder={"Tempel chat dari WhatsApp...\n\nContoh:\nSari\n081234567890\ncoklat 3, martabak 1\nbesok pagi, jangan terlalu manis"}
+                    placeholder={"Paste a WhatsApp chat...\n\nExample:\nAisyah\n0123456789\nchocolate 3, kuih 1\ntomorrow morning, not too sweet"}
                     className="w-full min-h-[140px] px-3 py-2.5 bg-card border border-border rounded-lg shadow-sm text-sm text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary/30 focus:bg-card transition-colors placeholder:text-muted-foreground resize-none"
                     autoFocus
                   />
@@ -382,8 +382,8 @@ export function AIOrderSheet({
                         <Camera className="w-6 h-6 text-muted-foreground" />
                       </div>
                       <div className="text-center">
-                        <p className="text-sm font-medium text-foreground">Pilih foto atau ambil gambar</p>
-                        <p className="text-xs text-muted-foreground mt-1">Screenshot chat WhatsApp berisi pesanan</p>
+                        <p className="text-sm font-medium text-foreground">Pick a photo or take one</p>
+                        <p className="text-xs text-muted-foreground mt-1">A WhatsApp screenshot containing the order</p>
                       </div>
                     </button>
                   )}
@@ -405,10 +405,10 @@ export function AIOrderSheet({
                   </button>
                   <p className="text-xs text-muted-foreground">
                     {isListening
-                      ? 'Bicara sekarang... contoh: "Nasi Goreng 2, Es Teh 3"'
+                      ? 'Speak now... e.g. "Nasi Lemak 2, Teh O Ais 3"'
                       : voiceError
-                        ? ERROR_MESSAGES[voiceError] || "Terjadi kesalahan."
-                        : "Ketuk mikrofon untuk mulai"}
+                        ? ERROR_MESSAGES[voiceError] || "An error occurred."
+                        : "Tap the microphone to start"}
                   </p>
                   {fullTranscript && (
                     <div className="w-full rounded-lg bg-muted/50 px-3 py-2.5 text-left">
@@ -443,13 +443,13 @@ export function AIOrderSheet({
               {isProcessing && (
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <div className="w-3 h-3 border-2 border-muted-foreground/30 border-t-muted-foreground rounded-full animate-spin" />
-                  {mode === "image" ? "Mengekstrak pesanan dari gambar..." : "Menyempurnakan dengan AI..."}
+                  {mode === "image" ? "Extracting order from image..." : "Refining with AI..."}
                 </div>
               )}
 
               {!isProcessing && previewItems.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-4">
-                  Tidak ada item terdeteksi. Coba ulangi.
+                  No items detected. Try again.
                 </p>
               ) : (
                 <div className="space-y-2">

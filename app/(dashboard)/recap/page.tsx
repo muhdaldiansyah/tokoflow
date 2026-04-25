@@ -34,7 +34,7 @@ function getDateString(date: Date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
-export default function RekapPage() {
+export default function RecapPage() {
   const now = new Date();
   const [activeTab, setActiveTab] = useState<Tab>("daily");
 
@@ -66,7 +66,7 @@ export default function RekapPage() {
   useEffect(() => {
     getProfile().then(p => {
       if (p) {
-        const todayStr = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Jakarta" });
+        const todayStr = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kuala_Lumpur" });
         setViewsToday(p.views_today_date === todayStr ? (p.views_today || 0) : 0);
         setTotalViews(p.total_views || 0);
       }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthenticatedClient } from "@/lib/supabase/api";
 import { generateSlug } from "@/lib/utils/slug";
+import { encryptSecret, isEncryptedEnvelope } from "@/lib/crypto/secret-box";
 
 // GET - Get current user's profile (with lazy monthly counter reset)
 export async function GET(request: NextRequest) {
@@ -102,9 +103,25 @@ export async function PUT(request: NextRequest) {
         : null;
     }
     if (body.myinvois_client_secret_enc !== undefined) {
-      updates.myinvois_client_secret_enc = body.myinvois_client_secret_enc
+      const raw = body.myinvois_client_secret_enc
         ? String(body.myinvois_client_secret_enc)
         : null;
+      if (raw === null) {
+        updates.myinvois_client_secret_enc = null;
+      } else if (isEncryptedEnvelope(raw)) {
+        // Already encrypted (e.g. round-tripped from another env); store as-is.
+        updates.myinvois_client_secret_enc = raw;
+      } else {
+        try {
+          updates.myinvois_client_secret_enc = encryptSecret(raw);
+        } catch (err) {
+          const message = err instanceof Error ? err.message : "Unknown error";
+          return NextResponse.json(
+            { error: `Cannot store MyInvois secret: ${message}` },
+            { status: 500 },
+          );
+        }
+      }
     }
     if (body.target_food_cost_percent !== undefined) updates.target_food_cost_percent = body.target_food_cost_percent;
     if (body.overhead_estimate_pct !== undefined) updates.overhead_estimate_pct = body.overhead_estimate_pct;

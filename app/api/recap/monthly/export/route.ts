@@ -13,10 +13,10 @@ export async function GET(request: NextRequest) {
     const month = parseInt(searchParams.get("month") || "1");
     const year = parseInt(searchParams.get("year") || "2026");
 
-    const startDate = `${year}-${String(month).padStart(2, "0")}-01T00:00:00.000+07:00`;
+    const startDate = `${year}-${String(month).padStart(2, "0")}-01T00:00:00.000+08:00`;
     const endMonth = month === 12 ? 1 : month + 1;
     const endYear = month === 12 ? year + 1 : year;
-    const endDate = `${endYear}-${String(endMonth).padStart(2, "0")}-01T00:00:00.000+07:00`;
+    const endDate = `${endYear}-${String(endMonth).padStart(2, "0")}-01T00:00:00.000+08:00`;
 
     const { data: orders, error } = await supabase
       .from("orders")
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
         : "-";
 
       return {
-        tanggal: new Date(order.created_at).toLocaleDateString("en-MY", { timeZone: "Asia/Jakarta" }),
+        tanggal: new Date(order.created_at).toLocaleDateString("en-MY", { timeZone: "Asia/Kuala_Lumpur" }),
         nomor_pesanan: order.order_number || "",
         pelanggan: order.customer_name || "-",
         telepon: order.customer_phone || "-",
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
         dibayar: order.paid_amount || 0,
         sisa: (order.total || 0) - (order.paid_amount || 0),
         pengiriman: order.delivery_date
-          ? new Date(order.delivery_date).toLocaleDateString("en-MY", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Jakarta" })
+          ? new Date(order.delivery_date).toLocaleDateString("en-MY", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kuala_Lumpur" })
           : "-",
         status: statusLabels[order.status] || order.status,
         pembayaran: paymentLabels[order.payment_status] || order.payment_status,

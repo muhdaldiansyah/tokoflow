@@ -7,14 +7,14 @@ import { formatCurrency, formatDate, formatShortDate, pct } from "@/lib/utils/fo
 import { SOURCE_LABELS } from "@/features/orders/types/order.types";
 
 interface Adoption {
-  linkTokoAktif: number;
-  qrisUploaded: number;
+  storeLinkActive: number;
+  qrUploaded: number;
   preorderMode: number;
-  modeLangganan: number;
-  modeDefault: number;
-  punyaViews: number;
+  subscriptionMode: number;
+  defaultMode: number;
+  withViews: number;
   usersWithProducts: number;
-  usersWithHpp: number;
+  usersWithCostPrice: number;
   total: number;
 }
 
@@ -33,7 +33,7 @@ interface DashboardData {
     categoryBreakdown: Record<string, number>;
     profilesWithCity: number;
     profilesWithCategory: number;
-    menungguCount: number;
+    pendingCount: number;
   };
   recentSignups: { id: string; name: string; created_at: string }[];
   recentOrders: {
@@ -96,7 +96,7 @@ export default function AdminDashboardPage() {
       <div className="rounded-xl border bg-card shadow-sm p-4">
         <div className="flex items-center gap-2 mb-4">
           <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          <p className="text-sm font-semibold text-foreground">Tren 14 Hari Terakhir</p>
+          <p className="text-sm font-semibold text-foreground">Last 14 days trend</p>
         </div>
         <div className="flex items-end gap-1 h-32">
           {data.dailyTrends.map((t) => (
@@ -158,11 +158,11 @@ export default function AdminDashboardPage() {
 
         {/* Pending alert + Feature adoption summary */}
         <div className="space-y-4">
-          {m.menungguCount > 0 && (
+          {m.pendingCount > 0 && (
             <div className="rounded-xl border border-amber-200 bg-amber-50 shadow-sm p-4">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4 text-amber-600" />
-                <p className="text-sm font-semibold text-amber-800">{m.menungguCount} pesanan menunggu</p>
+                <p className="text-sm font-semibold text-amber-800">{m.pendingCount} pending orders</p>
               </div>
               <p className="text-xs text-amber-700 mt-1">Orders via store link exceeding merchant free quota.</p>
             </div>
@@ -174,16 +174,16 @@ export default function AdminDashboardPage() {
               <p className="text-sm font-semibold text-foreground">Adoption</p>
             </div>
             <div className="space-y-2">
-              <AdoptionRow icon={<LinkIcon className="h-3.5 w-3.5" />} label="Store link" value={a.linkTokoAktif} total={a.total} />
-              <AdoptionRow icon={<Package className="h-3.5 w-3.5" />} label="Produk" value={a.usersWithProducts} total={a.total} />
-              <AdoptionRow icon={<QrCode className="h-3.5 w-3.5" />} label="QRIS" value={a.qrisUploaded} total={a.total} />
-              <AdoptionRow icon={<Banknote className="h-3.5 w-3.5" />} label="HPP" value={a.usersWithHpp} total={a.total} />
-              <AdoptionRow icon={<Eye className="h-3.5 w-3.5" />} label="Kunjungan" value={a.punyaViews} total={a.total} />
+              <AdoptionRow icon={<LinkIcon className="h-3.5 w-3.5" />} label="Store link" value={a.storeLinkActive} total={a.total} />
+              <AdoptionRow icon={<Package className="h-3.5 w-3.5" />} label="Products" value={a.usersWithProducts} total={a.total} />
+              <AdoptionRow icon={<QrCode className="h-3.5 w-3.5" />} label="DuitNow QR" value={a.qrUploaded} total={a.total} />
+              <AdoptionRow icon={<Banknote className="h-3.5 w-3.5" />} label="Cost price" value={a.usersWithCostPrice} total={a.total} />
+              <AdoptionRow icon={<Eye className="h-3.5 w-3.5" />} label="Visits" value={a.withViews} total={a.total} />
             </div>
             <div className="flex gap-2 mt-3 pt-3 border-t">
-              <span className="inline-flex h-6 px-2 text-[11px] font-medium rounded-full border items-center bg-muted">Default: {a.modeDefault}</span>
+              <span className="inline-flex h-6 px-2 text-[11px] font-medium rounded-full border items-center bg-muted">Default: {a.defaultMode}</span>
               <span className="inline-flex h-6 px-2 text-[11px] font-medium rounded-full border items-center bg-amber-50 text-amber-700 border-amber-200">Pre-order: {a.preorderMode}</span>
-              <span className="inline-flex h-6 px-2 text-[11px] font-medium rounded-full border items-center bg-blue-50 text-blue-700 border-blue-200">Langganan: {a.modeLangganan}</span>
+              <span className="inline-flex h-6 px-2 text-[11px] font-medium rounded-full border items-center bg-blue-50 text-blue-700 border-blue-200">Subscription: {a.subscriptionMode}</span>
             </div>
             <div className="mt-3 pt-3 border-t">
               <p className="text-xs text-muted-foreground mb-1">Order source</p>
@@ -201,7 +201,7 @@ export default function AdminDashboardPage() {
       <div className="grid lg:grid-cols-2 gap-4">
         <div className="rounded-xl border bg-card shadow-sm">
           <div className="p-4 border-b">
-            <p className="text-sm font-semibold text-foreground">Pendaftaran Terbaru</p>
+            <p className="text-sm font-semibold text-foreground">Latest signups</p>
           </div>
           <div className="divide-y">
             {data.recentSignups.length === 0 ? (

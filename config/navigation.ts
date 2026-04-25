@@ -11,9 +11,8 @@ export interface NavGroup {
   items: NavItem[];
 }
 
-// Note: hrefs still use BI route segments (/orders, /products, etc.) — a
-// future migration will rename routes to /orders, /products with 301 redirects.
-// Labels are already English so menus read correctly today.
+// Routes and labels are both English. Legacy BI paths (/pesanan, /produk, …)
+// are 301-redirected by middleware.ts so old WhatsApp / bookmark links survive.
 
 export const marketingNav: NavItem[] = [
   { title: "Features", href: "/features" },

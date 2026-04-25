@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthenticatedClient } from "@/lib/supabase/api";
 
-const VALID_STATUSES = ["new", "processed", "shipped", "done", "cancelled"];
+const VALID_STATUSES = ["new", "menunggu", "processed", "shipped", "done", "cancelled"];
 
 // POST - Bulk update order status
 export async function POST(request: NextRequest) {

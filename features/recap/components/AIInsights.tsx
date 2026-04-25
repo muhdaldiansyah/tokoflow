@@ -87,19 +87,14 @@ export function AIInsights({ type, periodKey, hasData, totalOrders, businessName
   async function handleGenerate(force?: boolean) {
     setState("loading");
     setIsStale(false);
-    try {
-      const result = await generateAnalysis(type, periodKey, force);
-      if (result.insights) {
-        setInsights(result.insights);
-        setState("result");
-        track("ai_analysis_generated", { type, period: periodKey, force: !!force });
-      } else {
-        setState("empty");
-        toast.error("Gagal menganalisis data");
-      }
-    } catch {
+    const result = await generateAnalysis(type, periodKey, force);
+    if (result.insights) {
+      setInsights(result.insights);
+      setState("result");
+      track("ai_analysis_generated", { type, period: periodKey, force: !!force });
+    } else {
       setState("empty");
-      toast.error("Gagal menganalisis data");
+      toast.error(result.error ?? "Failed to generate analysis");
     }
   }
 
@@ -112,11 +107,11 @@ export function AIInsights({ type, periodKey, hasData, totalOrders, businessName
       ? new Date(periodKey + "T00:00:00").toLocaleDateString("en-MY", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
       : new Date(`${periodKey}-01T00:00:00`).toLocaleDateString("en-MY", { month: "long", year: "numeric" });
 
-    const typeLabel = type === "daily" ? "Harian" : "Bulanan";
+    const typeLabel = type === "daily" ? "Daily" : "Monthly";
     const dateSlug = periodKey.replace(/\//g, "-");
     const now = new Date();
     const timeSlug = `${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}`;
-    const filename = `Analisis-${typeLabel}-${dateSlug}-${timeSlug}.pdf`;
+    const filename = `Analysis-${typeLabel}-${dateSlug}-${timeSlug}.pdf`;
 
     const doc = new jsPDF({ unit: "mm", format: "a4" });
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -133,7 +128,7 @@ export function AIInsights({ type, periodKey, hasData, totalOrders, businessName
     doc.setFontSize(11);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(100, 100, 100);
-    doc.text(`Analisis ${typeLabel} — ${periodLabel}`, margin, y);
+    doc.text(`${typeLabel} analysis — ${periodLabel}`, margin, y);
     y += 4;
 
     // Divider
@@ -148,7 +143,7 @@ export function AIInsights({ type, periodKey, hasData, totalOrders, businessName
       doc.setTextColor(60, 60, 60);
       doc.setFontSize(11);
       doc.setFont("helvetica", "bold");
-      doc.text("RINGKASAN", margin, y);
+      doc.text("SUMMARY", margin, y);
       y += 7;
 
       doc.setFont("helvetica", "normal");
@@ -157,13 +152,13 @@ export function AIInsights({ type, periodKey, hasData, totalOrders, businessName
       const rows: [string, string][] = [
         ["Total orders", String(summary.totalOrders)],
         ["Total sales", fmtRp(summary.totalRevenue)],
-        ["Terkumpul", fmtRp(summary.collectedRevenue)],
+        ["Collected", fmtRp(summary.collectedRevenue)],
         ["Unpaid", fmtRp(summary.piutang)],
         ["Avg. order value", fmtRp(summary.aov)],
         ["Collection rate", `${summary.collectionRate}%`],
-        ["Paid", `${summary.paidCount} pesanan`],
-        ["DP", `${summary.partialCount} pesanan`],
-        ["Unpaid", `${summary.unpaidCount} pesanan`],
+        ["Paid", `${summary.paidCount} orders`],
+        ["Partial", `${summary.partialCount} orders`],
+        ["Unpaid", `${summary.unpaidCount} orders`],
       ];
 
       for (const [label, value] of rows) {
@@ -185,7 +180,7 @@ export function AIInsights({ type, periodKey, hasData, totalOrders, businessName
     doc.setTextColor(60, 60, 60);
     doc.setFontSize(11);
     doc.setFont("helvetica", "bold");
-    doc.text("ANALISIS AI", margin, y);
+    doc.text("AI ANALYSIS", margin, y);
     y += 7;
 
     doc.setFont("helvetica", "normal");
@@ -208,7 +203,7 @@ export function AIInsights({ type, periodKey, hasData, totalOrders, businessName
     doc.line(margin, footerY - 4, pageWidth - margin, footerY - 4);
     doc.setFontSize(8);
     doc.setTextColor(160, 160, 160);
-    doc.text("Dibuat dengan Tokoflow — tokoflow.com", margin, footerY);
+    doc.text("Generated with Tokoflow — tokoflow.com", margin, footerY);
     doc.text(
       now.toLocaleDateString("en-MY", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" }),
       pageWidth - margin,
@@ -226,7 +221,7 @@ export function AIInsights({ type, periodKey, hasData, totalOrders, businessName
         <div className="space-y-3 py-2">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="w-4 h-4 animate-spin" />
-            Menganalisis data...
+            Analyzing data...
           </div>
           <div className="space-y-2 animate-pulse">
             <div className="h-3 bg-muted rounded w-full" />

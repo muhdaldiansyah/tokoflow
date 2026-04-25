@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
       .eq("organizer_id", user.id);
 
     if ((count || 0) >= 3) {
-      return NextResponse.json({ error: "Maksimal 3 komunitas per akun" }, { status: 429 });
+      return NextResponse.json({ error: "Maximum 3 communities per account" }, { status: 429 });
     }
 
     // Get organizer's city info
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error("Error creating community:", error);
-      return NextResponse.json({ error: "Gagal membuat komunitas" }, { status: 500 });
+      return NextResponse.json({ error: "Failed to create community" }, { status: 500 });
     }
 
     // Auto-add organizer as member with 'organizer' role

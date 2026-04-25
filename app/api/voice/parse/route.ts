@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthenticatedClient } from "@/lib/supabase/api";
+import { aiRateLimitResponseInit, checkAiRateLimit } from "@/lib/rate-limit/ai";
+
+const MAX_TRANSCRIPT_CHARS = 10_000;
 
 interface ParsedItem {
   name: string;
@@ -26,12 +29,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const limit = checkAiRateLimit(user.id);
+    if (!limit.allowed) {
+      return NextResponse.json(
+        {
+          error:
+            limit.reason === "day"
+              ? "Daily AI usage limit reached. Try again tomorrow."
+              : "Too many AI requests. Slow down for a moment.",
+        },
+        aiRateLimitResponseInit(limit),
+      );
+    }
+
     const { transcript, products } = await request.json();
 
     if (!transcript || typeof transcript !== "string") {
       return NextResponse.json(
         { error: "transcript is required" },
         { status: 400 }
+      );
+    }
+
+    if (transcript.length > MAX_TRANSCRIPT_CHARS) {
+      return NextResponse.json(
+        { error: `Transcript too long (max ${MAX_TRANSCRIPT_CHARS} chars).` },
+        { status: 413 },
       );
     }
 

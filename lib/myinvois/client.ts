@@ -18,15 +18,15 @@ function getIdentityBase(): string {
   return process.env.NODE_ENV === "production" ? DEFAULT_PROD : DEFAULT_PREPROD;
 }
 
-// Simple in-memory token cache. Tokens last ~1h; refresh on demand.
+// In-memory token cache. Tokens last ~1h; refresh on demand. The pending
+// promise is shared so concurrent callers during a refresh wait on the same
+// fetch — without it, two parallel submissions during expiry would each fire
+// their own OAuth call and race to overwrite cachedToken.
 type CachedToken = { token: string; expiresAt: number };
 let cachedToken: CachedToken | null = null;
+let pendingRefresh: Promise<string> | null = null;
 
-async function getAccessToken(): Promise<string> {
-  if (cachedToken && cachedToken.expiresAt > Date.now() + 30_000) {
-    return cachedToken.token;
-  }
-
+async function fetchNewToken(): Promise<string> {
   const clientId = process.env.MYINVOIS_CLIENT_ID;
   const clientSecret = process.env.MYINVOIS_CLIENT_SECRET;
   if (!clientId || !clientSecret) {
@@ -61,6 +61,18 @@ async function getAccessToken(): Promise<string> {
     expiresAt: Date.now() + json.expires_in * 1000,
   };
   return json.access_token;
+}
+
+async function getAccessToken(): Promise<string> {
+  if (cachedToken && cachedToken.expiresAt > Date.now() + 30_000) {
+    return cachedToken.token;
+  }
+  if (pendingRefresh) return pendingRefresh;
+
+  pendingRefresh = fetchNewToken().finally(() => {
+    pendingRefresh = null;
+  });
+  return pendingRefresh;
 }
 
 async function myInvoisFetch<T>(

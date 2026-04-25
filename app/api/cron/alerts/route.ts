@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const EXPO_PUSH_URL = "https://exp.host/--/api/v2/push/send";
 
-// Proactive alerts cron — runs daily at 08:00 WIB (01:00 UTC)
+// Proactive alerts cron — runs daily at 08:00 MYT (01:00 UTC)
 // Checks: stock running low, capacity almost full, customer re-order predictions
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -32,11 +32,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ processed: 0, sent: 0 });
   }
 
-  // Tomorrow in WIB
+  // Tomorrow in MYT
   const now = new Date();
-  const wibOffset = 7 * 60 * 60 * 1000;
-  const tomorrowWIB = new Date(now.getTime() + wibOffset + 24 * 60 * 60 * 1000);
-  const tomorrowStr = tomorrowWIB.toISOString().split("T")[0];
+  const mytOffset = 8 * 60 * 60 * 1000;
+  const tomorrowMYT = new Date(now.getTime() + mytOffset + 24 * 60 * 60 * 1000);
+  const tomorrowStr = tomorrowMYT.toISOString().split("T")[0];
 
   const pushMessages: { to: string; title: string; body: string; sound: string; data: Record<string, unknown> }[] = [];
 
@@ -55,11 +55,11 @@ export async function POST(request: NextRequest) {
       .limit(5);
 
     if (lowStock && lowStock.length > 0) {
-      const items = lowStock.map((p) => `${p.name} (sisa ${p.stock})`).join(", ");
+      const items = lowStock.map((p) => `${p.name} (${p.stock} left)`).join(", ");
       pushMessages.push({
         to: profile.push_token,
-        title: "📦 Stok hampir habis",
-        body: `${items} — perlu restok supaya tidak kehabisan`,
+        title: "📦 Low stock",
+        body: `${items} — restock soon to avoid running out`,
         sound: "default",
         data: { screen: "products" },
       });
@@ -71,8 +71,8 @@ export async function POST(request: NextRequest) {
         .from("orders")
         .select("id", { count: "exact", head: true })
         .eq("user_id", profile.id)
-        .gte("delivery_date", `${tomorrowStr}T00:00:00+07:00`)
-        .lt("delivery_date", `${tomorrowStr}T23:59:59+07:00`)
+        .gte("delivery_date", `${tomorrowStr}T00:00:00+08:00`)
+        .lt("delivery_date", `${tomorrowStr}T23:59:59+08:00`)
         .not("status", "eq", "cancelled")
         .is("deleted_at", null);
 
@@ -83,15 +83,15 @@ export async function POST(request: NextRequest) {
       if (pct >= 80 && count < cap) {
         pushMessages.push({
           to: profile.push_token,
-          title: `📋 Besok ${count}/${cap} slot terisi`,
-          body: `Tinggal ${cap - count} slot. Sisanya waktu istirahatmu.`,
+          title: `📋 Tomorrow ${count}/${cap} slots filled`,
+          body: `${cap - count} slots left. The rest is your rest time.`,
           sound: "default",
           data: { screen: "production" },
         });
       } else if (count >= cap) {
         pushMessages.push({
           to: profile.push_token,
-          title: "✅ Besok penuh — istirahat terjaga",
+          title: "✅ Tomorrow is fully booked — rest assured",
           body: `${count}/${cap} orders today. The system is keeping you from overwork — new orders are redirected to another date.`,
           sound: "default",
           data: { screen: "production" },
@@ -107,15 +107,15 @@ export async function POST(request: NextRequest) {
     if (!isUnlimited && !hasCredits && ordersUsed >= 48 && ordersUsed < 50) {
       pushMessages.push({
         to: profile.push_token,
-        title: "⚡ Kuota hampir habis",
-        body: `${ordersUsed}/50 pesanan gratis terpakai. Sisa ${50 - ordersUsed} pesanan. Tambah paket supaya pesanan dari link toko tidak tertahan.`,
+        title: "⚡ Quota almost used",
+        body: `${ordersUsed}/50 free orders used. ${50 - ordersUsed} left. Top up so orders from your store link don't get held back.`,
         sound: "default",
         data: { screen: "settings" },
       });
     } else if (!isUnlimited && !hasCredits && ordersUsed >= 50) {
       pushMessages.push({
         to: profile.push_token,
-        title: "🔴 Kuota habis — pesanan menunggu",
+        title: "🔴 Quota exhausted — orders on hold",
         body: "New orders from your store link are on hold until you top up. Starting from RM 5.",
         sound: "default",
         data: { screen: "settings" },

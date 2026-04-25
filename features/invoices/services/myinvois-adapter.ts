@@ -77,7 +77,7 @@ function buildSupplierParty(
       line1: address.line1,
       line2: address.line2,
       line3: address.line3,
-      city: "Kuala Lumpur", // TODO: read from profile.city once we persist it at invoice time
+      city: profile.city ?? "Kuala Lumpur",
       postalZone: "00000",
       stateCode: MY_STATE_CODES[stateName] ?? MY_STATE_CODES.NA,
       countryCode: "MYS",

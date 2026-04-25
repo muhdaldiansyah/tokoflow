@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthenticatedClient } from "@/lib/supabase/api";
 
-const VALID_STATUSES = ["new", "processed", "shipped", "done", "cancelled"];
+// "menunggu" is the DB enum for orders that hit the quota wall on creation
+// (see check_order_limit RPC); merchants can still progress them once they
+// upgrade, so it must be a valid input here.
+const VALID_STATUSES = ["new", "menunggu", "processed", "shipped", "done", "cancelled"];
 
 // PATCH - Update order status only
 export async function PATCH(

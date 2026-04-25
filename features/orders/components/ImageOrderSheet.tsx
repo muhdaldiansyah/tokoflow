@@ -139,7 +139,7 @@ export function ImageOrderSheet({
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
           <h3 className="text-sm font-semibold text-foreground">
-            {phase === "upload" ? "Foto screenshot pesanan" : "Cek pesanan"}
+            {phase === "upload" ? "Photograph the order screenshot" : "Review order"}
           </h3>
           <button
             type="button"
@@ -221,7 +221,7 @@ export function ImageOrderSheet({
 
               {!isProcessing && previewItems.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-4">
-                  Tidak ada item terdeteksi. Coba foto lain.
+                  No items detected. Try another photo.
                 </p>
               ) : (
                 <div className="space-y-2">

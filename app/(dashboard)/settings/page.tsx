@@ -509,11 +509,11 @@ export default function SettingsPage() {
             <div className="flex items-center gap-1.5">
               <input
                 type="time"
-                value={profile?.quiet_hours_start ?? "21:00"}
+                value={profile?.quiet_hours_start ?? "22:00"}
                 onChange={async (e) => {
                   const start = e.target.value;
                   setProfile((prev) => prev ? { ...prev, quiet_hours_start: start } : prev);
-                  await updateQuietHours(start, profile?.quiet_hours_end ?? "05:00");
+                  await updateQuietHours(start, profile?.quiet_hours_end ?? "06:00");
                   track("quiet_hours_updated", { start, end: profile?.quiet_hours_end });
                 }}
                 className="w-[5.5rem] h-8 px-2 text-sm text-center bg-muted/50 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary/30 focus:bg-background transition-colors"
@@ -521,11 +521,11 @@ export default function SettingsPage() {
               <span className="text-xs text-muted-foreground">—</span>
               <input
                 type="time"
-                value={profile?.quiet_hours_end ?? "05:00"}
+                value={profile?.quiet_hours_end ?? "06:00"}
                 onChange={async (e) => {
                   const end = e.target.value;
                   setProfile((prev) => prev ? { ...prev, quiet_hours_end: end } : prev);
-                  await updateQuietHours(profile?.quiet_hours_start ?? "21:00", end);
+                  await updateQuietHours(profile?.quiet_hours_start ?? "22:00", end);
                   track("quiet_hours_updated", { start: profile?.quiet_hours_start, end });
                 }}
                 className="w-[5.5rem] h-8 px-2 text-sm text-center bg-muted/50 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary/30 focus:bg-background transition-colors"
@@ -938,11 +938,11 @@ export default function SettingsPage() {
             </div>
             <div className="rounded-lg bg-muted/50 p-2.5">
               <p className="text-sm font-semibold text-foreground">{formatRupiah(profile.referral_total_earned ?? 0)}</p>
-              <p className="text-[10px] text-muted-foreground">Total Komisi</p>
+              <p className="text-[10px] text-muted-foreground">Total commission</p>
             </div>
             <div className="rounded-lg bg-muted/50 p-2.5">
               <p className="text-sm font-semibold text-foreground">{formatRupiah(profile.referral_balance ?? 0)}</p>
-              <p className="text-[10px] text-muted-foreground">Saldo</p>
+              <p className="text-[10px] text-muted-foreground">Balance</p>
             </div>
           </div>
 

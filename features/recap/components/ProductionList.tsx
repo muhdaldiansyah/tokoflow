@@ -24,7 +24,7 @@ interface ProductionListProps {
 
 const PAYMENT_LABELS: Record<string, string> = {
   paid: "Paid",
-  partial: "DP",
+  partial: "Partial",
   unpaid: "Unpaid",
 };
 
@@ -99,14 +99,14 @@ export function ProductionList({ dateStr, selectedDate, exportTrigger, waTrigger
 
       // Sheet 1: Summary with context
       const summaryData: (string | number)[][] = [
-        [`PERSIAPAN — ${dateFormatted}`],
-        [`${data.orders.length} pesanan · ${data.items.reduce((s, i) => s + i.jumlah, 0)} item`],
+        [`PREP LIST — ${dateFormatted}`],
+        [`${data.orders.length} orders · ${data.items.reduce((s, i) => s + i.jumlah, 0)} items`],
         [],
-        ["YANG HARUS DISIAPKAN"],
+        ["WHAT TO PREPARE"],
         ["Product", "Quantity", "From orders"],
         ...data.items.map(i => [i.produk, i.jumlah, i.dari_pesanan]),
         [],
-        ["DETAIL PESANAN"],
+        ["ORDER DETAILS"],
         ["No.", "Customer", "Item", "Total (RM)", "Paid (RM)", "Balance (RM)", "Status"],
         ...data.orders.map(o => [o.no, o.pelanggan, o.item, o.total, o.dibayar, o.sisa, o.pembayaran]),
         [],
@@ -128,7 +128,7 @@ export function ProductionList({ dateStr, selectedDate, exportTrigger, waTrigger
       track("production_exported", { date: dateStr });
       toast.success(`Downloaded: ${filename}`);
     } catch {
-      toast.error("Gagal mengekspor daftar persiapan");
+      toast.error("Failed to export prep list");
     } finally {
       onExportingChange(false);
     }
@@ -154,15 +154,15 @@ export function ProductionList({ dateStr, selectedDate, exportTrigger, waTrigger
 
     const piutang = production.totalRevenue - production.collectedRevenue;
 
-    const message = `📋 *Daftar Persiapan — ${dateLabel}*
-${production.totalOrders} pesanan · ${production.totalItems} item
+    const message = `📋 *Prep list — ${dateLabel}*
+${production.totalOrders} orders · ${production.totalItems} items
 
-*YANG HARUS DISIAPKAN:*
+*WHAT TO PREPARE:*
 ${itemLines}
 
-*DETAIL PESANAN:*
+*ORDER DETAILS:*
 ${orderLines}
-${piutang > 0 ? `\n💰 Belum dibayar: RM ${piutang.toLocaleString("en-MY")}` : ""}
+${piutang > 0 ? `\n💰 Unpaid: RM ${piutang.toLocaleString("en-MY")}` : ""}
 _${businessName} · Tokoflow_`;
 
     const encoded = encodeURIComponent(message);
@@ -206,12 +206,12 @@ _${businessName} · Tokoflow_`;
 
   return (
     <div className="space-y-4 pb-8">
-      {/* Ringkasan Persiapan */}
+      {/* Prep summary */}
       <div className="rounded-xl border bg-card px-4 py-4 space-y-2 shadow-sm">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-medium text-muted-foreground">Yang Harus Disiapkan</p>
+          <p className="text-xs font-medium text-muted-foreground">What to prepare</p>
           <p className="text-xs text-muted-foreground">
-            {production.totalOrders} pesanan · {production.totalItems} item
+            {production.totalOrders} orders · {production.totalItems} items
           </p>
         </div>
         <div className="divide-y">
@@ -219,7 +219,7 @@ _${businessName} · Tokoflow_`;
             <div key={item.name} className="flex items-center justify-between py-2">
               <div className="min-w-0">
                 <p className="text-sm text-foreground">{item.name}</p>
-                <p className="text-xs text-muted-foreground">{item.orderCount} pesanan</p>
+                <p className="text-xs text-muted-foreground">{item.orderCount} orders</p>
               </div>
               <span className="text-sm font-semibold text-foreground tabular-nums shrink-0 ml-3">
                 {item.qty}

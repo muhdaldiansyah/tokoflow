@@ -199,7 +199,7 @@ export function PasteOrderSheet({
               <textarea
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                placeholder={"Tempel chat dari WhatsApp...\n\nContoh:\nSari\n081234567890\ncoklat 3, martabak 1\nbesok pagi, jangan terlalu manis"}
+                placeholder={"Paste a WhatsApp chat...\n\nExample:\nAisyah\n0123456789\nchocolate 3, kuih 1\ntomorrow morning, not too sweet"}
                 className="w-full flex-1 px-3 py-2.5 bg-card border border-border rounded-lg shadow-sm text-sm text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary/30 focus:bg-card transition-colors placeholder:text-muted-foreground resize-none"
                 autoFocus
               />
@@ -234,7 +234,7 @@ export function PasteOrderSheet({
 
               {previewItems.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-4">
-                  Tidak ada item terdeteksi. Coba tempel ulang.
+                  No items detected. Try pasting again.
                 </p>
               ) : (
                 <div className="space-y-2">

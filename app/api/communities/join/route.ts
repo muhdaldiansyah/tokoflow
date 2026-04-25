@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     if (existing) {
-      return NextResponse.json({ message: "Sudah bergabung", community });
+      return NextResponse.json({ message: "Already joined", community });
     }
 
     // Join
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     });
     if (joinError) {
       console.error("Failed to join community:", joinError);
-      return NextResponse.json({ error: "Gagal bergabung" }, { status: 500 });
+      return NextResponse.json({ error: "Failed to join" }, { status: 500 });
     }
 
     // Set as primary community (if user doesn't have one)
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
       .eq("id", user.id)
       .is("community_id", null);
 
-    return NextResponse.json({ message: "Berhasil bergabung", community });
+    return NextResponse.json({ message: "Joined successfully", community });
   } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

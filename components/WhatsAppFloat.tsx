@@ -1,7 +1,8 @@
 "use client";
 
-const WA_URL =
-  "https://wa.me/6285711552484?text=Halo%20Tokoflow%2C%20saya%20mau%20tanya";
+import { siteConfig } from "@/config/site";
+
+const WA_URL = `https://wa.me/${siteConfig.supportWhatsapp}?text=Hi%20Tokoflow%2C%20I%20have%20a%20question`;
 
 export function WhatsAppFloat() {
   return (
@@ -9,7 +10,7 @@ export function WhatsAppFloat() {
       href={WA_URL}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Chat WhatsApp"
+      aria-label="Chat on WhatsApp"
       style={{ position: "fixed", bottom: 20, right: 20 }}
       className="z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-black/15 transition-transform hover:scale-110 active:scale-95"
     >

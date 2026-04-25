@@ -53,7 +53,7 @@ export async function PATCH(request: NextRequest) {
 
   // Only admin can change roles — moderator is read-only
   if (auth.profile?.role !== USER_ROLES.ADMIN) {
-    return NextResponse.json({ error: "Hanya admin yang bisa mengubah role" }, { status: 403 });
+    return NextResponse.json({ error: "Only admins can change roles" }, { status: 403 });
   }
 
   const body = await request.json();

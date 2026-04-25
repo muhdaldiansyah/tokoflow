@@ -34,11 +34,11 @@ export async function updateSlug(slug: string): Promise<{ success: boolean; erro
     });
     if (!res.ok) {
       const data = await res.json();
-      return { success: false, error: data.error || "Gagal menyimpan" };
+      return { success: false, error: data.error || "Failed to save" };
     }
     return { success: true };
   } catch {
-    return { success: false, error: "Gagal menyimpan" };
+    return { success: false, error: "Failed to save" };
   }
 }
 

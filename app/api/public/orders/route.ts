@@ -4,9 +4,15 @@ import { createServiceClient } from "@/lib/supabase/server";
 
 // Simple in-memory rate limiter — best-effort on serverless
 const rateLimit = new Map<string, { count: number; resetAt: number }>();
+const MAX_ENTRIES = 10_000;
 
 function checkRateLimit(ip: string): boolean {
   const now = Date.now();
+  if (rateLimit.size > MAX_ENTRIES) {
+    for (const [k, v] of rateLimit) {
+      if (v.resetAt < now) rateLimit.delete(k);
+    }
+  }
   const window = rateLimit.get(ip);
   if (!window || now > window.resetAt) {
     rateLimit.set(ip, { count: 1, resetAt: now + 3_600_000 }); // 1 hour window
@@ -94,7 +100,7 @@ export async function POST(request: NextRequest) {
       if (catalogItem && catalogItem.stock !== null && catalogItem.stock !== undefined) {
         if (item.qty > catalogItem.stock) {
           return NextResponse.json({
-            error: `Stok ${catalogItem.name} tidak cukup (tersisa ${catalogItem.stock})`
+            error: `Insufficient stock for ${catalogItem.name} (${catalogItem.stock} left)`
           }, { status: 400 });
         }
       }
@@ -115,8 +121,8 @@ export async function POST(request: NextRequest) {
     // Capacity check (if set and delivery date provided)
     if (business.dailyOrderCapacity !== null && deliveryDate) {
       const svc = await createServiceClient();
-      const startOfDay = `${deliveryDate}T00:00:00.000+07:00`;
-      const endOfDay = `${deliveryDate}T23:59:59.999+07:00`;
+      const startOfDay = `${deliveryDate}T00:00:00.000+08:00`;
+      const endOfDay = `${deliveryDate}T23:59:59.999+08:00`;
 
       const { count } = await svc
         .from("orders")
@@ -151,7 +157,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!result) {
-      return NextResponse.json({ error: "Gagal membuat pesanan" }, { status: 500 });
+      return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
     }
 
     // Fire-and-forget analytics
@@ -176,6 +182,6 @@ export async function POST(request: NextRequest) {
       transferAmount: result.transferAmount,
     });
   } catch {
-    return NextResponse.json({ error: "Terjadi kesalahan" }, { status: 500 });
+    return NextResponse.json({ error: "An error occurred" }, { status: 500 });
   }
 }

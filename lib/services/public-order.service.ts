@@ -286,7 +286,7 @@ export async function createPublicOrder(params: {
   // Increment orders_used counter
   await supabase.rpc("increment_orders_used", { p_user_id: params.businessId });
 
-  // Referral signup bonus — credit referrer Rp5.000 on first order (best-effort)
+  // Referral signup bonus — credit referrer RM 2 on first order (best-effort)
   creditReferralSignupBonus(params.businessId);
 
   // Decrement stock for products with tracked inventory

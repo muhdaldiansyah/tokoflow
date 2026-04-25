@@ -29,10 +29,10 @@ interface DirectoryGridProps {
 }
 
 const PRICE_RANGES = [
-  { label: "< Rp50rb", max: 50000 },
-  { label: "Rp50rb — Rp200rb", min: 50000, max: 200000 },
-  { label: "Rp200rb — Rp500rb", min: 200000, max: 500000 },
-  { label: "> Rp500rb", min: 500000 },
+  { label: "< RM 50", max: 50 },
+  { label: "RM 50 — RM 200", min: 50, max: 200 },
+  { label: "RM 200 — RM 500", min: 200, max: 500 },
+  { label: "> RM 500", min: 500 },
 ];
 
 function formatPrice(n: number) {
@@ -89,7 +89,7 @@ export function DirectoryGrid({ merchants, cities, categories, categoryLabels }:
             onClick={() => setSelectedCategory("")}
             className={`h-8 px-3 rounded-full text-xs font-medium transition-colors ${!selectedCategory ? "bg-[#05A660] text-white" : "bg-white border border-border text-muted-foreground hover:text-foreground hover:border-foreground/30"}`}
           >
-            Semua
+            All
           </button>
           {categories.map((c) => (
             <button
@@ -110,7 +110,7 @@ export function DirectoryGrid({ merchants, cities, categories, categoryLabels }:
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Cari toko..."
+            placeholder="Search stores..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full h-10 pl-9 pr-3 rounded-lg border border-border bg-white text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500/30 transition-colors placeholder:text-muted-foreground"
@@ -129,7 +129,7 @@ export function DirectoryGrid({ merchants, cities, categories, categoryLabels }:
 
         {/* Price range filter */}
         <FilterSelect
-          placeholder="Semua Harga"
+          placeholder="All prices"
           options={PRICE_RANGES.map((r, i) => ({ id: String(i), label: r.label }))}
           value={selectedPriceRange}
           onChange={setSelectedPriceRange}
@@ -155,7 +155,7 @@ export function DirectoryGrid({ merchants, cities, categories, categoryLabels }:
       {/* Results count */}
       {hasFilters && (
         <p className="text-sm text-muted-foreground mb-4">
-          {filtered.length} toko ditemukan
+          {filtered.length} stores found
         </p>
       )}
 
@@ -175,8 +175,8 @@ export function DirectoryGrid({ merchants, cities, categories, categoryLabels }:
           <p className="text-lg font-medium text-foreground">No stores yet</p>
           <p className="mt-2 text-sm text-muted-foreground">
             {hasFilters
-              ? "Coba ubah filter atau kata kunci pencarian."
-              : "Toko akan muncul di sini setelah UMKM mendaftar dan melengkapi profil."}
+              ? "Try changing your filters or search."
+              : "Stores appear here after SMBs sign up and complete their profile."}
           </p>
         </div>
       )}
@@ -324,7 +324,7 @@ function FilterSelect({ placeholder, options, value, onChange }: {
               <Search className="w-4 h-4 text-muted-foreground shrink-0" />
               <input
                 type="text"
-                placeholder="Cari..."
+                placeholder="Search..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="flex-1 text-sm bg-transparent outline-none placeholder:text-muted-foreground"
@@ -351,7 +351,7 @@ function FilterSelect({ placeholder, options, value, onChange }: {
               </button>
             ))}
             {filtered.length === 0 && (
-              <p className="px-3 py-3 text-sm text-muted-foreground">Tidak ditemukan</p>
+              <p className="px-3 py-3 text-sm text-muted-foreground">No matches</p>
             )}
           </div>
         </div>

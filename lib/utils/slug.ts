@@ -33,7 +33,7 @@ export function isReservedSlug(slug: string): boolean {
 /**
  * Generate a URL-safe slug from a business name.
  * "Warung Bu Rina" → "warung-bu-rina"
- * No prefix stripping — full name as-is, operator customizes in Pengaturan.
+ * No prefix stripping — full name as-is, operator customizes in Settings.
  */
 export function generateSlug(name: string): string {
   return name

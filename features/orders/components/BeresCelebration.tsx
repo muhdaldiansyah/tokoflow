@@ -35,7 +35,7 @@ export function BeresCelebration({ onDismiss }: BeresCelebrationProps) {
           <Check className="w-10 h-10 text-white" />
         </div>
         <h1 className="text-3xl font-bold text-white">Beres!</h1>
-        <p className="text-white/80 text-sm">Semua pesanan hari ini selesai</p>
+        <p className="text-white/80 text-sm">All orders done for today</p>
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ import { getCategories, buildCategoryLabels } from "@/config/categories";
 import { DirectoryGrid } from "./DirectoryGrid";
 
 export const metadata: Metadata = {
-  title: "Browse stores — Katering, Bakery & UMKM F&B | Tokoflow",
+  title: "Browse stores — Caterers, Bakeries & F&B SMBs | Tokoflow",
   description:
     "Find catering, bakery, cakes, and F&B merchants in your city. Order directly, no hefty commissions.",
   alternates: { canonical: `${siteConfig.url}/toko` },
@@ -129,8 +129,8 @@ export default async function TokoPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "Toko UMKM F&B di Tokoflow",
-    description: "Daftar katering, bakery, dan UMKM makanan yang menerima pesanan online via Tokoflow",
+    name: "F&B SMBs on Tokoflow",
+    description: "Caterers, bakeries, and food SMBs taking orders online via Tokoflow",
     numberOfItems: merchants.length,
     itemListElement: merchants.slice(0, 20).map((m, i) => ({
       "@type": "ListItem",

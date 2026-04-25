@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update counters on profile (fire-and-forget)
-    const todayStr = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Jakarta" });
+    const todayStr = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kuala_Lumpur" });
     const { data: current } = await supabase
       .from("profiles")
       .select("total_views, views_today, views_today_date")

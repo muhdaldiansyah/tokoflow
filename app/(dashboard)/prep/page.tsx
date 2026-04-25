@@ -5,8 +5,8 @@ import { ChevronLeft, ChevronRight, ChevronDown, Download, Loader2, Send } from 
 import { ProductionList } from "@/features/recap/components/ProductionList";
 import { getDeliveryCountsByMonth } from "@/features/orders/services/order.service";
 
-const MONTH_NAMES_SHORT = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-const DAY_LABELS = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"];
+const MONTH_NAMES_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 function getCalendarDays(year: number, month: number) {
   const firstDay = new Date(year, month, 1);
@@ -23,7 +23,7 @@ function getDateString(date: Date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
-export default function PersiapanPage() {
+export default function PrepPage() {
   const now = new Date();
   // Default to tomorrow for forward-looking prep
   const tomorrow = new Date(now);

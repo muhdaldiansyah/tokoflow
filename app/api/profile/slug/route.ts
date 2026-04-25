@@ -22,7 +22,7 @@ export async function PUT(request: NextRequest) {
     }
 
     if (isReservedSlug(slug)) {
-      return NextResponse.json({ success: false, error: "Slug ini tidak tersedia" }, { status: 400 });
+      return NextResponse.json({ success: false, error: "This slug is unavailable" }, { status: 400 });
     }
 
     const { error } = await supabase
@@ -34,7 +34,7 @@ export async function PUT(request: NextRequest) {
       if (error.code === "23505") {
         return NextResponse.json({ success: false, error: "Slug already taken" }, { status: 409 });
       }
-      return NextResponse.json({ success: false, error: "Gagal menyimpan" }, { status: 500 });
+      return NextResponse.json({ success: false, error: "Failed to save" }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });

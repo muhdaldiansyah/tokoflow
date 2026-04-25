@@ -84,7 +84,7 @@ export function CustomerList() {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search nama atau nomor HP..."
+          placeholder="Search name or phone..."
           className="w-full h-11 pl-10 pr-4 bg-card border rounded-lg shadow-sm text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary/30 focus:bg-card transition-colors placeholder:text-muted-foreground"
         />
       </div>
@@ -114,7 +114,7 @@ export function CustomerList() {
           {filteredPiutang.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground text-sm">
-                {debouncedSearch ? "Tidak ditemukan" : "Tidak ada piutang"}
+                {debouncedSearch ? "No matches" : "No outstanding balances"}
               </p>
             </div>
           ) : (
@@ -133,7 +133,7 @@ export function CustomerList() {
                         {customer.customer_name}
                       </Link>
                       {customer.customer_phone && (
-                        <p className="text-xs text-muted-foreground">{customer.customer_phone.startsWith("62") ? "0" + customer.customer_phone.slice(2) : customer.customer_phone}</p>
+                        <p className="text-xs text-muted-foreground">{customer.customer_phone.startsWith("60") ? "0" + customer.customer_phone.slice(2) : customer.customer_phone}</p>
                       )}
                     </div>
                     <div className="text-right shrink-0 ml-3">
@@ -199,7 +199,7 @@ export function CustomerList() {
                           {customer.name}
                         </h3>
                         {customer.phone && (
-                          <p className="text-sm text-muted-foreground">{customer.phone.startsWith("62") ? "0" + customer.phone.slice(2) : customer.phone}</p>
+                          <p className="text-sm text-muted-foreground">{customer.phone.startsWith("60") ? "0" + customer.phone.slice(2) : customer.phone}</p>
                         )}
                       </div>
                       <div className="text-right">

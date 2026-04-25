@@ -20,14 +20,14 @@ async function sendNotificationEmail(participant: {
   await transporter.sendMail({
     from: `Tokoflow <${user}>`,
     to: "muhamadaldiansyah24@gmail.com",
-    subject: `[Coba Aplikasi] ${participant.name} — ${participant.business_type}`,
+    subject: `[Trial signup] ${participant.name} — ${participant.business_type}`,
     text: [
-      `Pendaftar baru program Coba Aplikasi:`,
+      `New signup for the trial program:`,
       ``,
-      `Nama: ${participant.name}`,
-      `WA: ${participant.phone}`,
+      `Name: ${participant.name}`,
+      `WhatsApp: ${participant.phone}`,
       `Email: ${participant.email}`,
-      `Usaha: ${participant.business_type}`,
+      `Business: ${participant.business_type}`,
       ``,
       `— Tokoflow`,
     ].join("\n"),
@@ -51,9 +51,10 @@ export async function POST(
       );
     }
 
-    // Normalize phone: remove spaces, ensure starts with 08 or +62
-    const normalizedPhone = phone.replace(/\s+/g, "").replace(/^(\+62|62)/, "0");
-    if (!/^08\d{8,13}$/.test(normalizedPhone)) {
+    // Normalize phone: remove spaces, ensure starts with 01 (Malaysian mobile).
+    // Accepts +60xx, 60xx, 01xx — outputs the leading-zero form 01xxxxxxxx.
+    const normalizedPhone = phone.replace(/\s+/g, "").replace(/^(\+60|60)/, "0");
+    if (!/^01\d{8,9}$/.test(normalizedPhone)) {
       return NextResponse.json(
         { error: "Invalid WhatsApp number format" },
         { status: 400 }
@@ -78,7 +79,7 @@ export async function POST(
 
     if (program.status !== "active") {
       return NextResponse.json(
-        { error: "Program sudah ditutup" },
+        { error: "Program is closed" },
         { status: 410 }
       );
     }
@@ -92,7 +93,7 @@ export async function POST(
 
       if (count !== null && count >= program.max_participants) {
         return NextResponse.json(
-          { error: "Kuota sudah penuh. Terima kasih atas minatmu!" },
+          { error: "Slots are full. Thanks for your interest!" },
           { status: 409 }
         );
       }
@@ -108,7 +109,7 @@ export async function POST(
 
     if (existing) {
       return NextResponse.json(
-        { error: "Nomor WhatsApp ini sudah terdaftar" },
+        { error: "This WhatsApp number is already registered" },
         { status: 409 }
       );
     }
@@ -131,7 +132,7 @@ export async function POST(
     if (insertError) {
       console.error("Signup insert error:", insertError);
       return NextResponse.json(
-        { error: "Gagal mendaftar. Coba lagi." },
+        { error: "Signup failed. Please try again." },
         { status: 500 }
       );
     }
@@ -161,7 +162,7 @@ export async function POST(
   } catch (error) {
     console.error("Program signup error:", error);
     return NextResponse.json(
-      { error: "Terjadi kesalahan. Coba lagi." },
+      { error: "An error occurred. Please try again." },
       { status: 500 }
     );
   }

@@ -6,7 +6,7 @@
 
 **Target market:** Malaysia — RM 1M–5M turnover merchants facing the LHDN e-Invoice Phase 4 mandate (enforcement 1 Jan 2027, relaxation ends 31 Dec 2026).
 
-**Codebase:** ~45K LOC across 319 TS/TSX files. Zero user-visible Bahasa Indonesia strings. Zero commission. 0% platform fee.
+**Codebase:** ~45K LOC across 324 TS/TSX files. ~100 API routes + 5 cron jobs. Zero user-visible Bahasa Indonesia strings on the customer-touched surface. Zero commission. 0% platform fee.
 
 ## What it does
 
@@ -119,7 +119,7 @@ app/
 ├── (public)/         # /[slug] customer order form (rewrites to /order/[slug]) · /r/[id] receipt
 ├── (dashboard)/      # orders, products, customers, prep, recap, invoices, community, tax, settings (+ staff), profil, laporan, pengingat, pembayaran
 ├── (admin)/          # internal tools
-└── api/              # ~60 routes including /invoices/[id]/myinvois-{submit,status,cancel}, /staff, /orders/[id]/assign, /public/order-history, /tax/summary, /invoices/sst-summary
+└── api/              # ~100 routes including /invoices/[id]/myinvois-{submit,status,cancel}, /staff, /orders/[id]/assign, /public/order-history, /tax/summary, /invoices/sst-summary
 
 features/             # orders, products, customers, invoices, staff, tax, recap, referral, auth
 lib/

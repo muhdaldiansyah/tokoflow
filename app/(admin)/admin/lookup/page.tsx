@@ -19,32 +19,32 @@ type TableType = "categories" | "units" | "cities";
 
 const TABLE_CONFIG: Record<TableType, { title: string; idEditable: boolean; fields: { key: string; label: string; type: string }[] }> = {
   categories: {
-    title: "Kategori Bisnis",
+    title: "Business categories",
     idEditable: true,
     fields: [
       { key: "id", label: "ID (slug)", type: "text" },
       { key: "label", label: "Label", type: "text" },
-      { key: "icon", label: "Icon (opsional)", type: "text" },
-      { key: "sort_order", label: "Urutan", type: "number" },
+      { key: "icon", label: "Icon (optional)", type: "text" },
+      { key: "sort_order", label: "Sort order", type: "number" },
     ],
   },
   units: {
-    title: "Satuan Produk",
+    title: "Product units",
     idEditable: true,
     fields: [
       { key: "id", label: "ID", type: "text" },
       { key: "label", label: "Label", type: "text" },
-      { key: "sort_order", label: "Urutan", type: "number" },
+      { key: "sort_order", label: "Sort order", type: "number" },
     ],
   },
   cities: {
-    title: "Kota",
+    title: "Cities",
     idEditable: false,
     fields: [
-      { key: "name", label: "Nama Kota", type: "text" },
+      { key: "name", label: "City name", type: "text" },
       { key: "slug", label: "Slug", type: "text" },
-      { key: "province", label: "Provinsi", type: "text" },
-      { key: "sort_order", label: "Urutan", type: "number" },
+      { key: "province", label: "State", type: "text" },
+      { key: "sort_order", label: "Sort order", type: "number" },
     ],
   },
 };
@@ -69,7 +69,7 @@ export default function AdminLookupPage() {
       const res = await fetch(`/api/lookup?type=${activeTab}`);
       if (res.ok) setItems(await res.json());
     } catch {
-      setError("Gagal memuat data");
+      setError("Failed to load data");
     }
     setIsLoading(false);
   }
@@ -106,13 +106,13 @@ export default function AdminLookupPage() {
       });
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error || "Gagal menyimpan");
+        setError(data.error || "Failed to save");
       } else {
         setEditingId(null);
         await loadItems();
       }
     } catch {
-      setError("Gagal menyimpan");
+      setError("Failed to save");
     }
     setSaving(false);
   };
@@ -132,31 +132,31 @@ export default function AdminLookupPage() {
       });
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error || "Gagal menambah");
+        setError(data.error || "Failed to add");
       } else {
         setIsAdding(false);
         setAddForm({});
         await loadItems();
       }
     } catch {
-      setError("Gagal menambah");
+      setError("Failed to add");
     }
     setSaving(false);
   };
 
   const handleDelete = async (id: string, label: string) => {
-    if (!confirm(`Nonaktifkan "${label}"?`)) return;
+    if (!confirm(`Disable "${label}"?`)) return;
     setError("");
     try {
       const res = await fetch(`/api/admin/lookup?type=${activeTab}&id=${id}`, { method: "DELETE" });
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error || "Gagal menghapus");
+        setError(data.error || "Failed to delete");
       } else {
         await loadItems();
       }
     } catch {
-      setError("Gagal menghapus");
+      setError("Failed to delete");
     }
   };
 
@@ -243,7 +243,7 @@ export default function AdminLookupPage() {
             {/* Items */}
             {items.length === 0 && !isAdding && (
               <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-                Belum ada data
+                No data yet
               </div>
             )}
 

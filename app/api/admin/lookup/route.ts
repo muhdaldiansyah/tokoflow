@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
 
   if (error) {
     if (error.code === "23505") {
-      return NextResponse.json({ error: "ID sudah digunakan" }, { status: 400 });
+      return NextResponse.json({ error: "ID already in use" }, { status: 400 });
     }
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
@@ -90,10 +90,10 @@ export async function PUT(request: NextRequest) {
 
   // Validate label is not empty
   if (updates.label !== undefined && !updates.label?.trim()) {
-    return NextResponse.json({ error: "Label tidak boleh kosong" }, { status: 400 });
+    return NextResponse.json({ error: "Label cannot be empty" }, { status: 400 });
   }
   if (updates.name !== undefined && !updates.name?.trim()) {
-    return NextResponse.json({ error: "Nama tidak boleh kosong" }, { status: 400 });
+    return NextResponse.json({ error: "Name cannot be empty" }, { status: 400 });
   }
 
   const { data, error } = await auth.supabase
@@ -132,7 +132,7 @@ export async function DELETE(request: NextRequest) {
       .eq(check.column, id);
     if (count && count > 0) {
       return NextResponse.json({
-        error: `Tidak bisa hapus — ${count} ${check.label} masih menggunakan "${id}"`,
+        error: `Cannot delete — ${count} ${check.label} still using "${id}"`,
       }, { status: 400 });
     }
   }

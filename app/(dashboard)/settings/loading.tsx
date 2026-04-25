@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function PengaturanLoading() {
+export default function SettingsLoading() {
   return (
     <div className="max-w-2xl mx-auto space-y-4">
       {/* Header */}

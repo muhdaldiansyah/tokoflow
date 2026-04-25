@@ -38,7 +38,7 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
 
   useEffect(() => {
     try {
-      const raw = sessionStorage.getItem("catatorder_last_order");
+      const raw = sessionStorage.getItem("tokoflow_last_order");
       if (raw) {
         setOrderDetails(JSON.parse(raw));
         // Keep in sessionStorage so receipt image can include items on re-download

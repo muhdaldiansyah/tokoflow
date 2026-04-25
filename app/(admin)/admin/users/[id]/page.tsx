@@ -117,7 +117,7 @@ export default function UserDetailPage() {
         </div>
         {p.slug && (
           <a href={`https://tokoflow.com/${p.slug}`} target="_blank" rel="noopener" className="ml-auto h-8 px-3 flex items-center gap-1.5 rounded-lg text-xs font-medium bg-card border hover:bg-muted">
-            <ExternalLink className="w-3 h-3" /> Lihat Toko
+            <ExternalLink className="w-3 h-3" /> View store
           </a>
         )}
       </div>
@@ -137,7 +137,7 @@ export default function UserDetailPage() {
         <StatCard label="Produk" value={s.totalProducts} icon={<Package className="w-4 h-4 text-purple-500" />} />
         <StatCard label="Customers" value={s.totalCustomers} icon={<Users className="w-4 h-4 text-orange-500" />} />
         <StatCard label="Kunjungan" value={s.totalPageViews} icon={<Eye className="w-4 h-4 text-cyan-500" />} />
-        <StatCard label="Faktur" value={s.totalInvoices} icon={<FileText className="w-4 h-4 text-amber-500" />} />
+        <StatCard label="Invoices" value={s.totalInvoices} icon={<FileText className="w-4 h-4 text-amber-500" />} />
         <StatCard label="Terkumpul" value={fmt(s.totalCollected)} />
         <StatCard label="Piutang" value={fmt(s.totalRevenue - s.totalCollected)} />
       </div>
@@ -153,10 +153,10 @@ export default function UserDetailPage() {
           <div className="space-y-2">
             {[
               { label: "Daftar akun", done: ob.hasAccount },
-              { label: "Tambah produk", done: ob.hasProducts },
+              { label: "Add product", done: ob.hasProducts },
               { label: "Lengkapi profil", done: ob.hasProfile },
               { label: "Isi kota & kategori", done: ob.hasCityCategory },
-              { label: "Buat pesanan", done: ob.hasOrders },
+              { label: "Create order", done: ob.hasOrders },
               { label: "Send WA", done: ob.hasWaSent },
             ].map((step) => (
               <div key={step.label} className="flex items-center gap-2">
@@ -240,7 +240,7 @@ export default function UserDetailPage() {
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-medium">{fmt(pr.price)}</span>
                   <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${pr.is_available ? "bg-green-50 text-green-600" : "bg-gray-100 text-gray-500"}`}>
-                    {pr.is_available ? "Aktif" : "Nonaktif"}
+                    {pr.is_available ? "Active" : "Inactive"}
                   </span>
                 </div>
               </div>

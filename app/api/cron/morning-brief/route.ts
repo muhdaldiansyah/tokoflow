@@ -30,11 +30,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ processed: 0, sent: 0 });
   }
 
-  // Today in WIB (UTC+7)
+  // Today in MYT (UTC+8)
   const now = new Date();
-  const wibOffset = 7 * 60 * 60 * 1000;
-  const todayWIB = new Date(now.getTime() + wibOffset);
-  const todayStr = todayWIB.toISOString().split("T")[0]; // YYYY-MM-DD
+  const mytOffset = 8 * 60 * 60 * 1000;
+  const todayMYT = new Date(now.getTime() + mytOffset);
+  const todayStr = todayMYT.toISOString().split("T")[0]; // YYYY-MM-DD
 
   let sent = 0;
   const pushMessages: { to: string; title: string; body: string; sound: string; data: Record<string, unknown> }[] = [];
@@ -45,8 +45,8 @@ export async function POST(request: NextRequest) {
       .from("orders")
       .select("id, items, total, paid_amount, customer_name, status")
       .eq("user_id", profile.id)
-      .gte("delivery_date", `${todayStr}T00:00:00+07:00`)
-      .lt("delivery_date", `${todayStr}T23:59:59+07:00`)
+      .gte("delivery_date", `${todayStr}T00:00:00+08:00`)
+      .lt("delivery_date", `${todayStr}T23:59:59+08:00`)
       .not("status", "eq", "cancelled")
       .is("deleted_at", null);
 
@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
     // Cost trend alert: compare this month's avg food cost % vs last month's
     if (orderCount > 0) {
       const thisMonthStart = `${todayStr.slice(0, 7)}-01`;
-      const lastMonthDate = new Date(todayWIB);
+      const lastMonthDate = new Date(todayMYT);
       lastMonthDate.setMonth(lastMonthDate.getMonth() - 1);
       const lastMonthStart = `${lastMonthDate.toISOString().slice(0, 7)}-01`;
       const lastMonthEnd = thisMonthStart;
@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
         .from("orders")
         .select("total, items")
         .eq("user_id", profile.id)
-        .gte("delivery_date", `${thisMonthStart}T00:00:00+07:00`)
+        .gte("delivery_date", `${thisMonthStart}T00:00:00+08:00`)
         .not("status", "eq", "cancelled")
         .is("deleted_at", null);
 
@@ -126,8 +126,8 @@ export async function POST(request: NextRequest) {
         .from("orders")
         .select("total, items")
         .eq("user_id", profile.id)
-        .gte("delivery_date", `${lastMonthStart}T00:00:00+07:00`)
-        .lt("delivery_date", `${lastMonthEnd}T00:00:00+07:00`)
+        .gte("delivery_date", `${lastMonthStart}T00:00:00+08:00`)
+        .lt("delivery_date", `${lastMonthEnd}T00:00:00+08:00`)
         .not("status", "eq", "cancelled")
         .is("deleted_at", null);
 

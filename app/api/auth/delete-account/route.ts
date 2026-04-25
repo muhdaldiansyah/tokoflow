@@ -21,7 +21,7 @@ export async function POST() {
 
   if (error) {
     return NextResponse.json(
-      { error: "Gagal menghapus akun" },
+      { error: "Failed to delete account" },
       { status: 500 }
     );
   }

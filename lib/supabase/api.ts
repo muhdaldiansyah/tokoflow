@@ -15,6 +15,14 @@ export async function getAuthenticatedClient(
 
   if (authHeader?.startsWith("Bearer ")) {
     const token = authHeader.slice(7);
+    // Reject obviously oversized tokens before passing to Supabase. A normal
+    // Supabase JWT is ~1-2 KB; anything beyond 4 KB is a malformed/abuse
+    // attempt. Fall back to cookie auth (and ultimately user: null).
+    if (token.length === 0 || token.length > 4096) {
+      const supabase = await createClient();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return { supabase: supabase as any, user: null };
+    }
     const supabase = createJsClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

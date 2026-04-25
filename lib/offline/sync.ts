@@ -10,7 +10,7 @@ import {
   type PendingOrder,
 } from "./db";
 
-const SYNC_LOCK_KEY = "catatorder_syncing";
+const SYNC_LOCK_KEY = "tokoflow_syncing";
 const SYNC_LOCK_TTL = 30_000; // 30s
 
 interface FetchOptions {

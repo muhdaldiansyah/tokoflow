@@ -3,6 +3,10 @@ export const siteConfig = {
   description:
     "The LHDN-ready order platform for Malaysian SMBs selling on WhatsApp. Share one link, customers self-order, DuitNow collects, and each sale submits to MyInvois in one tap. Built for the RM 1M–5M merchant.",
   url: process.env.NEXT_PUBLIC_APP_URL || "https://tokoflow.com",
+  // Support contact: replace with the real Tokoflow MY WhatsApp once the
+  // company line is provisioned. Used by the marketing footer + /contact page.
+  supportEmail: "hello@tokoflow.com",
+  supportWhatsapp: "60123456789", // placeholder MY number — update before launch
   ogImage: "/images/og.png",
   links: {
     twitter: "https://twitter.com/muhdaldiansyah",

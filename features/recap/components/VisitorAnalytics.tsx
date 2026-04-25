@@ -9,11 +9,11 @@ const REFERRER_LABELS: Record<string, string> = {
   instagram: "Instagram",
   tiktok: "TikTok",
   facebook: "Facebook",
-  langsung: "Langsung",
-  lainnya: "Lainnya",
+  langsung: "Direct",
+  lainnya: "Other",
 };
 
-const DAY_LABELS = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 interface Props {
   period?: "daily" | "monthly";
@@ -46,10 +46,10 @@ export function VisitorAnalytics({ period = "daily", month, year, dateStr }: Pro
 
   const diff = stats.periodCount - stats.previousPeriodCount;
   const diffText = diff > 0
-    ? `↑ ${diff} lebih banyak dari ${stats.previousLabel}`
+    ? `↑ ${diff} more than ${stats.previousLabel}`
     : diff < 0
-      ? `↓ ${Math.abs(diff)} lebih sedikit dari ${stats.previousLabel}`
-      : `Sama seperti ${stats.previousLabel}`;
+      ? `↓ ${Math.abs(diff)} fewer than ${stats.previousLabel}`
+      : `Same as ${stats.previousLabel}`;
 
   const DiffIcon = diff > 0 ? TrendingUp : diff < 0 ? TrendingDown : Minus;
   const diffColor = diff > 0 ? "text-emerald-600" : diff < 0 ? "text-rose-500" : "text-muted-foreground";
@@ -59,7 +59,7 @@ export function VisitorAnalytics({ period = "daily", month, year, dateStr }: Pro
       {/* Main counter */}
       <div className="rounded-xl border bg-card px-4 py-4 shadow-sm text-center space-y-1">
         <p className="text-3xl font-bold text-foreground">{stats.periodCount}</p>
-        <p className="text-sm text-muted-foreground">pengunjung {stats.periodLabel}</p>
+        <p className="text-sm text-muted-foreground">visitors · {stats.periodLabel}</p>
         <div className={`flex items-center justify-center gap-1 text-xs font-medium ${diffColor}`}>
           <DiffIcon className="w-3 h-3" />
           {diffText}
@@ -70,7 +70,7 @@ export function VisitorAnalytics({ period = "daily", month, year, dateStr }: Pro
       {stats.dailyTrend.length > 1 && (
         <div className="rounded-xl border bg-card px-4 py-4 shadow-sm space-y-3">
           <p className="text-xs font-medium text-muted-foreground">
-            {period === "daily" ? "7 Hari Terakhir" : "Per Hari"}
+            {period === "daily" ? "Last 7 days" : "By day"}
           </p>
           <div className="flex items-end justify-between gap-1 h-16">
             {(() => {
@@ -80,7 +80,7 @@ export function VisitorAnalytics({ period = "daily", month, year, dateStr }: Pro
                 for (let i = 6; i >= 0; i--) {
                   const d = new Date(now);
                   d.setDate(d.getDate() - i);
-                  const dateStr = d.toLocaleDateString("en-CA", { timeZone: "Asia/Jakarta" });
+                  const dateStr = d.toLocaleDateString("en-CA", { timeZone: "Asia/Kuala_Lumpur" });
                   const dayLabel = DAY_LABELS[d.getDay()];
                   const count = stats.dailyTrend.find(t => t.date === dateStr)?.count || 0;
                   days.push({ label: dayLabel, count, isToday: i === 0 });
@@ -116,7 +116,7 @@ export function VisitorAnalytics({ period = "daily", month, year, dateStr }: Pro
             })()}
           </div>
           <div className="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t">
-            <span>Total: {stats.periodCount} pengunjung</span>
+            <span>Total: {stats.periodCount} visitors</span>
             <span>All-time: {stats.total.toLocaleString("en-MY")}</span>
           </div>
         </div>
@@ -127,13 +127,13 @@ export function VisitorAnalytics({ period = "daily", month, year, dateStr }: Pro
         <div className="rounded-xl border bg-card px-4 py-4 shadow-sm space-y-2">
           <div className="flex items-center gap-1.5">
             <Globe className="w-3.5 h-3.5 text-muted-foreground" />
-            <p className="text-xs font-medium text-muted-foreground">Dari Mana Pengunjung</p>
+            <p className="text-xs font-medium text-muted-foreground">Visitor sources</p>
           </div>
           <div className="space-y-1.5">
             {stats.byReferrer.map(r => (
               <div key={r.referrer} className="flex items-center justify-between">
                 <span className="text-sm text-foreground">{REFERRER_LABELS[r.referrer] || r.referrer}</span>
-                <span className="text-sm font-medium text-foreground">{r.count} orang</span>
+                <span className="text-sm font-medium text-foreground">{r.count} people</span>
               </div>
             ))}
           </div>
@@ -145,13 +145,13 @@ export function VisitorAnalytics({ period = "daily", month, year, dateStr }: Pro
         <div className="rounded-xl border bg-card px-4 py-4 shadow-sm space-y-2">
           <div className="flex items-center gap-1.5">
             <Clock className="w-3.5 h-3.5 text-muted-foreground" />
-            <p className="text-xs font-medium text-muted-foreground">Jam Ramai</p>
+            <p className="text-xs font-medium text-muted-foreground">Peak hour</p>
           </div>
           <p className="text-sm text-foreground">
-            Paling banyak jam <span className="font-semibold">{String(stats.peakHour.hour).padStart(2, "0")}:00</span> ({stats.peakHour.count} pengunjung)
+            Most visits at <span className="font-semibold">{String(stats.peakHour.hour).padStart(2, "0")}:00</span> ({stats.peakHour.count} visitors)
           </p>
           <p className="text-xs text-muted-foreground">
-            Share link toko di jam ini biar makin rame!
+            Share your store link around this time to drive more traffic.
           </p>
         </div>
       )}
@@ -162,8 +162,8 @@ export function VisitorAnalytics({ period = "daily", month, year, dateStr }: Pro
       {stats.periodCount === 0 && stats.total === 0 && (
         <div className="rounded-xl border bg-card px-4 py-6 shadow-sm text-center space-y-2">
           <Users className="w-8 h-8 text-muted-foreground/30 mx-auto" />
-          <p className="text-sm text-muted-foreground">Belum ada pengunjung</p>
-          <p className="text-xs text-muted-foreground">Share link toko di WA Status atau Instagram bio biar orang mulai datang!</p>
+          <p className="text-sm text-muted-foreground">No visitors yet</p>
+          <p className="text-xs text-muted-foreground">Share your store link on WhatsApp Status or in your Instagram bio to get traffic.</p>
         </div>
       )}
     </div>

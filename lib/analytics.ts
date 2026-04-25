@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/client";
 
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"] as const;
-const UTM_SESSION_KEY = "catatorder_utm";
+const UTM_SESSION_KEY = "tokoflow_utm";
 
 function captureUtmParams(): Record<string, string> | undefined {
   if (typeof window === "undefined") return undefined;

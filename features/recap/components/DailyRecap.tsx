@@ -69,7 +69,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
 
     const profile = await getProfile();
     if (profile) {
-      setBusinessName(profile.business_name || "Toko Saya");
+      setBusinessName(profile.business_name || "My Store");
     }
 
     // Fetch community stats (gated by API — returns null if <3 members)
@@ -90,14 +90,14 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
         return;
       }
 
-      const workbook = await generateExcel(rows, "Rekap Harian", [
+      const workbook = await generateExcel(rows, "Daily Recap", [
         { key: "nomor_pesanan", label: "Order no." },
         { key: "pelanggan", label: "Customer" },
         { key: "telepon", label: "Phone" },
         { key: "item", label: "Item" },
         { key: "total", label: "Total (RM)" },
-        { key: "dibayar", label: "Paid (Rp)" },
-        { key: "sisa", label: "Balance (Rp)" },
+        { key: "dibayar", label: "Paid (RM)" },
+        { key: "sisa", label: "Balance (RM)" },
         { key: "pengiriman", label: "Delivery" },
         { key: "status", label: "Status" },
         { key: "pembayaran", label: "Payment" },
@@ -114,20 +114,20 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
         };
 
         const summaryData: (string | number)[][] = [
-          [`RINGKASAN REKAP — ${selectedDate.toLocaleDateString("en-MY", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}`],
+          [`RECAP SUMMARY — ${selectedDate.toLocaleDateString("en-MY", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}`],
           [],
           ["REVENUE"],
           ["Customers served", recap.totalOrders],
-          ["Hasil Usaha", recap.totalRevenue],
+          ["Revenue", recap.totalRevenue],
           ["Collected", recap.collectedRevenue],
           ["Unpaid", recap.piutang],
           ...(recap.totalDiscount > 0 ? [["Discount given", recap.totalDiscount] as (string | number)[]] : []),
           [],
           ["PAYMENTS"],
-          ...(recap.paidCount > 0 ? [["Paid", `${recap.paidCount} pesanan`, recap.paidRevenue] as (string | number)[]] : []),
-          ...(recap.partialCount > 0 ? [["DP", `${recap.partialCount} pesanan`, recap.partialRevenue] as (string | number)[]] : []),
-          ...(recap.unpaidCount > 0 ? [["Unpaid", `${recap.unpaidCount} pesanan`, recap.unpaidRevenue] as (string | number)[]] : []),
-          ...(recap.cancelledCount > 0 ? [["Cancelled", `${recap.cancelledCount} pesanan`, recap.cancelledValue] as (string | number)[]] : []),
+          ...(recap.paidCount > 0 ? [["Paid", `${recap.paidCount} orders`, recap.paidRevenue] as (string | number)[]] : []),
+          ...(recap.partialCount > 0 ? [["Partial", `${recap.partialCount} orders`, recap.partialRevenue] as (string | number)[]] : []),
+          ...(recap.unpaidCount > 0 ? [["Unpaid", `${recap.unpaidCount} orders`, recap.unpaidRevenue] as (string | number)[]] : []),
+          ...(recap.cancelledCount > 0 ? [["Cancelled", `${recap.cancelledCount} orders`, recap.cancelledValue] as (string | number)[]] : []),
           [],
           ["ORDER SOURCE"],
           ...Object.entries(recap.ordersBySource).map(([src, count]) => [
@@ -140,19 +140,19 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
           ["", "Sold", "Revenue", "Profit", "Margin"],
           ...recap.topItems.slice(0, 10).map((item, i) => [
             `${i + 1}. ${item.name}`,
-            `${item.qty} terjual`,
+            `${item.qty} sold`,
             item.revenue,
             item.profit ?? "-",
             item.margin !== undefined ? `${item.margin}%` : "-",
           ]),
           ...(recap.stockAlerts.length > 0 ? [
             [] as (string | number)[],
-            ["STOK RENDAH"] as (string | number)[],
-            ...recap.stockAlerts.map(s => [s.name, `Sisa ${s.stock}`] as (string | number)[]),
+            ["LOW STOCK"] as (string | number)[],
+            ...recap.stockAlerts.map(s => [s.name, `${s.stock} left`] as (string | number)[]),
           ] : []),
           ...(recap.lateOrders.length > 0 ? [
             [] as (string | number)[],
-            ["PESANAN TERLAMBAT"] as (string | number)[],
+            ["LATE ORDERS"] as (string | number)[],
             ...recap.lateOrders.map(o => [o.customerName, o.orderNumber, o.total] as (string | number)[]),
           ] : []),
         ];
@@ -166,12 +166,12 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
       const now = new Date();
       const time = `${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}`;
       const dayLabel = selectedDate.toLocaleDateString("en-MY", { day: "numeric", month: "short", year: "numeric" }).replace(/ /g, "-");
-      const filename = `Rekap-Harian-${dayLabel}-${time}.xlsx`;
+      const filename = `Daily-Recap-${dayLabel}-${time}.xlsx`;
       downloadBlob(buffer, filename, "xlsx");
       track("recap_exported", { date: dateStr, order_count: rows.length });
       toast.success(`Downloaded: ${filename}`);
     } catch {
-      toast.error("Gagal mengekspor rekap");
+      toast.error("Failed to export recap");
     } finally {
       onExportingChange(false);
     }
@@ -281,9 +281,9 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
           if (critical.length > 0) {
             insights.push({
               icon: "📦",
-              text: `${critical.map((s: { name: string; stock: number }) => `${s.name} (sisa ${s.stock})`).join(", ")} — perlu restok segera.`,
+              text: `${critical.map((s: { name: string; stock: number }) => `${s.name} (${s.stock} left)`).join(", ")} — restock needed.`,
               color: "bg-amber-50 border-amber-100 text-amber-800",
-              actionLabel: "Lihat Produk",
+              actionLabel: "View products",
               actionHref: "/products",
             });
           }
@@ -369,10 +369,10 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
       {/* Kunjungan Toko */}
       <VisitorAnalytics period="daily" dateStr={dateStr} />
 
-      {/* Produk Terlaris */}
+      {/* Top products */}
       {recap && recap.topItems && recap.topItems.length > 0 && (
         <div className="rounded-xl border bg-card px-4 py-4 space-y-2 shadow-sm">
-            <p className="text-xs font-medium text-muted-foreground">Produk Terlaris</p>
+            <p className="text-xs font-medium text-muted-foreground">Top products</p>
             <div className="divide-y">
               {recap.topItems.map((item) => (
                 <div key={item.name} className="flex items-center justify-between py-2">
@@ -419,7 +419,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
               )}
               {recap.unpaidCount > 0 && (
                 <div className="flex justify-between text-sm py-2">
-                  <span className="text-muted-foreground">Belum Bayar ({recap.unpaidCount})</span>
+                  <span className="text-muted-foreground">Unpaid ({recap.unpaidCount})</span>
                   <span className="font-medium text-red-600">RM {recap.unpaidRevenue.toLocaleString("en-MY")}</span>
                 </div>
               )}
@@ -454,7 +454,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
                   <div className="min-w-0">
                     <p className="text-sm text-foreground truncate">{order.customerName}</p>
                     <p className="text-xs text-muted-foreground">
-                      {order.orderNumber} · Kirim {new Date(order.deliveryDate).toLocaleDateString("en-MY", { day: "numeric", month: "short", timeZone: "Asia/Jakarta" })}
+                      {order.orderNumber} · Kirim {new Date(order.deliveryDate).toLocaleDateString("en-MY", { day: "numeric", month: "short", timeZone: "Asia/Kuala_Lumpur" })}
                     </p>
                   </div>
                   <span className="text-sm font-medium text-red-600 shrink-0 ml-3">
@@ -469,7 +469,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
                 onClick={() => setShowAllLate(!showAllLate)}
                 className="w-full text-xs font-medium text-muted-foreground hover:text-foreground pt-1 transition-colors"
               >
-                {showAllLate ? "Sembunyikan" : `View all ${recap.lateOrders.length} pesanan`}
+                {showAllLate ? "Hide" : `View all ${recap.lateOrders.length} orders`}
               </button>
             )}
           </div>

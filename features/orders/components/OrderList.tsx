@@ -29,7 +29,7 @@ import type { Order, OrderStatus } from "../types/order.types";
 import { ORDER_STATUS_LABELS, ORDER_STATUS_FLOW } from "../types/order.types";
 
 const STATUS_CHIPS: { label: string; value: string; type: "status" }[] = [
-  { label: "Baru", value: "new", type: "status" },
+  { label: "New", value: "new", type: "status" },
   { label: "Processing", value: "processed", type: "status" },
   { label: "Shipped", value: "shipped", type: "status" },
   { label: "Completed", value: "done", type: "status" },
@@ -135,7 +135,7 @@ export function OrderList() {
   useEffect(() => {
     const slugClaimed = searchParamsHook.get("slug_claimed");
     if (slugClaimed) {
-      toast.success(`Link tokoflow.com/${slugClaimed} sudah aktif!`, { duration: 5000 });
+      toast.success(`Link tokoflow.com/${slugClaimed} is now active!`, { duration: 5000 });
       window.history.replaceState({}, "", "/orders");
     }
   }, [searchParamsHook]);
@@ -258,9 +258,9 @@ export function OrderList() {
             const via = payload.new.source === "whatsapp" ? " via WA" : "";
             const messages = [
               `New order from ${name}${via}! 🔔`,
-              `${name} baru saja pesan${via}! ✨`,
+              `${name} just ordered${via}! ✨`,
               `Cha-ching! Order received from ${name}${via} 🎉`,
-              `Toko laris! ${name} pesan${via} 🔥`,
+              `Sales rolling in! ${name} placed an order${via} 🔥`,
             ];
             const msg = messages[Math.floor(Math.random() * messages.length)];
             const orderId = payload.new.id;
@@ -293,7 +293,7 @@ export function OrderList() {
           // Notify when customer claims payment (payment_claimed_at goes from null to a value)
           if (!payload.old.payment_claimed_at && payload.new.payment_claimed_at) {
             const name = payload.new.customer_name || "Customer";
-            toast.info(`${name} bilang sudah bayar`, {
+            toast.info(`${name} reports payment`, {
               description: `${payload.new.order_number} — Cek pembayaran lalu tandai lunas`,
               duration: 10000,
             });
@@ -417,7 +417,7 @@ export function OrderList() {
       exitSelectMode();
       loadOrders();
     } else {
-      toast.error("Gagal mengubah pembayaran");
+      toast.error("Failed to update payment");
     }
   }
 
@@ -429,11 +429,11 @@ export function OrderList() {
     setShowStatusPicker(false);
     if (count > 0) {
       hapticAction();
-      toast.success(`${count} orders diubah ke ${ORDER_STATUS_LABELS[status]}`);
+      toast.success(`${count} orders updated to ${ORDER_STATUS_LABELS[status]}`);
       exitSelectMode();
       loadOrders();
     } else {
-      toast.error("Gagal mengubah status");
+      toast.error("Failed to update status");
     }
   }
 
@@ -482,7 +482,7 @@ export function OrderList() {
   function handleHeroAllDone(allDone: boolean) {
     if (prevAllDone === false && allDone && !beresShownThisSession.current) {
       // Check localStorage for once-per-day + session guard for undo/redo cycles
-      const todayKey = `catatorder_beres_${new Date().toISOString().slice(0, 10)}`;
+      const todayKey = `tokoflow_beres_${new Date().toISOString().slice(0, 10)}`;
       if (!localStorage.getItem(todayKey)) {
         setShowBeres(true);
         beresShownThisSession.current = true;
@@ -513,15 +513,15 @@ export function OrderList() {
       if (!allOrders.length) { toast.info("No orders"); return; }
 
       const XLSX = await import("xlsx");
-      const STATUS_MAP: Record<string, string> = { new: "Baru", menunggu: "Pending", processed: "Processing", shipped: "Shipped", done: "Completed", cancelled: "Cancelled" };
-      const PAYMENT_MAP: Record<string, string> = { paid: "Paid", partial: "DP", unpaid: "Unpaid" };
+      const STATUS_MAP: Record<string, string> = { new: "New", menunggu: "Pending", processed: "Processing", shipped: "Shipped", done: "Completed", cancelled: "Cancelled" };
+      const PAYMENT_MAP: Record<string, string> = { paid: "Paid", partial: "Partial", unpaid: "Unpaid" };
       const SOURCE_MAP: Record<string, string> = { manual: "Manual", order_link: "Store link", whatsapp: "WhatsApp" };
 
       const rows = allOrders.map((o) => ({
         "Order no.": o.order_number,
         "Date": new Date(o.created_at).toLocaleDateString("en-MY", { day: "numeric", month: "short", year: "numeric" }),
         "Customer": o.customer_name || "-",
-        "Telepon": o.customer_phone || "-",
+        "Phone": o.customer_phone || "-",
         "Item": o.items.map((it) => `${it.name} x${it.qty}`).join(", "),
         "Subtotal": o.subtotal,
         "Discount": o.discount || 0,
@@ -529,13 +529,13 @@ export function OrderList() {
         "Paid": o.paid_amount || 0,
         "Balance": Math.max(0, o.total - (o.paid_amount || 0)),
         "Status": STATUS_MAP[o.status] || o.status,
-        "Pembayaran": PAYMENT_MAP[o.payment_status] || o.payment_status,
-        "Sumber": SOURCE_MAP[o.source] || o.source,
-        "Order": o.is_preorder ? "Yes" : "-",
-        "Langganan": o.is_langganan ? "Yes" : "-",
-        "Langsung": o.is_dine_in ? "Yes" : "-",
-        "Meja": o.table_number || "-",
-        "Tgl Kirim": o.delivery_date ? new Date(o.delivery_date).toLocaleDateString("en-MY", { day: "numeric", month: "short", year: "numeric" }) : "-",
+        "Payment": PAYMENT_MAP[o.payment_status] || o.payment_status,
+        "Source": SOURCE_MAP[o.source] || o.source,
+        "Pre-order": o.is_preorder ? "Yes" : "-",
+        "Subscription": o.is_langganan ? "Yes" : "-",
+        "Walk-in": o.is_dine_in ? "Yes" : "-",
+        "Table": o.table_number || "-",
+        "Delivery date": o.delivery_date ? new Date(o.delivery_date).toLocaleDateString("en-MY", { day: "numeric", month: "short", year: "numeric" }) : "-",
         "Note": o.notes || "-",
       }));
 
@@ -555,7 +555,7 @@ export function OrderList() {
       toast.success("Orders downloaded");
     } catch (err) {
       console.error("Export error:", err);
-      toast.error("Gagal mengunduh data");
+      toast.error("Failed to download data");
     } finally {
       setIsExporting(false);
     }
@@ -646,7 +646,7 @@ export function OrderList() {
                 <span className="text-muted-foreground/40">·</span>
               )}
               {todaySummary.unpaidCount > 0 && (
-                <span className="text-xs font-medium text-amber-600">{todaySummary.unpaidCount} belum bayar</span>
+                <span className="text-xs font-medium text-amber-600">{todaySummary.unpaidCount} unpaid</span>
               )}
             </div>
           )}
@@ -707,7 +707,7 @@ export function OrderList() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search nama, nomor, atau nominal transfer..."
+            placeholder="Search name, number, or transfer amount..."
             className="w-full h-11 pl-10 pr-4 bg-card border rounded-lg shadow-sm text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary/30 focus:bg-card transition-colors placeholder:text-muted-foreground"
           />
         </div>
@@ -746,7 +746,7 @@ export function OrderList() {
                 >
                   <CalendarDays className="w-3 h-3" />
                   {dateFilter
-                    ? `${dateMode === "delivery" ? "Kirim" : "Pesan"}: ${DATE_CHIPS.find(c => c.value === dateFilter)?.label
+                    ? `${dateMode === "delivery" ? "Delivery" : "Order"}: ${DATE_CHIPS.find(c => c.value === dateFilter)?.label
                       || (dateFilter.startsWith("custom:")
                         ? new Date(dateFilter.slice(7) + "T00:00").toLocaleDateString("en-MY", { day: "numeric", month: "short" })
                         : "")}`
@@ -780,7 +780,7 @@ export function OrderList() {
                   onClick={() => setDineInFilter(!dineInFilter)}
                   className={`${chipBase} ${dineInFilter ? "bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100" : chipInactive}`}
                 >
-                  Langsung
+                  Walk-in
                 </button>
 
               </div>
@@ -816,21 +816,21 @@ export function OrderList() {
                 const selectedObj = selectedStr ? new Date(selectedStr + "T00:00") : null;
                 return (
                   <div ref={dateCalendarRef} className="absolute left-0 top-full mt-1 z-50 bg-card border rounded-xl shadow-lg p-3 w-72">
-                    {/* Mode toggle: Pesan | Kirim */}
+                    {/* Mode toggle: Order | Delivery */}
                     <div className="flex bg-muted rounded-lg p-0.5 mb-3">
                       <button
                         type="button"
                         onClick={() => setDateMode("created")}
                         className={`flex-1 h-7 text-[11px] font-medium rounded-md transition-colors ${dateMode === "created" ? "bg-card shadow-sm text-foreground" : "text-muted-foreground"}`}
                       >
-                        Pesan
+                        Order
                       </button>
                       <button
                         type="button"
                         onClick={() => setDateMode("delivery")}
                         className={`flex-1 h-7 text-[11px] font-medium rounded-md transition-colors ${dateMode === "delivery" ? "bg-card shadow-sm text-foreground" : "text-muted-foreground"}`}
                       >
-                        Kirim
+                        Delivery
                       </button>
                     </div>
                     {/* Quick presets */}
@@ -1029,7 +1029,7 @@ export function OrderList() {
               disabled={isLoadingMore}
               className="w-full h-11 mt-2 text-sm font-medium text-muted-foreground rounded-lg border hover:bg-muted/50 disabled:opacity-50 transition-colors"
             >
-              {isLoadingMore ? "Loading..." : "Muat lebih banyak"}
+              {isLoadingMore ? "Loading..." : "Load more"}
             </button>
           )}
         </div>

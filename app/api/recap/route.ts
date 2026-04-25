@@ -13,10 +13,10 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const now = new Date();
-    const wibNow = new Date(now.getTime() + 7 * 60 * 60 * 1000);
-    const targetDate = searchParams.get("date") || wibNow.toISOString().split("T")[0];
-    const startOfDay = `${targetDate}T00:00:00.000+07:00`;
-    const endOfDay = `${targetDate}T23:59:59.999+07:00`;
+    const mytNow = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+    const targetDate = searchParams.get("date") || mytNow.toISOString().split("T")[0];
+    const startOfDay = `${targetDate}T00:00:00.000+08:00`;
+    const endOfDay = `${targetDate}T23:59:59.999+08:00`;
 
     // Main query: orders for the date
     const { data: orders, error } = await supabase
@@ -114,14 +114,14 @@ export async function GET(request: NextRequest) {
       .slice(0, 10);
 
     // Yesterday for growth comparison
-    const yesterday = new Date(`${targetDate}T12:00:00+07:00`);
+    const yesterday = new Date(`${targetDate}T12:00:00+08:00`);
     yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, "0")}-${String(yesterday.getDate()).padStart(2, "0")}`;
-    const yesterdayStart = `${yesterdayStr}T00:00:00.000+07:00`;
-    const yesterdayEnd = `${yesterdayStr}T23:59:59.999+07:00`;
+    const yesterdayStart = `${yesterdayStr}T00:00:00.000+08:00`;
+    const yesterdayEnd = `${yesterdayStr}T23:59:59.999+08:00`;
 
-    const nowWib = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Jakarta" });
-    const todayStartIso = `${nowWib}T00:00:00.000+07:00`;
+    const nowMyt = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kuala_Lumpur" });
+    const todayStartIso = `${nowMyt}T00:00:00.000+08:00`;
 
     // Parallel: new customers, yesterday, stock alerts, late orders, profile
     const [
@@ -204,10 +204,10 @@ export async function POST(request: NextRequest) {
     }
 
     const now = new Date();
-    const wibNow = new Date(now.getTime() + 7 * 60 * 60 * 1000);
-    const today = wibNow.toISOString().split("T")[0];
-    const startOfDay = `${today}T00:00:00.000+07:00`;
-    const endOfDay = `${today}T23:59:59.999+07:00`;
+    const mytNow = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+    const today = mytNow.toISOString().split("T")[0];
+    const startOfDay = `${today}T00:00:00.000+08:00`;
+    const endOfDay = `${today}T23:59:59.999+08:00`;
 
     const { data: orders } = await supabase
       .from("orders").select("*").eq("user_id", user.id)

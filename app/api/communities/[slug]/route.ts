@@ -94,7 +94,7 @@ export async function PUT(
       .single();
 
     if (error || !data) {
-      return NextResponse.json({ error: "Gagal update atau bukan organizer" }, { status: 403 });
+      return NextResponse.json({ error: "Update failed or you are not the organizer" }, { status: 403 });
     }
 
     return NextResponse.json(data);

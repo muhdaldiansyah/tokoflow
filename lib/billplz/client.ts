@@ -73,8 +73,8 @@ export async function getBill(id: string): Promise<BillplzBill> {
 }
 
 // Stable merchant-side reference for pairing with our payment_orders row.
-// Format: PAY-<base36 time>-<random6>. Mirrors the Midtrans generateOrderId shape
-// so webhook/reconciliation logic can stay gateway-agnostic.
+// Format: PAY-<base36 time>-<random6>. Webhook/reconciliation logic uses this
+// gateway-agnostic shape so a future payment-gateway swap stays mechanical.
 export function generateReference(): string {
   const timestamp = Date.now().toString(36);
   const random = Math.random().toString(36).substring(2, 8);

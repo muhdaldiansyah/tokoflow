@@ -108,7 +108,7 @@ export function WAPreviewSheet({
 
         {/* Edit + Actions */}
         <div className="px-4 pb-6 pt-3 border-t border-border space-y-3 shrink-0">
-          <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">Edit Pesan</p>
+          <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">Edit message</p>
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}

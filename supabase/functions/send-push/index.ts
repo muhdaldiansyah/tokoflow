@@ -18,11 +18,11 @@ Deno.serve(async (req) => {
     // Determine notification content
     let title = "";
     let body = "";
-    let userId = record.user_id as string;
-    let orderId = record.id as string;
+    const userId = record.user_id as string;
+    const orderId = record.id as string;
 
     if (type === "INSERT") {
-      // New order from Link Toko or WA
+      // New order from store link or WhatsApp
       const source = record.source as string;
       if (source === "manual") {
         return new Response(JSON.stringify({ skipped: "manual order" }), { status: 200 });
@@ -64,12 +64,12 @@ Deno.serve(async (req) => {
     }
 
     // Quiet hours check: suppress sound during rest mode (order still recorded)
-    const qStart = profile.quiet_hours_start || "21:00";
-    const qEnd = profile.quiet_hours_end || "05:00";
-    const nowWIB = new Date(Date.now() + 7 * 60 * 60 * 1000);
-    const hhmm = `${String(nowWIB.getUTCHours()).padStart(2, "0")}:${String(nowWIB.getUTCMinutes()).padStart(2, "0")}`;
+    const qStart = profile.quiet_hours_start || "22:00";
+    const qEnd = profile.quiet_hours_end || "06:00";
+    const nowMYT = new Date(Date.now() + 8 * 60 * 60 * 1000);
+    const hhmm = `${String(nowMYT.getUTCHours()).padStart(2, "0")}:${String(nowMYT.getUTCMinutes()).padStart(2, "0")}`;
     const inQuietHours = qStart > qEnd
-      ? (hhmm >= qStart || hhmm < qEnd)  // overnight: 21:00-05:00
+      ? (hhmm >= qStart || hhmm < qEnd)  // overnight: 22:00-06:00
       : (hhmm >= qStart && hhmm < qEnd); // same-day: 13:00-15:00
 
     if (inQuietHours) {

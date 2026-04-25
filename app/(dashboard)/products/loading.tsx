@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function ProdukLoading() {
+export default function ProductsLoading() {
   return (
     <div className="max-w-2xl mx-auto">
       {/* Header */}

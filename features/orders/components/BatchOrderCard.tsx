@@ -58,7 +58,7 @@ export function BatchOrderCard({
               : `Order ${index + 1}`}
           </p>
           {hasCustomer && !customerName && (
-            <p className="text-xs text-muted-foreground">Tanpa nama</p>
+            <p className="text-xs text-muted-foreground">Unnamed</p>
           )}
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
@@ -85,7 +85,7 @@ export function BatchOrderCard({
                   : "text-muted-foreground hover:text-foreground hover:bg-muted"
               }`}
             >
-              {confirmRemove ? "Yakin hapus?" : <X className="w-4 h-4" />}
+              {confirmRemove ? "Sure?" : <X className="w-4 h-4" />}
             </button>
           )}
         </div>

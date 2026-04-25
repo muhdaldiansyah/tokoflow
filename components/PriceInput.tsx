@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Price input with auto thousand separator (Indonesian format: 25.000)
+ * Price input with auto thousand separator (en-MY format: 25,000).
  * Stores raw number, displays formatted.
  */
 
@@ -23,7 +23,7 @@ function parsePrice(formatted: string): string {
   return formatted.replace(/\D/g, "");
 }
 
-export function PriceInput({ value, onChange, placeholder = "25.000" }: PriceInputProps) {
+export function PriceInput({ value, onChange, placeholder = "25,000" }: PriceInputProps) {
   return (
     <input
       type="text"

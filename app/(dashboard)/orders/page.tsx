@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { OrderList } from "@/features/orders/components/OrderList";
 
-export default function PesananPage() {
+export default function OrdersPage() {
   return (
     <Suspense>
       <OrderList />

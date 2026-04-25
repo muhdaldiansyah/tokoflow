@@ -30,8 +30,8 @@ interface AnalyticsData {
 }
 
 function formatDuration(hours: number): string {
-  if (hours < 1) return `${Math.round(hours * 60)} menit`;
-  if (hours < 24) return `${Math.round(hours * 10) / 10} jam`;
+  if (hours < 1) return `${Math.round(hours * 60)} min`;
+  if (hours < 24) return `${Math.round(hours * 10) / 10} h`;
   return `${Math.round((hours / 24) * 10) / 10} hari`;
 }
 
@@ -47,10 +47,10 @@ function formatDateTime(d: string) {
 }
 
 const RANGE_OPTIONS = [
-  { label: "7 hari", value: 7 },
-  { label: "14 hari", value: 14 },
-  { label: "30 hari", value: 30 },
-  { label: "90 hari", value: 90 },
+  { label: "7 days", value: 7 },
+  { label: "14 days", value: 14 },
+  { label: "30 days", value: 30 },
+  { label: "90 days", value: 90 },
 ];
 
 export default function AdminAnalyticsPage() {
@@ -178,7 +178,7 @@ export default function AdminAnalyticsPage() {
         </p>
         <div className="rounded-xl border border-border bg-card shadow-sm p-4">
           {data.time_to_first_order.total_users === 0 ? (
-            <p className="text-sm text-muted-foreground">None yet data</p>
+            <p className="text-sm text-muted-foreground">No data yet</p>
           ) : (
             <div className="grid grid-cols-3 gap-4">
               <div>
@@ -188,7 +188,7 @@ export default function AdminAnalyticsPage() {
                 </p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground mb-1">Rata-rata</p>
+                <p className="text-xs text-muted-foreground mb-1">Average</p>
                 <p className="text-lg font-semibold text-foreground">
                   {formatDuration(data.time_to_first_order.average_hours)}
                 </p>
@@ -204,7 +204,7 @@ export default function AdminAnalyticsPage() {
         </div>
       </section>
 
-      {/* Daily Orders (14 hari) */}
+      {/* Daily Orders (14 days) */}
       <section>
         <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider mb-3">
           Daily orders (14 days)
@@ -241,7 +241,7 @@ export default function AdminAnalyticsPage() {
         </p>
         <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
           {data.utm.length === 0 ? (
-            <p className="p-4 text-sm text-muted-foreground">None yet data</p>
+            <p className="p-4 text-sm text-muted-foreground">No data yet</p>
           ) : (
             <table className="w-full text-sm">
               <thead>
@@ -308,7 +308,7 @@ export default function AdminAnalyticsPage() {
                       colSpan={3}
                       className="px-4 py-8 text-center text-muted-foreground"
                     >
-                      Belum ada event
+                      No events yet
                     </td>
                   </tr>
                 ) : (

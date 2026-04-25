@@ -63,4 +63,4 @@ export const USER_ROLES = {
 
 export const REFERRAL_COMMISSION_RATE = 0.30;
 export const REFERRAL_DURATION_MONTHS = 6;
-export const REFERRAL_SIGNUP_BONUS = 5000; // Rp5.000 credited when referred user makes first order
+export const REFERRAL_SIGNUP_BONUS = 2; // RM 2 credited to the referrer when a referred user makes their first order (matches marketing copy on /mitra)

@@ -543,7 +543,7 @@ function SearchableSelect({ label, placeholder, options, value, onChange, disabl
                 {opt.label}
               </button>
             )) : (
-              <p className="px-3 py-3 text-sm text-muted-foreground">Tidak ditemukan</p>
+              <p className="px-3 py-3 text-sm text-muted-foreground">No matches</p>
             )}
           </div>
         </div>

@@ -101,7 +101,7 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
       track("order_marked_paid", { order_id: order.id, amount: remaining });
       toast.success("Order marked as paid");
     } else {
-      toast.error("Gagal mengubah pembayaran");
+      toast.error("Failed to update payment");
     }
     setIsQuickUpdating(false);
   }
@@ -116,7 +116,7 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
       track("order_status_changed", { order_id: order.id, from: order.status, to: nextStatus });
       toast.success(`Status diubah ke ${ORDER_STATUS_LABELS[nextStatus]}`);
     } else {
-      toast.error("Gagal mengubah status");
+      toast.error("Failed to update status");
     }
     setIsQuickUpdating(false);
   }
@@ -449,7 +449,7 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
               </h2>
               <p className="text-sm text-muted-foreground mb-5">
                 {confirmAction === "markpaid"
-                  ? `Pembayaran RM ${((order?.total || 0) - (order?.paid_amount || 0)).toLocaleString("en-MY")} akan dicatat sebagai lunas.`
+                  ? `Pembayaran RM ${((order?.total || 0) - (order?.paid_amount || 0)).toLocaleString("en-MY")} will be recorded as paid.`
                   : `Order status will change to "${nextStatus ? ORDER_STATUS_LABELS[nextStatus] : ""}".`}
               </p>
               <div className="flex gap-3 w-full">

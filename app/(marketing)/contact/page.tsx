@@ -8,6 +8,7 @@ import {
   Clock,
   HelpCircle,
 } from "lucide-react";
+import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
   title: "Contact Tokoflow — Support for Malaysian SMBs",
@@ -98,7 +99,7 @@ export default function ContactPage() {
                     <span>Reply within 24 hours</span>
                   </div>
                   <a
-                    href="https://wa.me/60123456789?text=Hi%20Tokoflow%2C%20I%20have%20a%20question"
+                    href={`https://wa.me/${siteConfig.supportWhatsapp}?text=Hi%20Tokoflow%2C%20I%20have%20a%20question`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-3 inline-flex items-center justify-center rounded-lg bg-[#05A660] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#048C51]"

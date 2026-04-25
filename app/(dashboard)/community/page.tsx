@@ -19,7 +19,7 @@ interface Community {
   role: string;
 }
 
-export default function KomunitasPage() {
+export default function CommunityPage() {
   const router = useRouter();
   const [communities, setCommunities] = useState<Community[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -59,7 +59,7 @@ export default function KomunitasPage() {
   }, []);
 
   async function handlePostAnnouncement() {
-    if (!announcementTitle.trim()) { toast.error("Judul diperlukan"); return; }
+    if (!announcementTitle.trim()) { toast.error("Title required"); return; }
     setIsPosting(true);
     try {
       const res = await fetch("/api/communities/announcements", {
@@ -72,24 +72,24 @@ export default function KomunitasPage() {
         setAnnouncements(prev => [{ ...data.announcement, authorName: "You", createdAt: new Date().toISOString() }, ...prev]);
         setAnnouncementTitle("");
         setAnnouncementBody("");
-        toast.success("Pengumuman terkirim");
+        toast.success("Announcement sent");
         track("announcement_posted", { type: announcementType });
       } else {
-        toast.error("Gagal kirim pengumuman");
+        toast.error("Failed to send announcement");
       }
-    } catch { toast.error("Gagal kirim"); }
+    } catch { toast.error("Failed to send"); }
     setIsPosting(false);
   }
 
   function handleCopyInvite(community: Community) {
     const link = `https://tokoflow.com/join/${community.invite_code}`;
     navigator.clipboard.writeText(link);
-    toast.success("Link undangan disalin!");
+    toast.success("Invitation link copied!");
   }
 
   function handleShareWA(community: Community) {
     const link = `https://tokoflow.com/join/${community.invite_code}`;
-    const text = `Hai! Gabung di ${community.name} — komunitas UMKM yang pakai Tokoflow.\n\nCustomers order through a link, pesanan and everything lands in my dashboard.\n\n${link}\n\n_From selling to a real business_`;
+    const text = `Hi! Join ${community.name} — an SMB community on Tokoflow.\n\nCustomers order through a link and everything lands in my dashboard.\n\n${link}\n\n_From selling to a real business_`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
     track("community_invite_wa", { community: community.name });
   }
@@ -108,14 +108,14 @@ export default function KomunitasPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-lg font-semibold text-foreground">Community</h1>
-          <p className="text-sm text-muted-foreground">Ajak UMKM lain bergabung di satu komunitas</p>
+          <p className="text-sm text-muted-foreground">Bring other SMBs into one community</p>
         </div>
         <Link
           href="/community/new"
           className="h-9 px-3 bg-warm-green text-white rounded-lg text-sm font-medium hover:bg-warm-green/90 transition-colors flex items-center gap-1.5"
         >
           <Plus className="w-4 h-4" />
-          Buat Komunitas
+          Create community
         </Link>
       </div>
 
@@ -123,9 +123,9 @@ export default function KomunitasPage() {
       {communities.length === 0 ? (
         <div className="text-center py-12 rounded-xl border bg-card shadow-sm">
           <Users className="w-12 h-12 mx-auto mb-4 text-muted-foreground/40" />
-          <p className="font-medium text-foreground">None yet komunitas</p>
+          <p className="font-medium text-foreground">No communities yet</p>
           <p className="text-sm text-muted-foreground mt-1">
-            Buat komunitas untuk mengajak UMKM lain bergabung
+            Create a community to invite other SMBs
           </p>
         </div>
       ) : (
@@ -137,7 +137,7 @@ export default function KomunitasPage() {
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold text-foreground">{c.name}</h3>
                     {c.role === "organizer" && (
-                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#E8F6F0] text-[#05A660]">Koordinator</span>
+                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#E8F6F0] text-[#05A660]">Organizer</span>
                     )}
                   </div>
                   {c.description && (
@@ -155,12 +155,12 @@ export default function KomunitasPage() {
               <div className="flex items-center gap-4 text-xs text-muted-foreground">
                 <span className="inline-flex items-center gap-1">
                   <Users className="w-3.5 h-3.5" />
-                  {c.member_count} anggota
+                  {c.member_count} members
                 </span>
                 {c.total_orders > 0 && (
                   <span className="inline-flex items-center gap-1">
                     <ShoppingBag className="w-3.5 h-3.5" />
-                    {c.total_orders} pesanan
+                    {c.total_orders} orders
                   </span>
                 )}
               </div>
@@ -178,7 +178,7 @@ export default function KomunitasPage() {
                   className="flex-1 h-9 rounded-lg bg-[#25D366] text-white text-xs font-medium hover:bg-[#25D366]/90 transition-colors flex items-center justify-center gap-1.5"
                 >
                   <Share2 className="w-3.5 h-3.5" />
-                  Undang via WA
+                  Invite via WhatsApp
                 </button>
               </div>
             </div>
@@ -217,7 +217,7 @@ export default function KomunitasPage() {
             className="w-full h-10 px-3 bg-card border rounded-lg text-sm focus:ring-2 focus:ring-[#1a4d35]/20 focus:border-[#1a4d35]"
           />
           <textarea
-            placeholder="Detail (opsional)"
+            placeholder="Details (optional)"
             value={announcementBody}
             onChange={(e) => setAnnouncementBody(e.target.value)}
             rows={2}
@@ -228,7 +228,7 @@ export default function KomunitasPage() {
             disabled={isPosting || !announcementTitle.trim()}
             className="w-full h-10 rounded-lg bg-[#1a4d35] text-white text-sm font-medium hover:bg-[#1a4d35]/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
           >
-            {isPosting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Kirim ke Semua Member"}
+            {isPosting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Send to all members"}
           </button>
         </div>
       )}
@@ -238,7 +238,7 @@ export default function KomunitasPage() {
         <div className="space-y-2">
           <h2 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
             <Megaphone className="w-3.5 h-3.5" />
-            Pengumuman Komunitas
+            Community announcements
           </h2>
           {announcements.slice(0, 5).map(a => (
             <div key={a.id} className="rounded-lg border bg-card px-3 py-2.5 shadow-sm">

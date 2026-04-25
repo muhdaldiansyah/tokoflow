@@ -42,7 +42,7 @@ const stageConfig: Record<
   { label: string; color: string; icon: React.ReactNode }
 > = {
   baru_daftar: {
-    label: "Baru Daftar",
+    label: "New signup",
     color: "bg-gray-100 text-gray-600",
     icon: <UserPlus className="h-3.5 w-3.5" />,
   },
@@ -52,7 +52,7 @@ const stageConfig: Record<
     icon: <UserCheck className="h-3.5 w-3.5" />,
   },
   ada_produk: {
-    label: "Ada Produk",
+    label: "Has products",
     color: "bg-purple-100 text-purple-700",
     icon: <Package className="h-3.5 w-3.5" />,
   },
@@ -62,7 +62,7 @@ const stageConfig: Record<
     icon: <ShoppingBag className="h-3.5 w-3.5" />,
   },
   aktif: {
-    label: "Aktif",
+    label: "Active",
     color: "bg-green-100 text-green-700",
     icon: <Zap className="h-3.5 w-3.5" />,
   },
@@ -124,7 +124,7 @@ export default function AdminRegistrationsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-foreground">Registrasi</h1>
+        <h1 className="text-xl font-semibold text-foreground">Signups</h1>
         <select
           value={days}
           onChange={(e) => setDays(Number(e.target.value))}
@@ -132,7 +132,7 @@ export default function AdminRegistrationsPage() {
         >
           {dayOptions.map((d) => (
             <option key={d} value={d}>
-              {d} hari terakhir
+              Last {d} days
             </option>
           ))}
         </select>
@@ -166,7 +166,7 @@ export default function AdminRegistrationsPage() {
       {/* Provider breakdown */}
       {summary && (
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
-          <span className="font-medium">Metode daftar:</span>
+          <span className="font-medium">Signup method:</span>
           {Object.entries(summary.providerCounts).map(([provider, count]) => (
             <span key={provider}>
               {providerLabels[provider] || provider}:{" "}
@@ -181,7 +181,7 @@ export default function AdminRegistrationsPage() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <input
           type="text"
-          placeholder="Search nama, email, kota, kategori..."
+          placeholder="Search name, email, city, category..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="h-11 w-full pl-10 pr-3 bg-card border border-border rounded-lg shadow-sm text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary/30 focus:bg-card transition-colors placeholder:text-muted-foreground"
@@ -190,7 +190,7 @@ export default function AdminRegistrationsPage() {
 
       {/* Count */}
       <p className="text-xs text-muted-foreground">
-        Menampilkan {filtered.length} dari {registrations.length} pendaftar
+        Showing {filtered.length} of {registrations.length} signups
       </p>
 
       {/* Desktop table */}
@@ -283,8 +283,8 @@ export default function AdminRegistrationsPage() {
                   className="px-4 py-8 text-center text-muted-foreground"
                 >
                   {search || stageFilter !== "all"
-                    ? "Tidak ditemukan"
-                    : "Belum ada pendaftar"}
+                    ? "No matches"
+                    : "No signups yet"}
                 </td>
               </tr>
             )}
@@ -348,8 +348,8 @@ export default function AdminRegistrationsPage() {
         {filtered.length === 0 && (
           <p className="text-center py-8 text-sm text-muted-foreground">
             {search || stageFilter !== "all"
-              ? "Tidak ditemukan"
-              : "Belum ada pendaftar"}
+              ? "No matches"
+              : "No signups yet"}
           </p>
         )}
       </div>

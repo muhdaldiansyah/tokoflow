@@ -5,7 +5,10 @@ interface ProductRef {
   price: number;
 }
 
+// Malay/Manglish + English number words. BM speakers may use "lapan" while
+// BI speakers say "delapan" — both work.
 const NUMBER_WORDS: Record<string, number> = {
+  // Malay / Bahasa
   satu: 1,
   dua: 2,
   tiga: 3,
@@ -13,13 +16,25 @@ const NUMBER_WORDS: Record<string, number> = {
   lima: 5,
   enam: 6,
   tujuh: 7,
+  lapan: 8,
   delapan: 8,
   sembilan: 9,
   sepuluh: 10,
   se: 1,
+  // English
+  one: 1,
+  two: 2,
+  three: 3,
+  four: 4,
+  five: 5,
+  six: 6,
+  seven: 7,
+  eight: 8,
+  nine: 9,
+  ten: 10,
 };
 
-const UNIT_WORDS = /\b(porsi|buah|pcs|biji|x|kali|cup|gelas|mangkok|bungkus)\b/gi;
+const UNIT_WORDS = /\b(porsi|buah|pcs|biji|biji|x|kali|cup|gelas|mangkok|mangkuk|bungkus|set|platter|pinggan|piece|pieces|pax)\b/gi;
 
 // Split transcript into individual item segments
 function splitSegments(transcript: string): string[] {
@@ -27,7 +42,7 @@ function splitSegments(transcript: string): string[] {
   const text = transcript.trim().replace(/\s+/g, " ");
   // Split by delimiters
   return text
-    .split(/[,;]+|\b(?:sama|terus|tambah|dan|plus)\b/i)
+    .split(/[,;]+|\b(?:sama|terus|tambah|dan|plus|and|with|also)\b/i)
     .map((s) => s.trim())
     .filter((s) => s.length > 0);
 }
@@ -35,7 +50,7 @@ function splitSegments(transcript: string): string[] {
 // Extract qty from a segment, return [name, qty]
 function extractQtyAndName(segment: string): [string, number] {
   // Remove unit words
-  let cleaned = segment.replace(UNIT_WORDS, "").replace(/\s+/g, " ").trim();
+  const cleaned = segment.replace(UNIT_WORDS, "").replace(/\s+/g, " ").trim();
 
   // Try qty at start: "dua nasi goreng" or "2 nasi goreng"
   const startDigit = cleaned.match(/^(\d+)\s+(.+)/);

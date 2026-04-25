@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthenticatedClient } from "@/lib/supabase/api";
-import { invoiceToMyInvoisDocument } from "@/features/invoices/services/myinvois-adapter";
+import {
+  invoiceToMyInvoisDocument,
+  requiresIndividualEInvoice,
+} from "@/features/invoices/services/myinvois-adapter";
 import { submitDocuments, getDocumentStatus } from "@/lib/myinvois";
 import type { Invoice } from "@/features/invoices/types/invoice.types";
 
@@ -68,8 +71,32 @@ export async function POST(
     );
   }
 
-  // Idempotency: if already submitted and accepted, return the existing status.
-  if (invoice.myinvois_uuid && invoice.myinvois_status === "valid") {
+  // RM 10K rule (LHDN, mandatory 1 Jan 2026): B2C invoices >= RM 10,000 must
+  // be issued as individual e-invoices with a buyer TIN. Tokoflow only emits
+  // individual submissions (no consolidation), so the practical enforcement
+  // is: above the threshold, refuse to submit without buyer TIN.
+  const isHighValueB2C = requiresIndividualEInvoice(invoice as Invoice);
+  if (isHighValueB2C && !invoice.buyer_tin) {
+    return NextResponse.json(
+      {
+        error:
+          "Buyer TIN is required for invoices RM 10,000 and above (LHDN rule, effective 1 Jan 2026). Capture the buyer's TIN before submitting.",
+      },
+      { status: 400 },
+    );
+  }
+
+  // Idempotency: if a UUID exists and the invoice isn't in a terminal-fail
+  // state (rejected/invalid/cancelled), return the existing record. This
+  // covers both "valid" (accepted) and "submitted" (still validating) — a
+  // user double-clicking submit while polling must not re-POST to LHDN and
+  // create a duplicate UUID.
+  const TERMINAL_FAIL = new Set(["rejected", "invalid", "cancelled"]);
+  if (
+    invoice.myinvois_uuid &&
+    invoice.myinvois_status &&
+    !TERMINAL_FAIL.has(String(invoice.myinvois_status).toLowerCase())
+  ) {
     return NextResponse.json({
       submissionUid: invoice.myinvois_submission_uid,
       uuid: invoice.myinvois_uuid,
@@ -148,6 +175,7 @@ export async function POST(
         myinvois_long_id: longId ?? null,
         myinvois_status: finalStatus,
         myinvois_submitted_at: new Date().toISOString(),
+        requires_individual_einvoice: isHighValueB2C,
         ...(finalStatus === "valid"
           ? { myinvois_validated_at: new Date().toISOString() }
           : {}),

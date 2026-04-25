@@ -35,19 +35,19 @@ export async function GET(request: NextRequest) {
 
   const memberIds = members.map(m => m.user_id);
 
-  // Today in WIB
+  // Today in MYT
   const now = new Date();
-  const wibOffset = 7 * 60 * 60 * 1000;
-  const todayWIB = new Date(now.getTime() + wibOffset);
-  const todayStr = todayWIB.toISOString().split("T")[0];
+  const mytOffset = 8 * 60 * 60 * 1000;
+  const todayMYT = new Date(now.getTime() + mytOffset);
+  const todayStr = todayMYT.toISOString().split("T")[0];
 
   // Count today's orders across all community members
   const { data: todayOrders } = await supabase
     .from("orders")
     .select("user_id, total")
     .in("user_id", memberIds)
-    .gte("delivery_date", `${todayStr}T00:00:00+07:00`)
-    .lt("delivery_date", `${todayStr}T23:59:59+07:00`)
+    .gte("delivery_date", `${todayStr}T00:00:00+08:00`)
+    .lt("delivery_date", `${todayStr}T23:59:59+08:00`)
     .not("status", "eq", "cancelled")
     .is("deleted_at", null);
 

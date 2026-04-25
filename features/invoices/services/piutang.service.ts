@@ -17,13 +17,13 @@ export interface PiutangByCustomer {
   };
 }
 
-export async function getPiutangSummary(): Promise<InvoicePiutangSummary> {
+export async function getPiutangSummary(): Promise<InvoicePiutangSummary | null> {
   try {
     const res = await fetch("/api/piutang");
-    if (!res.ok) return { totalOutstanding: 0, overdueCount: 0, totalInvoices: 0 };
+    if (!res.ok) return null;
     return res.json();
   } catch {
-    return { totalOutstanding: 0, overdueCount: 0, totalInvoices: 0 };
+    return null;
   }
 }
 

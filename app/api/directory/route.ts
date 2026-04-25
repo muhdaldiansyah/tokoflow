@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
     const data = merchantResult.data || [];
 
     // Fetch product counts for returned merchants only (if any)
-    let productCounts: Record<string, number> = {};
+    const productCounts: Record<string, number> = {};
     if (data.length > 0) {
       const ids = data.map((m) => m.id);
       const { data: products } = await supabase

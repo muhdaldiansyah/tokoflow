@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
       const deliveryTime = new Date(delivery_date).getTime();
       const yesterday = Date.now() - 24 * 60 * 60 * 1000;
       if (deliveryTime < yesterday) {
-        return NextResponse.json({ error: "Tanggal kirim tidak boleh di masa lalu" }, { status: 400 });
+        return NextResponse.json({ error: "Delivery date cannot be in the past" }, { status: 400 });
       }
     }
 
@@ -257,7 +257,7 @@ export async function POST(request: NextRequest) {
     // Increment order count
     await supabase.rpc("increment_orders_used", { p_user_id: user.id });
 
-    // Referral signup bonus — credit referrer Rp5.000 on first order (best-effort)
+    // Referral signup bonus — credit referrer RM 2 on first order (best-effort)
     creditReferralSignupBonus(user.id);
 
     // Customer stats auto-updated by database trigger (053_customer_stats_trigger)

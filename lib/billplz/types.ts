@@ -68,8 +68,9 @@ export interface BillplzCallbackPayload {
   [key: string]: string | undefined;
 }
 
-// Unified payment order status — shared with existing Midtrans webhook downstream.
-// Kept identical to lib/midtrans/types.ts::PaymentOrderStatus for swap-compatibility.
+// Unified payment order status used across the Billplz webhook + downstream
+// plan-activation logic. Gateway-agnostic on purpose so a future swap is
+// mechanical.
 export type PaymentOrderStatus =
   | "pending"
   | "completed"

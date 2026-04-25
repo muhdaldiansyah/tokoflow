@@ -24,7 +24,7 @@ const STATUS_FILTERS: { value: FilterStatus; label: string }[] = [
   { value: "paid", label: "Paid" },
 ];
 
-export default function FakturPage() {
+export default function InvoicesPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isBuying, setIsBuying] = useState(false);

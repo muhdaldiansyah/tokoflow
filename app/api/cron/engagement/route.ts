@@ -165,19 +165,19 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Monthly review — send on 1st of each month (WIB)
-    const wibOffset = 7 * 60 * 60 * 1000;
-    const nowWIB = new Date(now.getTime() + wibOffset);
-    const isFirstOfMonth = nowWIB.getDate() === 1;
-    const monthReviewKey = `monthly_review_${nowWIB.getUTCFullYear()}_${String(nowWIB.getUTCMonth() + 1).padStart(2, "0")}`;
+    // Monthly review — send on 1st of each month (MYT)
+    const mytOffset = 8 * 60 * 60 * 1000;
+    const nowMYT = new Date(now.getTime() + mytOffset);
+    const isFirstOfMonth = nowMYT.getDate() === 1;
+    const monthReviewKey = `monthly_review_${nowMYT.getUTCFullYear()}_${String(nowMYT.getUTCMonth() + 1).padStart(2, "0")}`;
 
     if (isFirstOfMonth && !drip[monthReviewKey] && totalOrders > 0 && profile.push_token) {
       // Get last month's stats
-      const lastMonth = new Date(nowWIB);
+      const lastMonth = new Date(nowMYT);
       lastMonth.setMonth(lastMonth.getMonth() - 1);
-      const lastMonthStart = `${lastMonth.getFullYear()}-${String(lastMonth.getMonth() + 1).padStart(2, "0")}-01T00:00:00+07:00`;
-      const thisMonthStart = `${nowWIB.getFullYear()}-${String(nowWIB.getMonth() + 1).padStart(2, "0")}-01T00:00:00+07:00`;
-      const monthName = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"][lastMonth.getMonth()];
+      const lastMonthStart = `${lastMonth.getFullYear()}-${String(lastMonth.getMonth() + 1).padStart(2, "0")}-01T00:00:00+08:00`;
+      const thisMonthStart = `${nowMYT.getFullYear()}-${String(nowMYT.getMonth() + 1).padStart(2, "0")}-01T00:00:00+08:00`;
+      const monthName = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][lastMonth.getMonth()];
 
       const [{ count: monthOrders }, { data: monthRevenue }] = await Promise.all([
         supabase
@@ -205,8 +205,8 @@ export async function POST(request: NextRequest) {
         const revenueStr = revenue > 0 ? `RM ${revenue.toLocaleString("en-MY")}` : "";
         pushMessages.push({
           to: profile.push_token,
-          title: `Rekap ${monthName}`,
-          body: `${orderCount} pelanggan dilayani${revenueStr ? `, ${revenueStr} hasil usaha` : ""}. ${customerCount || 0} pelanggan percaya padamu. Dari jualan jadi usaha.`,
+          title: `${monthName} recap`,
+          body: `${orderCount} customers served${revenueStr ? `, ${revenueStr} revenue` : ""}. ${customerCount || 0} customers trust you. From selling to running a business.`,
           sound: "default",
           data: { screen: "recap" },
         });

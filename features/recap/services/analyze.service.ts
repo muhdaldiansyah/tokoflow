@@ -2,6 +2,7 @@ export interface AnalysisResult {
   insights: string | null;
   cached: boolean;
   cachedTotalOrders?: number | null;
+  error?: string;
 }
 
 export async function checkAnalysisCache(type: "daily" | "monthly", period: string): Promise<AnalysisResult> {
@@ -18,7 +19,14 @@ export async function generateAnalysis(type: "daily" | "monthly", period: string
   });
 
   if (!res.ok) {
-    throw new Error("ANALYSIS_FAILED");
+    let error = `HTTP ${res.status}`;
+    try {
+      const body = await res.json();
+      if (body?.error) error = String(body.error);
+    } catch {
+      // body wasn't JSON — keep the HTTP fallback
+    }
+    return { insights: null, cached: false, error };
   }
 
   return res.json();

@@ -225,11 +225,11 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
     // Pre-fill sample order when ?contoh=1
     if (searchParams.get("contoh") === "1" && !initialOrder) {
       setItems([
-        { name: "Nasi Goreng", qty: 2, price: 25000 },
-        { name: "Es Teh", qty: 2, price: 5000 },
+        { name: "Nasi Lemak Ayam", qty: 2, price: 8 },
+        { name: "Teh Tarik", qty: 2, price: 3 },
       ]);
-      setCustomerName("Bu Sari");
-      setCustomerPhone("08123456789");
+      setCustomerName("Puan Aisyah");
+      setCustomerPhone("0123456789");
       setShowCustomer(true);
     }
 
@@ -514,13 +514,13 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
 
     const sourceLabel = source === "voice" ? "suara" : source === "image" ? "foto" : "tempel";
     if (parsedItems.length > 0) {
-      toast.success(`${parsedItems.length} item ditambahkan dari ${sourceLabel}`);
+      toast.success(`${parsedItems.length} items added from ${sourceLabel}`);
     }
     if (customItems.length > 0) {
-      toast.info(`Item baru (bukan dari katalog): ${customItems.join(", ")}`);
+      toast.info(`New items (not in catalog): ${customItems.join(", ")}`);
     }
     if (parsedItems.length === 0) {
-      toast.error("Tidak ada item yang terdeteksi");
+      toast.error("No items detected");
     }
 
     track(`${source}_order_parsed`, {
@@ -594,12 +594,12 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
     }
 
     if (finalItems.length === 0) {
-      toast.error("Tambahkan minimal 1 item");
+      toast.error("Add at least one item");
       return;
     }
 
     if (finalItems.some((item) => item.price === 0)) {
-      toast.error("Ada item dengan harga Rp0. Tap item untuk isi harga.");
+      toast.error("Some items have RM 0 price. Tap an item to set the price.");
       return;
     }
 
@@ -614,7 +614,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
       if (orderStatus !== initialOrder.status) {
         const statusUpdated = await updateOrderStatus(initialOrder.id, orderStatus);
         if (!statusUpdated) {
-          toast.error("Gagal mengubah status");
+          toast.error("Failed to update status");
           setIsSaving(false);
           return;
         }
@@ -888,7 +888,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
         }`}>
           {isLangganan && "Subscription mode — date optional, pay later"}
           {isPreorder && !isLangganan && "Pre-order mode — delivery date is required"}
-          {isDineIn && "Mode Langsung"}
+          {isDineIn && "Walk-in mode"}
         </div>
       )}
 

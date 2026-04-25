@@ -154,7 +154,7 @@ export const OrderCard = memo(function OrderCard({
             )}
             {order.is_dine_in && (
               <span className="inline-flex h-5 px-1.5 text-[10px] font-medium rounded-full border items-center bg-amber-50 text-amber-700 border-amber-200">
-                Langsung
+                Walk-in
               </span>
             )}
             {order.is_langganan && (

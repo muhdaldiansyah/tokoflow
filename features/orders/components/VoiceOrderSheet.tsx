@@ -20,10 +20,10 @@ interface VoiceOrderSheetProps {
 }
 
 const ERROR_MESSAGES: Record<string, string> = {
-  "not-allowed": "Mikrofon diblokir. Izinkan akses mikrofon di pengaturan browser.",
-  "no-speech": "Tidak ada suara terdeteksi. Coba bicara lebih jelas.",
-  "network": "Butuh koneksi internet untuk pengenalan suara.",
-  aborted: "Pengenalan suara dihentikan.",
+  "not-allowed": "Microphone blocked. Allow microphone access in browser settings.",
+  "no-speech": "No speech detected. Try speaking more clearly.",
+  "network": "Voice recognition needs an internet connection.",
+  aborted: "Voice recognition stopped.",
 };
 
 export function VoiceOrderSheet({
@@ -145,7 +145,7 @@ export function VoiceOrderSheet({
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
           <h3 className="text-sm font-semibold text-foreground">
-            {phase === "listening" ? "Pesan lewat suara" : "Cek pesanan"}
+            {phase === "listening" ? "Voice order" : "Review order"}
           </h3>
           <button
             type="button"
@@ -179,10 +179,10 @@ export function VoiceOrderSheet({
 
               <p className="text-xs text-muted-foreground">
                 {isListening
-                  ? 'Bicara sekarang... contoh: "Nasi Goreng 2, Es Teh 3"'
+                  ? 'Speak now... e.g. "Nasi Lemak 2, Teh O Ais 3"'
                   : error
-                    ? ERROR_MESSAGES[error] || "Terjadi kesalahan."
-                    : "Ketuk mikrofon untuk mulai"}
+                    ? ERROR_MESSAGES[error] || "An error occurred."
+                    : "Tap the microphone to start"}
               </p>
 
               {/* Transcript display */}
@@ -219,7 +219,7 @@ export function VoiceOrderSheet({
                   }}
                   className="h-9 px-4 text-sm font-medium text-warm-green hover:underline"
                 >
-                  Coba lagi
+                  Try again
                 </button>
               )}
             </div>
@@ -236,7 +236,7 @@ export function VoiceOrderSheet({
 
               {previewItems.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-4">
-                  Tidak ada item terdeteksi. Coba ulangi.
+                  No items detected. Try again.
                 </p>
               ) : (
                 <div className="space-y-2">

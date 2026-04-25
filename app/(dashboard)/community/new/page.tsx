@@ -7,7 +7,7 @@ import { Loader2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { track } from "@/lib/analytics";
 
-export default function BuatKomunitasPage() {
+export default function NewCommunityPage() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
@@ -15,7 +15,7 @@ export default function BuatKomunitasPage() {
 
   async function handleCreate() {
     if (!name.trim()) {
-      toast.error("Nama komunitas diperlukan");
+      toast.error("Community name is required");
       return;
     }
 
@@ -29,16 +29,16 @@ export default function BuatKomunitasPage() {
 
       if (!res.ok) {
         const data = await res.json();
-        toast.error(data.error || "Gagal membuat komunitas");
+        toast.error(data.error || "Failed to create community");
         return;
       }
 
       const community = await res.json();
-      toast.success("Komunitas dibuat!");
+      toast.success("Community created!");
       track("community_created", { name: community.name });
       router.push("/community");
     } catch {
-      toast.error("Gagal membuat komunitas");
+      toast.error("Failed to create community");
     } finally {
       setIsCreating(false);
     }
@@ -55,18 +55,18 @@ export default function BuatKomunitasPage() {
           <ArrowLeft className="w-5 h-5 text-muted-foreground" />
         </Link>
         <div>
-          <h1 className="text-lg font-semibold text-foreground">Buat Komunitas</h1>
-          <p className="text-sm text-muted-foreground">Ajak UMKM lain bergabung di satu komunitas</p>
+          <h1 className="text-lg font-semibold text-foreground">Create community</h1>
+          <p className="text-sm text-muted-foreground">Bring other SMBs into one community</p>
         </div>
       </div>
 
       {/* Form */}
       <div className="rounded-xl border bg-card p-4 shadow-sm space-y-4">
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-foreground">Nama Komunitas</label>
+          <label className="text-sm font-medium text-foreground">Community name</label>
           <input
             type="text"
-            placeholder="contoh: Katering Bekasi"
+            placeholder="e.g. KL Caterers Network"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="w-full h-11 px-3 bg-card border rounded-lg shadow-sm text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-colors"
@@ -75,9 +75,9 @@ export default function BuatKomunitasPage() {
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-foreground">Deskripsi <span className="text-muted-foreground font-normal">(opsional)</span></label>
+          <label className="text-sm font-medium text-foreground">Description <span className="text-muted-foreground font-normal">(optional)</span></label>
           <textarea
-            placeholder="Contoh: Komunitas katering dan nasi box area Bekasi"
+            placeholder="e.g. A community of caterers and nasi box vendors around KL"
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
             rows={3}
@@ -90,14 +90,14 @@ export default function BuatKomunitasPage() {
             href="/community"
             className="flex-1 h-10 rounded-lg border bg-card text-sm font-medium text-muted-foreground hover:bg-accent transition-colors flex items-center justify-center"
           >
-            Batal
+            Cancel
           </Link>
           <button
             onClick={handleCreate}
             disabled={isCreating || !name.trim()}
             className="flex-1 h-10 rounded-lg bg-warm-green text-white text-sm font-medium hover:bg-warm-green/90 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
           >
-            {isCreating ? <Loader2 className="w-4 h-4 animate-spin" /> : "Buat Komunitas"}
+            {isCreating ? <Loader2 className="w-4 h-4 animate-spin" /> : "Create community"}
           </button>
         </div>
       </div>

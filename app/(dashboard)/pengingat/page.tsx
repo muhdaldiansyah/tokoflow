@@ -22,7 +22,7 @@ function getRelativeDate(scheduledAt: string): { label: string; isOverdue: boole
   if (scheduled < startOfToday) {
     const diffMs = startOfToday.getTime() - scheduled.getTime();
     const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-    return { label: `Terlambat ${diffDays} hari`, isOverdue: true, isToday: false };
+    return { label: `Overdue by ${diffDays} days`, isOverdue: true, isToday: false };
   }
 
   if (scheduled >= startOfToday && scheduled < endOfToday) {
@@ -33,21 +33,21 @@ function getRelativeDate(scheduledAt: string): { label: string; isOverdue: boole
   const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 
   if (diffDays === 0) {
-    return { label: "Besok", isOverdue: false, isToday: false };
+    return { label: "Tomorrow", isOverdue: false, isToday: false };
   }
 
-  return { label: `${diffDays + 1} hari lagi`, isOverdue: false, isToday: false };
+  return { label: `in ${diffDays + 1} days`, isOverdue: false, isToday: false };
 }
 
 type TimeFilter = "all" | "overdue" | "today" | "upcoming";
 
 const TIME_CHIPS: { label: string; value: TimeFilter }[] = [
-  { label: "Terlambat", value: "overdue" },
+  { label: "Overdue", value: "overdue" },
   { label: "Today", value: "today" },
-  { label: "Mendatang", value: "upcoming" },
+  { label: "Upcoming", value: "upcoming" },
 ];
 
-export default function PengingatPage() {
+export default function RemindersPage() {
   const [reminders, setReminders] = useState<ReminderWithSource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -88,7 +88,7 @@ export default function PengingatPage() {
       const data = await getPendingReminders();
       setReminders(data);
     } catch {
-      toast.error("Gagal memuat pengingat");
+      toast.error("Failed to load reminders");
     } finally {
       setIsLoading(false);
     }
@@ -103,7 +103,7 @@ export default function PengingatPage() {
       const outstanding = (reminder.order.total || 0) - (reminder.order.paid_amount || 0);
       return {
         number: reminder.order.order_number,
-        name: reminder.order.customer_name || "Tanpa nama",
+        name: reminder.order.customer_name || "Unnamed",
         phone: reminder.order.customer_phone || null,
         amount: outstanding,
         type: "Order" as const,
@@ -112,13 +112,13 @@ export default function PengingatPage() {
     if (reminder.receipt) {
       return {
         number: reminder.receipt.receipt_number,
-        name: reminder.receipt.customer_name || "Tanpa nama",
+        name: reminder.receipt.customer_name || "Unnamed",
         phone: reminder.receipt.customer_phone || null,
         amount: reminder.receipt.total,
-        type: "Struk" as const,
+        type: "Receipt" as const,
       };
     }
-    return { number: "-", name: "Tanpa nama", phone: null, amount: 0, type: "Order" as const };
+    return { number: "-", name: "Unnamed", phone: null, amount: 0, type: "Order" as const };
   }
 
   // Filter reminders
@@ -455,7 +455,7 @@ export default function PengingatPage() {
         {/* Results */}
         {filtered.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-8">
-            Tidak ada pengingat{debouncedSearch ? " ditemukan" : ""}
+            {debouncedSearch ? "No matching reminders" : "No reminders"}
           </p>
         ) : (
           <div className="space-y-4">
@@ -463,7 +463,7 @@ export default function PengingatPage() {
             {overdueGroup.length > 0 && (timeFilter === "all" || timeFilter === "overdue") && (
               <div className="space-y-2">
                 <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">
-                  Terlambat ({overdueGroup.length})
+                  Overdue ({overdueGroup.length})
                 </p>
                 <div className="rounded-xl border bg-card shadow-sm divide-y">
                   {overdueGroup.map((reminder) => (
@@ -505,7 +505,7 @@ export default function PengingatPage() {
             {upcomingGroup.length > 0 && (timeFilter === "all" || timeFilter === "upcoming") && (
               <div className="space-y-2">
                 <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">
-                  Mendatang ({upcomingGroup.length})
+                  Upcoming ({upcomingGroup.length})
                 </p>
                 <div className="rounded-xl border bg-card shadow-sm divide-y">
                   {upcomingGroup.map((reminder) => (
@@ -545,7 +545,7 @@ function ReminderCard({
   onCancel,
 }: {
   reminder: ReminderWithSource;
-  getCustomerInfo: (r: ReminderWithSource) => { number: string; name: string; phone: string | null; amount: number; type: "Order" | "Struk" };
+  getCustomerInfo: (r: ReminderWithSource) => { number: string; name: string; phone: string | null; amount: number; type: "Order" | "Receipt" };
   confirmCancelId: string | null;
   onSendWA: (r: ReminderWithSource) => void;
   onCancel: (id: string) => void;
@@ -584,7 +584,7 @@ function ReminderCard({
             className="mt-0.5 p-1 rounded-md text-muted-foreground/40 hover:text-red-500 hover:bg-red-50 transition-colors"
           >
             {confirmCancelId === reminder.id ? (
-              <span className="text-red-500 text-[10px] font-medium">Hapus?</span>
+              <span className="text-red-500 text-[10px] font-medium">Delete?</span>
             ) : (
               <X className="w-3 h-3" />
             )}

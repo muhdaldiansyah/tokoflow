@@ -1,8 +1,8 @@
 {
   "name": "Tokoflow",
   "short_name": "Tokoflow",
-  "description": "Kelola pesanan & lacak pembayaran UMKM",
-  "start_url": "/pesanan",
+  "description": "Manage orders and track payments for Malaysian SMBs",
+  "start_url": "/orders",
   "display": "standalone",
   "background_color": "#f5f2ef",
   "theme_color": "#171717",

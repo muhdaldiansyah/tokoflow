@@ -15,8 +15,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Date is required" }, { status: 400 });
     }
 
-    const startOfDay = `${date}T00:00:00.000+07:00`;
-    const endOfDay = `${date}T23:59:59.999+07:00`;
+    const startOfDay = `${date}T00:00:00.000+08:00`;
+    const endOfDay = `${date}T23:59:59.999+08:00`;
 
     const { data: orders, error } = await supabase
       .from("orders")
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
         dibayar: order.paid_amount || 0,
         sisa: (order.total || 0) - (order.paid_amount || 0),
         pengiriman: order.delivery_date
-          ? new Date(order.delivery_date).toLocaleDateString("en-MY", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Jakarta" })
+          ? new Date(order.delivery_date).toLocaleDateString("en-MY", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kuala_Lumpur" })
           : "-",
         status: statusLabels[order.status] || order.status,
         pembayaran: paymentLabels[order.payment_status] || order.payment_status,

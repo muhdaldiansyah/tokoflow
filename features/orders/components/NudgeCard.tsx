@@ -25,13 +25,13 @@ const NUDGES: Nudge[] = [
   },
   {
     id: "share",
-    text: "Share link toko ke pelanggan",
+    text: "Share your store link with customers",
     href: "/settings",
     condition: (ordersUsed) => ordersUsed >= 5,
   },
 ];
 
-const STORAGE_KEY = "catatorder_dismissed_nudges";
+const STORAGE_KEY = "tokoflow_dismissed_nudges";
 
 function getDismissed(): string[] {
   if (typeof window === "undefined") return [];

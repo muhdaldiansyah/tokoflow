@@ -313,7 +313,7 @@ export default function CustomerDetailPage({
                         <div className="flex items-center gap-1.5 flex-nowrap shrink-0">
                           {order.source === "order_link" && (
                             <span className="inline-flex h-5 px-1.5 text-[10px] font-medium rounded-full border items-center bg-sky-50 text-sky-700 border-sky-200">
-                              Link Toko
+                              Store link
                             </span>
                           )}
                           {order.source === "whatsapp" && (
@@ -324,7 +324,7 @@ export default function CustomerDetailPage({
                           <OrderStatusBadge status={order.status} />
                           {paymentChip && (
                             <span className={`inline-flex h-5 px-1.5 text-[10px] font-medium rounded-full border items-center ${paymentChip}`}>
-                              {hasClaim ? "Sudah Bayar?" : order.payment_status === "partial" ? "DP" : "Unpaid"}
+                              {hasClaim ? "Paid?" : order.payment_status === "partial" ? "Partial" : "Unpaid"}
                             </span>
                           )}
                         </div>
@@ -343,11 +343,11 @@ export default function CustomerDetailPage({
         <div className="fixed inset-0 z-50 bg-black/40 flex items-end lg:items-center justify-center" onClick={() => setShowDeleteConfirm(false)}>
           <div className="bg-background rounded-t-2xl lg:rounded-2xl w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
             <div className="p-5 pb-6 space-y-4">
-              <h2 className="text-base font-semibold text-foreground">Hapus pelanggan?</h2>
+              <h2 className="text-base font-semibold text-foreground">Delete customer?</h2>
               <p className="text-sm text-muted-foreground">
                 {orders.length > 0
-                  ? `${customer.name} punya ${orders.length} pesanan. Data pelanggan akan dihapus tapi pesanan tetap ada.`
-                  : `${customer.name} akan dihapus permanen.`}
+                  ? `${customer.name} has ${orders.length} orders. The customer record will be deleted but their orders will remain.`
+                  : `${customer.name} will be permanently deleted.`}
               </p>
               <div className="flex gap-2">
                 <button
@@ -361,7 +361,7 @@ export default function CustomerDetailPage({
                   disabled={isDeleting}
                   className="flex-1 h-11 rounded-lg bg-red-600 text-white text-xs font-medium hover:bg-red-700 disabled:opacity-50 transition-colors"
                 >
-                  {isDeleting ? "Menghapus..." : "Hapus"}
+                  {isDeleting ? "Deleting..." : "Delete"}
                 </button>
               </div>
             </div>

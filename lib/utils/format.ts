@@ -3,13 +3,17 @@
  * Import from here instead of defining inline formatters.
  */
 
-/** Format number as Indonesian Rupiah: 1500000 → "Rp1.500.000" */
+/**
+ * Format a number as Malaysian Ringgit: 1500 → "RM 1,500".
+ * The function is still named `formatRupiah` for backwards-compat with the
+ * fork; rename when callers are tidied up.
+ */
 export function formatRupiah(amount: number): string {
-  if (amount === 0) return "Rp0";
+  if (amount === 0) return "RM 0";
   return `RM ${amount.toLocaleString("en-MY")}`;
 }
 
-/** Format number as Rupiah with Intl (includes "MYR" prefix): 1500000 → "Rp 1.500.000" */
+/** Format number as MYR currency with Intl: 1500 → "MYR 1,500" */
 export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("en-MY", {
     style: "currency",
@@ -18,7 +22,7 @@ export function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
-/** Format ISO date string to Indonesian locale: "2026-03-21" → "21 Mar 2026" */
+/** Format ISO date string to short Malaysia locale: "2026-03-21" → "21 Mar 2026" */
 export function formatDate(d: string): string {
   return new Date(d).toLocaleDateString("en-MY", {
     day: "numeric",
@@ -38,7 +42,7 @@ export function formatTime(d: string): string {
   return new Date(d).toLocaleTimeString("en-MY", { hour: "2-digit", minute: "2-digit" });
 }
 
-/** Format ISO date string to long Indonesian locale: "2026-03-21" → "21 Maret 2026" */
+/** Format ISO date string to long Malaysia locale: "2026-03-21" → "21 March 2026" */
 export function formatDateLong(d: string): string {
   return new Date(d).toLocaleDateString("en-MY", {
     day: "numeric",

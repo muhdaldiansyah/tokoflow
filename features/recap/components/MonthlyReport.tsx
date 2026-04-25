@@ -56,7 +56,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
   const [report, setReport] = useState<MonthlyReportType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
-  const [businessName, setBusinessName] = useState("Toko Saya");
+  const [businessName, setBusinessName] = useState("My Store");
   const [aiDownloadFn, setAiDownloadFn] = useState<(() => void) | null>(null);
   const [showAllLate, setShowAllLate] = useState(false);
   const lastExportTrigger = useRef(exportTrigger);
@@ -88,7 +88,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
 
     const profile = await getProfile();
     if (profile) {
-      setBusinessName(profile.business_name || "Toko Saya");
+      setBusinessName(profile.business_name || "My Store");
     }
 
     setIsLoading(false);
@@ -111,8 +111,8 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
         { key: "telepon", label: "Phone" },
         { key: "item", label: "Item" },
         { key: "total", label: "Total (RM)" },
-        { key: "dibayar", label: "Paid (Rp)" },
-        { key: "sisa", label: "Balance (Rp)" },
+        { key: "dibayar", label: "Paid (RM)" },
+        { key: "sisa", label: "Balance (RM)" },
         { key: "pengiriman", label: "Delivery" },
         { key: "status", label: "Status" },
         { key: "pembayaran", label: "Payment" },
@@ -129,7 +129,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
         };
 
         const summaryData: (string | number)[][] = [
-          [`RINGKASAN LAPORAN — ${MONTH_NAMES[month - 1]} ${year}`],
+          [`REPORT SUMMARY — ${MONTH_NAMES[month - 1]} ${year}`],
           [],
           ["REVENUE"],
           ["Total orders", report.totalOrders],
@@ -141,10 +141,10 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
           ...(report.totalDiscount > 0 ? [["Discount given", report.totalDiscount] as (string | number)[]] : []),
           [],
           ["PAYMENTS"],
-          ["Paid", `${report.paidCount} pesanan`, report.paidRevenue],
-          ["DP", `${report.partialCount} pesanan`, report.partialRevenue],
-          ["Unpaid", `${report.unpaidCount} pesanan`, report.unpaidRevenue],
-          ...(report.cancelledCount > 0 ? [["Cancelled", `${report.cancelledCount} pesanan`, report.cancelledValue] as (string | number)[]] : []),
+          ["Paid", `${report.paidCount} orders`, report.paidRevenue],
+          ["Partial", `${report.partialCount} orders`, report.partialRevenue],
+          ["Unpaid", `${report.unpaidCount} orders`, report.unpaidRevenue],
+          ...(report.cancelledCount > 0 ? [["Cancelled", `${report.cancelledCount} orders`, report.cancelledValue] as (string | number)[]] : []),
           [],
           ["ORDER SOURCE"],
           ...Object.entries(report.ordersBySource).map(([src, count]) => [
@@ -154,13 +154,13 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
           ]),
           [],
           ["CUSTOMERS"],
-          ["Baru", report.newCustomerCount],
+          ["New", report.newCustomerCount],
           ["Returning", report.returningCustomerCount],
           [],
           ["UNPAID AGING"],
           ...report.piutangAging.filter(b => b.count > 0).map(b => [
             b.label,
-            `${b.count} pesanan`,
+            `${b.count} orders`,
             b.amount,
           ]),
           ...(report.piutangAging.some(b => b.count > 0) ? [
@@ -171,7 +171,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
           ["", "Sold", "Revenue", "Profit", "Margin"],
           ...report.topItems.slice(0, 10).map((item, i) => [
             `${i + 1}. ${item.name}`,
-            `${item.qty} terjual`,
+            `${item.qty} sold`,
             item.revenue,
             item.profit ?? "-",
             item.margin !== undefined ? `${item.margin}%` : "-",
@@ -180,7 +180,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
           ["TOP CUSTOMERS"],
           ...report.topCustomers.slice(0, 10).map((c, i) => [
             `${i + 1}. ${c.name}`,
-            `${c.orderCount} pesanan`,
+            `${c.orderCount} orders`,
             c.totalSpent,
           ]),
         ];
@@ -275,7 +275,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                 <span className="font-medium text-foreground">RM {(report.totalRevenue || 0).toLocaleString("en-MY")}</span>
               </div>
               <div className="flex justify-between text-sm py-2">
-                <span className="text-muted-foreground">Terkumpul</span>
+                <span className="text-muted-foreground">Collected</span>
                 <span className={`font-medium ${report.collectedRevenue > 0 ? "text-green-600" : "text-foreground"}`}>RM {(report.collectedRevenue || 0).toLocaleString("en-MY")}</span>
               </div>
               {report.piutang > 0 && (
@@ -316,7 +316,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
             const totalLate = report.lateOrders.reduce((sum: number, o: { total: number }) => sum + o.total, 0);
             insights.push({
               icon: "⏰",
-              text: `${report.lateOrders.length} pesanan lewat tanggal kirim (RM ${totalLate.toLocaleString("en-MY")}).`,
+              text: `${report.lateOrders.length} orders past delivery date (RM ${totalLate.toLocaleString("en-MY")}).`,
               color: "bg-orange-50 border-orange-100 text-orange-800",
               actionLabel: "View order",
               actionHref: "/orders",
@@ -330,7 +330,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
             if (topPct > 20) {
               insights.push({
                 icon: "⭐",
-                text: `${top.name} menyumbang ${topPct}% pendapatan bulan ini (${top.orderCount} pesanan, RM ${top.totalSpent.toLocaleString("en-MY")}).`,
+                text: `${top.name} contributed ${topPct}% of revenue this month (${top.orderCount} orders, RM ${top.totalSpent.toLocaleString("en-MY")}).`,
                 color: "bg-blue-50 border-blue-100 text-blue-800",
               });
             }
@@ -351,7 +351,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
             if (oldDebt) {
               insights.push({
                 icon: "🚨",
-                text: `${oldDebt.count} pesanan belum dibayar lebih dari 30 hari (RM ${oldDebt.amount.toLocaleString("en-MY")}). Segera tindak lanjuti.`,
+                text: `${oldDebt.count} orders unpaid for over 30 days (RM ${oldDebt.amount.toLocaleString("en-MY")}). Follow up soon.`,
                 color: "bg-red-50 border-red-100 text-red-800",
                 actionLabel: "View details",
                 actionHref: "/orders",
@@ -388,10 +388,10 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
         {/* Kunjungan Toko */}
         <VisitorAnalytics period="monthly" month={month} year={year} />
 
-        {/* Produk Terlaris — moved up */}
+        {/* Top products — moved up */}
         {report.topItems && report.topItems.length > 0 && (
           <div className="rounded-xl border bg-card px-4 py-4 space-y-2 shadow-sm">
-              <p className="text-xs font-medium text-muted-foreground">Produk Terlaris</p>
+              <p className="text-xs font-medium text-muted-foreground">Top products</p>
               <div className="divide-y">
                 {report.topItems.map((item, index) => (
                   <div key={item.name} className="flex items-center justify-between py-2">
@@ -401,7 +401,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                       </span>
                       <div className="min-w-0">
                         <p className="text-sm text-foreground truncate">{item.name}</p>
-                        <p className="text-xs text-muted-foreground">{item.qty} terjual</p>
+                        <p className="text-xs text-muted-foreground">{item.qty} sold</p>
                       </div>
                     </div>
                     <div className="text-right shrink-0 ml-3">
@@ -443,7 +443,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                 )}
                 {report.unpaidCount > 0 && (
                   <div className="flex justify-between text-sm py-2">
-                    <span className="text-muted-foreground">Belum Bayar ({report.unpaidCount})</span>
+                    <span className="text-muted-foreground">Unpaid ({report.unpaidCount})</span>
                     <span className="font-medium text-red-600">RM {report.unpaidRevenue.toLocaleString("en-MY")}</span>
                   </div>
                 )}
@@ -466,7 +466,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                   <div key={source} className="flex justify-between text-sm py-2">
                     <span className="text-muted-foreground">{SOURCE_LABELS[source] || source}</span>
                     <div className="text-right">
-                      <span className="font-medium text-foreground">{count} pesanan</span>
+                      <span className="font-medium text-foreground">{count} orders</span>
                       {report.revenueBySource[source] > 0 && (
                         <span className="text-xs text-muted-foreground ml-2">
                           · RM {report.revenueBySource[source].toLocaleString("en-MY")}
@@ -507,7 +507,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                         RM {customer.totalSpent.toLocaleString("en-MY")}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {customer.orderCount} pesanan
+                        {customer.orderCount} orders
                       </p>
                     </div>
                   </div>
@@ -526,7 +526,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                     <span className="text-muted-foreground">{bucket.label}</span>
                     <div className="text-right">
                       <span className="font-medium text-red-600">RM {bucket.amount.toLocaleString("en-MY")}</span>
-                      <span className="text-xs text-muted-foreground ml-2">· {bucket.count} pesanan</span>
+                      <span className="text-xs text-muted-foreground ml-2">· {bucket.count} orders</span>
                     </div>
                   </div>
                 ))}
@@ -582,7 +582,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                     <div className="min-w-0">
                       <p className="text-sm text-foreground truncate">{order.customerName}</p>
                       <p className="text-xs text-muted-foreground">
-                        {order.orderNumber} · Kirim {new Date(order.deliveryDate).toLocaleDateString("en-MY", { day: "numeric", month: "short", timeZone: "Asia/Jakarta" })}
+                        {order.orderNumber} · Kirim {new Date(order.deliveryDate).toLocaleDateString("en-MY", { day: "numeric", month: "short", timeZone: "Asia/Kuala_Lumpur" })}
                       </p>
                     </div>
                     <span className="text-sm font-medium text-red-600 shrink-0 ml-3">
@@ -597,7 +597,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                   onClick={() => setShowAllLate(!showAllLate)}
                   className="w-full text-xs font-medium text-muted-foreground hover:text-foreground pt-1 transition-colors"
                 >
-                  {showAllLate ? "Sembunyikan" : `View all ${report.lateOrders.length} pesanan`}
+                  {showAllLate ? "Hide" : `View all ${report.lateOrders.length} orders`}
                 </button>
               )}
             </div>

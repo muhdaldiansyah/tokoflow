@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function RekapLoading() {
+export default function RecapLoading() {
   return (
     <div className="max-w-2xl mx-auto space-y-3">
       {/* Header */}

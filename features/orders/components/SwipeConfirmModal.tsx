@@ -39,7 +39,7 @@ export function SwipeConfirmModal({
       toast.success(`Status diubah ke ${ORDER_STATUS_LABELS[nextStatus]}`);
       onConfirm(updated);
     } else {
-      toast.error("Gagal mengubah status");
+      toast.error("Failed to update status");
     }
     onClose();
   }

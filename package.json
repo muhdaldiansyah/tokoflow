@@ -1,5 +1,5 @@
 {
-  "name": "order",
+  "name": "tokoflow",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -27,7 +27,6 @@
     "html-to-image": "^1.11.13",
     "jspdf": "^4.2.0",
     "lucide-react": "^0.563.0",
-    "midtrans-client": "^1.4.3",
     "next": "16.1.4",
     "next-mdx-remote": "^6.0.0",
     "nodemailer": "^8.0.4",

@@ -76,7 +76,7 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
   // Restore saved customer info from localStorage
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(`catatorder_customer_${slug}`);
+      const saved = localStorage.getItem(`tokoflow_customer_${slug}`);
       if (saved) {
         const { name, phone } = JSON.parse(saved);
         if (name) { setCustomerName(name); setIsReturningCustomer(true); }
@@ -88,15 +88,15 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
   // Track page view (once per session)
   useEffect(() => {
     try {
-      const key = `catatorder_viewed_${slug}`;
+      const key = `tokoflow_viewed_${slug}`;
       if (sessionStorage.getItem(key)) return; // already tracked this session
       sessionStorage.setItem(key, "1");
 
       // Generate session ID
-      let sessionId = sessionStorage.getItem("catatorder_sid");
+      let sessionId = sessionStorage.getItem("tokoflow_sid");
       if (!sessionId) {
         sessionId = Math.random().toString(36).slice(2) + Date.now().toString(36);
-        sessionStorage.setItem("catatorder_sid", sessionId);
+        sessionStorage.setItem("tokoflow_sid", sessionId);
       }
 
       // Detect referrer
@@ -106,7 +106,7 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
       else if (ref.includes("instagram") || ref.includes("l.instagram.com")) referrer = "instagram";
       else if (ref.includes("tiktok")) referrer = "tiktok";
       else if (ref.includes("facebook") || ref.includes("fb.")) referrer = "facebook";
-      else if (ref && !ref.includes("catatorder")) referrer = "lainnya";
+      else if (ref && !ref.includes("tokoflow")) referrer = "lainnya";
 
       // Product names for product_view tracking
       const products = frequentItems.map(fi => fi.name);
@@ -366,7 +366,7 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
 
       // Persist customer info for repeat orders
       try {
-        localStorage.setItem(`catatorder_customer_${slug}`, JSON.stringify({
+        localStorage.setItem(`tokoflow_customer_${slug}`, JSON.stringify({
           name: customerName.trim(),
           phone: customerPhone.trim(),
         }));
@@ -374,7 +374,7 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
 
       // Store order details for success page
       try {
-        sessionStorage.setItem("catatorder_last_order", JSON.stringify({
+        sessionStorage.setItem("tokoflow_last_order", JSON.stringify({
           orderNumber: data.orderNumber,
           orderId: data.orderId,
           items,

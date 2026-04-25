@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthenticatedClient } from "@/lib/supabase/api";
+import { aiRateLimitResponseInit, checkAiRateLimit } from "@/lib/rate-limit/ai";
 
 export async function GET(request: NextRequest) {
   try {
@@ -45,6 +46,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const limit = checkAiRateLimit(user.id);
+    if (!limit.allowed) {
+      return NextResponse.json(
+        {
+          error:
+            limit.reason === "day"
+              ? "Daily AI usage limit reached. Try again tomorrow."
+              : "Too many AI requests. Slow down for a moment.",
+        },
+        aiRateLimitResponseInit(limit),
+      );
+    }
+
     const { type, period, force } = await request.json();
 
     if (!type || !period || !["daily", "monthly"].includes(type)) {
@@ -72,8 +86,8 @@ export async function POST(request: NextRequest) {
 
     if (type === "daily") {
       // Current day orders
-      const startOfDay = `${period}T00:00:00.000+07:00`;
-      const endOfDay = `${period}T23:59:59.999+07:00`;
+      const startOfDay = `${period}T00:00:00.000+08:00`;
+      const endOfDay = `${period}T23:59:59.999+08:00`;
 
       const { data: orders } = await supabase
         .from("orders")
@@ -85,7 +99,7 @@ export async function POST(request: NextRequest) {
       currentOrders = orders || [];
 
       // Last 7 days for comparison
-      const targetDate = new Date(period + "T00:00:00+07:00");
+      const targetDate = new Date(period + "T00:00:00+08:00");
       const sevenDaysAgo = new Date(targetDate);
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
       const sevenDaysAgoStr = `${sevenDaysAgo.getFullYear()}-${String(sevenDaysAgo.getMonth() + 1).padStart(2, "0")}-${String(sevenDaysAgo.getDate()).padStart(2, "0")}`;
@@ -94,7 +108,7 @@ export async function POST(request: NextRequest) {
         .from("orders")
         .select("*")
         .eq("user_id", user.id)
-        .gte("created_at", `${sevenDaysAgoStr}T00:00:00.000+07:00`)
+        .gte("created_at", `${sevenDaysAgoStr}T00:00:00.000+08:00`)
         .lt("created_at", startOfDay);
 
       const pastList = pastOrders || [];
@@ -132,10 +146,10 @@ export async function POST(request: NextRequest) {
     } else {
       // Monthly: current month
       const [yearStr, monthStr] = period.split("-");
-      const startOfMonth = `${period}-01T00:00:00.000+07:00`;
+      const startOfMonth = `${period}-01T00:00:00.000+08:00`;
       const nextMonth = parseInt(monthStr) === 12
-        ? `${parseInt(yearStr) + 1}-01-01T00:00:00.000+07:00`
-        : `${yearStr}-${String(parseInt(monthStr) + 1).padStart(2, "0")}-01T00:00:00.000+07:00`;
+        ? `${parseInt(yearStr) + 1}-01-01T00:00:00.000+08:00`
+        : `${yearStr}-${String(parseInt(monthStr) + 1).padStart(2, "0")}-01T00:00:00.000+08:00`;
 
       const { data: orders } = await supabase
         .from("orders")
@@ -150,7 +164,7 @@ export async function POST(request: NextRequest) {
       const prevMonth = parseInt(monthStr) === 1
         ? `${parseInt(yearStr) - 1}-12`
         : `${yearStr}-${String(parseInt(monthStr) - 1).padStart(2, "0")}`;
-      const prevMonthStart = `${prevMonth}-01T00:00:00.000+07:00`;
+      const prevMonthStart = `${prevMonth}-01T00:00:00.000+08:00`;
 
       const { data: prevOrders } = await supabase
         .from("orders")
@@ -208,8 +222,8 @@ export async function POST(request: NextRequest) {
     // New customers count
     let newCustomers = 0;
     if (type === "daily") {
-      const startOfDay = `${period}T00:00:00.000+07:00`;
-      const endOfDay = `${period}T23:59:59.999+07:00`;
+      const startOfDay = `${period}T00:00:00.000+08:00`;
+      const endOfDay = `${period}T23:59:59.999+08:00`;
       const { count } = await supabase
         .from("customers")
         .select("*", { count: "exact", head: true })

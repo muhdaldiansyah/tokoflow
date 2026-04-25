@@ -26,7 +26,7 @@ export default function ComingSoon() {
         {/* Building message */}
         <div className="bg-gray-50 rounded-2xl p-6">
           <p className="text-sm text-gray-600 leading-relaxed">
-            Kami sedang membangun sesuatu yang spesial untuk UMKM Indonesia.
+            We are building something special for Malaysian SMBs.
             Tunggu kabar selanjutnya!
           </p>
         </div>

@@ -123,7 +123,7 @@ export function MarketingNav() {
             <div className="md:hidden flex items-center">
               <button
                 onClick={() => setMobileOpen(true)}
-                aria-label="Buka menu navigasi"
+                aria-label="Open navigation menu"
                 aria-controls="mobile-menu"
                 aria-expanded={mobileOpen}
                 className="p-1.5 rounded-lg text-muted-foreground hover:text-muted-foreground hover:bg-muted/50 focus:outline-none focus:ring-1 focus:ring-border transition-all"
@@ -182,7 +182,7 @@ export function MarketingNav() {
           </Link>
           <button
             onClick={() => setMobileOpen(false)}
-            aria-label="Tutup menu navigasi"
+            aria-label="Close navigation menu"
             className="p-1 rounded-lg text-muted-foreground hover:text-muted-foreground hover:bg-muted/50 focus:outline-none focus:ring-1 focus:ring-border"
           >
             <X className="w-5 h-5" strokeWidth={1.5} />

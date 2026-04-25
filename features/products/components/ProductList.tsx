@@ -66,7 +66,7 @@ export function ProductList() {
   // Filter + sort products
   const sorted = useMemo(() => {
     const q = debouncedSearch.toLowerCase();
-    let filtered = q
+    const filtered = q
       ? products.filter((p) =>
           p.name.toLowerCase().includes(q) ||
           (p.description?.toLowerCase().includes(q)) ||

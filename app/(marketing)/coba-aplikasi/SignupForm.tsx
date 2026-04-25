@@ -4,22 +4,23 @@ import { useState, useRef, useEffect } from "react";
 import { ChevronDown, Search } from "lucide-react";
 
 const BUSINESS_TYPES = [
-  "Bakery & Kue",
-  "Fotografer",
+  "Bakery & Cakes",
+  "Beverages",
+  "Catering & Nasi Box",
+  "Crafts",
   "Frozen Food",
   "Furniture",
-  "Grosir & Supplier",
-  "Katering & Nasi Box",
-  "Kerajinan",
-  "Konveksi & Jahit",
+  "Hampers & Gifts",
+  "Kopitiam & Food Stall",
   "Laundry",
-  "Minuman",
   "MUA & Makeup",
-  "Percetakan",
-  "Snack & Jajanan",
-  "Warung & Rumah Makan",
-  "Wedding & EO",
-  "Lainnya",
+  "Photography",
+  "Printing",
+  "Snacks",
+  "Tailoring & Apparel",
+  "Wedding & Event Organiser",
+  "Wholesale & Supplier",
+  "Other",
 ];
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -75,7 +76,7 @@ function SearchableSelect({ label, placeholder, options, value, onChange }: {
             <Search className="w-4 h-4 text-[#94A3B8] shrink-0" />
             <input
               type="text"
-              placeholder="Cari..."
+              placeholder="Search..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="flex-1 text-sm bg-transparent outline-none placeholder:text-[#CBD5E1] text-[#1E293B]"
@@ -93,7 +94,7 @@ function SearchableSelect({ label, placeholder, options, value, onChange }: {
                 {opt}
               </button>
             )) : (
-              <p className="px-3 py-3 text-sm text-[#94A3B8]">Tidak ditemukan</p>
+              <p className="px-3 py-3 text-sm text-[#94A3B8]">No matches</p>
             )}
           </div>
         </div>
@@ -122,7 +123,7 @@ export default function SignupForm() {
       setError("All fields are required.");
       return;
     }
-    if (form.business_type === "Lainnya" && !form.business_type_other) {
+    if (form.business_type === "Other" && !form.business_type_other) {
       setError("Describe your business type.");
       return;
     }
@@ -137,7 +138,7 @@ export default function SignupForm() {
           name: form.name,
           phone: form.phone,
           email: form.email,
-          business_type: form.business_type === "Lainnya" ? form.business_type_other : form.business_type,
+          business_type: form.business_type === "Other" ? form.business_type_other : form.business_type,
         }),
       });
 
@@ -216,10 +217,10 @@ export default function SignupForm() {
         placeholder="Choose a business type"
         options={BUSINESS_TYPES}
         value={form.business_type}
-        onChange={(val) => setForm({ ...form, business_type: val, business_type_other: val === "Lainnya" ? form.business_type_other : "" })}
+        onChange={(val) => setForm({ ...form, business_type: val, business_type_other: val === "Other" ? form.business_type_other : "" })}
       />
 
-      {form.business_type === "Lainnya" && (
+      {form.business_type === "Other" && (
         <Field label="Describe your business *">
           <input
             type="text"

@@ -100,7 +100,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const data = await getCityData(citySlug);
   if (!data) return { title: "Kota tidak ditemukan" };
 
-  const title = `Toko Katering & Bakery di ${data.cityName} | Tokoflow`;
+  const title = `Caterers & bakeries in ${data.cityName} | Tokoflow`;
   const description = `Find ${data.merchants.length} F&B and bakery merchants in ${data.cityName}. Order directly, no hefty commissions.`;
 
   return {
@@ -131,8 +131,8 @@ export default async function CityPage({ params }: PageProps) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: `Toko Katering & Bakery di ${cityName}`,
-    description: `Daftar UMKM makanan di ${cityName} yang menerima pesanan online`,
+    name: `Caterers & bakeries in ${cityName}`,
+    description: `Food SMBs in ${cityName} taking orders online`,
     numberOfItems: merchants.length,
     itemListElement: merchants.slice(0, 20).map((m, i) => ({
       "@type": "ListItem",
@@ -167,7 +167,7 @@ export default async function CityPage({ params }: PageProps) {
             <a href="/toko" className="hover:underline">Browse stores</a> / {cityName}
           </p>
           <h1 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight">
-            Toko Katering & Bakery di {cityName}
+            Caterers & bakeries in {cityName}
           </h1>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
             {merchants.length} toko menerima pesanan online di {cityName}.

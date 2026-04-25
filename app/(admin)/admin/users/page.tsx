@@ -198,7 +198,7 @@ export default function AdminUsersPage() {
                   colSpan={7}
                   className="px-4 py-8 text-center text-muted-foreground"
                 >
-                  {search ? "Tidak ditemukan" : "Belum ada user"}
+                  {search ? "No matches" : "No users yet"}
                 </td>
               </tr>
             )}
@@ -241,7 +241,7 @@ export default function AdminUsersPage() {
         ))}
         {filtered.length === 0 && (
           <p className="text-center py-8 text-sm text-muted-foreground">
-            {search ? "Tidak ditemukan" : "Belum ada user"}
+            {search ? "No matches" : "No users yet"}
           </p>
         )}
       </div>
