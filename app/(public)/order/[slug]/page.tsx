@@ -13,7 +13,13 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const [business, cats] = await Promise.all([getPublicBusinessInfo(slug), getCategories()]);
-  if (!business) return { title: "Not found" };
+  if (!business) return { title: "Store not found" };
+  if (business.setupIncomplete) {
+    return {
+      title: "Store coming soon",
+      robots: { index: false, follow: false },
+    };
+  }
 
   const catLabels = buildCategoryLabels(cats);
   const url = `${siteConfig.url}/${slug}`;
@@ -54,6 +60,33 @@ export default async function PublicOrderPage({ params }: PageProps) {
   const CATEGORY_LABELS = buildCategoryLabels(dbCategories);
 
   if (!business) notFound();
+
+  // Profile exists but merchant hasn't finished onboarding — render a friendly
+  // "coming soon" view so the slug doesn't 404 between signup and first save.
+  if (business.setupIncomplete) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background px-4 py-16">
+        <div className="max-w-md w-full text-center space-y-6">
+          <div className="w-20 h-20 rounded-full bg-[#1a4d35]/10 flex items-center justify-center mx-auto">
+            <span className="text-3xl">🌱</span>
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">Store coming soon</h1>
+            <p className="text-muted-foreground mt-2">
+              The owner of <span className="font-medium text-foreground">tokoflow.com/{slug}</span> is still setting things up.
+              Check back in a bit.
+            </p>
+          </div>
+          <a
+            href="/"
+            className="inline-block h-11 px-5 leading-[44px] rounded-xl bg-[#1a4d35] text-white font-medium hover:bg-[#1a4d35]/90 transition-colors"
+          >
+            Back to Tokoflow
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   // Build JSON-LD LocalBusiness schema
   const jsonLd: Record<string, unknown> = {

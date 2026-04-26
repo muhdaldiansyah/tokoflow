@@ -41,8 +41,13 @@ export interface PublicBusinessInfo {
 /**
  * Resolves slug → business info + top 8 frequent items.
  * No auth, no sensitive data. Server-side only (service role key).
+ *
+ * Returns null only when the slug doesn't match any profile.
+ * If the profile exists but the merchant hasn't finished onboarding
+ * (no business_name yet), returns a stub with `setupIncomplete: true`
+ * so the page can render a "store being set up" view instead of 404.
  */
-export async function getPublicBusinessInfo(slug: string): Promise<PublicBusinessInfo | null> {
+export async function getPublicBusinessInfo(slug: string): Promise<(PublicBusinessInfo & { setupIncomplete?: boolean }) | null> {
   const supabase = await createServiceClient();
 
   // Look up profile by slug
@@ -52,7 +57,26 @@ export async function getPublicBusinessInfo(slug: string): Promise<PublicBusines
     .eq("slug", slug)
     .maybeSingle();
 
-  if (!profile || !profile.business_name) return null;
+  if (!profile) return null;
+
+  // Profile exists but merchant hasn't named the business — surface a stub so
+  // the page can render a friendly "coming soon" view instead of a hard 404.
+  if (!profile.business_name) {
+    return {
+      businessId: profile.id,
+      businessName: "",
+      orderFormEnabled: false,
+      preorderEnabled: false,
+      langgananEnabled: false,
+      dailyOrderCapacity: null,
+      planExpired: false,
+      frequentItems: [],
+      completedOrders: 0,
+      repeatCustomerPct: 0,
+      hasQris: false,
+      setupIncomplete: true,
+    };
+  }
 
   const planExpired = profile.plan_expiry
     ? new Date(profile.plan_expiry) < new Date()

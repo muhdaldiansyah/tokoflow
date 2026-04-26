@@ -27,8 +27,19 @@ export default function SetupPage() {
     { name: "", price: "" },
   ]);
   const [slug, setSlug] = useState<string>("");
+  const [businessName, setBusinessName] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // Live preview of the slug the server will derive — keeps in sync with lib/utils/slug.ts
+  const slugPreview = businessName
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 40);
 
   const selectedDefaults = selectedCategory ? getCategoryDefaults(selectedCategory) : null;
 
@@ -120,6 +131,43 @@ export default function SetupPage() {
       // best-effort
     }
     setStep(3);
+  }
+
+  async function handleSaveBusinessName() {
+    const name = businessName.trim();
+    if (!name) {
+      toast.error("Type your business name");
+      return;
+    }
+    if (slugPreview.length < 3) {
+      toast.error("Use at least 3 letters or numbers");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ business_name: name }),
+      });
+      if (!res.ok) throw new Error("Save failed");
+
+      // Server picks the actual slug (handles uniqueness); refetch to get it.
+      const profileRes = await fetch("/api/profile");
+      if (profileRes.ok) {
+        const profile = await profileRes.json();
+        setSlug(profile.slug || "");
+        if (!profile.slug) {
+          toast.error("Couldn't generate a unique link — try a different name");
+          return;
+        }
+      }
+    } catch {
+      toast.error("Could not save business name");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   async function handleCopyLink() {
@@ -222,18 +270,21 @@ export default function SetupPage() {
                     }}
                     className="flex-1 h-12 px-4 bg-card border border-border rounded-xl shadow-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#1a4d35]/20 focus:border-[#1a4d35]"
                   />
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    placeholder="25"
-                    value={product.price ? parseInt(product.price).toLocaleString("en-MY") : ""}
-                    onChange={(e) => {
-                      const updated = [...products];
-                      updated[i] = { ...updated[i], price: e.target.value.replace(/\D/g, "") };
-                      setProducts(updated);
-                    }}
-                    className="w-28 h-12 px-4 bg-card border border-border rounded-xl shadow-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#1a4d35]/20 focus:border-[#1a4d35]"
-                  />
+                  <div className="relative w-32">
+                    <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">RM</span>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="25"
+                      value={product.price ? parseInt(product.price).toLocaleString("en-MY") : ""}
+                      onChange={(e) => {
+                        const updated = [...products];
+                        updated[i] = { ...updated[i], price: e.target.value.replace(/\D/g, "") };
+                        setProducts(updated);
+                      }}
+                      className="w-full h-12 pl-10 pr-3 bg-card border border-border rounded-xl shadow-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#1a4d35]/20 focus:border-[#1a4d35]"
+                    />
+                  </div>
                   {products.length > 1 && (
                     <button
                       type="button"
@@ -288,8 +339,54 @@ export default function SetupPage() {
           </div>
         )}
 
-        {/* Step 3: Link Ready */}
-        {step === 3 && (
+        {/* Step 3a: Pick your store link (when slug not yet set) */}
+        {step === 3 && !slug && (
+          <div className="space-y-6">
+            <div className="text-center">
+              <h1 className="text-2xl font-bold text-foreground">Pick your store link</h1>
+              <p className="text-muted-foreground mt-1">
+                Customers visit this link to order from you
+              </p>
+            </div>
+
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">Business name</label>
+              <input
+                type="text"
+                placeholder="e.g. Aisyah Catering"
+                value={businessName}
+                onChange={(e) => setBusinessName(e.target.value)}
+                className="w-full h-12 px-4 bg-card border border-border rounded-xl shadow-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#1a4d35]/20 focus:border-[#1a4d35]"
+                maxLength={60}
+                autoFocus
+              />
+              <p className="text-xs text-muted-foreground mt-2">
+                Your store link will be{" "}
+                <span className="font-medium text-foreground">
+                  tokoflow.com/{slugPreview || "your-business"}
+                </span>
+              </p>
+            </div>
+
+            <button
+              onClick={handleSaveBusinessName}
+              disabled={isLoading || slugPreview.length < 3}
+              className="w-full h-12 rounded-xl bg-[#1a4d35] text-white font-medium hover:bg-[#1a4d35]/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  Create my store link
+                  <ChevronRight className="h-4 w-4" />
+                </>
+              )}
+            </button>
+          </div>
+        )}
+
+        {/* Step 3b: Link Ready */}
+        {step === 3 && slug && (
           <div className="space-y-6">
             <div className="text-center">
               <div className="text-4xl mb-3">🎉</div>
@@ -299,14 +396,12 @@ export default function SetupPage() {
               </p>
             </div>
 
-            {slug && (
-              <div className="bg-card border border-border rounded-xl p-4 text-center">
-                <p className="text-sm text-muted-foreground mb-1">Store link</p>
-                <p className="text-lg font-semibold text-foreground">
-                  tokoflow.com/{slug}
-                </p>
-              </div>
-            )}
+            <div className="bg-card border border-border rounded-xl p-4 text-center">
+              <p className="text-sm text-muted-foreground mb-1">Store link</p>
+              <p className="text-lg font-semibold text-foreground">
+                tokoflow.com/{slug}
+              </p>
+            </div>
 
             <div className="flex gap-3">
               <button
