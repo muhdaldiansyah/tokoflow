@@ -3,22 +3,31 @@
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown, Search } from "lucide-react";
 
+// Mirrors business_categories labels from migration 080 so trial-signup vocab
+// matches the onboarding picker. Keep in sync.
 const BUSINESS_TYPES = [
-  "Bakery & Cakes",
-  "Beverages",
   "Catering & Nasi Box",
-  "Crafts",
+  "Bakery & Bread",
+  "Custom Cake & Kuih",
+  "Snack Box & Hampers",
   "Frozen Food",
-  "Furniture",
-  "Hampers & Gifts",
   "Kopitiam & Food Stall",
-  "Laundry",
-  "MUA & Makeup",
-  "Photography",
-  "Printing",
-  "Snacks",
-  "Tailoring & Apparel",
-  "Wedding & Event Organiser",
+  "Drinks & Coffee",
+  "Apparel & Custom Print",
+  "Tailor & Alterations",
+  "Printing & Signage",
+  "Crafts & Souvenir",
+  "Furniture & Interior",
+  "Cosmetics & Skincare",
+  "Photography & Videography",
+  "MUA & Beauty",
+  "Wedding & Event Planner",
+  "Laundry & Dry Clean",
+  "Equipment Rental",
+  "Electronics Repair",
+  "Automotive Service",
+  "Tuition & Education",
+  "Design Services",
   "Wholesale & Supplier",
   "Other",
 ];

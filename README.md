@@ -26,7 +26,7 @@ MVP for launch = wedge 1. 2–3 are retention differentiators.
 |---|---|
 | Framework | Next.js 16 · React 19 · TypeScript |
 | Styling | Tailwind CSS 4 · shadcn/ui |
-| Database | Supabase (Mumbai region — Singapore migration planned) · 80 migrations (000 baseline + 001-079) |
+| Database | Supabase (Mumbai region — Singapore migration planned) · 81 migrations (000 baseline + 001-080) |
 | Auth | Supabase Auth (email + Google OAuth in testing mode) |
 | Payment | Billplz — FPX / DuitNow QR / cards (`lib/billplz/`, zero-SDK adapter) |
 | Tax / e-Invoice | LHDN MyInvois UBL 2.1 JSON (`lib/myinvois/`) + 72h cancel window |
@@ -128,9 +128,9 @@ lib/
 ├── pdf/              # A4 invoice PDF with MyInvois UUID + longId reference
 └── supabase/, voice/, offline/, utils/
 
-config/               # plans, site, my-cities, business-types, navigation
+config/               # plans, site, categories, category-defaults, navigation
 scripts/phase-0/      # sandbox spikes + 10-merchant interview script
-supabase/migrations/  # 000 (baseline) + 001-079
+supabase/migrations/  # 000 (baseline) + 001-080
 middleware.ts         # legacy-route 301 redirects
 ```
 

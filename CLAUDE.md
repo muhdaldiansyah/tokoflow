@@ -39,7 +39,7 @@ MVP = wedge 1 (compliance). 2–3 are post-beta differentiators.
 | Pricing tiers | Rp15K/25K/39K/99K | RM 5 / 8 / 13 / 49 / 99 |
 | Timezone | WIB (UTC+7), quiet hours 21:00–05:00 | MYT (UTC+8), quiet hours 22:00–06:00 |
 | Language | Bahasa Indonesia | English (BM = Phase 4, not shipped) |
-| Cities | 27 ID cities | 43 MY cities × 16 states (`config/my-cities.ts`) |
+| Cities | 27 ID cities | 44 MY cities × 16 states (DB `cities` + `provinces`, seeded by migration 080) |
 | Phone prefix | +62 | +60 (normalised in `lib/utils/phone.ts`) |
 | Marketplace integration | Shipped into CatatOrder (commit `f81e083`) | Not ported — Phase 4 item |
 
@@ -49,7 +49,7 @@ Tokoflow and CatatOrder are **sister products**, not a unified codebase. See HAN
 
 ## Database schema
 
-All 80 migrations applied on the Tokoflow Supabase project (`yhwjvdwmwboasehznlfv`, Mumbai region — migrate to Singapore pre-launch). Migration tracker `supabase_migrations.schema_migrations` is in sync with `supabase/migrations/` on the CLI.
+All 81 migrations applied on the Tokoflow Supabase project (`yhwjvdwmwboasehznlfv`, Mumbai region — migrate to Singapore pre-launch). Migration tracker `supabase_migrations.schema_migrations` is in sync with `supabase/migrations/` on the CLI.
 
 ### Phase 2 additions (this session)
 
@@ -71,6 +71,14 @@ All 80 migrations applied on the Tokoflow Supabase project (`yhwjvdwmwboasehznlf
 |---|---|
 | `staff` (new) | `id`, `user_id` (owner FK), `name`, `phone`, `role` (`owner`\|`assistant`), `active` · RLS scoped to owner |
 | `orders` | `assigned_staff_id` FK, `assigned_at` |
+
+**Migration 080 — MY localization for lookup tables**
+| Table | Change |
+|---|---|
+| `business_categories` | Relabelled 16 ID rows to MY-English (`Catering & Nasi Box`, `Kopitiam & Food Stall`, …); added 8 service categories (`tailor`, `kosmetik`, `laundry`, `rental`, `elektronik`, `otomotif`, `pendidikan`, `desain`). 24 active rows. |
+| `product_units` | Relabelled 10 ID units (`porsi`→`pax`, `loyang`→`tray`, `gelas`→`glass`, `lembar`→`sheet`, `batang`→`stick`); added 7 (`set`, `cup`, `carton`, `litre`, `package`, `session`, `hour`). 17 active rows. |
+| `provinces` | Seeded 16 MY states + federal territories (KL, Selangor, Penang, …). Sort order surfaces Klang Valley first. |
+| `cities` | Seeded 44 MY cities mirroring (now-deleted) `config/my-cities.ts`, joined to `provinces` via FK. |
 
 ### Core tables (inherited)
 
@@ -129,9 +137,9 @@ lib/
 ├── pdf/generate-invoice.ts  # EN + TIN/BRN/SST + MyInvois UUID ref
 └── supabase/, voice/, offline/, utils/
 
-config/{plans.ts, my-cities.ts, business-types.ts, site.ts, navigation.ts}
+config/{plans.ts, categories.ts, category-defaults.ts, site.ts, navigation.ts}
 scripts/phase-0/             # MyInvois + Billplz sandbox spikes + merchant interview
-supabase/migrations/         # 000 (baseline) + 001–079
+supabase/migrations/         # 000 (baseline) + 001–080
 middleware.ts                # Legacy-route 301s (pesanan→orders etc. + /baru→/new leaf)
 ```
 
@@ -194,7 +202,7 @@ Legacy paths: `/pembayaran` (payment result), `/pengingat` (reminders), `/profil
 - **Offline:** Network-first + IDB fallback. FIFO sync + localStorage lock (30s TTL).
 - **Analytics:** `track(event, properties?)` → `events` table + UTM.
 - **Progressive disclosure:** Nav items by totalOrders — 0 → 3 menus, 1+ → Customers, 3+ → Community, 5+ → Prep/Recap, 10+ → Invoices.
-- **Smart defaults:** `config/business-types.ts` — 10 types auto-set mode, capacity, units, `overheadEstimatePct`.
+- **Smart defaults:** `config/category-defaults.ts` — 28 entries map a `business_category` ID to mode (preorder/dine-in/booking), capacity, sample products, and suggested categories. Drives `/setup` step 1 → 2 transition.
 - **Pricing compass:** Traffic light 🟢🟡🔴⚫ in ProductForm (net margin after overhead). Peer benchmark via `/api/benchmark` (gated ≥10 users/cluster).
 - **Quiet hours:** `profiles.quiet_hours_start/end` (default 22:00–06:00 MYT). Push suppressed during window.
 - **MyInvois submission (Pro):** One-tap from `/invoices/[id]` detail or `/invoices/[id]/edit`. Polls `/myinvois-status` every 5s until terminal (valid / invalid / cancelled / rejected) or 2 min timeout. Stores UUID + longId + validation state on the invoice row. 72h cancel modal with reason capture.
@@ -340,7 +348,7 @@ Fail any → re-evaluate wedge before more code.
 - [ ] MyInvois production certification (post Sdn Bhd verification)
 - [ ] MDEC Digitalisation Partner certification (6-8 week lag)
 - [x] `tokoflow.com` domain procured + Vercel alias live
-- [x] Supabase migrations 001-079 applied to project `yhwjvdwmwboasehznlfv`
+- [x] Supabase migrations 001-080 applied to project `yhwjvdwmwboasehznlfv`
 - [ ] Supabase region migration Mumbai → Singapore (pre-launch)
 - [ ] Populate Billplz / MyInvois / OpenRouter / Gmail env vars in Vercel production (currently placeholder/empty for these)
 - [ ] Publish Google OAuth consent screen (currently Testing mode — only test users can sign in)
