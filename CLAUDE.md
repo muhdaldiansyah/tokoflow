@@ -351,7 +351,7 @@ Fail any → re-evaluate wedge before more code.
 
 ## Known issues (as of 2026-04-24)
 
-- **Vercel auto-deploy is silent.** GitHub → Vercel webhook stopped firing ~Apr 9 (`a144397`). Every subsequent `git push` to main has required a manual `vercel --prod --force` to ship. Fix path: GitHub → Settings → Webhooks → inspect Vercel webhook deliveries or reinstall the Vercel GitHub App.
+- ~~**Vercel auto-deploy is silent.**~~ Resolved 2026-04-27. GitHub App grant + `vercel git disconnect && vercel git connect` flushed the stale link. Pushes to `main` now deploy automatically again.
 - **Vercel production env vars** were stored as empty encrypted strings when the project was set up. Sync from `.env.local` → Vercel via the REST API (not the CLI — CLI stdin piping silently stored empties). Some Phase 0 service env vars (`BILLPLZ_*`, `MYINVOIS_*`, `OPENROUTER_API_KEY`, `GMAIL_*`) are still unset in production because we don't have the creds yet.
 - **Test-mode Google OAuth.** Only emails added to the Test users list in Google Cloud Console can sign in. Publish the consent screen before private beta.
 - **Supabase region** is Mumbai — move to Singapore (`ap-southeast-1`) before public launch for MYT latency.
