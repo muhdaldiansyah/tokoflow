@@ -1,24 +1,25 @@
 # Tokoflow
 
-**LHDN-ready WhatsApp storefront for Malaysian SMBs.** Share an order link, customers self-order, submit each sale to LHDN MyInvois in one tap.
+> **From snap to sold.** The simplest way for anyone to start selling — one photo to launch your shop. AI handles the conversation, payment, and paperwork so the merchant can focus on what they make.
 
-**Status:** Phase 1 + Phase 2 code complete · route rename complete · database + 80 migrations applied · Google OAuth wired · pre-launch. Launch-blocked on Phase 0 validation (LHDN preprod spike, Billplz sandbox spike, 10 merchant interviews, MDEC Partner certification) + Sdn Bhd + real-world ops. See [HANDOFF.md](./HANDOFF.md).
+**Status:** Repositioned 2026-04-27 from "LHDN-ready WhatsApp storefront" to an Apple-grade selling layer. Phase 1 + Phase 2 code complete · 80 migrations applied · Google OAuth wired (testing mode) · pre-launch.
 
-**Target market:** Malaysia — RM 1M–5M turnover merchants facing the LHDN e-Invoice Phase 4 mandate (enforcement 1 Jan 2027, relaxation ends 31 Dec 2026).
+**Strategic compass:** [`docs/positioning/`](./docs/positioning/) — read [`00-manifesto.md`](./docs/positioning/00-manifesto.md) before product decisions. Every feature must pass the 5 tests.
 
-**Codebase:** ~45K LOC across 324 TS/TSX files. ~100 API routes + 5 cron jobs. Zero user-visible Bahasa Indonesia strings on the customer-touched surface. Zero commission. 0% platform fee.
+**Target Year 1:** Malaysia, hyperlocal Shah Alam — home F&B mompreneur (Bu Aisyah persona). Concentric expansion: Klang Valley → SEA → global.
+
+**Codebase:** ~45K LOC across ~330 TS/TSX files · ~100 API routes · 5 cron jobs · zero commission · 0% platform fee · merchants own their customers.
 
 ## What it does
 
-Malaysian small businesses take orders on WhatsApp — chat piles up, orders slip, LHDN deadlines loom. Tokoflow gives merchants a **store link** — customers order themselves, every order lands tidy, and (on the Pro tier) the merchant ships each invoice to MyInvois with one tap. DuitNow QR settles payment. No commission. Customers stay yours.
+A merchant takes one photo of their kitchen, counter, or dagangan. In seconds they have a shop link they can share to WhatsApp / IG / TikTok. Customers self-order, DuitNow QR settles payment, every order lands tidy in the merchant's dashboard. AI handles routine customer chat. The dashboard runs warm and quiet — no streaks, no anxiety counters, no "X/50 used" banners. Compliance (LHDN MyInvois e-Invoice) is *built-in* on the Pro tier as a silent superpower, not the pitch.
 
-## Core wedge
+## The four wedges
 
-1. **Compliance (urgent, dated):** native LHDN MyInvois integration. Orderla.my has zero e-Invoice support; Niagawan is building but not shipped. RM 10,000 individual-invoice rule live 1 Jan 2026; Phase 4 enforcement 1 Jan 2027.
-2. **AI-native (shipped):** paste WhatsApp chat → order, voice → order, screenshot → order (Gemini Flash Lite via OpenRouter). Prompts tuned for Malay / English / Manglish vocab.
-3. **Community data (shipped, density-gated):** peer benchmark live at `/api/benchmark` with a ≥10 users/cluster gate. Group-buy pooling deferred to Phase 4.
-
-MVP for launch = wedge 1. 2–3 are retention differentiators.
+1. **The Photo Magic** *(Phase 1, planned — see [`P4-photo-magic-plan.md`](./docs/positioning/P4-photo-magic-plan.md))*: one photo → toko muncul. The iconic interaction.
+2. **AI-native** *(shipped)*: paste WhatsApp chat → order, voice → order, screenshot → order. Gemini Flash Lite via OpenRouter. MY SMB vocab, +60 phones, Asia/Kuala_Lumpur.
+3. **Community data** *(shipped, density-gated)*: peer benchmark live at `/api/benchmark` (≥10 users/cluster gate). Group-buy pooling deferred to Phase 4.
+4. **Silent superpower — LHDN MyInvois** *(shipped, demoted to Pro tier)*: one-tap submit at `/invoices`. Not the pitch. RM 1M–5M relaxation runs through 31 Dec 2026, full enforcement 1 Jan 2027.
 
 ## Tech stack
 
@@ -26,52 +27,47 @@ MVP for launch = wedge 1. 2–3 are retention differentiators.
 |---|---|
 | Framework | Next.js 16 · React 19 · TypeScript |
 | Styling | Tailwind CSS 4 · shadcn/ui |
-| Database | Supabase (Mumbai region — Singapore migration planned) · 81 migrations (000 baseline + 001-080) |
+| Database | Supabase (Mumbai region — Singapore migration planned) · 81 migrations |
 | Auth | Supabase Auth (email + Google OAuth in testing mode) |
 | Payment | Billplz — FPX / DuitNow QR / cards (`lib/billplz/`, zero-SDK adapter) |
 | Tax / e-Invoice | LHDN MyInvois UBL 2.1 JSON (`lib/myinvois/`) + 72h cancel window |
 | AI | Gemini Flash Lite via OpenRouter |
-| Deploy | Vercel |
+| Microcopy | `lib/copy/` — voice canon templates per [`docs/positioning/04-design-system.md`](./docs/positioning/04-design-system.md) |
+| Deploy | Vercel (auto-deploy on push to `main`) |
 
 ## Pricing (MYR)
 
+Three tiers per [`docs/positioning/05-pricing.md`](./docs/positioning/05-pricing.md) (D-008):
+
 | Tier | Price | Included |
 |---|---|---|
-| Free | — | 50 orders/month, all core features (store link, AI parse, recap, customer directory) |
-| Top-up pack | RM 5 / 50 orders | Never expires |
-| Top-up saver | RM 8 / 100 orders | 20% off per order |
-| Unlimited | RM 13 / month | Unlimited orders, no MyInvois |
-| **Pro — LHDN-ready** | **RM 49 / month** | Everything + one-tap MyInvois submission + SST calculation + >RM 10K individual-einvoice flag + 72h cancel window |
-| Business | RM 99 / month | Franchise · API · white-label — Phase 4, not yet wired |
+| **Free** | RM 0/mo | 50 orders/month, all core features (store link, AI parse, recap, customer directory, basic invoices) |
+| **Pro** | **RM 49/mo** | Unlimited orders + voice/photo order parsing + pricing whisper + one-tap LHDN MyInvois submit + SST 0/6% reporting + receivables tracking |
+| **Business** | RM 99/mo | Pro + multi-staff (2 included, +RM 15/extra) + advanced (still dignifying) analytics + priority support |
 
-MDEC Digitalisation Partner grant co-funding for eligible MSMEs is planned — partnership application is pending, not yet certified.
+The legacy RM 5 / 8 / 13 quota top-up packs are `@deprecated` in `config/plans.ts` — kept for API + DB compat for any grandfathered users; not surfaced in current UI.
 
-## What's shipped (this session)
+## Recent reposition pass (2026-04-27)
 
-**Phase 2 — 8/8 tasks complete**
+Five commits, all live (`10bc895` → `6fa38c3`). Highlights:
 
-1. `InvoiceForm.tsx` rewritten: TIN/BRN/SST inputs, SST 0/6% toggle, MyInvois submit button with 2-min status polling, RM 10K warning, +60 phone
-2. `InvoiceDetail.tsx` rewritten: MyInvois UUID + longId, 72h cancel modal, PDF download
-3. Tax engine: `/api/tax/summary` + `/api/invoices/sst-summary` replace Indonesian PPh routes; `/tax` page with copy-for-RMCD-SST-02 helper
-4. Staff accounts (migration 079): CRUD at `/settings/staff` + order assignment via `AssigneePicker`
-5. Customer 1-tap reorder: `/api/public/order-history` + past-orders panel on storefront
-6. `lib/efaktur/` deleted + 4 legacy routes removed
-7. NPWP/NITKU cleanup: customers API, pengaturan, PDF, WA, cron all use TIN/BRN/SST
-8. Private beta prep: typecheck clean, Next build green, analytics events wired
+- **"From snap to sold"** marketing reposition across 11 pages; LHDN demoted from hero to silent superpower
+- **Anti-anxiety sweep** — deleted `BeresCelebration` (3.5s green-wash), reframed `OnboardingChecklist` (no count, no strikethrough), collapsed `TrialBanner` to a single quiet line at exhausted, simplified `getNudgeLevel` to two states
+- **Compliance gating** — TIN/BRN/SST inputs only render for Pro merchants or those with tax info already entered
+- **Microcopy library** at `lib/copy/index.ts` with templates for empty states, errors, loading, confirmations, success, and the 7 empathy moments. Wired into 4 list views.
+- **Empathy moments shipped** — Hari Sepi (morning-brief), Customer Returns + Anniversary + Pre-Ramadan (engagement), Mid-Rush (realtime toast)
+- **Cron copy rewrite** — removed comparison shaming, robotic factoids, pressure language, Indonesian leaks
+- **Vercel auto-deploy restored** — GitHub App access + `vercel git disconnect/connect` flushed the stale link state
 
-**Route rename** — `/pesanan → /orders`, `/produk → /products`, `/pelanggan → /customers`, `/persiapan → /prep`, `/rekap → /recap`, `/faktur → /invoices`, `/komunitas → /community`, `/pajak → /tax`, `/pengaturan → /settings`, `/pesan/[slug] → /order/[slug]`, plus `/baru → /new` leaf rename. Middleware 301-redirects every legacy path so WhatsApp + bookmark links survive.
+Full history in `docs/positioning/07-decisions.md` and the commit log.
 
-**DB reset + re-migrate** — public schema dropped, 80 migrations applied via `supabase db push`, migration tracker in sync with CLI. 29 tables · 60 RLS policies · 27 stored functions · 5 storage buckets · zero legacy `tf_*`/`av_*`/`kn_*` leftovers.
-
-**Google OAuth enabled** on Supabase auth (client id + secret in vault, not in app env — Supabase handles the flow server-side). Consent screen in Testing mode — add beta testers to the Test users list until the app is published.
-
-## What's remaining (honest list)
+## What's remaining
 
 ### Phase 0 validation gates (your action, before launch)
 
 - [ ] LHDN MyInvois preprod spike returns a valid `submissionUid` + `uuid`
 - [ ] Billplz sandbox X-Signature round-trip passes (genuine + tamper tests)
-- [ ] 10 merchant interviews — ≥7 score LHDN panic ≥7/10, ≥6 willing to pay RM 20-40/mo
+- [ ] 10 merchant interviews — ≥7 score LHDN panic ≥7/10, ≥6 willing to pay RM 20–40/mo
 - [ ] MDEC Digitalisation Partner application cleared
 - [ ] Niagawan e-Invoice timeline confirmed ≥6 months away
 
@@ -79,11 +75,15 @@ Scripts at `scripts/phase-0/`. If any gate fails → re-evaluate the wedge befor
 
 ### Real-world ops (your action)
 
-Sdn Bhd registration · Malaysian bank account · Billplz merchant KYB · MyInvois production certification · MDEC DP certification · Supabase region migration Mumbai → Singapore · populate Phase 0 service env vars in Vercel production.
+Sdn Bhd registration · Malaysian bank account · Billplz merchant KYB · MyInvois production certification · MDEC DP certification · Supabase region migration Mumbai → Singapore · populate Phase 0 service env vars in Vercel production · publish Google OAuth consent screen.
+
+### Big code ticket
+
+**Photo Magic v1** per [`docs/positioning/P4-photo-magic-plan.md`](./docs/positioning/P4-photo-magic-plan.md) — 8–12 days. Phase 1 deliverable; the only iconic interaction the codebase still contradicts.
 
 ### Phase 4 — post-launch growth
 
-Komunitas group-buy finish (~28h) · TikTok Shop MY sync (~40h, exists in CatatOrder commit history, needs TS port) · Shopee MY sync (~15h after TikTok) · BM localization (~40h) · Accounting sync — SQL Account / Bukku / AutoCount (~60h) · Franchise / multi-outlet mode (~60h) · Singapore + Brunei cross-border (~40h).
+Komunitas group-buy finish (~28h) · TikTok Shop MY sync (~40h) · Shopee MY sync (~15h) · BM localization (~40h) · Accounting sync (SQL Account / Bukku / AutoCount, ~60h) · Franchise / multi-outlet mode (~60h) · Singapore + Brunei cross-border (~40h).
 
 ## Getting started (local dev)
 
@@ -101,7 +101,7 @@ npx tsx --env-file=scripts/phase-0/.env.phase-0 scripts/phase-0/myinvois-spike.t
 npx tsx --env-file=scripts/phase-0/.env.phase-0 scripts/phase-0/billplz-spike.ts
 ```
 
-**Applying migrations to a fresh Supabase project** — link the CLI, then push:
+**Applying migrations to a fresh Supabase project**:
 
 ```bash
 export SUPABASE_ACCESS_TOKEN=sbp_…
@@ -115,7 +115,7 @@ supabase db push --linked --yes
 app/
 ├── (marketing)/      # landing, pricing, features, about, contact, blog, toko, mitra, coba-aplikasi, community/[slug]
 ├── (auth)/           # /login, /register, /forgot-password, /reset-password
-├── (onboarding)/     # /setup — 3-step first-run
+├── (onboarding)/     # /setup — current 3-step (replaced by Photo Magic when P4 ships)
 ├── (public)/         # /[slug] customer order form (rewrites to /order/[slug]) · /r/[id] receipt
 ├── (dashboard)/      # orders, products, customers, prep, recap, invoices, community, tax, settings (+ staff), profil, laporan, pengingat, pembayaran
 ├── (admin)/          # internal tools
@@ -125,10 +125,12 @@ features/             # orders, products, customers, invoices, staff, tax, recap
 lib/
 ├── billplz/          # zero-SDK adapter
 ├── myinvois/         # UBL 2.1 builder + OAuth client + submit/status/cancel
+├── copy/             # microcopy library — empty/error/loading/confirm/success/empathy + jargon-free labels
 ├── pdf/              # A4 invoice PDF with MyInvois UUID + longId reference
 └── supabase/, voice/, offline/, utils/
 
 config/               # plans, site, categories, category-defaults, navigation
+docs/positioning/     # strategic compass — manifesto, positioning, product soul, design, pricing, roadmap, decision log, P4 plan
 scripts/phase-0/      # sandbox spikes + 10-merchant interview script
 supabase/migrations/  # 000 (baseline) + 001-080
 middleware.ts         # legacy-route 301 redirects
@@ -136,12 +138,15 @@ middleware.ts         # legacy-route 301 redirects
 
 ## Known issues
 
-- **Vercel auto-deploy is silent.** GitHub → Vercel webhook stopped firing ~Apr 9. Manual `vercel --prod --force` is required until the GitHub App is reinstalled or the webhook redelivers.
-- **Vercel production env vars** — some were empty strings when set up; syncing from `.env.local` via the Vercel REST API is more reliable than the CLI. Phase 0 service creds (`BILLPLZ_*`, `MYINVOIS_*`, `OPENROUTER_API_KEY`, `GMAIL_*`) are placeholders until the real credentials exist.
-- **Google OAuth** is in Testing mode — only emails on the Test users list can sign in. Publish the consent screen before private beta.
+- **Vercel production env vars** — some were empty strings when the project was set up; sync from `.env.local` via the Vercel REST API (not `vercel env add` stdin piping, which silently stored empties). Phase 0 service creds (`BILLPLZ_*`, `MYINVOIS_*`, `OPENROUTER_API_KEY`, `GMAIL_*`) are placeholders until the real credentials exist.
+- **Google OAuth** in Testing mode — only emails on the Test users list can sign in. Publish the consent screen before private beta.
+- **Supabase region** is Mumbai — move to Singapore (`ap-southeast-1`) before public launch for MYT latency.
+
+(Vercel auto-deploy was silent ~Apr 9 to Apr 27; resolved by re-granting the GitHub App access to this repo + `vercel git disconnect && vercel git connect` to flush the stale link.)
 
 ## Documentation
 
+- [`docs/positioning/`](./docs/positioning/) — strategic compass (start with `00-manifesto.md`)
 - [CLAUDE.md](./CLAUDE.md) — full technical spec (stack, schema, patterns, integrations, env, known issues)
 - [HANDOFF.md](./HANDOFF.md) — status, open work, Phase 0 gates, deployment checklist
 - [scripts/phase-0/merchant-interview.md](./scripts/phase-0/merchant-interview.md) — 10-merchant validation script

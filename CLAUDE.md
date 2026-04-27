@@ -30,7 +30,7 @@
 | Payment | Midtrans Snap QRIS | Billplz (FPX / DuitNow QR / cards) — `lib/billplz/` |
 | Tax | e-Faktur / NPWP / NITKU / DJP XML | SST 0%/6% · MyInvois UBL 2.1 JSON · TIN · BRN · SST reg |
 | e-Invoice | DJP Coretax upload | LHDN MyInvois API — `lib/myinvois/` |
-| Pricing tiers | Rp15K/25K/39K/99K | RM 5 / 8 / 13 / 49 / 99 |
+| Pricing tiers | Rp15K/25K/39K/99K | Free / Pro RM 49 / Business RM 99 (legacy RM 5/8/13 pack model `@deprecated` in `config/plans.ts`, kept for API+DB compat) |
 | Timezone | WIB (UTC+7), quiet hours 21:00–05:00 | MYT (UTC+8), quiet hours 22:00–06:00 |
 | Language | Bahasa Indonesia | English (BM = Phase 4, not shipped) |
 | Cities | 27 ID cities | 44 MY cities × 16 states (DB `cities` + `provinces`, seeded by migration 080) |
@@ -128,6 +128,7 @@ features/{orders,customers,products,billing,recap,receipts,referral,invoices,sta
 lib/
 ├── billplz/                 # ACTIVE — types, client, verify
 ├── myinvois/                # ACTIVE — types, generate-json, client
+├── copy/index.ts            # Microcopy library — empty/error/loading/confirm/success/empathy templates + jargon-free labels (per docs/positioning/04)
 ├── pdf/generate-invoice.ts  # EN + TIN/BRN/SST + MyInvois UUID ref
 └── supabase/, voice/, offline/, utils/
 
@@ -199,6 +200,9 @@ Legacy paths: `/pembayaran` (payment result), `/pengingat` (reminders), `/profil
 - **Smart defaults:** `config/category-defaults.ts` — 28 entries map a `business_category` ID to mode (preorder/dine-in/booking), capacity, sample products, and suggested categories. Drives `/setup` step 1 → 2 transition.
 - **Pricing compass:** Traffic light 🟢🟡🔴⚫ in ProductForm (net margin after overhead). Peer benchmark via `/api/benchmark` (gated ≥10 users/cluster).
 - **Quiet hours:** `profiles.quiet_hours_start/end` (default 22:00–06:00 MYT). Push suppressed during window.
+- **Quota nudge:** two-state only — `"none"` until 50 orders used, then `"exhausted"`. No soft/medium/urgent thresholds, no `"X/50 used"` banners (anti-anxiety, see [`docs/positioning/03-features.md`](./docs/positioning/03-features.md)). `TrialBanner` shows a single quiet line at exhausted; settings page surfaces Pro upgrade as the only resolution path.
+- **Tax identity gating:** TIN/BRN/SST inputs in `/settings` only render for Pro merchants OR users who already have tax info entered — free-tier merchants don't see the form (compliance is silent superpower).
+- **Microcopy:** import from `lib/copy` for empty states, errors, loading, confirmations, success, and the 7 empathy moments. Adds new copy via this library, not inline.
 - **MyInvois submission (Pro):** One-tap from `/invoices/[id]` detail or `/invoices/[id]/edit`. Polls `/myinvois-status` every 5s until terminal (valid / invalid / cancelled / rejected) or 2 min timeout. Stores UUID + longId + validation state on the invoice row. 72h cancel modal with reason capture.
 - **SST calculation:** Per-invoice toggle (0% / 6%), seeded from `profile.default_sst_rate`. Not per-product-category (that would require schema extension).
 - **Staff assignment:** `AssigneePicker` component in `features/staff/components/`. Owner assigns from `/orders/[id]/edit`. Staff CRUD at `/settings/staff`. Phone+PIN staff login deferred to Phase 4.
@@ -234,10 +238,12 @@ Legacy paths: `/pembayaran` (payment result), `/pengingat` (reminders), `/profil
 | Job | Schedule (UTC) | MYT | Function |
 |---|---|---|---|
 | invoice-overdue | 07:00 | 15:00 | Mark overdue invoices |
-| morning-brief | 22:00 | 06:00 | Push: today's orders summary + cost trend alert (food cost delta ≥ 5pp) |
-| engagement | 00:00 | 08:00 | Push: death valley + milestones + monthly review |
-| alerts | 00:00 | 08:00 | Push: stock ≤ 3, capacity ≥ 80%, quota approaching, quota exhausted |
-| tax-reminder | 02:00 on day 10 | 10:00 | Push Pro merchants about sent invoices not yet submitted to MyInvois (quiet-hours aware) |
+| morning-brief | 22:00 | 06:00 | Push: today's lineup + cost trend (food cost delta ≥ 5pp) + **Hari Sepi** variant when today's revenue <30% of 7-day avg (with >RM 50/day baseline) |
+| engagement | 00:00 | 08:00 | Push: onboarding drip · milestone (10/50/100/500/1000) · monthly recap · **Anniversary** (1y/3y/5y) · **Customer Returns** (3+ orders, drip-deduped) · **Pre-Ramadan** (14d before, hard-coded dates 2027-2030) |
+| alerts | 00:00 | 08:00 | Push: stock ≤ 3, capacity ≥ 80%, quota exhausted (single trigger at 50, no pre-exhaustion banner per anti-anxiety rules) |
+| tax-reminder | 02:00 on day 10 | 10:00 | Pro merchants with unsubmitted invoices, quiet-hours aware (warm tone, not pressure) |
+
+**Mid-Rush** (client-side, not cron): the dashboard's realtime listener counts INSERTs in a 30-min sliding window and surfaces a one-time supportive toast at 5+ orders, 60-min suppressed via sessionStorage.
 
 ---
 
@@ -297,24 +303,18 @@ Fail any → re-evaluate wedge before more code.
 
 ---
 
-## Phase 2 — complete (shipped this session)
+## Recent reposition pass (2026-04-27)
 
-| # | Task | What shipped |
-|---|---|---|
-| 1 | InvoiceForm.tsx rewrite | TIN/BRN/SST inputs · SST 0/6% toggle · MyInvois submit + polling · RM 10K warning · +60 phone · EN |
-| 2 | InvoiceDetail.tsx rewrite | MyInvois UUID + longId display · 72h cancel modal · PDF download · SST display |
-| 3 | Tax engine refactor | `/api/tax/summary` + `/api/invoices/sst-summary` replace `/api/tax/{pph-calculation,rekap,omzet-summary}` · `/tax` page MY-native with RMCD SST-02 copy helper |
-| 4 | Staff accounts + assignment | Migration 079 · `/api/staff` + `/api/orders/[id]/assign` · `AssigneePicker` · `/settings/staff` CRUD |
-| 5 | Customer 1-tap reorder | `/api/public/order-history` · storefront past-orders panel with Reorder button · +60 phone validation fix |
-| 6 | Delete `lib/efaktur/` | Legacy XML generator + 4 legacy routes (`export`, `exportable`, `quota`, `ppn-summary`) removed |
-| 7 | NPWP/NITKU cleanup | Customer + settings + PDF + WA + cron copy all use TIN/BRN/SST |
-| 8 | Private beta prep | Analytics events wired, typecheck clean, Next build green |
+"From snap to sold" + anti-anxiety + microcopy library, shipped across 5 commits (10bc895 → 6fa38c3). Highlights:
 
-**Route rename** — `/pesanan → /orders`, `/produk → /products`, `/pelanggan → /customers`, `/persiapan → /prep`, `/rekap → /recap`, `/faktur → /invoices`, `/komunitas → /community`, `/pajak → /tax`, `/pengaturan → /settings`, `/pesan/[slug] → /order/[slug]`, plus subpath `baru → new` for orders/products/invoices/community. Middleware 301-redirects every legacy path.
-
-**Tier 4 cleanup** — `lib/utils/phone.ts` now normalises to `60…` (was `62…`), customer detail page lint fixed, PublicOrderForm BI calendar strings → EN, marketing copy polished for honesty, onboarding setup page translated, Gemini prompts rewritten for MY.
-
-**Honest positioning** — removed from the site: MDEC Partnership claim (application pending, not certified), bilingual EN/BM Pro feature (Phase 4 not shipped), MyInvois QR-code PDF receipts (PDF embeds UUID + longId as text, not QR image), auto-SST-by-product-category (not implemented). Replaced "auto-submit" / "auto-file SST" language with "one-tap submit" / "calculate SST" across landing/features/about/pricing. Added explicit disclaimer that SST filing itself is done separately via MySST.
+- **Marketing reposition** — landing, features, pricing, about, contact, mitra, toko, coba-aplikasi rewritten around the new tagline; LHDN demoted from hero to silent superpower
+- **Pricing collapsed** — UI shows Free / Pro RM 49 / Business RM 99 only; legacy RM 5/8/13 pack constants `@deprecated` (kept for grandfathered users + API/DB compat)
+- **Anti-anxiety sweep** — `BeresCelebration` deleted, `OnboardingChecklist` reframed as suggestions (no X/N count or strikethrough), `TrialBanner` collapsed to one quiet line at exhausted only, `getNudgeLevel` simplified to `"none" \| "exhausted"`
+- **Compliance gating** — TIN/BRN/SST inputs in settings now gated to Pro merchants or those with tax info already entered
+- **Microcopy library** — `lib/copy/index.ts` with empty/error/loading/confirm/success/empathy templates; wired into 4 list empty states (orders, products, customers, invoices)
+- **Empathy moments shipped** — Hari Sepi (morning-brief), Customer Returns + Anniversary + Pre-Ramadan (engagement cron), Mid-Rush (realtime client toast)
+- **Cron copy rewrite** — removed comparison shaming ("tidier than 90% of SMBs"), robotic factoids ("Science says"), pressure tone, Indonesian leaks
+- **Photo Magic plan** — [`docs/positioning/P4-photo-magic-plan.md`](./docs/positioning/P4-photo-magic-plan.md) scopes the 1-photo onboarding ticket (~8-12 days, Phase 1 deliverable)
 
 ---
 
@@ -366,4 +366,4 @@ Vault at `~/base/vault/credentials/tokoflow.md`:
 
 ---
 
-*Last updated: 2026-04-24 · Phase 1 complete · Phase 2 complete · Route rename complete · 80 migrations applied + tracked · Google OAuth live in testing mode · Launch-blocked on Phase 0 validation + real-world ops.*
+*Last updated: 2026-04-27 · "From snap to sold" reposition + anti-anxiety + microcopy + 4 new empathy moments shipped · Vercel auto-deploy restored · Launch-blocked on Phase 0 validation + real-world ops.*
