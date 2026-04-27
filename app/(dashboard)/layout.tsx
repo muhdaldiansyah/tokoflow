@@ -60,11 +60,7 @@ export default async function DashboardLayout({
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <MobileHeader userName={displayName} userEmail={user.email} userRole={profile?.role} ordersRemaining={ordersRemaining} isBisnisActive={isBisnisActive} totalOrders={totalOrders ?? 0} />
         <OfflineIndicator />
-        <TrialBanner
-          ordersUsed={profile?.orders_used ?? 0}
-          nudgeLevel={nudgeLevel}
-          ordersRemaining={ordersRemaining}
-        />
+        <TrialBanner nudgeLevel={nudgeLevel} />
         <main className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto p-4 lg:p-6">
           {children}
         </main>

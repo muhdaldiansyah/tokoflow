@@ -21,7 +21,6 @@ import { OnboardingChecklist } from "./OnboardingChecklist";
 import { WAPreviewSheet } from "./WAPreviewSheet";
 import { OrderCard } from "./OrderCard";
 import { SwipeConfirmModal } from "./SwipeConfirmModal";
-import { BeresCelebration } from "./BeresCelebration";
 import { usePeakMode } from "../hooks/usePeakMode";
 import { useFeatureUnlock } from "../hooks/useFeatureUnlock";
 import { updateOrderStatus } from "../services/order.service";
@@ -116,11 +115,7 @@ export function OrderList() {
   // Swipe-to-action
   const [swipeConfirmOrder, setSwipeConfirmOrder] = useState<Order | null>(null);
 
-  // Beres! celebration
   const [summaryKey, setSummaryKey] = useState(0);
-  const [showBeres, setShowBeres] = useState(false);
-  const [prevAllDone, setPrevAllDone] = useState<boolean | null>(null);
-  const beresShownThisSession = useRef(false);
 
   // Morning delivery summary
   const [deliverySummary, setDeliverySummary] = useState<{ count: number; items: { name: string; qty: number }[]; revenue: number } | null>(null);
@@ -471,26 +466,9 @@ export function OrderList() {
     return date.toLocaleDateString("en-MY", { day: "numeric", month: "short" }) + timeStr;
   }, []);
 
-  // Check "all done" for beres celebration (replaces HeroSummaryCell)
   useEffect(() => {
-    getTodaySummary().then((data) => {
-      handleHeroAllDone(data.allTodayDone);
-      setTodaySummary(data);
-    });
+    getTodaySummary().then(setTodaySummary);
   }, [summaryKey]);
-
-  function handleHeroAllDone(allDone: boolean) {
-    if (prevAllDone === false && allDone && !beresShownThisSession.current) {
-      // Check localStorage for once-per-day + session guard for undo/redo cycles
-      const todayKey = `tokoflow_beres_${new Date().toISOString().slice(0, 10)}`;
-      if (!localStorage.getItem(todayKey)) {
-        setShowBeres(true);
-        beresShownThisSession.current = true;
-        localStorage.setItem(todayKey, "1");
-      }
-    }
-    setPrevAllDone(allDone);
-  }
 
   function handleSwipeAdvance(order: Order) {
     setSwipeConfirmOrder(order);
@@ -1092,9 +1070,6 @@ export function OrderList() {
           </div>
         </div>
       )}
-
-      {/* Beres! celebration */}
-      {showBeres && <BeresCelebration onDismiss={() => setShowBeres(false)} />}
 
       {/* Swipe Confirm Modal */}
       {swipeConfirmOrder && (() => {

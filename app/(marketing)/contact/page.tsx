@@ -11,9 +11,9 @@ import {
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "Contact Tokoflow — Support for Malaysian SMBs",
+  title: "Contact Tokoflow",
   description:
-    "Reach Tokoflow via WhatsApp or email. Help with your store link, orders, DuitNow QR, MyInvois e-Invoice, and more.",
+    "Talk to us on WhatsApp or email. Real humans, honest answers. We reply within a day.",
   alternates: {
     canonical: "https://tokoflow.com/contact",
   },
@@ -23,22 +23,22 @@ const faqs = [
   {
     question: "Is Tokoflow free?",
     answer:
-      "Tokoflow is free forever — 50 orders per month includes every feature: store link, receipts, AI (paste chat, photo, voice), recap, and payment tracking. Need more? Top up from RM 5 / 50 orders or RM 8 / 100 orders via DuitNow QR. Or go Unlimited at RM 13/mo. Pro (RM 49/mo) adds MyInvois e-Invoice and SST handling.",
+      "Yes. Free forever — 50 orders/month, including the Photo Magic onboarding, your shop link, AI customer assistant, and Daily Summary. Pro (RM 49/mo) unlocks unlimited orders and the full AI companion. Business (RM 99/mo) adds silent LHDN MyInvois compliance.",
   },
   {
     question: "Do I need to install an app?",
     answer:
-      "No. Tokoflow works directly in your mobile browser or laptop — no install required. You can also add it to your home screen as a PWA for offline support.",
+      "Not yet. Right now Tokoflow runs in your mobile browser — works great as a PWA when you add to home screen. Native iOS and Android apps come a few months after launch.",
   },
   {
     question: "Is my data secure?",
     answer:
-      "Data is stored on encrypted servers. Each user can only access their own data — no one else can see your business records.",
+      "Yes. Encrypted servers, per-user data isolation, regular backups. We never sell or share your data. PDPA 2024-compliant.",
   },
   {
     question: "How do I delete my account?",
     answer:
-      "Email hello@tokoflow.com to request account deletion. Your data will be permanently removed in line with PDPA 2010.",
+      "One tap in Settings. Or email hello@tokoflow.com — your data will be removed permanently within 5 business days. No exit survey, no friction.",
   },
 ];
 
@@ -75,10 +75,10 @@ export default function ContactPage() {
           </nav>
 
           <h1 className="text-2xl lg:text-3xl font-semibold tracking-tight text-[#1E293B]">
-            Contact Tokoflow
+            Talk to us.
           </h1>
           <p className="mt-1 text-sm lg:text-base text-[#475569]">
-            Questions, issues, or feedback? Reach us directly on WhatsApp or email.
+            Real humans, honest answers. WhatsApp or email — both work.
           </p>
         </div>
       </div>

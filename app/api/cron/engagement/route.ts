@@ -3,60 +3,67 @@ import { createClient } from "@supabase/supabase-js";
 
 const EXPO_PUSH_URL = "https://exp.host/--/api/v2/push/send";
 
-// Messages keyed by trigger
+// Engagement push notifications.
+//
+// Voice rules from docs/positioning/02-product-soul.md:
+//   warm, personal, dignifying — never compare to peers, never shame inaction.
+// Anti-patterns explicitly removed from these strings:
+//   • "tidier than 90% of SMBs" → comparison shaming
+//   • "Science says habits form by day 66" → robotic factoid
+//   • "No orders yet?" → anxiety question to a struggling merchant
 const DEATH_VALLEY_MESSAGES: Record<string, { title: string; body: (ctx: MessageContext) => string }> = {
   day1_inactive: {
-    title: "Your store link is ready",
-    body: () => "Share it with one customer — orders land in your dashboard automatically",
+    title: "Your shop is live",
+    body: () => "Send the link to one customer — orders land here automatically.",
   },
   day3_active: {
-    title: "Your first order is in!",
-    body: (ctx) => `${ctx.ordersUsed} orders recorded. Check today's recap`,
+    title: "First order is in",
+    body: (ctx) => `${ctx.ordersUsed} order${ctx.ordersUsed === 1 ? "" : "s"} so far. Have a peek at today's recap when you have a moment.`,
   },
   day3_inactive: {
-    title: "No orders yet?",
-    body: () => "Try sending your store link to a nearby customer — free, no hassle",
+    title: "Still here when you need it",
+    body: () => "Whenever you're ready, share your shop link with one customer — that's all it takes to start.",
   },
   day7_active: {
-    title: "7 days on Tokoflow",
-    body: (ctx) => `${ctx.ordersUsed} orders recorded. You're already tidier than 90% of SMBs`,
+    title: "One week in",
+    body: (ctx) => `${ctx.ordersUsed} order${ctx.ordersUsed === 1 ? "" : "s"} recorded. Quietly building.`,
   },
   day7_inactive: {
-    title: "Your store link is still active",
-    body: (ctx) => ctx.slug ? `https://tokoflow.com/${ctx.slug} — customers can order anytime` : "Customers can order anytime via your store link",
+    title: "Your shop is still ready",
+    body: (ctx) => ctx.slug ? `tokoflow.com/${ctx.slug} — customers can order any time you're open.` : "Your shop link is open whenever you are.",
   },
   day14_active: {
-    title: "2 weeks!",
-    body: (ctx) => `${ctx.ordersUsed} orders, ${ctx.customerCount} customers. Tidier, more trustworthy`,
+    title: "Two weeks",
+    body: (ctx) => `${ctx.ordersUsed} order${ctx.ordersUsed === 1 ? "" : "s"}, ${ctx.customerCount} customer${ctx.customerCount === 1 ? "" : "s"}. Trust grows from here.`,
   },
   day14_inactive: {
-    title: "Welcome back anytime",
-    body: () => "Your orders are still saved. We're here when you need us",
+    title: "Welcome back any time",
+    body: () => "Everything you set up is still here.",
   },
   day21: {
-    title: "3 weeks — past the hump",
-    body: (ctx) => `${ctx.ordersUsed} orders recorded. Most merchants feel at home by now`,
+    title: "Three weeks",
+    body: (ctx) => `${ctx.ordersUsed} order${ctx.ordersUsed === 1 ? "" : "s"} recorded. The rhythm starts to settle in around now.`,
   },
   day30: {
-    title: "1 month on Tokoflow!",
-    body: (ctx) => `${ctx.ordersUsed} orders, ${ctx.customerCount} customers. Next month will be even better`,
+    title: "One month",
+    body: (ctx) => `${ctx.ordersUsed} order${ctx.ordersUsed === 1 ? "" : "s"}, ${ctx.customerCount} customer${ctx.customerCount === 1 ? "" : "s"}. That's a real start.`,
   },
   day45: {
-    title: "45 days — nearly a habit",
-    body: (ctx) => `${ctx.ordersUsed} orders this month. Keep going!`,
+    title: "Forty-five days",
+    body: (ctx) => `${ctx.ordersUsed} order${ctx.ordersUsed === 1 ? "" : "s"} this month — you're finding the groove.`,
   },
   day66: {
-    title: "66 days — new habit formed",
-    body: () => "Science says habits form by day 66. Tokoflow is part of your routine now",
+    title: "Two months in",
+    body: () => "Tokoflow's part of your routine now. We're glad to be along.",
   },
 };
 
 const MILESTONE_MESSAGES: Record<number, { title: string; body: string }> = {
-  10: { title: "10th order!", body: "Great start. From selling to a real business" },
-  50: { title: "50 orders recorded!", body: "That's 50 pages of notes — all tidy" },
-  100: { title: "100 orders!", body: "From selling to a real business — for real" },
-  500: { title: "500 orders!", body: "You've served hundreds of families" },
-  1000: { title: "1,000 orders!", body: "You're not just selling — you're running a business" },
+  10: { title: "Ten orders", body: "A real start — and only growing from here." },
+  50: { title: "Fifty orders", body: "Fifty customers fed by your work. That counts." },
+  100: { title: "One hundred", body: "A hundred orders. This is no longer a side thing." },
+  500: { title: "Five hundred", body: "You've quietly served hundreds of families. Take a moment." },
+  1000: { title: "One thousand orders", body: "A thousand. Not just selling — running a business." },
 };
 
 interface MessageContext {
@@ -206,7 +213,7 @@ export async function POST(request: NextRequest) {
         pushMessages.push({
           to: profile.push_token,
           title: `${monthName} recap`,
-          body: `${orderCount} customers served${revenueStr ? `, ${revenueStr} revenue` : ""}. ${customerCount || 0} customers trust you. From selling to running a business.`,
+          body: `${orderCount} order${orderCount === 1 ? "" : "s"}${revenueStr ? `, ${revenueStr}` : ""}. ${customerCount || 0} customer${customerCount === 1 ? "" : "s"} along the way.`,
           sound: "default",
           data: { screen: "recap" },
         });

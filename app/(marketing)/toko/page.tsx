@@ -6,16 +6,16 @@ import { getCategories, buildCategoryLabels } from "@/config/categories";
 import { DirectoryGrid } from "./DirectoryGrid";
 
 export const metadata: Metadata = {
-  title: "Browse stores — Caterers, Bakeries & F&B SMBs | Tokoflow",
+  title: "Discover sellers near you | Tokoflow",
   description:
-    "Find catering, bakery, cakes, and F&B merchants in your city. Order directly, no hefty commissions.",
+    "Real shops by real people — bakers, caterers, cooks, crafters. Order directly. No commissions, no middlemen.",
   alternates: { canonical: `${siteConfig.url}/toko` },
   openGraph: {
     type: "website",
     url: `${siteConfig.url}/toko`,
-    title: "Browse stores — Katering & Bakery di Kotamu",
+    title: "Discover sellers near you | Tokoflow",
     description:
-      "Find catering, bakery, cakes, and F&B merchants. Order directly, no hefty commissions.",
+      "Real shops by real people. Order directly, no commissions, no middlemen.",
     siteName: siteConfig.name,
   },
 };
@@ -129,8 +129,8 @@ export default async function TokoPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "F&B SMBs on Tokoflow",
-    description: "Caterers, bakeries, and food SMBs taking orders online via Tokoflow",
+    name: "Sellers on Tokoflow",
+    description: "Independent shops — bakers, caterers, cooks, crafters — taking orders directly via Tokoflow",
     numberOfItems: merchants.length,
     itemListElement: merchants.slice(0, 20).map((m, i) => ({
       "@type": "ListItem",
@@ -146,7 +146,7 @@ export default async function TokoPage() {
             "@type": "PostalAddress",
             streetAddress: m.business_address,
             ...(m.city && { addressLocality: m.city }),
-            addressCountry: "ID",
+            addressCountry: "MY",
           },
         }),
       },
@@ -164,11 +164,11 @@ export default async function TokoPage() {
       <section className="pt-22 pb-4 bg-gradient-to-b from-emerald-50/40 to-transparent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-baseline justify-between">
           <h1 className="text-xl font-bold text-foreground">
-            Browse stores
+            Discover sellers
           </h1>
           {merchants.length > 0 && (
             <span className="text-sm text-muted-foreground">
-              {merchants.length} toko
+              {merchants.length} shops
             </span>
           )}
         </div>
@@ -191,15 +191,15 @@ export default async function TokoPage() {
       {/* CTA for merchants */}
       <section className="py-16 border-t border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-2xl font-bold text-foreground">Got a food business?</h2>
+          <h2 className="text-2xl font-bold text-foreground">Sell something?</h2>
           <p className="mt-3 text-muted-foreground max-w-lg mx-auto">
-            Sign up free — your store appears here automatically. Customers can find and order directly.
+            Sign up free — one photo, your shop is live. Appears here automatically. Customers find you, order directly.
           </p>
           <a
             href="/register"
             className="inline-flex items-center justify-center mt-6 h-11 px-6 rounded-lg bg-[#05A660] text-white text-sm font-medium hover:bg-[#05A660]/90 transition-colors"
           >
-            Sign up free
+            Start free
           </a>
         </div>
       </section>

@@ -2,36 +2,34 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
-  ShoppingBag,
-  BarChart3,
-  Receipt,
-  MessageSquare,
-  LinkIcon,
-  Mic,
-  ClipboardPaste,
   Camera,
-  Users,
-  Package,
+  Mic,
+  Heart,
+  Sun,
+  LinkIcon,
+  ClipboardPaste,
+  Sparkles,
+  ShoppingBag,
   CalendarClock,
-  FileBarChart,
   QrCode,
-  Bell,
+  MessageSquare,
   ClipboardList,
-  Gauge,
   Calculator,
   ImageIcon,
-  Download,
+  Bell,
+  Receipt,
+  BarChart3,
+  Users,
   WifiOff,
-  UtensilsCrossed,
   FileCheck,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Features — LHDN-Ready WhatsApp Storefront | Tokoflow",
+  title: "Features — From snap to sold | Tokoflow",
   description:
-    "Share a store link, take orders via WhatsApp, submit LHDN MyInvois e-Invoices in one tap — everything a Malaysian small business needs.",
+    "Designed around five iconic moments that make selling humane. The Photo Magic, The Voice Ask, The Vibrate, The Swipe Forward, and The Evening Embrace.",
   alternates: {
     canonical: "https://tokoflow.com/features",
   },
@@ -39,54 +37,76 @@ export const metadata: Metadata = {
 
 type Feature = { icon: LucideIcon; title: string; desc: string };
 
-const sections: { label: string; features: Feature[] }[] = [
+const sections: { label: string; intro: string; features: Feature[] }[] = [
   {
-    label: "Take orders",
+    label: "The Photo Magic",
+    intro: "Sixty seconds from snap to live shop. No setup wizards, no business-type dropdowns, no forms. Just the camera you already use.",
     features: [
-      { icon: LinkIcon, title: "Store link", desc: "Share your link, customers order themselves, everything lands in your dashboard." },
-      { icon: ClipboardPaste, title: "Paste WhatsApp chat", desc: "Paste a WhatsApp thread — AI turns it into a clean order." },
-      { icon: Mic, title: "Voice to order", desc: "Speak the order — AI transcribes items and quantities." },
-      { icon: Camera, title: "Screenshot to order", desc: "Snap a photo of a WhatsApp chat — AI reads and structures it." },
+      { icon: Camera, title: "1-photo onboarding", desc: "Point your camera at your kitchen or your bakes. AI generates your shop name, story, menu, prices, and beautiful product photos in seconds." },
+      { icon: Mic, title: "Voice setup fallback", desc: "Prefer speaking? Tap mic and say what you sell. \"I sell nasi goreng RM 12, mee ayam RM 10.\" Done." },
+      { icon: Sparkles, title: "Smart defaults from context", desc: "Location, time, photo — Tokoflow infers your business type, hours, currency. You never pick anything from a dropdown." },
+      { icon: LinkIcon, title: "One-tap share", desc: "Once your shop is live, share to IG bio, TikTok, WhatsApp status with a single tap." },
     ],
   },
   {
-    label: "Manage & fulfil",
+    label: "The Storefront",
+    intro: "A link with a face — your story, your menu, your customer's path from curious to confirmed.",
     features: [
-      { icon: Package, title: "Product list", desc: "Set up once — your products appear on the store link and order form." },
-      { icon: ShoppingBag, title: "Order status", desc: "Swipe the card to advance: New → Processing → Shipped → Completed." },
-      { icon: ShoppingBag, title: "Payment tracking", desc: "Mark orders Paid, Partial, or Unpaid." },
-      { icon: CalendarClock, title: "Pre-order mode", desc: "Customers order ahead, ready on the chosen date. Ideal for catering, custom cakes, apparel." },
-      { icon: UtensilsCrossed, title: "Subscription mode", desc: "Recurring customers who pay on account. Ideal for wholesale, supply, standing orders." },
-      { icon: Gauge, title: "Daily capacity + rest mode", desc: "Cap orders per day. When full, the form auto-closes — the system keeps you from overworking." },
-      { icon: CalendarClock, title: "Delivery scheduling", desc: "Set ship dates, see what needs to be prepared today." },
-      { icon: ImageIcon, title: "Reference photos", desc: "Attach design or reference photos to orders. Max 3 per order." },
-      { icon: QrCode, title: "DuitNow QR payment", desc: "Upload your DuitNow QR — customers pay right after ordering." },
-      { icon: MessageSquare, title: "One-tap WhatsApp", desc: "Confirmation, reminders, receipts — one tap to your customer's WhatsApp." },
-      { icon: Receipt, title: "Digital receipts", desc: "Generate a receipt, send to WhatsApp. No printer required." },
-      { icon: Bell, title: "Payment reminders", desc: "Unpaid? Send a reminder directly via WhatsApp." },
+      { icon: LinkIcon, title: "Beautiful shop page", desc: "Your photo, your story, your menu. Real personality, not a template." },
+      { icon: MessageSquare, title: "AI conversational order flow", desc: "Visual menu by default; AI handles questions, custom requests, and \"are you open?\" — quietly, on your behalf." },
+      { icon: Heart, title: "Personal story block", desc: "Two or three lines about who you are. Customers feel they're buying from a person, not a faceless seller." },
+      { icon: QrCode, title: "Instant payment", desc: "DuitNow QR, FPX, cards, e-wallets — pay in 30 seconds, no redirects." },
+      { icon: Sparkles, title: "1-tap reorder", desc: "Returning customers see \"Order the same as last week?\" — phone-based, no signup, no cookies." },
     ],
   },
   {
-    label: "Compliance & invoicing (Pro)",
+    label: "The Vibrate, The Swipe, The Voice",
+    intro: "When work is happening, Tokoflow disappears. When you need it, one gesture is enough.",
     features: [
-      { icon: FileCheck, title: "LHDN MyInvois submit", desc: "One-tap submit to MyInvois with UBL 2.1 JSON. Validated UUID + Long ID stored on the invoice." },
-      { icon: Calculator, title: "SST calculation", desc: "0% or 6% — pick per invoice or set a merchant default. Mirrored to legacy columns during migration." },
-      { icon: FileCheck, title: "> RM 10,000 flag", desc: "Invoices at or above RM 10,000 with no buyer TIN are flagged for individual submission (LHDN rule, 1 Jan 2026)." },
-      { icon: Receipt, title: "Invoice PDF", desc: "Branded A4 PDF with MyInvois UUID + Long ID reference printed on the receipt." },
+      { icon: Heart, title: "Vibrate-only notifications", desc: "Soft buzz when an order arrives. No jarring sound by default. Tokoflow respects the kitchen, the hands, the flow." },
+      { icon: ShoppingBag, title: "Swipe forward", desc: "Swipe right to advance an order: received → cooking → ready → out → done. One gesture per step. That's it." },
+      { icon: Mic, title: "The Voice Ask", desc: "Tap mic, ask anything. \"Show me Pak Andi's orders from last week.\" \"Add ayam crispy, 27 ringgit.\" \"How much chicken's left?\" — done." },
+      { icon: Bell, title: "Quiet hours by default", desc: "22:00–06:00 silent automatically. Family time stays family time." },
     ],
   },
   {
-    label: "Insights & recap",
+    label: "The Companion",
+    intro: "A presence that knows when to help, and when to stay quiet.",
     features: [
-      { icon: Users, title: "Customer directory", desc: "Auto-built from orders. See history, lifetime spend, filter unpaid." },
-      { icon: ClipboardList, title: "Prep list", desc: "Daily totals by product — generated from incoming orders. Send to WhatsApp." },
-      { icon: Calculator, title: "Cost & profit", desc: "Enter COGS per item, see margin and profit per product in the recap." },
-      { icon: BarChart3, title: "Store visits", desc: "See how many people opened your store link, from where, and when it peaks." },
-      { icon: BarChart3, title: "Daily recap", desc: "Orders, revenue, visitors, and top products for the day." },
-      { icon: FileBarChart, title: "Monthly report", desc: "Revenue, top customers, best-sellers, visit patterns — export to Excel." },
-      { icon: Download, title: "Excel export", desc: "Export all orders, recap, or prep lists as Excel files." },
-      { icon: BarChart3, title: "AI insights", desc: "Plain-English recommendations from your order trends and store visits." },
-      { icon: WifiOff, title: "Offline mode", desc: "Lost connection? Orders still get logged, sync automatically when back online." },
+      { icon: MessageSquare, title: "AI customer assistant", desc: "Replies to standard questions on your behalf — hours, address, prices, custom requests. You only see the chats that matter." },
+      { icon: ClipboardList, title: "Auto customer follow-up", desc: "\"Your order's ready.\" \"Thank you, see you next time.\" Tokoflow keeps the relationship alive while you cook." },
+      { icon: ImageIcon, title: "Inventory by photo", desc: "Restocked? Take a photo. Tokoflow tracks. \"Chicken's running low — want me to remind your supplier?\"" },
+      { icon: BarChart3, title: "Pricing whisper", desc: "Once a week, a gentle nudge: \"Peers in Shah Alam sell kuih lapis at RM 6, you're at RM 5. You could go a bit higher.\" Optional, never pushy." },
+    ],
+  },
+  {
+    label: "The Evening Embrace",
+    intro: "Each evening, Tokoflow has something kind to say. Not charts — stories.",
+    features: [
+      { icon: Sun, title: "Daily summary, told kindly", desc: "\"You did well today. 23 orders, RM 1,247. Pak Andi said your kek lapis was wonderful.\" On slow days: \"Today was quieter. That's okay. Rest up.\"" },
+      { icon: Heart, title: "Weekly story", desc: "\"This week — 3 first-time customers, all loved it. Top item: kek lapis, ordered 18×.\" Numbers told as a narrative." },
+      { icon: Users, title: "Customer recognition", desc: "\"Pak Andi's back! 3rd time this month. Want me to tag him 'regular'?\"" },
+      { icon: CalendarClock, title: "Seasonal awareness", desc: "Two weeks before Ramadan: \"Want help prepping your takjil menu?\" Tokoflow knows the rhythm of Malaysian commerce." },
+    ],
+  },
+  {
+    label: "Silent superpower (Business)",
+    intro: "Behind the scenes — invoices, SST, LHDN MyInvois — handled quietly. You'll never have to think about a tax form.",
+    features: [
+      { icon: FileCheck, title: "LHDN MyInvois auto-submit", desc: "Each paid invoice flows into MyInvois automatically. UUID + Long ID stored. You never log in to LHDN." },
+      { icon: Calculator, title: "SST, calculated", desc: "0% or 6%, applied per invoice or as default. Tokoflow does the math, files the records." },
+      { icon: Receipt, title: "Beautiful PDF receipts", desc: "Auto-generated, sent to WhatsApp on your behalf. Branded, dignified, with MyInvois reference." },
+      { icon: Bell, title: "Tax reminder, gentle", desc: "\"This month's tax has been filed automatically.\" Information, not a task." },
+    ],
+  },
+  {
+    label: "Reliability",
+    intro: "Quiet things that just work. So you trust the tool, then forget it.",
+    features: [
+      { icon: WifiOff, title: "Works offline", desc: "Lost signal? Keep taking orders. Everything syncs when you're back online." },
+      { icon: ShoppingBag, title: "Stock auto-decrement", desc: "When you sell out, the menu auto-disables that item. No manual updates required." },
+      { icon: ClipboardList, title: "Daily prep list", desc: "Today's totals by product, in one tap. Bring to the kitchen, send to your team via WhatsApp." },
+      { icon: Sparkles, title: "Auto invoice numbering", desc: "Sequential, never duplicated, ready when you need it." },
     ],
   },
 ];
@@ -112,10 +132,10 @@ export default function FeaturesPage() {
       <section className="pt-24 lg:pt-28 pb-10 lg:pb-12">
         <div className="max-w-2xl mx-auto px-4 text-center">
           <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-foreground">
-            Everything you need to run your business
+            Designed around five iconic moments.
           </h1>
           <p className="mt-3 text-muted-foreground lg:text-lg">
-            Take orders, get paid, stay LHDN-compliant — no commission, customers stay yours.
+            The Photo Magic. The Vibrate. The Swipe Forward. The Voice Ask. The Evening Embrace. Everything else exists to support these — quietly.
           </p>
         </div>
       </section>
@@ -124,8 +144,11 @@ export default function FeaturesPage() {
       {sections.map((section, i) => (
         <section key={section.label} className={`py-12 lg:py-14 ${i > 0 ? "border-t" : ""}`}>
           <div className="max-w-2xl mx-auto px-4">
-            <p className="text-xs font-bold text-foreground/50 uppercase tracking-wider mb-6">
+            <p className="text-xs font-bold text-foreground/50 uppercase tracking-wider mb-2">
               {section.label}
+            </p>
+            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+              {section.intro}
             </p>
             <div className="divide-y divide-border">
               {section.features.map((f) => (
@@ -142,10 +165,10 @@ export default function FeaturesPage() {
       <section className="border-t py-12 lg:py-16">
         <div className="max-w-2xl mx-auto px-4 text-center">
           <h2 className="text-xl lg:text-2xl font-bold tracking-tight text-foreground">
-            From selling to a real business. Free to start.
+            Your shop. One photo away.
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            50 orders/month free — forever. No commission. Customers stay yours.
+            Free forever for your first 50 orders/month. No credit card. No commission.
           </p>
           <div className="mt-6">
             <Button
@@ -154,7 +177,7 @@ export default function FeaturesPage() {
               asChild
             >
               <Link href="/login">
-                Start now
+                Start free
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>

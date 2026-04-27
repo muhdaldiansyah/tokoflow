@@ -4,7 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Partner program — Tokoflow",
   description:
-    "Help fellow Malaysian small businesses level up with Tokoflow. Earn RM 2 per friend who signs up + 30% commission on their payments for 6 months.",
+    "Invite a friend to Tokoflow. Earn RM 2 when they place their first order, plus 30% commission on their payments for 6 months. Real cash, no points.",
 };
 
 export default function MitraPage() {
@@ -13,10 +13,10 @@ export default function MitraPage() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-12">
           <h1 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-4">
-            Tokoflow partner program
+            Bring a friend along.
           </h1>
           <p className="text-lg text-[#475569] max-w-xl mx-auto">
-            Help fellow SMBs level up — from selling to a real business. Earn cash for every friend who joins.
+            Know someone who&apos;d love a calmer way to run their shop? Send them your link. When they sell, you earn — quietly, fairly.
           </p>
         </div>
 
@@ -29,12 +29,12 @@ export default function MitraPage() {
           <div className="rounded-xl border border-border bg-white p-6 shadow-sm text-center">
             <div className="h-12 w-12 rounded-full bg-green-50 text-green-600 flex items-center justify-center mx-auto mb-3 text-xl font-bold">2</div>
             <h3 className="font-semibold text-[#1E293B] mb-1">Share link</h3>
-            <p className="text-sm text-[#475569]">Send your link to SMB friends via WhatsApp. Help them run a cleaner business.</p>
+            <p className="text-sm text-[#475569]">Send your link to friends who sell on WhatsApp, IG, or TikTok.</p>
           </div>
           <div className="rounded-xl border border-border bg-white p-6 shadow-sm text-center">
             <div className="h-12 w-12 rounded-full bg-green-50 text-green-600 flex items-center justify-center mx-auto mb-3 text-xl font-bold">3</div>
             <h3 className="font-semibold text-[#1E293B] mb-1">Get paid</h3>
-            <p className="text-sm text-[#475569]">RM 2 when they place their first order + 30% commission on their payments for 6 months.</p>
+            <p className="text-sm text-[#475569]">RM 2 on their first order + 30% commission on their payments for 6 months.</p>
           </div>
         </div>
 

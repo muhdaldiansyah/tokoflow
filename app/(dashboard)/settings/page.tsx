@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { getProfile, updateProfile, updateSlug, updateOrderFormEnabled, updateDailyOrderCapacity, updateQuietHours } from "@/features/receipts/services/receipt.service";
 import { isValidSlug, isReservedSlug, generateSlug } from "@/lib/utils/slug";
 import { track } from "@/lib/analytics";
-import { PACK_PRICE, PACK_ORDERS, PACK_CODE, MEDIUM_PACK_PRICE, MEDIUM_PACK_ORDERS, MEDIUM_PACK_CODE, UNLIMITED_CODE, UNLIMITED_PRICE, FREE_MONTHLY_ORDERS, getOrdersRemaining, isOrderQuotaExhausted, getNudgeLevel, isUnlimited, BISNIS_CODE, BISNIS_PRICE, isBisnis } from "@/config/plans";
+import { getOrdersRemaining, isOrderQuotaExhausted, isUnlimited, BISNIS_CODE, BISNIS_PRICE, isBisnis } from "@/config/plans";
 import type { Profile } from "@/features/receipts/types/receipt.types";
 import { createClient } from "@/lib/supabase/client";
 import { getProducts } from "@/features/products/services/product.service";
@@ -42,9 +42,6 @@ export default function SettingsPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSendingReset, setIsSendingReset] = useState(false);
-  const [isBuyingPack, setIsBuyingPack] = useState(false);
-  const [isBuyingMediumPack, setIsBuyingMediumPack] = useState(false);
-  const [isBuyingUnlimited, setIsBuyingUnlimited] = useState(false);
   const [isBuyingBisnis, setIsBuyingBisnis] = useState(false);
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -212,21 +209,6 @@ export default function SettingsPage() {
     [],
   );
 
-  const handleBuyPack = useCallback(
-    () => startBillplzCheckout(PACK_CODE, setIsBuyingPack),
-    [startBillplzCheckout],
-  );
-
-  const handleBuyMediumPack = useCallback(
-    () => startBillplzCheckout(MEDIUM_PACK_CODE, setIsBuyingMediumPack),
-    [startBillplzCheckout],
-  );
-
-  const handleBuyUnlimited = useCallback(
-    () => startBillplzCheckout(UNLIMITED_CODE, setIsBuyingUnlimited),
-    [startBillplzCheckout],
-  );
-
   const handleBuyBisnis = useCallback(() => {
     track("bisnis_purchase_started", {});
     startBillplzCheckout(BISNIS_CODE, setIsBuyingBisnis);
@@ -265,17 +247,13 @@ export default function SettingsPage() {
 
   const bisnisActive = profile ? isBisnis(profile) : false;
 
-  const fullUrl = `tokoflow.com/${slugInput || "..."}`;
   const hasSlug = !!profile?.slug;
 
   // Derived order quota values
-  const ordersUsed = profile?.orders_used ?? 0;
-  const freeUsed = Math.min(ordersUsed, FREE_MONTHLY_ORDERS);
-  const orderCredits = profile?.order_credits ?? 0;
   const totalRemaining = profile ? getOrdersRemaining(profile) : 0;
   const quotaExhausted = profile ? isOrderQuotaExhausted(profile) : false;
-  const nudgeLevel = profile ? getNudgeLevel(profile) : "none";
   const unlimited = profile ? isUnlimited(profile) : false;
+  const hasTaxInfo = !!(profile?.tin || profile?.brn || profile?.sst_registration_id);
 
   if (isLoading) {
     return (
@@ -559,11 +537,11 @@ export default function SettingsPage() {
           <p className="text-[10px] text-muted-foreground -mt-1">Operating costs beyond raw materials (transport, rent, utilities, packaging). Used to calculate real margin on product pages.</p>
         </div>
 
-        {/* Incomplete items — only show when something is missing */}
+        {/* Suggested next steps — listed without a count to avoid completion-% guilt. */}
         {hasSlug && missingItems.length > 0 && (
           <div className="border-t px-4 py-3">
             <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
-              Complete your store ({missingItems.length} remaining)
+              Suggested next steps
             </p>
             <div className="space-y-1">
               {missingItems.map((item) => (
@@ -575,171 +553,26 @@ export default function SettingsPage() {
 
       </div>
 
-      {/* ── SECTION 3: KUOTA PESANAN ── */}
+      {/* ── SECTION: ORDER QUOTA ── */}
       <div className="rounded-lg border bg-card px-4 py-4 shadow-sm">
-        <div className="flex items-center justify-between mb-1">
-          <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">Order quota</p>
-          {unlimited && (
-            <span className="inline-flex h-6 px-2.5 text-xs font-medium rounded-full border border-green-200 bg-green-50 text-green-700 items-center">
-              Unlimited
-            </span>
-          )}
+        <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">Orders this month</p>
+
+        <div className="text-center my-3">
+          <p className="text-3xl font-bold text-foreground leading-none">
+            {unlimited || totalRemaining === Infinity ? "\u221e" : totalRemaining}
+          </p>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {unlimited ? "unlimited on Pro" : "orders left on the free tier"}
+          </p>
         </div>
 
-        {unlimited ? (
-          <div className="text-center my-3">
-            <p className="text-3xl font-bold text-foreground leading-none">&infin;</p>
-            <p className="text-xs text-muted-foreground mt-0.5">unlimited orders left this month</p>
-          </div>
-        ) : (
-          <>
-            <div className="text-center my-3">
-              <p className="text-3xl font-bold text-foreground leading-none">
-                {totalRemaining === Infinity ? "\u221e" : totalRemaining}
-              </p>
-              <p className="text-xs text-muted-foreground mt-0.5">orders remaining</p>
-            </div>
-
-            <div className="space-y-1.5 mb-4">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">Free this month</span>
-                <span className="font-medium text-foreground">{freeUsed}/{FREE_MONTHLY_ORDERS}</span>
-              </div>
-              {/* Progress bar */}
-              <div className="h-2 rounded-full bg-muted overflow-hidden">
-                <div
-                  className={`h-full rounded-full transition-all ${freeUsed >= FREE_MONTHLY_ORDERS ? "bg-amber-500" : freeUsed >= 40 ? "bg-amber-400" : "bg-warm-green"}`}
-                  style={{ width: `${Math.min(100, (freeUsed / FREE_MONTHLY_ORDERS) * 100)}%` }}
-                />
-              </div>
-              {orderCredits > 0 && (
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">From pack (never expires)</span>
-                  <span className="font-medium text-foreground">{orderCredits}</span>
-                </div>
-              )}
-            </div>
-          </>
-        )}
-
-        {(nudgeLevel === "soft" || nudgeLevel === "medium") && (
-          <div className="rounded-lg bg-blue-50 border border-blue-200 px-3 py-2 text-center mb-3">
-            <p className="text-xs font-medium text-blue-800">
-              Business is picking up! Top up orders from RM {Math.round(PACK_PRICE / PACK_ORDERS).toLocaleString("en-MY")}/order.
-            </p>
-          </div>
-        )}
-
-        {nudgeLevel === "urgent" && (
-          <div className="rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-center mb-3">
-            <p className="text-xs font-medium text-amber-800">
-              {FREE_MONTHLY_ORDERS - freeUsed} free orders left. Top up from RM {PACK_PRICE} to avoid disruption.
-            </p>
-          </div>
-        )}
-
         {quotaExhausted && (
-          <div className="rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-center mb-3">
-            <p className="text-xs font-medium text-amber-800">
-              Quota exhausted — new orders on hold. Top up from RM {PACK_PRICE} for {PACK_ORDERS} orders.
+          <div className="rounded-lg bg-warm-green-light border border-warm-green/20 px-3 py-2 text-center">
+            <p className="text-xs text-warm-green">
+              You&rsquo;ve passed 50 orders this month. Go unlimited with Pro below.
             </p>
           </div>
         )}
-
-        {!unlimited && (
-          <div className="space-y-2">
-            {/* Pack Kecil */}
-            <button
-              onClick={handleBuyPack}
-              disabled={isBuyingPack}
-              className="w-full rounded-xl border border-border bg-card px-3.5 py-3 text-left hover:bg-muted/50 active:bg-muted transition-colors disabled:opacity-50"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-lg bg-warm-green/10 flex items-center justify-center shrink-0">
-                    <Zap className="w-4 h-4 text-warm-green" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">{PACK_ORDERS} Order top-up</p>
-                    <p className="text-[10px] text-muted-foreground">RM {Math.round(PACK_PRICE / PACK_ORDERS).toLocaleString("en-MY")}/order · never expires</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  {isBuyingPack ? (
-                    <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-                  ) : (
-                    <>
-                      <p className="text-sm font-bold text-foreground">RM {PACK_PRICE}</p>
-                      <p className="text-[10px] text-muted-foreground">QRIS</p>
-                    </>
-                  )}
-                </div>
-              </div>
-            </button>
-
-            {/* Pack Besar (Decoy) */}
-            <button
-              onClick={handleBuyMediumPack}
-              disabled={isBuyingMediumPack}
-              className="w-full rounded-xl border border-border bg-card px-3.5 py-3 text-left hover:bg-muted/50 active:bg-muted transition-colors disabled:opacity-50"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-lg bg-warm-green/10 flex items-center justify-center shrink-0">
-                    <Zap className="w-4 h-4 text-warm-green" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">{MEDIUM_PACK_ORDERS} Order top-up</p>
-                    <p className="text-[10px] text-muted-foreground">RM {Math.round(MEDIUM_PACK_PRICE / MEDIUM_PACK_ORDERS).toLocaleString("en-MY")}/order · never expires</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  {isBuyingMediumPack ? (
-                    <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-                  ) : (
-                    <>
-                      <p className="text-sm font-bold text-foreground">RM {MEDIUM_PACK_PRICE}</p>
-                      <p className="text-[10px] text-muted-foreground">QRIS</p>
-                    </>
-                  )}
-                </div>
-              </div>
-            </button>
-
-            {/* Unlimited */}
-            <button
-              onClick={handleBuyUnlimited}
-              disabled={isBuyingUnlimited}
-              className="w-full rounded-xl border-2 border-warm-green/30 bg-warm-green/5 px-3.5 py-3 text-left hover:bg-warm-green/10 active:bg-warm-green/15 transition-colors disabled:opacity-50"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-lg bg-warm-green/10 flex items-center justify-center shrink-0">
-                    <Zap className="w-4 h-4 text-warm-green" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">Unlimited 1 Bulan</p>
-                    <p className="text-[10px] text-muted-foreground">Unlimited orders · best value</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  {isBuyingUnlimited ? (
-                    <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-                  ) : (
-                    <>
-                      <p className="text-sm font-bold text-warm-green">RM {UNLIMITED_PRICE}</p>
-                      <p className="text-[10px] text-muted-foreground">QRIS</p>
-                    </>
-                  )}
-                </div>
-              </div>
-            </button>
-          </div>
-        )}
-
-        <p className="text-[11px] text-muted-foreground text-center mt-3">
-          Semua fitur gratis tanpa batas: store link, struk, AI, rekap.
-        </p>
       </div>
 
       {/* ── SECTION: PRO PLAN ── */}
@@ -766,32 +599,29 @@ export default function SettingsPage() {
         ) : (
           <>
             <p className="text-xs text-muted-foreground">
-              From orders to LHDN e-invoices in one click. Save ~10 hours/month on compliance admin.
+              Unlimited orders, voice and image order parsing, peer pricing whisper, and the silent compliance layer when you need it.
             </p>
             <div className="space-y-1.5 text-[11px] text-muted-foreground">
-              <p className="flex items-center gap-1.5">✅ 1-click LHDN MyInvois submission</p>
-              <p className="flex items-center gap-1.5">✅ SST 0%/6% reporting — monthly summary</p>
+              <p className="flex items-center gap-1.5">✅ Unlimited orders, no quota nudge</p>
+              <p className="flex items-center gap-1.5">✅ Voice + photo order parsing</p>
+              <p className="flex items-center gap-1.5">✅ Pricing whisper from peer benchmarks</p>
               <p className="flex items-center gap-1.5">✅ Formal invoice + A4 PDF + WhatsApp send</p>
-              <p className="flex items-center gap-1.5">✅ Receivables aging + invoice status tracking</p>
-              <p className="flex items-center gap-1.5">✅ Order → Invoice in one click (only on Tokoflow)</p>
-              <p className="flex items-center gap-1.5">✅ Unlimited orders</p>
-            </div>
-            <div className="rounded-lg bg-amber-50 border border-amber-200 p-2.5 text-[11px] text-amber-800">
-              💡 SMBs typically pay tax agents RM 500+/mo for MyInvois & SST filings. With Tokoflow Pro you handle it yourself for just RM 49/mo.
+              <p className="flex items-center gap-1.5">✅ Receivables tracking + monthly recap</p>
+              <p className="flex items-center gap-1.5 text-muted-foreground/80">✅ One-tap LHDN MyInvois submit when you&rsquo;re ready</p>
             </div>
             <button
               onClick={handleBuyBisnis}
               disabled={isBuyingBisnis}
-              className="w-full rounded-xl border-2 border-blue-200 bg-blue-50 px-3.5 py-3 text-left hover:bg-blue-100 transition-colors disabled:opacity-50"
+              className="w-full rounded-xl border-2 border-warm-green/30 bg-warm-green/5 px-3.5 py-3 text-left hover:bg-warm-green/10 transition-colors disabled:opacity-50"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
-                    <Zap className="w-4 h-4 text-blue-600" />
+                  <div className="h-9 w-9 rounded-lg bg-warm-green/10 flex items-center justify-center shrink-0">
+                    <Zap className="w-4 h-4 text-warm-green" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-foreground">Pro plan · 1 month</p>
-                    <p className="text-[10px] text-muted-foreground">Save ~10 hours/month on compliance</p>
+                    <p className="text-sm font-semibold text-foreground">Pro · 1 month</p>
+                    <p className="text-[10px] text-muted-foreground">~1 hour saved per day, all month</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -799,7 +629,7 @@ export default function SettingsPage() {
                     <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
                   ) : (
                     <>
-                      <p className="text-sm font-bold text-blue-600">RM {BISNIS_PRICE}</p>
+                      <p className="text-sm font-bold text-warm-green">RM {BISNIS_PRICE}</p>
                       <p className="text-[10px] text-muted-foreground">Billplz</p>
                     </>
                   )}
@@ -811,6 +641,12 @@ export default function SettingsPage() {
       </div>
 
       {/* ── SECTION: TAX IDENTITY ── */}
+      {/*
+        Gated to Pro merchants and to anyone who already entered tax info.
+        Free-tier merchants don't see this until they actually need it
+        (silent superpower discipline — see docs/positioning/03-features.md).
+      */}
+      {(bisnisActive || hasTaxInfo) && (
       <div className="rounded-lg border bg-card px-4 py-4 shadow-sm space-y-3">
         <div className="flex items-center gap-2">
           <FileText className="w-4 h-4 text-muted-foreground" />
@@ -819,7 +655,7 @@ export default function SettingsPage() {
           </p>
         </div>
         <p className="text-xs text-muted-foreground">
-          Your TIN and BRN appear on every invoice and are required for LHDN MyInvois submission.
+          Used for the formal invoice and LHDN submission — leave blank if you don&rsquo;t file e-invoices yet.
         </p>
         <div className="space-y-2">
           <input
@@ -881,6 +717,7 @@ export default function SettingsPage() {
           {isSavingTax ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save"}
         </button>
       </div>
+      )}
 
       {/* ── SECTION: STAFF ── */}
       <Link

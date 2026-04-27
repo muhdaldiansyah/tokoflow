@@ -4,9 +4,9 @@ import { Gift, Smartphone, MessageSquare, HelpCircle } from "lucide-react";
 import SignupForm from "./SignupForm";
 
 export const metadata: Metadata = {
-  title: "Try Tokoflow — Early access beta",
+  title: "Try Tokoflow — Early access",
   description:
-    "Running a WhatsApp-based business? Try Tokoflow free during early access. Help shape the product and get a TNG reload as a thank-you.",
+    "Sell something? Try Tokoflow during early access. Your shop, one photo away. Help shape the product and get a TNG reload as a thank-you.",
   alternates: {
     canonical: "https://tokoflow.com/coba-aplikasi",
   },
@@ -15,15 +15,15 @@ export const metadata: Metadata = {
 const faqs = [
   {
     question: "Is it really free?",
-    answer: "Yes. 50 orders/month free forever, all features included.",
+    answer: "Yes. 50 orders/month free forever — including 1-Photo Onboarding, your shop link, and basic AI customer assistant.",
   },
   {
-    question: "Do I need an Android phone?",
-    answer: "Right now yes — we're testing on Play Store first. iPhone support comes next.",
+    question: "Do I need to install anything?",
+    answer: "No. Tokoflow runs in your mobile browser. Install as a PWA if you want an app icon. Native iOS / Android apps follow a few months after launch.",
   },
   {
     question: "When do I get the reload?",
-    answer: "After 14 days of use plus a short feedback survey.",
+    answer: "After 14 days of use plus a short feedback chat with us.",
   },
 ];
 
@@ -57,23 +57,22 @@ export default function CobaAplikasiPage() {
               </div>
 
               <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-[#1E293B] leading-snug">
-                Take orders from your phone,
+                Your shop,
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#05A660] to-[#048C51]">
-                  nothing slips through the cracks.
+                  one photo away.
                 </span>
               </h1>
 
               <p className="text-[#475569] leading-relaxed">
-                Tokoflow is getting ready to launch on the Play Store and we&apos;re looking for
-                feedback from Malaysian SMBs who take orders on WhatsApp.
+                Tokoflow is in early access — we&apos;re looking for sellers who want a tool that respects their time and dignifies their work. Help shape the magic.
               </p>
 
               <div className="space-y-2.5">
                 {[
                   { icon: Gift, text: "RM 10 mobile top-up after 14 days of use" },
-                  { icon: Smartphone, text: "App is free forever" },
-                  { icon: MessageSquare, text: "Your feedback becomes improvements" },
+                  { icon: Smartphone, text: "Free forever — first 50 orders/month" },
+                  { icon: MessageSquare, text: "Your feedback shapes the product" },
                 ].map((item) => (
                   <div key={item.text} className="flex items-center gap-2.5">
                     <item.icon className="h-4 w-4 text-[#05A660] shrink-0" strokeWidth={1.5} />
@@ -86,8 +85,8 @@ export default function CobaAplikasiPage() {
             {/* Right: Form */}
             <div className="lg:sticky lg:top-24">
               <div className="rounded-[2rem] border border-[#E2E8F0] bg-white shadow-lg p-6 lg:p-8">
-                <h2 className="text-lg font-bold text-[#1E293B] mb-1">Sign up to try the app</h2>
-                <p className="text-sm text-[#94A3B8] mb-6">We&apos;ll reach you on WhatsApp within 1-2 days.</p>
+                <h2 className="text-lg font-bold text-[#1E293B] mb-1">Get early access</h2>
+                <p className="text-sm text-[#94A3B8] mb-6">We&apos;ll reach you on WhatsApp within 1–2 days.</p>
                 <SignupForm />
               </div>
             </div>

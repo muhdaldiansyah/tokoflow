@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: "Tokoflow",
   description:
-    "The LHDN-ready order platform for Malaysian SMBs selling on WhatsApp. Share one link, customers self-order, DuitNow collects, and each sale submits to MyInvois in one tap. Built for the RM 1M–5M merchant.",
+    "From snap to sold. The simplest way for anyone to start selling — one photo to launch your shop. AI handles the conversation, payment, and paperwork so you can focus on what you make.",
   url: process.env.NEXT_PUBLIC_APP_URL || "https://tokoflow.com",
   // Support contact: replace with the real Tokoflow MY WhatsApp once the
   // company line is provisioned. Used by the marketing footer + /contact page.
@@ -14,27 +14,30 @@ export const siteConfig = {
   },
   creator: "Muhammad Aldiansyah",
   keywords: [
-    // Tier 1 — compliance wedge (panic-window 2026–2027)
-    "LHDN e-Invoice Malaysia",
-    "MyInvois WhatsApp storefront",
-    "e-Invoice for SME Malaysia",
-    "MyInvois order form",
-    "LHDN compliant invoice app",
-    "SST invoice Malaysia",
-    // Tier 2 — WhatsApp-order intent
-    "WhatsApp order form Malaysia",
-    "WhatsApp storefront SME",
-    "online order link Malaysia",
+    // Tier 1 — core positioning
+    "online shop in one photo",
+    "AI shop builder",
+    "easiest way to sell online",
+    "shop link from photo",
+    "AI selling assistant",
+    // Tier 2 — seller intent
+    "online store for home business",
+    "shop link in bio",
+    "WhatsApp order link Malaysia",
+    "online order form Malaysia",
     "DuitNow QR order payment",
-    "small business order management Malaysia",
+    "small business selling tool",
     // Tier 3 — vertical long-tail
-    "bakery order form Malaysia",
-    "home F&B order tool Malaysia",
-    "TikTok Shop reseller order manager",
-    "pasar tani digital merchant",
-    "cloud kitchen order tool Malaysia",
-    "catering invoice Malaysia",
-    // Tier 4 — brand
+    "home bakery order link",
+    "mompreneur online store",
+    "TikTok seller order manager",
+    "Instagram bio shop link",
+    "modest fashion seller tool",
+    "catering order tool Malaysia",
+    // Tier 4 — silent superpower (compliance, not hero)
+    "LHDN MyInvois auto submit",
+    "SST invoice Malaysia",
+    // Tier 5 — brand
     "tokoflow",
   ],
 };

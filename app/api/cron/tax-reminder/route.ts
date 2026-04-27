@@ -89,8 +89,8 @@ export async function POST(request: NextRequest) {
 
     pushMessages.push({
       to: profile.push_token,
-      title: `${unsubmitted} invoice${unsubmitted > 1 ? "s" : ""} awaiting MyInvois submission`,
-      body: `Submit to LHDN within 72 hours of issue to stay compliant. Tap to review.`,
+      title: `${unsubmitted} invoice${unsubmitted > 1 ? "s" : ""} ready for MyInvois`,
+      body: `Each one is one tap away from LHDN. Best to send them within 72 hours of issuing — open invoices to review.`,
       sound: "default",
       data: { screen: "invoices" },
     });

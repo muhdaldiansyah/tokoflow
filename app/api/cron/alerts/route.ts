@@ -58,8 +58,8 @@ export async function POST(request: NextRequest) {
       const items = lowStock.map((p) => `${p.name} (${p.stock} left)`).join(", ");
       pushMessages.push({
         to: profile.push_token,
-        title: "📦 Low stock",
-        body: `${items} — restock soon to avoid running out`,
+        title: "Stock running low",
+        body: `${items}. Worth a restock when you have a moment.`,
         sound: "default",
         data: { screen: "products" },
       });
@@ -83,40 +83,34 @@ export async function POST(request: NextRequest) {
       if (pct >= 80 && count < cap) {
         pushMessages.push({
           to: profile.push_token,
-          title: `📋 Tomorrow ${count}/${cap} slots filled`,
-          body: `${cap - count} slots left. The rest is your rest time.`,
+          title: `Tomorrow's almost full`,
+          body: `${count} of ${cap} slots taken. The rest is yours.`,
           sound: "default",
           data: { screen: "production" },
         });
       } else if (count >= cap) {
         pushMessages.push({
           to: profile.push_token,
-          title: "✅ Tomorrow is fully booked — rest assured",
-          body: `${count}/${cap} orders today. The system is keeping you from overwork — new orders are redirected to another date.`,
+          title: "Tomorrow is fully booked",
+          body: `${count} order${count === 1 ? "" : "s"} on the schedule. Anyone ordering after this will be offered another date — your rest is protected.`,
           sound: "default",
           data: { screen: "production" },
         });
       }
     }
 
-    // Alert 3: Quota approaching limit (free users only)
+    // Quota nudge — only fires once the free tier actually runs out for the
+    // month. No "X/50 used" warning at 48 — see docs/positioning/03-features.md
+    // anti-anxiety rules.
     const isUnlimited = profile.unlimited_until && new Date(profile.unlimited_until) > now;
     const hasCredits = (profile.order_credits || 0) > 0;
     const ordersUsed = profile.orders_used || 0;
 
-    if (!isUnlimited && !hasCredits && ordersUsed >= 48 && ordersUsed < 50) {
+    if (!isUnlimited && !hasCredits && ordersUsed >= 50) {
       pushMessages.push({
         to: profile.push_token,
-        title: "⚡ Quota almost used",
-        body: `${ordersUsed}/50 free orders used. ${50 - ordersUsed} left. Top up so orders from your store link don't get held back.`,
-        sound: "default",
-        data: { screen: "settings" },
-      });
-    } else if (!isUnlimited && !hasCredits && ordersUsed >= 50) {
-      pushMessages.push({
-        to: profile.push_token,
-        title: "🔴 Quota exhausted — orders on hold",
-        body: "New orders from your store link are on hold until you top up. Starting from RM 5.",
+        title: "Busy month",
+        body: "You've passed 50 orders. When you're ready, Pro lifts the cap for RM 49/month.",
         sound: "default",
         data: { screen: "settings" },
       });

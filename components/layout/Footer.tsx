@@ -41,7 +41,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-sm text-muted-foreground max-w-xs">
-              WhatsApp storefront — customers self-order, every sale becomes a LHDN-compliant MyInvois e-Invoice. For Malaysian small businesses.
+              Your shop, one photo away. The simplest way for anyone to start selling — AI handles the conversation, payment, and paperwork.
             </p>
             <div className="flex items-center gap-4">
               {/* WhatsApp */}

@@ -94,16 +94,16 @@ export async function POST(request: NextRequest) {
     let body = "";
 
     if (orderCount > 0) {
-      title = `📋 Today: ${orderCount} orders`;
+      title = `Today's lineup: ${orderCount} order${orderCount === 1 ? "" : "s"}`;
       const parts: string[] = [];
       if (topItems) parts.push(topItems);
       if (unpaidAmount > 0) {
-        parts.push(`${unpaidCount || 0} unpaid (RM ${unpaidAmount.toLocaleString("en-MY")})`);
+        parts.push(`${unpaidCount || 0} still to be paid (RM ${unpaidAmount.toLocaleString("en-MY")}).`);
       }
       body = parts.join("\n");
     } else if ((unpaidCount || 0) > 0) {
-      title = "💰 Money not yet collected";
-      body = `${unpaidCount} orders still unpaid — the longer you wait, the harder it gets to collect`;
+      title = "A quiet word on receivables";
+      body = `${unpaidCount} order${(unpaidCount ?? 0) === 1 ? "" : "s"} still unpaid. Worth a gentle nudge when you have a moment.`;
     }
 
     // Cost trend alert: compare this month's avg food cost % vs last month's
@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
       if (thisMonthPct !== null && lastMonthPct !== null && lastMonthPct > 0) {
         const delta = thisMonthPct - lastMonthPct;
         if (delta >= 5) {
-          body += `\n🔴 Food cost naik ${delta}pp dari bulan lalu — margin tergerus`;
+          body += `\nIngredient costs are running ${delta}pp higher than last month — worth a glance when you can.`;
         }
       }
     }

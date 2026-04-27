@@ -115,7 +115,7 @@ export function MarketingNav() {
                 href="/register"
                 className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-white bg-[#05A660] hover:bg-[#05A660]/90 shadow-sm transition-colors"
               >
-                Sign up
+                Start free
               </Link>
             </div>
 
@@ -204,14 +204,14 @@ export function MarketingNav() {
               onClick={() => setMobileOpen(false)}
               className="block w-full rounded-lg bg-muted py-2.5 text-center text-sm font-medium text-foreground hover:bg-muted transition-colors"
             >
-              Masuk
+              Sign in
             </Link>
             <Link
               href="/register"
               onClick={() => setMobileOpen(false)}
               className="block w-full rounded-lg bg-[#05A660] py-2.5 text-center text-sm font-medium text-white shadow-sm hover:bg-[#05A660]/90 transition-colors"
             >
-              Daftar
+              Start free
             </Link>
           </div>
         </div>
