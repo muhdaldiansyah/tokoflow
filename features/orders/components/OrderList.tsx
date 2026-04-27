@@ -26,6 +26,7 @@ import { useFeatureUnlock } from "../hooks/useFeatureUnlock";
 import { updateOrderStatus } from "../services/order.service";
 import type { Order, OrderStatus } from "../types/order.types";
 import { ORDER_STATUS_LABELS, ORDER_STATUS_FLOW } from "../types/order.types";
+import { copy } from "@/lib/copy";
 
 const STATUS_CHIPS: { label: string; value: string; type: "status" }[] = [
   { label: "New", value: "new", type: "status" },
@@ -925,20 +926,14 @@ export function OrderList() {
       ) : orders.length === 0 ? (
         <div className="text-center py-12">
           {search || statusFilter || preorderFilter || dineInFilter || dateFilter ? (
-            <p className="text-muted-foreground text-sm">
-              No orders
-              {preorderFilter ? " (preorder)" : ""}
-              {dineInFilter ? " (direct)" : ""}
-              {statusFilter ? ` · ${STATUS_CHIPS.find((c) => c.value === statusFilter)?.label.toLowerCase()}` : ""}
-              {search ? " found" : ""}
-            </p>
+            <p className="text-muted-foreground text-sm">{copy.empty.ordersNoMatch()}</p>
           ) : (
             <>
               <div className="w-16 h-16 mx-auto rounded-2xl bg-muted flex items-center justify-center mb-4">
                 <ShoppingBag className="w-7 h-7 text-muted-foreground" />
               </div>
               <h2 className="text-base font-semibold text-foreground mb-1">No orders yet</h2>
-              <p className="text-sm text-muted-foreground mb-6">Log your first order — takes 30 seconds</p>
+              <p className="text-sm text-muted-foreground mb-6">{copy.empty.ordersFirstTime()}</p>
               <div className="flex flex-col items-center gap-3">
                 <Link
                   href="/orders/new"

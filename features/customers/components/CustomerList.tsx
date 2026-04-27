@@ -7,6 +7,7 @@ import { getCustomers } from "../services/customer.service";
 import { getPiutangSummary } from "@/features/orders/services/order.service";
 import type { Customer } from "../types/customer.types";
 import type { PiutangSummary } from "@/features/orders/services/order.service";
+import { copy } from "@/lib/copy";
 
 type Tab = "semua" | "belum_lunas";
 
@@ -174,9 +175,7 @@ export function CustomerList() {
             <div className="text-center py-12">
               <Users className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
               <p className="text-muted-foreground">
-                {search
-                  ? "No customers found"
-                  : "Customers are auto-added when you create an order"}
+                {search ? copy.empty.customersNoMatch() : copy.empty.customers()}
               </p>
             </div>
           ) : (

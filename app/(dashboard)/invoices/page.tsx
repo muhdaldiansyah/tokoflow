@@ -12,6 +12,7 @@ import { PiutangDashboard } from "@/features/invoices/components/PiutangDashboar
 import type { Invoice, InvoiceStatus } from "@/features/invoices/types/invoice.types";
 import type { Profile } from "@/features/receipts/types/receipt.types";
 import { track } from "@/lib/analytics";
+import { copy } from "@/lib/copy";
 
 type Tab = "invoices" | "receivables";
 type FilterStatus = "all" | InvoiceStatus;
@@ -202,8 +203,8 @@ export default function InvoicesPage() {
               <FileText className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
               <p className="text-sm text-muted-foreground">
                 {search || statusFilter !== "all"
-                  ? "No matching invoices."
-                  : "No invoices yet. Create your first invoice!"}
+                  ? copy.empty.invoicesNoMatch()
+                  : copy.empty.invoices()}
               </p>
             </div>
           ) : (

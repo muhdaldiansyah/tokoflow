@@ -14,10 +14,22 @@
 // Templates that need values are functions; static strings are exported as is.
 
 export const empty = {
+  // "No orders for the day" — repeat-user empty.
   orders: () => "No orders today. Enjoy a quiet morning.",
-  products: () => "Add your first product. Snap a photo — we'll handle the rest.",
+  // First-time empty (lifetime no orders ever).
+  ordersFirstTime: () => "Your first order is 30 seconds away.",
+  // First-time + filtered/searched-no-match.
+  ordersNoMatch: () => "Nothing matches that filter — try widening it.",
+
+  products: () => "No products yet. Add one and customers can order from your store link.",
+  productsNoMatch: (term: string) => `Nothing matches "${term}".`,
+
   customers: () => "Customers show up here after their first order.",
-  invoices: () => "Invoices appear here automatically when an order is paid.",
+  customersNoMatch: () => "No customers match that search.",
+
+  invoices: () => "Invoices appear here when an order is paid — or you can write one manually.",
+  invoicesNoMatch: () => "No invoices match that filter.",
+
   history: () => "Nothing here yet — your past orders will show up after the first sale.",
 } as const;
 

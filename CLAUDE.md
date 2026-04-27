@@ -1,29 +1,23 @@
 # Tokoflow
 
-> LHDN-ready WhatsApp storefront for Malaysian SMBs.
+> **From snap to sold.** The simplest way for anyone to start selling — one photo to launch your shop.
+> AI handles the conversation, payment, and paperwork so the merchant can focus on what they make.
 > Forked from CatatOrder (ID) · Next.js 16 · React 19 · TypeScript · Supabase · Tailwind 4.
 
 **Domain:** https://tokoflow.com · aliased to production deploy on Vercel
-**Target:** Malaysia — RM 1M–5M turnover merchants (LHDN e-Invoice Phase 4 mandate).
-**Status:** Phase 1 + Phase 2 code **complete** · route rename **complete** · DB reset + 80 migrations applied with CLI tracking in sync · Pre-launch — gated on Phase 0 validation + Sdn Bhd + Billplz KYB + LHDN prod cert. See [HANDOFF.md](./HANDOFF.md).
+**Target Year 1:** Malaysia, hyperlocal Shah Alam — home F&B mompreneur (Bu Aisyah persona). Concentric expansion to Klang Valley → SEA → global.
+**Status:** Phase 1 + Phase 2 code **complete** · "From snap to sold" reposition **shipped** · 80 migrations applied · Pre-launch — gated on Phase 0 validation + Sdn Bhd + Billplz KYB + LHDN prod cert.
+
+> **Strategic compass:** [`docs/positioning/`](./docs/positioning/) is the bible — read [`00-manifesto.md`](./docs/positioning/00-manifesto.md) before any product decision. Every feature must pass the 5 tests.
 
 ---
 
-## Core wedge
+## Wedges (Apple-grade soul, with compliance as silent superpower)
 
-Tokoflow is a *positioned fork* for Malaysia, riding three stacked wedges:
-
-1. **Compliance (urgent, dated):** native LHDN MyInvois integration. Orderla.my zero; Niagawan building but unshipped. RM 10K individual-invoice rule live 1 Jan 2026; Phase 4 full enforcement 1 Jan 2027.
-2. **AI-native (shipped):** paste WA chat → order, voice → order, screenshot → order. Gemini Flash Lite via OpenRouter. System prompts tuned for Malaysian SMB vocab (Malay / English / Manglish), +60 phones, Asia/Kuala_Lumpur.
-3. **Community data (shipped, density-gated):** peer benchmark live at `/api/benchmark` (≥10 users/cluster gate). Komunitas tables + pages exist; group-buy pooling deferred to Phase 4.
-
-MVP = wedge 1 (compliance). 2–3 are post-beta differentiators.
-
-## Panic window
-
-- **Now (2026):** relaxation active for RM 1M–5M band, ends 31 Dec 2026
-- **Q3 2026:** merchant panic-buying window — launch target
-- **Jan 2027:** full enforcement — post-launch defence
+1. **The Photo Magic (Phase 1, planned):** one photo → toko muncul. Iconic interaction. See [`P4-photo-magic-plan.md`](./docs/positioning/P4-photo-magic-plan.md).
+2. **AI-native (shipped):** paste WA chat → order, voice → order, screenshot → order. Gemini Flash Lite via OpenRouter. MY SMB vocab, +60 phones, Asia/Kuala_Lumpur.
+3. **Community data (shipped, density-gated):** peer benchmark live at `/api/benchmark` (≥10 users/cluster gate). Group-buy pooling deferred to Phase 4.
+4. **Silent superpower — LHDN MyInvois (shipped, demoted to Pro tier):** one-tap submit at `/invoices`. Not the hero — RM 1M–5M relaxation runs through 31 Dec 2026, full enforcement 1 Jan 2027. Compliance is *built-in*, not the pitch. See [`01-positioning.md`](./docs/positioning/01-positioning.md) for what Tokoflow is **not**.
 
 ---
 

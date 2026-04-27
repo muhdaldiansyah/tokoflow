@@ -80,12 +80,41 @@ export async function POST(request: NextRequest) {
       topItems = sorted.map(([name, qty]) => `${name} x${qty}`).join(", ");
     }
 
-    // Calculate unpaid amount for today
+    // Calculate today's revenue + unpaid amount for "Hari Sepi" detection.
     let unpaidAmount = 0;
+    let todayRevenue = 0;
     if (todayOrders) {
       for (const order of todayOrders) {
+        todayRevenue += order.total || 0;
         const remaining = (order.total || 0) - (order.paid_amount || 0);
         if (remaining > 0) unpaidAmount += remaining;
+      }
+    }
+
+    // Hari Sepi check — compare to last 7 days' avg revenue (excluding today).
+    // Empathy moment from docs/positioning/02-product-soul.md.
+    let isQuietDay = false;
+    if (orderCount > 0) {
+      const sevenDaysAgo = new Date(todayMYT.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const sevenDaysAgoStr = sevenDaysAgo.toISOString().split("T")[0];
+      const { data: prior7 } = await supabase
+        .from("orders")
+        .select("total, delivery_date")
+        .eq("user_id", profile.id)
+        .gte("delivery_date", `${sevenDaysAgoStr}T00:00:00+08:00`)
+        .lt("delivery_date", `${todayStr}T00:00:00+08:00`)
+        .not("status", "eq", "cancelled")
+        .is("deleted_at", null);
+      if (prior7 && prior7.length > 0) {
+        const totalPrior = prior7.reduce(
+          (sum: number, o: { total: number }) => sum + (o.total || 0),
+          0,
+        );
+        const avgDaily = totalPrior / 7;
+        // Only flag if there's a meaningful baseline (avoid first-week noise).
+        if (avgDaily > 50 && todayRevenue < avgDaily * 0.3) {
+          isQuietDay = true;
+        }
       }
     }
 
@@ -93,7 +122,10 @@ export async function POST(request: NextRequest) {
     let title = "";
     let body = "";
 
-    if (orderCount > 0) {
+    if (orderCount > 0 && isQuietDay) {
+      title = "A quieter day";
+      body = `${orderCount} order${orderCount === 1 ? "" : "s"} so far. Every business has these — rest tonight, tomorrow's another one.`;
+    } else if (orderCount > 0) {
       title = `Today's lineup: ${orderCount} order${orderCount === 1 ? "" : "s"}`;
       const parts: string[] = [];
       if (topItems) parts.push(topItems);

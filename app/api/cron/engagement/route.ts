@@ -229,6 +229,32 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Anniversary recognition — 1, 3, 5 years since the merchant joined.
+    // Dignifying tone per docs/positioning/02-product-soul.md "Moment 7".
+    const ageYears = Math.floor(ageDays / 365);
+    if ([1, 3, 5].includes(ageYears) && profile.push_token) {
+      const anniversaryKey = `anniversary_${ageYears}`;
+      if (!drip[anniversaryKey]) {
+        const businessName = profile.business_name || profile.full_name || "your shop";
+        const yearLabel = ageYears === 1 ? "One year" : `${ageYears} years`;
+        pushMessages.push({
+          to: profile.push_token,
+          title: `${yearLabel} since you started`,
+          body: `${ageYears === 1 ? "A year" : `${ageYears} years`} ago you began with one shop link. ${customerCount || 0} customer${customerCount === 1 ? "" : "s"} later — happy anniversary, ${businessName}.`,
+          sound: "default",
+          data: { screen: "recap" },
+        });
+        const updatedDrip = updates.find((u) => u.id === profile.id)?.drip || { ...drip };
+        updatedDrip[anniversaryKey] = now.toISOString();
+        const existing = updates.find((u) => u.id === profile.id);
+        if (existing) {
+          existing.drip = updatedDrip;
+        } else {
+          updates.push({ id: profile.id, drip: updatedDrip });
+        }
+      }
+    }
+
     // Check for milestones
     for (const [threshold, msg] of Object.entries(MILESTONE_MESSAGES)) {
       const milestoneKey = `milestone_${threshold}`;
