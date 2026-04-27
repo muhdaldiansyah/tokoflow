@@ -229,6 +229,73 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Pre-Ramadan rush trigger — fires on the dates listed below (14 days before
+    // each Ramadan 1st). Update annually as moon-sighting predictions firm up.
+    // Source: Astronomical estimates from islamicfinder.org (verify before each
+    // production cron run for the upcoming year).
+    const RAMADAN_PREP_DATES: Record<string, string> = {
+      "2027-01-24": "2027",
+      "2028-01-13": "2028",
+      "2029-01-02": "2029",
+      "2029-12-23": "2030",
+    };
+    const todayMytStr = new Date(now.getTime() + 8 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const ramadanYear = RAMADAN_PREP_DATES[todayMytStr];
+    if (ramadanYear && profile.push_token) {
+      const ramadanKey = `pre_ramadan_${ramadanYear}`;
+      if (!drip[ramadanKey]) {
+        pushMessages.push({
+          to: profile.push_token,
+          title: "Ramadan in two weeks",
+          body: "Want a hand sketching out a Ramadan menu? Reply to this when you're ready.",
+          sound: "default",
+          data: { screen: "products" },
+        });
+        const updatedDrip = updates.find((u) => u.id === profile.id)?.drip || { ...drip };
+        updatedDrip[ramadanKey] = now.toISOString();
+        const existing = updates.find((u) => u.id === profile.id);
+        if (existing) {
+          existing.drip = updatedDrip;
+        } else {
+          updates.push({ id: profile.id, drip: updatedDrip });
+        }
+      }
+    }
+
+    // Customer Returns recognition — when a customer has 3+ orders and the
+    // merchant hasn't been told yet, surface that customer as a regular.
+    // Cap one recognition per cron run per merchant so the inbox doesn't burst.
+    if (profile.push_token) {
+      const { data: loyalCustomers } = await supabase
+        .from("customers")
+        .select("id, name, total_orders")
+        .eq("user_id", profile.id)
+        .gte("total_orders", 3)
+        .order("total_orders", { ascending: false })
+        .limit(10);
+      const newRegular = (loyalCustomers || []).find(
+        (c: { id: string }) => !drip[`loyal_${c.id}`],
+      );
+      if (newRegular) {
+        const loyalKey = `loyal_${newRegular.id}`;
+        pushMessages.push({
+          to: profile.push_token,
+          title: `${newRegular.name} is back`,
+          body: `That's order #${newRegular.total_orders} from ${newRegular.name}. Want to tag them as a regular?`,
+          sound: "default",
+          data: { screen: "customers" },
+        });
+        const updatedDrip = updates.find((u) => u.id === profile.id)?.drip || { ...drip };
+        updatedDrip[loyalKey] = now.toISOString();
+        const existing = updates.find((u) => u.id === profile.id);
+        if (existing) {
+          existing.drip = updatedDrip;
+        } else {
+          updates.push({ id: profile.id, drip: updatedDrip });
+        }
+      }
+    }
+
     // Anniversary recognition — 1, 3, 5 years since the merchant joined.
     // Dignifying tone per docs/positioning/02-product-soul.md "Moment 7".
     const ageYears = Math.floor(ageDays / 365);

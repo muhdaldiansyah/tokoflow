@@ -109,6 +109,8 @@ export function OrderList() {
   const [showStatusPicker, setShowStatusPicker] = useState(false);
   const [isBulkUpdating, setIsBulkUpdating] = useState(false);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Tracks recent order INSERTs for the Mid-Rush acknowledgment trigger.
+  const recentOrderTimestamps = useRef<number[]>([]);
 
   // WA preview sheet
   const [waPreview, setWaPreview] = useState<{ order: Order } | null>(null);
@@ -278,6 +280,25 @@ export function OrderList() {
             });
             playNotificationSound();
           }
+
+          // Mid-Rush acknowledgment — empathy moment from positioning doc 02.
+          // Fire once when a merchant crosses 5 orders in the last 30 minutes,
+          // suppressed for an hour after to avoid being chatty.
+          const now = Date.now();
+          const cutoff = now - 30 * 60 * 1000;
+          recentOrderTimestamps.current = recentOrderTimestamps.current.filter((t) => t > cutoff);
+          recentOrderTimestamps.current.push(now);
+          if (recentOrderTimestamps.current.length === 5) {
+            const lastShown = Number(sessionStorage.getItem("tokoflow_midrush_last") || "0");
+            if (now - lastShown > 60 * 60 * 1000) {
+              toast("Looks busy — go on, we've got chat covered", {
+                description: "5 orders in the last half hour. Focus on cooking, we'll watch the link.",
+                duration: 8000,
+              });
+              sessionStorage.setItem("tokoflow_midrush_last", String(now));
+            }
+          }
+
           // Refresh list for any new order
           loadOrders();
         }
