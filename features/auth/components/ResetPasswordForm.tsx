@@ -78,7 +78,7 @@ export function ResetPasswordForm() {
         return;
       }
       success("Password updated", "Your password was changed successfully");
-      router.push("/orders");
+      router.push("/today");
     } catch {
       showError("Connection failed", "Check your internet and try again");
     } finally {

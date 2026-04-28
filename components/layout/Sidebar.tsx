@@ -32,6 +32,7 @@ import {
   Database,
   Calculator,
   UserPlus,
+  Sun,
   type LucideIcon,
 } from "lucide-react";
 
@@ -50,6 +51,7 @@ const iconMap: Record<string, LucideIcon> = {
   Database,
   Calculator,
   UserPlus,
+  Sun,
 };
 
 interface SidebarProps {
@@ -62,21 +64,17 @@ interface SidebarProps {
   totalOrders?: number;
 }
 
-// Immersive nav: all items visible, unlocked items full opacity, locked items subdued
-function getNavWithLevel(totalOrders: number, isBisnisActive: boolean) {
-  return dashboardNav
-    .filter((item) => !(item.requiresBisnis && !isBisnisActive))
-    .map((item) => {
-      let unlocked = true;
-      let hint = "";
-      if (item.href === "/customers" && totalOrders < 1) { unlocked = false; hint = "1 order"; }
-      if (item.href === "/community" && totalOrders < 3) { unlocked = false; hint = "3 orders"; }
-      if (item.href === "/prep" && totalOrders < 5) { unlocked = false; hint = "5 orders"; }
-      if (item.href === "/recap" && totalOrders < 5) { unlocked = false; hint = "5 orders"; }
-      if (item.href === "/invoices" && totalOrders < 10) { unlocked = false; hint = "10 orders"; }
-      if (item.href === "/tax" && totalOrders < 10) { unlocked = false; hint = "10 orders"; }
-      return { ...item, unlocked, hint };
-    });
+// Cognitive cut: hide locked items entirely. Less to think about > "you can't
+// click this yet". Gates raised so secondary surfaces only appear when the
+// merchant has accumulated enough volume to actually want them.
+function getVisibleNav(totalOrders: number, isBisnisActive: boolean) {
+  return dashboardNav.filter((item) => {
+    if (item.requiresBisnis && !isBisnisActive) return false;
+    if (item.href === "/orders" && totalOrders < 10) return false;
+    if (item.href === "/customers" && totalOrders < 20) return false;
+    if (item.href === "/recap" && totalOrders < 20) return false;
+    return true;
+  });
 }
 
 export function Sidebar({
@@ -118,7 +116,7 @@ export function Sidebar({
       >
         {!collapsed && (
           <Link
-            href={variant === "admin" ? "/admin" : "/orders"}
+            href={variant === "admin" ? "/admin" : "/today"}
             className="font-bold text-xl text-foreground truncate"
           >
             {variant === "admin" ? "Admin" : siteConfig.name}
@@ -180,7 +178,7 @@ export function Sidebar({
           </div>
         ) : (
           <ul className="space-y-1">
-            {getNavWithLevel(totalOrders, isBisnisActive ?? false).map((item) => {
+            {getVisibleNav(totalOrders, isBisnisActive ?? false).map((item) => {
               const Icon = item.icon ? iconMap[item.icon] : undefined;
               const isActive =
                 pathname === item.href ||
@@ -194,22 +192,13 @@ export function Sidebar({
                       "flex items-center gap-3 px-3 py-2.5 rounded-lg text-[15px] font-medium transition-all duration-200",
                       isActive
                         ? "bg-muted text-foreground"
-                        : item.unlocked
-                          ? "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                          : "text-muted-foreground/40 hover:bg-muted/30 hover:text-muted-foreground/60",
+                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
                       collapsed && "justify-center px-2"
                     )}
-                    title={collapsed ? item.title + (item.hint ? ` (setelah ${item.hint})` : "") : undefined}
+                    title={collapsed ? item.title : undefined}
                   >
-                    {Icon && (
-                      <Icon className={cn("h-[18px] w-[18px] shrink-0", !item.unlocked && "opacity-40")} />
-                    )}
-                    {!collapsed && (
-                      <span className="flex-1">{item.title}</span>
-                    )}
-                    {!collapsed && !item.unlocked && (
-                      <span className="text-[10px] text-muted-foreground/40 tabular-nums">{item.hint}</span>
-                    )}
+                    {Icon && <Icon className="h-[18px] w-[18px] shrink-0" />}
+                    {!collapsed && <span className="flex-1">{item.title}</span>}
                   </Link>
                 </li>
               );

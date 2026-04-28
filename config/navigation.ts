@@ -11,8 +11,8 @@ export interface NavGroup {
   items: NavItem[];
 }
 
-// Routes and labels are both English. Legacy BI paths (/pesanan, /produk, …)
-// are 301-redirected by middleware.ts so old WhatsApp / bookmark links survive.
+// Routes and labels are English. Legacy BI paths (/pesanan, /produk, …) are
+// 301-redirected by middleware.ts so old WhatsApp / bookmark links survive.
 
 export const marketingNav: NavItem[] = [
   { title: "Features", href: "/features" },
@@ -22,24 +22,18 @@ export const marketingNav: NavItem[] = [
   { title: "Contact", href: "/contact" },
 ];
 
+// Cognitive-cut nav. Hide locked items entirely (don't dim).
+// Gates raised aggressively: secondary surfaces only appear once the merchant
+// has enough volume to actually want them. /today is the primary daily surface.
 export const dashboardNav: NavItem[] = [
+  { title: "Today", href: "/today", icon: "Sun" },
   { title: "Orders", href: "/orders", icon: "ShoppingBag" },
   { title: "Products", href: "/products", icon: "Package" },
   { title: "Customers", href: "/customers", icon: "Users" },
-  { title: "Prep", href: "/prep", icon: "ClipboardList" },
   { title: "Recap", href: "/recap", icon: "BarChart3" },
-  { title: "Invoices", href: "/invoices", icon: "FileText" },
-  { title: "Community", href: "/community", icon: "Users" },
-  { title: "Tax", href: "/tax", icon: "Calculator" },
+  { title: "Invoices", href: "/invoices", icon: "FileText", requiresBisnis: true },
+  { title: "Tax", href: "/tax", icon: "Calculator", requiresBisnis: true },
   { title: "Settings", href: "/settings", icon: "Settings" },
-];
-
-export const mobileNavItems: NavItem[] = [
-  { title: "Orders", href: "/orders", icon: "ShoppingBag" },
-  { title: "Products", href: "/products", icon: "Package" },
-  { title: "Customers", href: "/customers", icon: "Users" },
-  { title: "Recap", href: "/recap", icon: "BarChart3" },
-  { title: "Account", href: "/settings", icon: "User" },
 ];
 
 export const adminNav: NavGroup[] = [
@@ -56,7 +50,7 @@ export const adminNav: NavGroup[] = [
   {
     title: "",
     items: [
-      { title: "Back", href: "/orders", icon: "ArrowLeft" },
+      { title: "Back", href: "/today", icon: "ArrowLeft" },
     ],
   },
 ];

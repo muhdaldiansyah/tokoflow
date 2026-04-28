@@ -55,7 +55,7 @@ export function LoginForm({ claimedSlug }: { claimedSlug?: string }) {
       if (claimedSlug) {
         await claimSlugAfterAuth(claimedSlug);
       }
-      router.push("/orders");
+      router.push("/today");
       router.refresh();
     } catch {
       showError("Connection failed", "Check your internet and try again");

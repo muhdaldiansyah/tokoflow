@@ -158,7 +158,7 @@ export function RegisterForm({ claimedSlug, referralCode, communityCode }: { cla
         // If photo magic activated, jump to orders directly (setup is done).
         // Otherwise fall back to manual /setup wizard.
         if (photoMagic.activated && photoMagic.productsCreated > 0) {
-          router.push("/orders");
+          router.push("/today");
         } else {
           router.push("/setup");
         }

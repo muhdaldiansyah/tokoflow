@@ -185,7 +185,7 @@ export default function SetupPage() {
   }
 
   function handleDone() {
-    router.push("/orders");
+    router.push("/today");
   }
 
   return (

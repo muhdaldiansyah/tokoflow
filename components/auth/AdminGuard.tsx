@@ -33,7 +33,7 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
       const role = profile?.role;
       if (role !== USER_ROLES.ADMIN && role !== USER_ROLES.MODERATOR) {
         toast.error("Akses ditolak — hanya admin");
-        router.replace("/orders");
+        router.replace("/today");
         return;
       }
 

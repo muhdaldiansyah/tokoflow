@@ -469,7 +469,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
     if (success) {
       hapticDestructive();
       toast.success("Order deleted", { duration: 5000 });
-      router.push("/orders");
+      router.push("/today");
     } else {
       toast.error("Failed to delete order");
     }
@@ -665,7 +665,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
       hapticSuccess();
       track("order_created", { source: "offline", items_count: finalItems.length, total: finalTotal });
       toast.success("Order saved offline — will sync when online", { duration: 5000 });
-      router.push("/orders");
+      router.push("/today");
       return;
     }
 
