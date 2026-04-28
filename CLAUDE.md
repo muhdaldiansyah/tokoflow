@@ -1,23 +1,55 @@
 # Tokoflow
 
-> **From snap to sold.** The simplest way for anyone to start selling — one photo to launch your shop.
-> AI handles the conversation, payment, and paperwork so the merchant can focus on what they make.
+> **We handle the receipts. Not the recipes.**
+> *"Resi kami urus. Resep kamu."*
+> Tokoflow handles mechanical residue (admin, payment matching, invoicing, status updates) invisibly via Background Twin. Customer relationships stay merchant-controlled, amplified by Foreground Assist that suggests but never sends. Pure craft is protected — Tokoflow never enters the kitchen.
 > Forked from CatatOrder (ID) · Next.js 16 · React 19 · TypeScript · Supabase · Tailwind 4.
 
 **Domain:** https://tokoflow.com · aliased to production deploy on Vercel
-**Target Year 1:** Malaysia, hyperlocal Shah Alam — home F&B mompreneur (Bu Aisyah persona). Concentric expansion to Klang Valley → SEA → global.
-**Status:** Phase 1 + Phase 2 code **complete** · "From snap to sold" reposition **shipped** · 80 migrations applied · Pre-launch — gated on Phase 0 validation + Sdn Bhd + Billplz KYB + LHDN prod cert.
+**Target Year 1:** Malaysia, hyperlocal Shah Alam — home F&B mompreneur (Bu Aisyah persona, **PHASE-0-UNVALIDATED**). Wave 2 (Year 2): vertical-first within MY (kosmetik, modest fashion, jasa lokal). Wave 3+: geographic + cross-pattern.
+**Status:** Phase 1 + Phase 2 code **complete** · Positioning bible v1.2 **locked** (2026-04-28) · 80 migrations applied · Pre-launch — gated on **Phase 0 adversarial validation** (5 friendly + 5 hostile interviews + manual twin smoke test + AI cost measurement) + Sdn Bhd + Billplz KYB.
 
-> **Strategic compass:** [`docs/positioning/`](./docs/positioning/) is the bible — read [`00-manifesto.md`](./docs/positioning/00-manifesto.md) before any product decision. Every feature must pass the 5 tests.
+> **Strategic compass:** [`docs/positioning/`](./docs/positioning/) is the bible — read [`00-manifesto.md`](./docs/positioning/00-manifesto.md) before any product decision. Every feature must pass **Test 0** (hits one of Three-Tier Reality: Pure Craft / Customer Relationship / Mechanical Residue) + the 5 tests below it.
 
 ---
 
-## Wedges (Apple-grade soul, with compliance as silent superpower)
+## Three-Tier Reality (root product framework)
 
-1. **The Photo Magic (Phase 1, planned):** one photo → toko muncul. Iconic interaction. See [`P4-photo-magic-plan.md`](./docs/positioning/P4-photo-magic-plan.md).
-2. **AI-native (shipped):** paste WA chat → order, voice → order, screenshot → order. Gemini Flash Lite via OpenRouter. MY SMB vocab, +60 phones, Asia/Kuala_Lumpur.
-3. **Community data (shipped, density-gated):** peer benchmark live at `/api/benchmark` (≥10 users/cluster gate). Group-buy pooling deferred to Phase 4.
-4. **Silent superpower — LHDN MyInvois (shipped, demoted to Pro tier):** one-tap submit at `/invoices`. Not the hero — RM 1M–5M relaxation runs through 31 Dec 2026, full enforcement 1 Jan 2027. Compliance is *built-in*, not the pitch. See [`01-positioning.md`](./docs/positioning/01-positioning.md) for what Tokoflow is **not**.
+Hari setiap solo maker terbagi 3, bukan 2. Setiap fitur Tokoflow harus hit one of these tiers (Test 0):
+
+| Tier | What it is | Tokoflow's role | Architecture |
+|---|---|---|---|
+| **Tier 1 — Pure Craft** | What merchant loves (baking, design, writing) | Protect — never enter | (no surface) |
+| **Tier 2 — Customer Relationship** | What merchant often values (Pak Andi loyalty, school moms WA, custom orders) | Amplify with suggestions, never replace | Foreground Assist (suggests, merchant sends) |
+| **Tier 3 — Mechanical Residue** | Admin, payment match, invoice, status, repetitive Q&A | Remove invisibly | Background Twin (autonomous) |
+
+> **Internal naming**: "Background Twin", "Foreground Assist", "Three-Tier", "Tier 3" are precision terms for engineering + strategy. **Customer-facing UI must NEVER expose these.** Use "Tokoflow" or first-person *"saya urus"*. See [`04-design-system.md` Internal Architecture Names](./docs/positioning/04-design-system.md).
+
+---
+
+## Wedges (refined 2026-04-28)
+
+1. **The Photo Magic v1 (Phase 1, planned):** foto → AI **extract** inventory + pricing metadata. **Photo itself stays untouched** — kitchen-protection: photo IS part of merchant's craft and brand, we don't regenerate or beautify. See [`P4-photo-magic-plan.md`](./docs/positioning/P4-photo-magic-plan.md).
+2. **Real moat (4-dimensional)**: **(a)** unstructured input parsing (WA chat screenshots, voice notes, mixed e-wallets) where competitors require structured forms · **(b)** Bahasa-first conversational UX (Manglish, code-switch BM/EN/Mandarin) · **(c)** compliance silent (gated to Pro+, never visible Free tier) · **(d)** buyer experience (storefront from photo + conversational order flow). AI labor is the underlying enabling shift; the moat is what we build on top.
+3. **AI-native (shipped):** paste WA chat → order, voice → order, screenshot → order. Gemini Flash Lite via OpenRouter. MY SMB vocab, +60 phones, Asia/Kuala_Lumpur.
+4. **Community data (shipped, density-gated):** peer benchmark live at `/api/benchmark` (≥10 users/cluster gate). Group-buy pooling deferred to Phase 4.
+5. **Silent superpower — LHDN MyInvois (demoted to Pro/Business gated):** one-tap submit at `/invoices`. **Not Phase 1 hero.** SST RM 500K threshold means most home F&B mompreneur Year 1 don't hit. Surfaces only when merchant approaches threshold. See [`01-positioning.md`](./docs/positioning/01-positioning.md) for full anti-positioning + refuse list.
+
+## What Tokoflow REFUSES to do (positioning weapon)
+
+Restraint > capability messaging. Tokoflow **never**:
+1. DM customer atas namamu (relationship is yours)
+2. Set harga produkmu (judgment is yours)
+3. Auto-reply review/komplain (voice is yours)
+4. Post ke social media (brand is yours)
+5. Regenerate/beautify foto produk (craft is yours)
+6. Klaim ownership customer (data tetap milikmu)
+7. Otomatisasi respon emosional (judgment kamu, draft kami)
+8. Gamify dengan streak/badge (anti-anxiety)
+9. Jual data kamu (never)
+10. Lock kamu di platform (cancel 1-tap, ekspor data full)
+
+Full list in [`00-manifesto.md` What We REFUSE to Do](./docs/positioning/00-manifesto.md#what-we-refuse-to-do-added-2026-04-28).
 
 ---
 
@@ -288,33 +320,89 @@ Google OAuth client id/secret live inside Supabase auth config — **not** in `.
 
 ---
 
-## Phase 0 gates (before public launch)
+## Phase 0 gates (revised 2026-04-28 — validation-first)
 
-Scripts at `scripts/phase-0/`. Gate A criteria — all must pass before public launch:
+Phase 0 expanded to 3-month adversarial validation. **No Phase 1 build until Gate 0 passes.** Full plan in [`06-roadmap.md` Phase 0](./docs/positioning/06-roadmap.md#phase-0--validation-first-foundation-aprjul-2026-3-months).
+
+### Validation milestones
+
+- [ ] **5 friendly + 5 hostile interviews** Shah Alam mompreneur (NOT just observation — hostile q first: "what part of jualan you ENJOY?" then "why might Tokoflow NOT work for you?")
+- [ ] **Manual Twin smoke test**: Aldi as Background Twin for 1 volunteer merchant for 2 weeks via WA admin (cheap, validates trust transfer architecturally)
+- [ ] **AI cost measurement** with production-grade prompts (Background Twin + Foreground Assist) at 50-order/month load
+- [ ] **Ariff partnership formal** — kopi 2 jam, decide tier (advisor 1.5% / co-founder 5–10%), sign SAFE/MOU. **No casual mode.**
+- [ ] Sdn Bhd registration submitted (SSM)
+
+### Spike scripts (still required)
 
 - [ ] `myinvois-spike.ts` returns `submissionUid` + accepted `uuid` from LHDN preprod
 - [ ] `billplz-spike.ts` passes X-Signature round-trip (genuine + tamper tests)
-- [ ] Niagawan e-Invoice timeline: ≥ 6 months away
-- [ ] ≥ 7 of 10 merchant interviews score LHDN panic ≥ 7/10
-- [ ] ≥ 6 of 10 merchants willing to pay RM 20–40/month
 - [ ] MDEC Digitalisation Partner application cleared (currently: applied, pending)
 
-Fail any → re-evaluate wedge before more code.
+### Gate 0 pass criteria (all must hit)
+
+- ✓ 7/10 interviews resonate with Three-Tier framework (mechanical residue distinct from valued relationship + craft)
+- ✓ Smoke test merchant rates manual twin >7/10 helpfulness AND no customer noticed AI tone
+- ✓ AI cost measured ≤ RM 25/merchant/month at projected scale
+- ✓ Ariff formal partnership locked (signed)
+- ✓ Sdn Bhd in SSM queue
+
+### Pre-committed kill triggers (no rationalization when emotion arrives)
+
+1. AI cost > **RM 30/merchant/month** at RM 79 max → unit economics broken → kill
+2. **<5/10 interviews** resonate with Three-Tier → root problem wrong → reframe or kill
+3. Smoke test: customer noticed AI tone OR merchant trust degradation → reduce scope OR kill
+4. Ariff declines + Plan B unproven 4 weeks → kill
+5. Sdn Bhd structural block + sole-prop alternative non-viable → kill
+
+### Phase 1 Gate (post-validation, end Oct 2026) — "Love" operationally defined
+
+≥4/5 must hit:
+- Sean Ellis test: ≥40% answer "very disappointed" without Tokoflow
+- DAU consistency: ≥70% daily active over 4 weeks
+- Spontaneous referral: ≥1 alpha tells another merchant unprompted
+- NPS: ≥8 from all 5 alphas
+- Self-reported craft hours saved: ≥3 hours/week median
 
 ---
 
-## Recent reposition pass (2026-04-27)
+## Recent strategic passes
 
-"From snap to sold" + anti-anxiety + microcopy library, shipped across 5 commits (10bc895 → 6fa38c3). Highlights:
+### 2026-04-28 · Bible v1.2 — Three-Tier Reality + 2-Layer Twin (this session)
 
-- **Marketing reposition** — landing, features, pricing, about, contact, mitra, toko, coba-aplikasi rewritten around the new tagline; LHDN demoted from hero to silent superpower
-- **Pricing collapsed** — UI shows Free / Pro RM 49 / Business RM 99 only; legacy RM 5/8/13 pack constants `@deprecated` (kept for grandfathered users + API/DB compat)
-- **Anti-anxiety sweep** — `BeresCelebration` deleted, `OnboardingChecklist` reframed as suggestions (no X/N count or strikethrough), `TrialBanner` collapsed to one quiet line at exhausted only, `getNudgeLevel` simplified to `"none" \| "exhausted"`
-- **Compliance gating** — TIN/BRN/SST inputs in settings now gated to Pro merchants or those with tax info already entered
-- **Microcopy library** — `lib/copy/index.ts` with empty/error/loading/confirm/success/empathy templates; wired into 4 list empty states (orders, products, customers, invoices)
-- **Empathy moments shipped** — Hari Sepi (morning-brief), Customer Returns + Anniversary + Pre-Ramadan (engagement cron), Mid-Rush (realtime client toast)
-- **Cron copy rewrite** — removed comparison shaming ("tidier than 90% of SMBs"), robotic factoids ("Science says"), pressure tone, Indonesian leaks
-- **Photo Magic plan** — [`docs/positioning/P4-photo-magic-plan.md`](./docs/positioning/P4-photo-magic-plan.md) scopes the 1-photo onboarding ticket (~8-12 days, Phase 1 deliverable)
+8 ultrathink rounds + Steve Jobs lateral framing + devil's advocate red-team + critique-driven refinements. **Strategy locked, no code yet.** All in [`docs/positioning/`](./docs/positioning/) (versioned v1.2):
+
+- **Root problem refined**: "operations ate craft" (sweeping) → **Three-Tier Reality** (Pure Craft / Customer Relationship / Mechanical Residue) — D-013
+- **Solution architecture**: monolithic "autonomous twin" → **2-layer twin**: Background Twin (Tier 3, autonomous, invisible) + Foreground Assist (Tier 2, suggests, merchant sends). Trust transfer protected. — D-014
+- **New tagline**: **"We handle the receipts. Not the recipes."** (Bahasa: *"Resi kami urus. Resep kamu."*). Kitchen line literal. "Less admin. More making." retired as generic. "From snap to sold" demoted to Photo Magic feature tagline.
+- **6th iconic moment**: **The Disappearing Work** — felt absence of Tier 3 work, like Touch ID replacing password. New doc [`08-the-disappearing-work.md`](./docs/positioning/08-the-disappearing-work.md).
+- **Photo Magic v1 reframed extraction-only** — AI parses inventory/pricing, **leaves photo untouched**. Kitchen-protection enforced.
+- **Real moat sharpened** — 4-dimensional: unstructured input + Bahasa-first conversational + compliance silent + buyer experience. Not "AI labor" generic.
+- **Wave 1-5 expansion hypothesis** — Wave 1 mompreneur F&B Shah Alam → Wave 2 vertical-first MY (kosmetik/fashion/jasa) → Wave 3 geographic (KL/Penang/SG) → Wave 4 cross-pattern (creator/freelancer) → Wave 5 global. Bridges mission-wedge altitude gap.
+- **Phase 0 expanded** — 5 friendly + 5 hostile interviews + manual twin smoke test + AI cost measurement. 5 pre-committed kill triggers.
+- **"Love" operationally defined** — Sean Ellis 40% + DAU 70% + spontaneous referral + NPS 8 + 3hr/week craft saved.
+- **Phase 2 reframed** — milestone (50 paying) → underlying questions (Q1 retention >70%, Q2 CAC payback <3mo, Q3 K-factor >0.3).
+- **Tax demoted** — LHDN MyInvois moved Phase 1 hero → Pro/Business gated (SST RM 500K threshold reality).
+- **"What we refuse to do" list** — 10-item explicit restraint declaration as marketing weapon.
+- **Distribution hypothesis** — FB groups (Mommies Daily, Ibu-Ibu Bisnes Online MY), TikTok mompreneur creators, WhatsApp komuniti. Anti-channels: LinkedIn, Twitter/X, paid Google Ads.
+- **Lifestyle vs venture-scale acceptance** — RM 100-300K MRR ceiling realistic Year 3-5; venture-scale upside not assumption — D-015.
+- **Internal vs customer-facing naming discipline** — "Twin/Background/Foreground/Tier 3" never expose to user — D-016.
+
+Decision logs: D-013, D-014, D-015, D-016, D-017 (9 critique-driven refinements).
+
+### 2026-04-27 · "From snap to sold" + anti-anxiety + microcopy
+
+Shipped across 5 commits (10bc895 → 6fa38c3). **Code complete from this pass:**
+
+- **Marketing reposition** — landing, features, pricing, about, contact, mitra, toko, coba-aplikasi rewritten; LHDN demoted from hero to silent superpower
+- **Pricing collapsed** — UI shows Free / Pro RM 49 / Business RM 99 only; legacy pack constants `@deprecated`
+- **Anti-anxiety sweep** — `BeresCelebration` deleted, `OnboardingChecklist` reframed as suggestions, `TrialBanner` quiet line at exhausted only, `getNudgeLevel` simplified to `"none" \| "exhausted"`
+- **Compliance gating** — TIN/BRN/SST inputs in settings gated to Pro merchants or those with tax info entered
+- **Microcopy library** — `lib/copy/index.ts` wired into 4 list empty states
+- **Empathy moments shipped** — Hari Sepi, Customer Returns, Anniversary, Pre-Ramadan, Mid-Rush
+- **Cron copy rewrite** — removed comparison shaming, robotic factoids, pressure tone, Indonesian leaks
+- **Photo Magic plan** — [`P4-photo-magic-plan.md`](./docs/positioning/P4-photo-magic-plan.md) scopes 1-photo onboarding ticket
+
+> **Note on tagline migration**: shipped marketing copy still uses "From snap to sold." Bible v1.2 promotes that to *feature tagline for Photo Magic onboarding*. Brand-level tagline is now "We handle the receipts. Not the recipes." Marketing pages will be re-rewritten when Phase 1 build completes.
 
 ---
 
@@ -366,4 +454,4 @@ Vault at `~/base/vault/credentials/tokoflow.md`:
 
 ---
 
-*Last updated: 2026-04-27 · "From snap to sold" reposition + anti-anxiety + microcopy + 4 new empathy moments shipped · Vercel auto-deploy restored · Launch-blocked on Phase 0 validation + real-world ops.*
+*Last updated: 2026-04-28 · Positioning bible v1.2 locked: Three-Tier Reality + 2-layer twin + new tagline "We handle the receipts. Not the recipes." + 9 critique-driven refinements. Code unchanged this session. Launch-blocked on **Phase 0 adversarial validation** (interviews + smoke test + AI cost measurement) + Sdn Bhd + Billplz KYB. Phase 1 build starts only after Gate 0 passes ~end Jul 2026.*

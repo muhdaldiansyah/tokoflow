@@ -6,8 +6,16 @@
 
 ## Feature Philosophy
 
-Setiap fitur diuji terhadap [5 tests di manifesto](./00-manifesto.md#the-5-tests):
+Setiap fitur harus lulus **Test 0** dulu (mendahului 5 tests lain):
 
+> **Test 0**: Apakah ini hit salah satu dari [Three-Tier Reality](./00-manifesto.md#the-three-tier-reality)?
+> - Mengembalikan waktu untuk **Pure Craft** (Tier 1), atau
+> - Melindungi & mengamplifi **Customer Relationship** (Tier 2), atau
+> - Menghapus **Mechanical Residue** (Tier 3) invisibly
+
+Gagal Test 0 → potong. Tanpa pengecualian.
+
+Lalu lulus [5 tests lain](./00-manifesto.md#the-5-tests):
 1. Apakah ini melayani kebutuhan manusia yang nyata?
 2. Apakah ini terasa intuitif tanpa penjelasan?
 3. Apakah ini menciptakan momen empati?
@@ -15,6 +23,20 @@ Setiap fitur diuji terhadap [5 tests di manifesto](./00-manifesto.md#the-5-tests
 5. Apakah ini memuliakan user?
 
 Gagal salah satu = **potong atau rancang ulang**.
+
+---
+
+## 3-Tier Feature Classification
+
+Setiap fitur Tokoflow masuk ke salah satu dari 3 tier — dan tier menentukan **autonomy level + trust risk + AI cost profile**:
+
+| Tier | Layer | Autonomy | Customer sees? | Trust risk | AI cost |
+|---|---|---|---|---|---|
+| **3 — Mechanical Residue** | Background Twin | Fully autonomous | NO (invisible) | Low | Low (background ops) |
+| **2 — Customer Relationship** | Foreground Assist | Suggests, merchant decides + sends | NO (merchant face) | Medium-managed | Medium (drafts + judgment) |
+| **1 — Pure Craft** | Tokoflow doesn't enter | None | N/A | None — sacred | Zero |
+
+**Rule of thumb**: setiap feature placement DILEMMA → default ke Tier yang lebih konservatif (Tier 3 → Tier 2 → eject). Better small autonomous than big risky.
 
 ---
 
@@ -55,15 +77,16 @@ Gagal salah satu = **potong atau rancang ulang**.
 
 ## Features by User Journey
 
-### A. Setup — "The Photo Magic" (60 detik)
+### A. Setup — "The Photo Magic" (60 detik) [TIER 3 — extraction only]
 
-| Fitur | Lulus 5 tests | Description |
+> **Refined 2026-04-28**: Photo Magic v1 reframed dari "AI generate beautiful product photo + beautify" → "AI **extract** inventory metadata, leaves photo untouched." Kitchen line preserved — photo IS part of merchant's craft and brand, we don't enter it.
+
+| Fitur | Tier | Description |
 |---|:---:|---|
-| **1-Photo Onboarding** | ✅ | Foto dapur/dagangan → AI auto-generate nama toko, produk, harga (peer benchmark), deskripsi, foto |
-| **Voice Setup Fallback** | ✅ | Tap mic kalau prefer ngomong: "Saya jual nasi goreng RM 12, mie ayam RM 10" |
-| **Smart Defaults from Context** | ✅ | Lokasi (GPS), waktu, foto → AI infer business type, jam buka, currency |
-| **Auto Beautify Photos** | ✅ | AI enhance foto produk—tetap autentik, bukan fake |
-| **One-Tap Share** | ✅ | Setelah toko jadi, share ke IG/TikTok/WA dengan 1 tombol |
+| **1-Photo Inventory Extraction** | 3 | Foto dapur/dagangan → AI parse: produk apa, harga estimasi peer-benchmark, kategori. **Photo itself stays untouched and merchant's.** |
+| **Voice Setup Fallback** | 3 | Tap mic kalau prefer ngomong: "Saya jual nasi goreng RM 12, mie ayam RM 10" |
+| **Smart Defaults from Context** | 3 | Lokasi (GPS), waktu, foto → AI infer business type, jam buka, currency |
+| **One-Tap Share** | 3 | Setelah toko jadi, share ke IG/TikTok/WA dengan 1 tombol |
 
 **Anti-features (sengaja TIDAK ada):**
 - ❌ Multi-step setup wizard
@@ -71,6 +94,7 @@ Gagal salah satu = **potong atau rancang ulang**.
 - ❌ Setup checklist "lengkapi profil 70%"
 - ❌ "Verifikasi email/phone first"
 - ❌ Domain/slug customization manual (auto-generated)
+- ❌ ~~AI photo beautification/regeneration~~ — **REMOVED (kitchen-protection)**: foto IS part of merchant's craft. Tokoflow extracts metadata, doesn't replace visuals.
 
 ---
 
@@ -101,17 +125,20 @@ Gagal salah satu = **potong atau rancang ulang**.
 
 ---
 
-### C. Fulfill — "Invisible Mode" (owner masak, AI urus)
+### C. Fulfill — "Invisible Mode" (owner masak, Tokoflow urus)
 
-| Fitur | Lulus 5 tests | Description |
+**Important refinement (2026-04-28):** previously "AI Customer Assistant" claimed AI auto-replies chat customer. **Refined to Tier 2 (Foreground Assist):** AI **suggests** replies, merchant **sends**. Customer-facing layer stays merchant-controlled. Trust transfer protected.
+
+| Fitur | Tier | Description |
 |---|:---:|---|
-| **AI Customer Assistant** | ✅ | AI auto-balas chat customer untuk Q&A standar (jam, harga, alamat, custom request basic) |
-| **The Vibrate** | ✅ | Pesanan masuk → HP getar halus 1x (no sound default) |
-| **The Swipe Forward** | ✅ | Swipe kanan = advance status (1 gesture per langkah) |
-| **Auto Customer Follow-up** | ✅ | "Pesanan kamu sudah siap" — AI kirim atas nama owner, owner approve sekali |
-| **Quiet Hours by Default** | ✅ | 22:00-06:00 MYT default, AI tidak ganggu owner |
-| **Status Workflow (5 stages)** | ✅ | Diterima → Mulai masak → Siap → Antar → Selesai |
-| **Stock Auto-Decrement** | ✅ | Auto-disable produk saat stock 0 |
+| **Customer Reply Suggestions** (Tier 2 — refined) | 2 | AI draft replies untuk Q&A standar. Merchant tap "send" (in-app, copy-to-WA hybrid Phase 1). Bukan auto-send. |
+| **Pattern Surfacing** | 2 | "Pak Andi balik lagi (5x)"—AI notice, merchant decide what to do |
+| **The Vibrate** | 2 | Pesanan masuk → HP getar halus 1x (no sound default). Tier 2 awareness. |
+| **The Swipe Forward** | 2 | Swipe kanan = advance status (1 gesture per langkah). Tier 2 maintenance. |
+| **Status Update Sending** | 3 | Background Twin auto-send "siap untuk pickup" sekali merchant swipe forward (status update is mechanical, not relational nuance) |
+| **Quiet Hours by Default** | — | 22:00-06:00 MYT default. Background Twin respects this. |
+| **Status Workflow (5 stages)** | 2 | Diterima → Mulai masak → Siap → Antar → Selesai |
+| **Stock Auto-Decrement** | 3 | Background Twin (already shipped) |
 
 **Anti-features:**
 - ❌ Sound notif default ON—jangan, ganggu flow masak
@@ -168,18 +195,30 @@ Sample copy & full empathy moments di [`02-product-soul.md`](./02-product-soul.m
 
 ---
 
-### F. Silent Superpower — "Compliance & Money" (di balik layar)
+### F. Silent Superpower — "Compliance & Money" (di balik layar) [TIER 3]
 
-Ini fitur yang **tidak diiklankan**, tapi membuat Tokoflow defensible.
+Ini fitur yang **tidak diiklankan**, tapi membuat Tokoflow defensible. **Semua Tier 3 (Background Twin, fully autonomous, invisible).** Lulus Test 0 dengan menghapus Mechanical Residue.
 
-| Fitur | Lulus 5 tests | Description |
+> **Refined 2026-04-28**: Tax/LHDN demoted from Phase 1 hero → Pro/Business tier feature, gated to merchants who approach threshold. SST RM 500K threshold means most home F&B mompreneur Year 1 don't hit. Don't pre-build tax UI for merchants who'll never use it.
+
+#### Phase 1 (Background Twin, all tiers)
+
+| Fitur | Tier | Description |
 |---|:---:|---|
-| **Auto Invoice Numbering** | ✅ | Setiap order → invoice generated silently |
-| **LHDN MyInvois Auto-Submit (Business)** | ✅ | Compliance terjadi otomatis, owner tidak pikirin |
-| **e-Faktur Coretax Indonesia (Phase 2)** | ✅ | Sama untuk Indonesia |
-| **SST/PPN Auto-Calculator** | ✅ | Auto-apply tax rate per region |
-| **Tax Reminder (Soft)** | ✅ | "Pajak bulan ini sudah otomatis dilaporkan."—informasi, bukan tugas |
-| **Receipt PDF Generation** | ✅ | Auto-generate beautiful PDF receipt |
+| **Auto Invoice Numbering** | 3 | Setiap order → invoice generated silently. Background Twin. |
+| **Auto Payment Matching** | 3 | Bank notification → matched ke order. Background Twin. |
+| **Receipt PDF Generation** | 3 | Auto-generate beautiful PDF receipt. Background Twin. |
+| **Stock Auto-Decrement** | 3 | Already shipped. Background Twin. |
+| **Customer Relationship Memory** | 3 | Auto-tag pelanggan setia, custom request history. Background Twin. |
+
+#### Pro/Business tier only (gated, surface when merchant approaches threshold)
+
+| Fitur | Tier | Gating logic |
+|---|:---:|---|
+| **LHDN MyInvois Auto-Submit** | 3 | Surfaced only when merchant approaches LHDN threshold OR explicitly enables. Free tier merchants never see this. |
+| **SST/PPN Auto-Calculator** | 3 | Surfaced only when merchant approaches SST RM 500K threshold. |
+| **Tax Reminder (Soft)** | 3 | Active for Pro+ merchants who registered SST. |
+| **e-Faktur Coretax Indonesia** | 3 | Phase 5 (Indonesia migration). Same gating logic. |
 
 **Anti-features:**
 - ❌ Compliance checkbox wizard yang scary
@@ -264,4 +303,8 @@ Phase mapping per fitur—detail di [`06-roadmap.md`](./06-roadmap.md):
 
 ---
 
-*Versi 1.0 · 26 April 2026 · Setiap fitur baru harus pass 5 tests + tidak melanggar anti-features list.*
+*Versi 1.2 · 28 April 2026 · Setiap fitur baru harus pass Test 0 (Three-Tier hit) + 5 tests + tidak melanggar anti-features list.*
+
+*Changelog 1.1 (earlier same day):* Added Test 0 (Three-Tier Reality gate). Added 3-Tier Feature Classification table. Refined "AI Customer Assistant" from Tier 3 (autonomous reply) → Tier 2 (Foreground Assist: suggests, merchant sends). Trust transfer issue resolved by scope reduction. See `07-decisions.md` D-014.
+
+*Changelog 1.2:* Photo Magic v1 reframed extraction-only — AI parses inventory/pricing from photo, **leaves photo untouched** (kitchen-protection). LHDN MyInvois demoted from Phase 1 hero to Pro/Business gated feature (SST RM 500K threshold means most Year 1 mompreneur don't hit). Added "Auto Beautify Photos" to anti-features list explicitly. Critique-driven 2026-04-28.

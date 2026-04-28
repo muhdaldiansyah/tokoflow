@@ -12,68 +12,193 @@ Apple-grade ambition + hyperlocal start. Tidak pernah day-1 global. Setiap phase
 
 ---
 
-## Phase 0 — Foundation (sekarang–Mei 2026)
+## Wave Hypothesis (mission-wedge altitude bridge)
 
-**Goal**: Lock vision, formalize partnership, prepare infrastructure.
+> Critique 2026-04-28 yang valid: "global AI leverage" mission vs "Shah Alam mompreneur F&B" wedge — jarak besar tanpa jembatan ekspansi explicit. Lock hipotesis di sini.
+
+| Wave | Year | Segment | Same-pattern justification |
+|---|---|---|---|
+| **Wave 1** | Year 1 (2026-2027) | Home F&B mompreneur Shah Alam | Acute pain, dense cluster, Ariff distribution access |
+| **Wave 2** | Year 2 (2027) | **Vertical-first within MY**: kosmetik reseller, modest fashion home seller, jasa lokal (catering, daycare, beauty service) | Same WA-driven commerce pattern + same Bahasa-first UX + same dense mompreneur clusters |
+| **Wave 3** | Year 2-3 | **Geographic**: KL Selangor luas → Penang → Johor → Singapore | Same SEA mompreneur archetype, English-comfortable for SG bridge |
+| **Wave 4** | Year 3-4 | **Cross-pattern**: creator economy, freelancer (designer/dev), B2B service solo | Different commerce patterns (TikTok/IG, contracts) — requires Background Twin abstractions to be re-tuned |
+| **Wave 5+** | Year 4+ | Indonesia migration (CatatOrder users) → Vietnam/Philippines → Western pilot | Naval framework extension globally |
+
+**Implication for Phase 1 architecture**:
+- Background Twin abstractions harus **generic enough untuk Wave 2 vertical port** (payment matching, status update, invoice gen = pattern-agnostic)
+- WA-conversational UX = pattern-agnostic dalam SEA
+- Tax/LHDN integration = MY-specific (justify regional, not generic)
+- Don't over-engineer for Wave 4 patterns yang belum validated
+
+**Wave 2 trigger**: Phase 3 gate passes (500 paying Klang Valley) → start Wave 2 vertical pilots Q3 2027 with 1-2 segment additions.
+
+**Decision rule**: never add Wave N+1 segment sebelum Wave N achieves >60% segment dominance dalam target geo.
+
+---
+
+## Phase 0 — Validation-First Foundation (Apr–Jul 2026, ~3 months)
+
+**Goal**: Validate root problem (Three-Tier Reality) + solution architecture (Background Twin + Foreground Assist) **before** committing to full Phase 1 build. Lock partnership + start ops chain in parallel.
+
+> **Refined 2026-04-28**: Phase 0 is no longer just observation — it's adversarial validation. Phase 0 must DISPROVE thesis if thesis is wrong, not just confirm if confirmable. See [`07-decisions.md`](./07-decisions.md) D-013 + D-014.
 
 ### Milestones
 
-- [ ] Vision manifesto (1-pager) ditulis & shared dengan Ariff
-- [ ] Kopi 2 jam dengan Ariff Danial → decide partnership tier (advisor / co-founder)
-- [ ] Sign partnership agreement dengan Ariff (formal)
-- [ ] Identify target area Shah Alam (cluster mompreneur F&B)
-- [ ] Sdn Bhd registration mulai (4-8 minggu process)
-- [ ] Billplz KYB application started
+#### Strategy lock
+- [x] Positioning bible v1.1 updated dengan Three-Tier Reality + 2-layer Twin (2026-04-28)
+- [ ] Tokoflow.com landing reposition ke "Less admin. More making." (post bible lock)
+
+#### Partnership lock
+- [ ] Kopi 2 jam dengan Ariff Danial → decide partnership tier (advisor 1.5% / co-founder 5–10%)
+- [ ] Sign formal partnership agreement (SAFE/MOU)
+- [ ] **No casual mode** — Ariff in or out
+
+#### Adversarial persona validation
+- [ ] **5 friendly interviews** (via Ariff warm intro): test 3-tier framework, observe real day, document Tier 1/2/3 split
+- [ ] **5 hostile interviews** (cold outreach): hostile question first ("Apa bagian dari jualan yang kamu paling enjoy?"), then "why might Tokoflow NOT work for you?"
+- [ ] All 10 documented as profiles
+- [ ] Synthesize: does Three-Tier Reality match real merchant experience?
+
+#### Smoke test (NEW)
+- [ ] **Manual Twin test**: Aldi himself acts as Background Twin for 1 volunteer merchant for 2 weeks via WA admin (with explicit permission)
+- [ ] Track: which Tier 3 ops actually saved time? Did customer notice anything? Trust transfer real?
+- [ ] **Cost cheap (~30 jam Aldi time), insight high (validates whole thesis architecturally)**
+
+#### AI economics measurement (NEW)
+- [ ] Build real prompts for Background Twin (payment match, invoice, status, complaint draft)
+- [ ] Run against simulated 50-order/month merchant load
+- [ ] Measure: actual cost per active merchant in $/month
+- [ ] Decide: pricing tier adjustments needed?
+
+#### Real-world ops critical path
+- [ ] Sdn Bhd registration submitted (SSM)
+- [ ] Bank account application drafted (post Sdn Bhd)
+- [ ] Billplz KYB application prepared (waiting Sdn Bhd)
 - [ ] MD Status (MDEC) application started
-- [ ] Tokoflow.com landing page reposition (kill "LHDN-ready" hero, replace dengan "From snap to sold")
-- [ ] 10 ethnographic interview Shah Alam mompreneur—**no pitch**, just observe
+- [ ] **Accept: 6-12 month realistic timeline, not 12-16 weeks**
 
-### Success criteria
+### Success criteria (Phase 0 Gate, end Jul 2026)
 
-- Vision shared & locked
-- Ariff committed (whatever tier landed)
-- 10 deep interview profiles documented
-- Sdn Bhd + Billplz process in motion
+- ✓ 7/10 interviews resonate with Three-Tier framework (specifically: agree mechanical residue is distinct from valued relationship + craft)
+- ✓ Smoke test merchant rates manual twin >7/10 helpfulness AND no customer complaint about "feel" change
+- ✓ AI cost measured ≤ RM 25/merchant/month at projected scale
+- ✓ Ariff formal partnership locked (signed)
+- ✓ Sdn Bhd in SSM queue (12+ weeks lag accepted)
+- ✓ 5 alpha merchants identified for Phase 1 hand-install
 
 ### Failure criteria
 
-- Ariff hesitate atau cuma "casual help" mood → reconsider distribution strategy
-- 10 interviews show segment isn't ready → reconsider initial segment
+- ✗ <5/10 interviews resonate → reframe root problem, **don't push through**
+- ✗ Smoke test reveals customer noticed AI tone OR trust transfer felt off → reduce twin scope further
+- ✗ AI cost >RM 30/merchant → adjust pricing OR scope
+- ✗ Ariff casual mode → execute Plan B distribution (Aldi solo + slower)
+- ✗ Sdn Bhd or KYB blocked structurally → reassess legal structure (sole prop interim?)
 
 ---
 
-## Phase 1 — Magic Moment (Jun-Jul 2026)
+### Kill Criteria — Phase 0 (pre-committed, no rationalization)
 
-**Goal**: Build & ship "1-Photo Onboarding" sebagai centerpiece. Test dengan real merchants.
+> **Pre-commit principle**: Kill triggers ditulis SEKARANG, sebelum sunk cost bias kicks in. Saat trigger hit, kita TIDAK rasionalisasi. Kita kill atau pivot.
+
+5 explicit kill triggers. **Any single trigger hit → kill or pivot:**
+
+1. **AI cost** per active merchant > **RM 30/month** at RM 79 max price point → unit economics broken → kill
+2. **<5/10 interviews** resonate with Three-Tier framework → root problem wrong → reframe or kill
+3. **Smoke test**: customers consistently feel AI tone OR merchant reports trust degradation > 1 incident → relationship moat broken → reduce twin scope OR kill
+4. **Ariff** declines formal partnership AND Plan B distribution unproven within 4 weeks → kill
+5. **Sdn Bhd structurally blocked** (e.g., legal structure incompatible) AND sole-prop alternative makes Pro tier non-viable → kill
+
+**Pre-commitment authority**: signed by Aldi 2026-04-28. Triggers can only be relaxed via formal D-XXX entry in `07-decisions.md` with reasoning logged.
+
+---
+
+## Phase 1 — Minimum Viable 2-Layer Twin (Aug-Oct 2026, ~3 months)
+
+**Goal**: Ship **only** Photo Magic + Background Twin (Tier 3) + Foreground Assist (Tier 2). 5 alphas hand-installed. Refuse all scope expansion.
+
+> **Refined 2026-04-28**: Previously this phase was "1-Photo Onboarding shipped." Now expanded to include Background Twin + Foreground Assist — but scope held by removing other features (no autonomous customer-facing AI, no mobile app, no advanced empathy moments).
 
 ### Milestones
 
-- [ ] Web app: 1-Photo Onboarding shipped (Gemini multimodal integration)
-- [ ] Web app: Strip dashboard ke 2-screen (Home + Asisten)
-- [ ] Web app: Beautiful shop page redesign (humanized, story-first)
-- [ ] Web app: AI conversational customer flow shipped
-- [ ] Onboard 5 friendly merchants from Phase 0 interviews (free, ongoing feedback)
-- [ ] Patrick-Collison-style hand-installation: kamu + Ariff visit each merchant
-- [ ] Iterate weekly based on real feedback
+#### Month 1 (Aug 2026) — Photo Magic v1
+- [ ] Photo Magic v1 ships: foto → AI auto-generate shop (per [P4-photo-magic-plan.md](./P4-photo-magic-plan.md))
+- [ ] Visual identity + inventory parsing + peer-priced products
+- [ ] Manual fallback at `/setup/manual` preserved
+- [ ] Voice extension (3 questions for personality) DEFERRED to v2 if v1 lands well
 
-### Success criteria
+#### Month 2 (Sep 2026) — Background Twin (Tier 3)
+- [ ] Background Twin: payment matching (bank notif → order)
+- [ ] Background Twin: invoice auto-generation
+- [ ] Background Twin: status update auto-send (after merchant Swipe Forward)
+- [ ] Background Twin: stock auto-decrement (already shipped)
+- [ ] Background Twin: customer relationship memory (auto-tag pelanggan setia)
+- ~~LHDN MyInvois auto-submit~~ — **DEFERRED** (Pro/Business tier, gated, surfaced only when merchant approaches threshold; refined 2026-04-28 — see [03-features.md](./03-features.md))
 
-- 5 merchants onboard dalam <5 menit each (validation: it's actually 60-second)
-- 5 merchants use product daily for 4 weeks
-- NPS 8+ from 5 merchants
-- 1-Photo demo videoable (untuk Phase 2 marketing)
+#### Month 3 (Oct 2026) — Foreground Assist (Tier 2)
+- [ ] Suggested replies (in-app, copy-to-WA hybrid Phase 1)
+- [ ] Pattern surfacing ("Pak Andi balik lagi (5x)")
+- [ ] Complaint draft helper
+- [ ] Daily review screen (necessary UX, not iconic — supplements The Disappearing Work feeling)
+- [ ] 5 alphas hand-installed by Aldi+Ariff
+
+### NOT shipped Phase 1 (deferred, no exceptions)
+
+- ❌ Photo Magic v2 (voice personality bootstrap) → Phase 2
+- ❌ Autonomous customer chat → never (Tier 2 protected)
+- ❌ Mobile app native → Phase 2
+- ❌ Multi-staff → Phase 3
+- ❌ BM/Mandarin localization → Phase 4
+- ❌ Marketplace integration → Phase 4
+- ❌ Public marketing campaign → Phase 2 (post Gate 1)
+- ❌ Charts/dashboards/engagement gamification → never
+
+### Success criteria (Phase 1 Gate, end Oct 2026) — "Love" operationally defined
+
+> **Pre-committed metrics**: "5 alphas love it" defined precisely SEBELUM Phase 0 dimulai. Kalau metric tidak hit, **tidak rasionalisasi**.
+
+**ALL of these must hit (≥4 of 5):**
+
+| # | Metric | Threshold | Source |
+|---|---|---|---|
+| 1 | **Sean Ellis test** | ≥40% answer "very disappointed" without Tokoflow | Survey week 4 |
+| 2 | **DAU consistency** | ≥70% daily active over 4-week window per merchant | Telemetry |
+| 3 | **Spontaneous referral** | ≥1 alpha tells another merchant unprompted | Tracked manually |
+| 4 | **NPS** | ≥8 from all 5 alphas | Survey week 4 |
+| 5 | **Self-reported craft hours saved** | ≥3 hours/week (median across alphas) | Weekly diary |
+
+**Plus operational guardrails:**
+- ✓ Background Twin error rate < 5%
+- ✓ Foreground Assist suggestions approved-without-edit > 70%
+- ✓ No customer complaint reported about "feel" change
+- ✓ Demo video produced (Phase 2 marketing)
+
+**< 4/5 main metrics hit** → Phase 1 fails, iterate or kill.
 
 ### Failure criteria
 
-- Onboarding takes >5 minutes consistently → product not ready
-- Merchants don't use product daily → product not magic enough
-- NPS <7 → fundamental issue, investigate
+- ✗ Onboarding takes >5 minutes consistently → Photo Magic v1 needs iteration
+- ✗ Merchants don't use product daily → not magic enough, investigate
+- ✗ NPS <7 → fundamental issue
+- ✗ Twin error rate >10% → STOP autonomous, back to shadow mode
+- ✗ Customer complaints about AI-feel → reduce twin scope further
 
 ---
 
-## Phase 2 — First 50 Paying + Mobile Native (Aug-Oct 2026)
+## Phase 2 — Validate Retention + CAC + Referral (Nov 2026 – Mar 2027)
 
-**Goal**: First 50 paying merchants Shah Alam. Ship native mobile app.
+**Goal**: Phase 2 BUKAN "get 50 paying merchants" sebagai vanity number. Phase 2 menjawab **3 underlying questions** dengan N=50 sample.
+
+> **Refined 2026-04-28**: Critique valid — "50 merchants" tanpa underlying question = vanity. 50 adalah sample size untuk validate retention/CAC/referral, bukan goal itself.
+
+### The 3 Phase 2 Questions
+
+| # | Question | Target metric | Why it matters |
+|---|---|---|---|
+| **Q1** | Does retention hold beyond hand-installed alphas? | 90-day retention ≥70% | Hand-installed bias removed; product must self-sustain |
+| **Q2** | Does CAC payback work? | <3-month payback at projected pricing | Unit economics validated for Phase 3 expansion |
+| **Q3** | Is there organic referral? | K-factor ≥0.3 (each merchant brings 0.3 new) | Distribution flywheel forming |
+
+**N=50 paying merchants** is the sample size to answer these questions with reasonable confidence.
 
 ### Milestones
 
@@ -196,16 +321,18 @@ Apple-grade ambition + hyperlocal start. Tidak pernah day-1 global. Setiap phase
 
 ---
 
-## Decision Gates Summary
+## Decision Gates Summary (revised 2026-04-28)
 
 | Gate | When | Pass criteria | If fail |
 |---|---|---|---|
-| Gate 0 → 1 | End Mei 2026 | Vision locked + Ariff committed + 10 interviews done | Reassess approach |
-| Gate 1 → 2 | End Jul 2026 | 5 merchants love product (NPS 8+) | Iterate magic moment |
-| Gate 2 → 3 | End Oct 2026 | 50 paying + 20% conversion | Distribution rework |
-| Gate 3 → 4 | End Mar 2027 | 500 Klang Valley + Ramadan validated | Focus, don't expand |
+| Gate 0 → 1 | End Jul 2026 | 7/10 interviews validate Three-Tier + smoke test passes + AI cost ≤ RM 25 + Ariff locked | Reframe root problem, do not push through |
+| Gate 1 → 2 | End Oct 2026 | 5 alphas NPS 8+ + daily use + ≥1 referral + twin error <5% | Iterate magic moment, do not scale |
+| Gate 2 → 3 | End Mar 2027 | 50 paying + 20% conversion + twin silent >50% + churn <8% | Fix retention, don't expand to KL |
+| Gate 3 → 4 | End Sep 2027 | 500 Klang Valley + Ramadan validated | Focus, don't expand to SEA |
 | Gate 4 → 5 | End Dec 2027 | 2K paying + Singapore proven | Stay SEA, don't go global |
 | Gate 5 → 6 | End 2029 | 5K paying + 4 markets stable | Reassess global ambition |
+
+**Note on timeline shift**: Gate 1 moved from end Jul → end Oct (Phase 0 expanded to 3 months for proper validation). Gate 2 moved from end Oct → end Mar 2027. Adds ~3 months total but dramatically reduces "build wrong thing" risk. Ramadan 2027 (Feb–Mar) still capturable IF Gate 1 passes by end Oct 2026.
 
 ---
 
@@ -236,6 +363,36 @@ Setiap "tidak" ini adalah disiplin. Kalau temptasi muncul untuk bangun, baca [`0
 
 ---
 
+## Distribution Hypothesis (Year 1)
+
+> **Refined 2026-04-28**: Critique valid — "Where does Bu Aisyah live online" tidak articulate. Lock channel strategy.
+
+### Year 1 channels (where mompreneur Shah Alam are)
+
+| Channel | Why | Action |
+|---|---|---|
+| **FB groups** | Mommies Daily MY, Ibu-Ibu Bisnes Online MY, regional KL/Selangor mompreneur groups — high density, organic | Aldi/Ariff lurk first (Phase 0), seed organic mentions Phase 1 from alpha referrals |
+| **TikTok** | Mompreneur creator MY (small-mid tier) — visual, demo-friendly | Demo video produced Phase 1 → seed Phase 2 |
+| **WhatsApp komuniti** | School moms WA group, mosque jemaah, neighborhood — Bu Aisyah's existing network | Alpha merchants share organically; Ariff warm intro pipeline |
+| **Direct (warm)** | Ariff's network, alpha merchant referrals, Aldi's circle | Phase 0 + Phase 1 primary |
+
+### Anti-channels (explicit — wrong fit)
+
+- ❌ **LinkedIn** — wrong demographic (B2B/professional, bukan mompreneur)
+- ❌ **Twitter/X** — wrong demographic (tech/news/Western)
+- ❌ **Paid Google Ads** — wrong cost structure (CAC blows up at SMB pricing)
+- ❌ **Corporate sales** — wrong segment (D-006: B2B excluded Year 1)
+- ❌ **PR / press launch** — premature; Phase 2+ post 50 paying
+
+### Channel cadence
+
+- **Phase 0**: lurk + listen di FB groups + WA komuniti (no pitch). Document what mompreneur talk about, complain about, share.
+- **Phase 1**: Aldi+Ariff hand-install 5 alphas (warm direct). Phase 1 alpha demo video produced.
+- **Phase 2**: organic from alpha referrals + lightweight FB group mentions + 1-2 TikTok demo videos. **NO paid acquisition Year 1.**
+- **Phase 3+**: paid acquisition acceptable kalau CAC payback validated (Q2 from Phase 2).
+
+---
+
 ## Cross-references
 
 - Why this roadmap (mission): [`00-manifesto.md`](./00-manifesto.md)
@@ -245,4 +402,8 @@ Setiap "tidak" ini adalah disiplin. Kalau temptasi muncul untuk bangun, baca [`0
 
 ---
 
-*Versi 1.0 · 26 April 2026 · Roadmap is a hypothesis, not a contract. Update as we learn.*
+*Versi 1.2 · 28 April 2026 · Roadmap is a hypothesis, not a contract. Update as we learn.*
+
+*Changelog 1.1 (earlier same day):* Phase 0 expanded to 3-month validation-first phase (5 friendly + 5 hostile interviews + manual twin smoke test + AI cost measurement). Phase 1 expanded to 3 months Photo Magic + Background Twin + Foreground Assist (instead of just Photo Magic). Gate timing pushed ~3 months. Honest acceptance: Sdn Bhd → Billplz → LHDN ops chain realistic 6-12 months. See `07-decisions.md` D-013, D-014, D-015.
+
+*Changelog 1.2:* Added Wave 1-5 expansion hypothesis (mission-wedge altitude bridge). Added explicit Phase 0 kill criteria (5 pre-committed triggers). "Love" operationally defined (Sean Ellis + DAU + referral + NPS + craft hours). Phase 2 reframed from milestone (50 paying) to underlying questions (retention, CAC, referral). Added Distribution Hypothesis section (FB groups, TikTok, WA komuniti — anti-channels: LinkedIn, Twitter). LHDN deferred from Phase 1 hero → Pro/Business gated. Photo Magic v1 reframed extraction-only (kitchen-protected). All in response to 2026-04-28 critique.

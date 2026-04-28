@@ -4,11 +4,26 @@
 
 ---
 
-## The 5 Iconic Interactions
+## The 6 Iconic Moments
 
-Apple punya iconic interactions: slide-to-unlock, swipe-back gesture, AirPods open-to-pair, Apple Pay tap-to-pay. Masing-masing **satu gesture, magis karena restraint**.
+Apple punya iconic interactions: slide-to-unlock, swipe-back gesture, AirPods open-to-pair, Apple Pay tap-to-pay. Masing-masing **satu gesture, magis karena restraint**. Tapi Apple juga punya iconic FEELINGS — Touch ID's "no more passwords," Face ID's "phone just unlocks when I look." Itu bukan gesture, itu **absence of friction**.
 
-Tokoflow punya **5 iconic interactions** yang jadi jiwa produk. Setiap fitur lain mendukung 5 ini. Kalau salah satu hilang, Tokoflow kehilangan soul.
+Tokoflow punya **6 iconic moments** yang jadi jiwa produk:
+- 5 interactions (visible gestures)
+- 1 feeling (invisible, the absence of work)
+
+Setiap fitur lain mendukung 6 ini. Kalau salah satu hilang, Tokoflow kehilangan soul.
+
+**Mapping ke [Three-Tier Reality](./00-manifesto.md#the-three-tier-reality):**
+
+| Iconic Moment | Three-Tier function |
+|---|---|
+| 1. The Photo Magic | Tier 3 removed at setup (no admin form-filling) |
+| 2. The Vibrate | Tier 2 awareness (gentle, dignifying customer notification) |
+| 3. The Swipe Forward | Tier 2 maintenance (status as merchant↔customer touchpoint) |
+| 4. The Voice Ask | Merchant interface to Background Twin |
+| 5. The Evening Embrace | Tier 1+2+3 narrative — story of the day |
+| 6. **The Disappearing Work** *(NEW)* | Tier 3 removed continuously — the felt absence |
 
 ---
 
@@ -18,12 +33,13 @@ Tokoflow punya **5 iconic interactions** yang jadi jiwa produk. Setiap fitur lai
 
 **Feeling**: Wonder. *"Kok bisa?"*
 
-**Mechanics**:
+**Mechanics** *(refined 2026-04-28 — extraction only, kitchen-protected)*:
 - User open app first time → ada 1 button: kamera icon besar
 - Tap → kamera terbuka
 - Foto dapur, etalase, atau dagangan
 - 3 detik AI processing
-- Toko muncul: nama, story, menu (3-5 produk auto-detected), harga (peer benchmark), foto cantik
+- Toko muncul: nama, story, menu (3-5 produk auto-detected dari foto), harga estimasi (peer benchmark)
+- **Foto merchant ditampilkan as-is** — Tokoflow tidak regenerate atau beautify
 - User tap "Begini sudah pas?" → toko live + auto-share ke IG/WA
 
 **Why ini iconic**:
@@ -37,6 +53,7 @@ Tokoflow punya **5 iconic interactions** yang jadi jiwa produk. Setiap fitur lai
 - ❌ "Pilih business type dulu"
 - ❌ "Verifikasi email/phone first"
 - ❌ Manual product entry form
+- ❌ **AI regenerate / beautify foto** (kitchen-protection — photo IS part of craft)
 
 ---
 
@@ -174,6 +191,45 @@ Tokoflow punya **5 iconic interactions** yang jadi jiwa produk. Setiap fitur lai
 - ❌ Streaks yang punish ("kamu break streak hari ini!")
 - ❌ Goal-pressure ("masih kurang RM 200 dari target")
 - ❌ Generic stats list
+
+---
+
+### 6. The Disappearing Work
+
+**Feeling**: Invisibility. *"Eh, banyak hal sudah selesai padahal saya tidak melakukannya."*
+
+**Mechanics** (this is **a feeling, not a screen**):
+- Mechanical residue (Tier 3) di-handle Background Twin secara autonomous
+- Bu Aisyah glance HP malam hari, lihat catatan ringkas: *"Hari ini 23 invoice di-generate, 18 payment dimatch ke pesanan, 5 receipt dikirim ke customer, semua otomatis."*
+- Yang iconic bukan layar itu — yang iconic adalah **kesadaran bahwa pekerjaan yang biasa dia ingat lakukan, ternyata sudah hilang dari memori-nya karena dia tidak melakukannya.**
+- Like Touch ID replacing password: kamu lupa pernah ada password sama sekali
+
+**Why ini iconic**:
+- Apple's deepest UX magic adalah **work that disappears** (Touch ID, Face ID, Apple Pay tap, AirDrop)
+- Tier 3 removal yang Tokoflow lakukan = same family
+- Bukan dengan menambah fitur — dengan **mengurangi work yang merchant harus lakukan**
+- Iconic tertinggi adalah yang user tidak sadari, tapi merasakannya
+
+**Internal architecture name**: Background Twin (lihat [`08-the-disappearing-work.md`](./08-the-disappearing-work.md) untuk spec).
+
+**Customer-facing language**: never "twin", never "AI agent", never "background process." Cuma *"sudah saya urus"* atau *"otomatis"* atau (ideally) silence — work just isn't there.
+
+**Anti-pattern yang harus dihindari**:
+- ❌ Surface "AI handled X for you" notifications setiap operation (over-claim attention)
+- ❌ Persistent badges menunjukkan twin's activity (defeat invisibility)
+- ❌ Settings yang force merchant to "configure" what twin handles (cognitive burden)
+- ❌ "Achievement unlocked" celebrations untuk work twin did (gamification anti-pattern)
+
+**Sample copy by scenario**:
+
+> **Daily summary (mention disappearing work casually)**:
+> *"Hari ini 28 pesanan, RM 1,650. 22 invoice + 18 payment match selesai sendiri di belakang. Selamat istirahat ya."*
+
+> **Weekly summary (acknowledge cumulative)**:
+> *"Minggu ini, kamu nggak perlu hitung pajak sekali pun. SST untuk 142 order otomatis ter-track. Kamu balik ke dapur lebih banyak — ini yang mestinya."*
+
+> **First-month milestone**:
+> *"Sebulan lalu kamu mulai. Sejak itu Tokoflow sudah handle 87 invoice, 72 payment match, 12 LHDN submission. Itu kira-kira 25 jam admin yang nggak kamu lakukan. 25 jam yang kembali ke kek lapis."*
 
 ---
 
@@ -337,4 +393,6 @@ Total: ~34 copy templates yang harus carefully crafted. Semua di-store di file c
 
 ---
 
-*Versi 1.0 · 26 April 2026 · This doc captures the SOUL. Without these 5 iconic interactions and 7 empathy moments, Tokoflow is just another commerce tool.*
+*Versi 1.1 · 28 April 2026 · This doc captures the SOUL. Without these 6 iconic moments and 7 empathy moments, Tokoflow is just another commerce tool.*
+
+*Changelog 1.1:* Added 6th iconic moment "The Disappearing Work" (Tier 3 removal as a felt absence, not a screen). Re-framed 5 interactions around Three-Tier Reality. See `00-manifesto.md` updated, `08-the-disappearing-work.md` for spec.

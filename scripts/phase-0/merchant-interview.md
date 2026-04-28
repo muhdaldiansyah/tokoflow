@@ -1,117 +1,225 @@
-# Phase 0.4 — Merchant interview script
+# Phase 0 — Merchant Interview Script (v2, adversarial)
 
-**Target:** 10 Malaysian micro/small merchants currently taking orders via WhatsApp.
-**Channel:** WhatsApp voice call or Zoom, 20–30 min each.
-**Recruit from:** FB MY UMKM groups, Lowyat forums, TikTok Shop MY sellers, LinkedIn "small business owner Malaysia".
-**Mix:** 4 F&B (home kitchen, cloud kitchen, catering), 2 home bakery/kuih, 2 TikTok Shop resellers, 1 retail/fashion, 1 service (tuition/salon).
+> **Refined 2026-04-28** for bible v1.2: Three-Tier Reality + 2-layer Twin + tax demoted from hero. This script DISPROVES thesis if thesis is wrong, not just CONFIRMS.
 
-**Offer:** 30 RM Touch 'n Go reload (or equivalent) for 25 min of their time. Non-leading — don't preview the product.
-
----
-
-## Pass criteria (Gate A)
-
-Validate wedge only if:
-- ≥7 of 10 rate LHDN e-Invoice worry ≥7/10
-- ≥6 of 10 say they'd pay RM 20–40/mo for an integrated solution
-- ≥4 of 10 currently use Orderla / similar tool and have unresolved pain
-
-Fail criteria — pivot wedge if:
-- ≤3 of 10 panic on e-Invoice → compliance is not the hook
-- ≤2 of 10 willing to pay anything → pricing model broken
-- Everyone says "I just use WhatsApp + paper" → educate-first market, longer runway
+**Target:** 10 Malaysian home F&B mompreneur Shah Alam (extending optionally to KL Selangor cluster).
+**Channel:** WhatsApp voice call, in-person, or Zoom — 30 min each.
+**Mix:** **5 friendly** (via Ariff warm intro) + **5 hostile** (cold outreach via FB groups Mommies Daily, Ibu-Ibu Bisnes Online MY, regional KL Selangor mompreneur groups). Hostile mix critical to avoid selection bias.
+**Offer:** RM 30 Touch 'n Go reload for 30 min. Non-leading — don't preview product.
+**Anonymity:** All notes anonymized. Only Aldi sees raw transcripts.
 
 ---
 
-## Script
+## Pass / Fail criteria (Gate 0)
 
-### Opening (2 min)
+> Pre-committed before any interview starts. **Cannot be relaxed retroactively** without formal D-XXX entry in `docs/positioning/07-decisions.md`.
 
-> "Hi \[name\], terima kasih for the time. Saya \[your name\], bukan sales — researching how Malaysian small sellers manage WhatsApp orders. No product to pitch. 20 min ok? Semua kita simpan anonymous."
+### PASS — proceed to Phase 1 build
 
-*Don't mention tokoflow, e-Invoice, or any product idea until section 5.*
+**ALL must hit:**
 
-### 1. Context (3 min)
+- ✓ ≥7/10 resonate with **Three-Tier framework** (specifically: agree that mechanical residue is distinct from valued customer relationship + craft)
+- ✓ ≥5/10 willing to pay RM 49+/month for "Tokoflow handles the receipts, not the recipes"
+- ✓ ≥3/10 explicitly cite mechanical residue (payment match, invoice, repetitive Q&A) as top pain — NOT just "I'm busy generally"
+- ✓ ≥2/10 mention they LOVE customer chat / relationship (validates Tier 2 protect-not-replace decision)
+- ✓ Wave 2 spillover signal: ≥3/10 mention having a non-F&B mompreneur friend with similar pain (kosmetik/fashion/jasa)
 
-- Apa produk / service yang \[they\] jual?
-- Berapa lama dah jualan?
-- Monthly revenue roughly — bawah RM 10K? 10–50K? 50K–200K? Atas RM 200K?
-- Berapa order a day average?
+### KILL — do not push through
 
-**Listen for:** informal vs registered business (affects e-Invoice applicability), revenue band (Phase 4 RM1M–5M is the sweet spot).
+**ANY of these triggers kill:**
 
-### 2. How they take orders today (5 min)
+- ✗ <5/10 resonate with Three-Tier → root problem framing wrong → reframe or kill
+- ✗ <3/10 willing to pay RM 49 → pricing mismatch → adjust scope OR pivot segment
+- ✗ Majority cite *customer chat/relationship* as primary pain (would suggest twin should automate Tier 2 — opposite of our architecture)
+- ✗ Majority say "saya pakai WhatsApp + buku catat saja, no problem" → product not needed → educate-first market, not Year 1
 
-- Walk me through one real order yesterday. From customer's first message to the time wang masuk — each step.
-- What tool / app / spreadsheet yang you buka?
-- Berapa orang handle order — solo, family, ada staff?
-- Apa part yang paling buat pening / frustrated?
+---
 
-**Listen for:** Orderla/Yezza/manual spreadsheet mentions. If spreadsheet → they're Orderla Basic's target. Pain points without prompting = real pain.
+## Interview script
 
-### 3. Current pain (5 min)
+### Opening (3 min) — non-leading
 
-Rate 1–10 severity for each. If they rate ≥6, ask "apa yang jadi bila ini berlaku?":
+> "Hi [name], terima kasih dah luangkan masa. Saya [Aldi/Ariff], bukan sales — saya researching macam mana mompreneur jualan di rumah handle hari-hari mereka. Tak ada produk yang saya jual hari ni. Boleh kita ngobrol ~30 minit? Semua confidential, nama tak akan muncul di mana-mana."
 
-- (a) Order lost in WhatsApp chat
-- (b) Customer pay tapi you tak perasan
-- (c) Salah pack / salah hantar sebab order form messy
-- (d) Staff tak tahu sapa handle mana order
-- (e) Stok habis tapi dah accept order
-- (f) Lost customer contact info (have to ask semula)
-- (g) Tulis invoice manually for bulk buyer
+**Don't mention:** Tokoflow, AI, twin, e-Invoice, "tools", "automation". Until section 6 (last).
 
-**Listen for:** Which pain is HIGHEST. Our thesis: (a) order chaos + (g) invoice pain. If different → adjust.
+---
 
-### 4. e-Invoice LHDN awareness (5 min)
+### 1. Context (3 min) — establish baseline
 
-Don't lead. Start open:
+- Apa yang you jual?
+- Berapa lama dah jualan dari rumah?
+- Monthly revenue roughly: bawah RM 5K? RM 5–15K? RM 15–50K? Atas RM 50K?
+- Berapa orders sehari biasa? Pas Ramadan/Raya naik berapa?
+- Kerja lain selain jualan? (Anak, pekerjaan tetap, etc.)
 
-- Kalau saya sebut "LHDN e-Invoice" — apa yang \[they\] tahu about it?
-- Ada dengar about Jan 2026 or Jan 2027 deadline?
-- Have they started preparing? Using any software?
-- \[If business revenue > RM 1M\]: From 1–10, how worried / panic are you about compliance?
-- \[If < RM 1M\]: Have you heard you're exempt now?
-- Cost of current solution (if any)?
+**Listen for:** revenue band (Tier 1 mompreneur < RM 5K/month vs more established RM 15K+), full-time vs side-hustle, family pressure context.
 
-**Listen for:** Panic level. If ≤4/10 average → wedge is weaker than research suggested, consider pivot.
+---
 
-### 5. Solution-shape (5 min)
+### 2. **THE LOVE QUESTION** (5 min) — Three-Tier Tier 1+2 validation
 
-*Now you can describe (one sentence, no product name):*
+This is the most important section. Most founders skip it. **Ask BEFORE asking about pain.**
 
-> "Imagine kalau ada satu tool: pelanggan pesan via WhatsApp link (macam Orderla), auto generate LHDN-compliant e-Invoice, auto record bayaran via DuitNow QR. Untuk \[segmen you\] yang revenue bawah RM 5M."
+> "Sebelum kita masuk ke yang susah, saya nak tanya yang menyenangkan dulu. Apa **part dari jualan yang you paling suka**? Yang buat you happy?"
 
-- Apa reaksi pertama?
-- Berapa \[they\] willing to pay per month? (Probe: RM 10? 20? 40? 80?)
+**Probe:** "Kenapa? Apa specifically tentang itu?"
+
+**Listen for which Tier comes up:**
+- **Tier 1 (Pure Craft)**: "Saya suka bake," "Buat resep baru," "Test rasa baru," "Mood saya naik bila masak"
+- **Tier 2 (Customer Relationship)**: "Saya enjoy ngobrol dengan Pak Andi," "Bila pelanggan cakap kuih saya sedap," "School moms WA group, friends saya," "Customer special request lucu"
+- **Mixed**: many will mention both
+
+> "Ada part lain yang you anggap penting tapi maybe tak suka tapi tak boleh elak?"
+
+**Listen for:** they'll often start naming Tier 3 here organically (admin, tax, hitung-hitung).
+
+**Critical observation**: kalau merchant cakap "I LOVE balas customer WA chat" sebagai source of joy → twin yang automate customer reply akan rusak value mereka. Validates our 2-layer architecture (Foreground Assist suggest, merchant send).
+
+---
+
+### 3. The day yesterday (5 min) — observe Three-Tier split
+
+> "Ceritakan satu hari kemarin. Dari bangun pagi sampai tidur. Tak perlu detail sangat, but walk me through — bila masak, bila balas WA, bila buat invoice, etc."
+
+**Listen and silently categorize each activity into Tier 1/2/3:**
+- Masak/bake/prep = Tier 1
+- WA chat with customer (relational, individualized) = Tier 2
+- Hitung uang, copy invoice, match payment, recall siapa pelanggan, jawab "berapa harga?" repeated = Tier 3
+
+**Estimate ratio:** out of waking work hours, what % goes to each Tier?
+
+**Bonus question:**
+> "Kalau saya bagi you 2 jam extra setiap hari — tanpa kerjaan — you nak buat apa dengan 2 jam tu?"
+
+**Listen for:** does the answer point back to Tier 1 (more baking, more recipe experiment) or Tier 2 (more time with kids/family — kawan, keluarga)? Either is valuable signal.
+
+---
+
+### 4. Pain ranking (5 min) — adversarial probe
+
+Don't lead with pain points yet. First ask:
+
+> "Apa part yang paling **frustrating** dari running this jualan? Tak perlu solve — just yang paling buat pening."
+
+**Let them answer freely. Don't suggest options.**
+
+**Then probe their list with these — rate 1-10:**
+
+| Pain candidate | Tier | Why we ask |
+|---|---|---|
+| (a) Order tertinggal di WhatsApp chat banyak | T2 friction | Tests whether chat volume is the issue |
+| (b) Customer dah bayar tapi you tak perasan / tak tau dari order mana | T3 | Payment matching pain |
+| (c) Lupa siapa pelanggan setia, treat semua same | T2 amplification candidate | Customer memory pain |
+| (d) Jawab pertanyaan "berapa harga?" "ada lagi?" "boleh hantar?" untuk ke-50 kalinya hari yang sama | T3 (repetitive Q&A) | Tier 3 validation |
+| (e) Hitung uang masuk vs keluar end of day / week | T3 | Bookkeeping pain |
+| (f) Tulis invoice manual untuk bulk buyer / corporate / catering order | T3 | Invoice pain |
+| (g) Lost contact info pelanggan, kena tanya semula | T2 amplification | Memory pain |
+| (h) Stok habis tapi dah accept order | T3 (stock track) | Stock validation |
+| (i) **Customer rude atau komplain** | T2 (emotional) | Sensitive — listen for whether they NEED help vs handle it themselves with confidence |
+
+**For top-3 pains they cite, ask:**
+- "Bila ini berlaku, apa effect-nya?" (lost customer? lost money? lost time? lost mood?)
+- "Kalau ada cara hilangkan ini sama sekali, akan you bayar untuk itu?"
+
+---
+
+### 5. Adversarial questions (5 min) — HOSTILE INTERVIEWS ONLY
+
+Hostile interviews (5 of 10) get this section. Friendly interviews skip to section 6.
+
+> "Saya nak sekarang challenge thesis saya sendiri. **Kenapa tool macam yang saya gambarkan ni mungkin TAK akan work untuk you?**"
+
+**Probe:**
+- "Apa yang you nak HANDLE sendiri, tak nak app urus?"
+- "Kalau ada AI yang can balas customer atas nama you — would you trust that? Apa yang scare you?"
+- "Kalau tools macam BukuKas, Niagawan, atau Orderla dah ada — kenapa you tak guna?"
+- "Ada apa-apa yang you suka tentang status quo (WA + paper / Excel)?"
+
+**Listen for:**
+- Trust transfer concerns (validates Foreground Assist scope)
+- Vendor lock-in fears
+- Cost sensitivity even at "free trial"
+- Cultural / age / digital sophistication barriers
+- Existing tool experience that informs us
+
+This is the most uncomfortable section. **Don't soften it.** If merchant pushes back hard, that's signal.
+
+---
+
+### 6. Solution-shape test (5 min)
+
+NOW you can describe (one sentence, no product name, no jargon):
+
+> "Imagine ada satu tool — **bukan** auto-reply customer atas nama you, **bukan** automation everything. Tapi yang quietly handle **invoice, match payment, track stock, hitung tax — di belakang. Customer chat masih you handle, tapi tool yang draft balasan untuk you, you tap send. Foto produk you tetap foto you. Recipe tetap you. Kami urus admin, bukan dapur."
+
+**Probe:**
+- Apa reaksi pertama? (capture verbatim)
+- **Sean Ellis test**: "Kalau tool ini tutup esok, you akan rasa: (a) sangat kecewa (b) agak kecewa (c) tak peduli?"
+- Berapa willing to pay per month? Probe: RM 19? RM 29? RM 49? RM 79? RM 99?
 - Deal-breaker features — what MUST be in there?
-- Kalau harga RM 29/mo dengan e-Invoice included, tukar dari Orderla → yes/no/depends-on-what?
+- What do you WORRY about?
 
-### 6. Close (2 min)
-
-- Ada kawan lain yang \[they\] rasa patut saya cakap dengan? (referral)
-- Kalau kami nanti ada beta — boleh contact \[them\] semula?
-- Collect phone + optional email for waitlist.
+**Critical Sean Ellis threshold**: ≥40% answer "sangat kecewa" → strong PMF signal.
 
 ---
 
-## Log template (one row per interview)
+### 7. Wave 2 spillover signal (2 min) — segment expansion validation
 
-Keep in a Google Sheet or Airtable:
+> "Selain F&B mompreneur, you ada kawan yang jualan online dari rumah juga? Misalnya kosmetik, baju modest fashion, jasa daycare — yang pain-nya mungkin sama?"
 
-| # | Date | Vertical | Rev band | Tool used now | Top pain (1–7) | e-Invoice panic 1–10 | WTP RM/mo | Would switch? | Beta willing? | Notes |
-|---|------|----------|----------|----------------|-----------------|----------------------|-----------|---------------|---------------|-------|
+**If yes:**
+- "Apa pain mereka?"
+- "Mereka pakai apa sekarang?"
+- "Boleh saya contact mereka untuk research juga?"
+
+**Listen for:** does the same Three-Tier model apply? Is mechanical residue + customer relationship + craft framing valid for non-F&B mompreneur? This validates Wave 2 hypothesis.
 
 ---
 
-## After all 10 done
+### 8. Close (2 min)
 
-Compute:
-- Mean e-Invoice panic score
-- % willing to pay ≥RM 20
-- % willing to pay ≥RM 40
-- % already using Orderla-like tool
-- Most-cited pain point (rank 1–7)
-- Most-requested "deal-breaker" feature
+- Ada kawan lain yang you rasa patut saya cakap dengan? (referral chain)
+- Kalau kami ada beta untuk 5 merchant friendly nanti — boleh contact you semula?
+- Collect: phone + optional email + FB / IG handle
 
-Report back here. We update plan or pivot wedge based on the numbers.
+---
+
+## Log template
+
+Keep in Google Sheet / Airtable. **One row per interview. Anonymized.**
+
+| # | Date | Friendly/Hostile | Vertical | Rev band | Tier 1 love mentioned | Tier 2 love mentioned | Top 3 pains (ID from §4) | Three-Tier resonance 1-10 | Sean Ellis answer (a/b/c) | WTP RM/mo | Trust concern | Wave 2 spillover names | Beta-willing? | Notes |
+|---|------|------------------|----------|----------|-----------------------|-----------------------|--------------------------|---------------------------|---------------------------|-----------|---------------|-----------------------|---------------|-------|
+
+---
+
+## After all 10 done — synthesis
+
+Compute against pass/fail criteria:
+
+### Pass scores
+- [ ] Three-Tier resonance: average ≥7/10 across all interviews
+- [ ] Sean Ellis (a) percentage: ≥40%
+- [ ] WTP RM 49+: ≥5/10
+- [ ] Top pain Tier 3 cited: ≥3/10
+- [ ] Tier 2 love cited: ≥2/10
+- [ ] Wave 2 spillover names collected: ≥3/10
+
+### Kill scores
+- [ ] Three-Tier resonance <5/10 average → **KILL trigger #2**
+- [ ] WTP RM 49 <3/10 → adjust scope or pivot segment
+- [ ] Majority cite Tier 2 (customer chat) as PAIN (not joy) → architecture wrong
+- [ ] Majority "no problem with status quo" → educate-first market
+
+### Report deliverables
+- 1-page synthesis with above metrics
+- Top 3 unexpected findings (things we didn't predict)
+- 5 verbatim quotes that capture the pain
+- Recommendation: PROCEED / ITERATE / PIVOT / KILL
+
+Update `docs/positioning/07-decisions.md` with D-018 once synthesis complete.
+
+---
+
+*Last updated: 2026-04-28 · v2 — adversarial, Three-Tier-aware, Wave 2 spillover testing. Replaces v1 (LHDN-panic Gate A framing).*

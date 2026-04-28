@@ -20,6 +20,49 @@ Tokoflow follows: pricing yang **clear, fair, dignifying**.
 
 ---
 
+## ⚠️ Pricing under Phase-0 review (2026-04-28)
+
+Pricing tier di bawah (Free / Pro RM 49 / Business RM 99) **awalnya di-anchor ke "1 jam admin labor MY = RM 12-15."** Setelah pressure-test, framing ini tidak cukup — kita juga harus cover **AI labor cost (Background Twin + Foreground Assist API spend per merchant).**
+
+**Estimated AI cost per active merchant (50 orders/month):**
+- Background Twin (payment match, invoice gen, status update): ~$2-4/month
+- Foreground Assist (reply suggestions, pattern surfacing): ~$5-10/month
+- Voice transcription (onboarding + ongoing voice ask): ~$1-3/month
+- Embedding/context retrieval: ~$1-2/month
+- **Total: ~$9-19/month per active Pro merchant**
+
+RM 49 ≈ $10. **Margin tight, possibly negative untuk heavy users.**
+
+### Unit Economics Table (tentative, post-Phase-0 measurement will lock)
+
+| Tier | Price | Est AI cost | Gross margin | Margin % | Status |
+|---|---|---|---|---|---|
+| **Free** | RM 0 | ~RM 5/mo (capped) | -RM 5 (subsidy) | — | Subsidy capped via order limit (50/mo) |
+| **Pro** | RM 49 | ~RM 15-25/mo | RM 24-34 | 49–69% | **Tentative** — possibly RM 79 if AI cost validates higher |
+| **Pro adjusted** | RM 79 | ~RM 15-25/mo | RM 54-64 | 68–81% | **Likely landing** based on cost projection |
+| **Business** | RM 99 | ~RM 30-40/mo | RM 59-69 | 60–70% | Includes LHDN auto + multi-staff |
+
+**Phase 0 measurement determines:**
+- Real AI cost per merchant at production-grade prompts
+- Pro tier final pricing (RM 49 if cost low, RM 79 if cost mid, RM 99 if cost high)
+- Free tier order cap (currently 50/mo, may reduce to 25/mo if subsidy bleed too high)
+
+**Pre-commit kill criterion (per [`06-roadmap.md` Phase 0](./06-roadmap.md#kill-criteria--phase-0-pre-committed-no-rationalization)):** AI cost per merchant > RM 30/month at RM 79 max → unit economics broken → kill.
+
+**Actions before public pricing finalize:**
+- Phase 0 (May 2026): measure REAL AI cost per merchant dengan production-grade prompts
+- Phase 0 interview: test willingness to pay (RM 19 / 29 / 49 / 79 / 99 anchors)
+- Phase 1 (post-alpha 5): adjust tier boundaries based on real data
+
+**Possible adjustments:**
+- Pro might shift RM 49 → RM 79 if AI cost validates higher than estimated
+- Or twin scope reduces (less AI cost) to fit RM 49
+- Or Free tier scope tightens (fewer orders) to limit subsidy
+
+**This section will be removed and tiers locked once Phase 0 measurement complete. See [`07-decisions.md`](./07-decisions.md) D-014 for context.**
+
+---
+
 ## 3-Tier Structure (Year 1 Malaysia)
 
 | Tier | Price | Untuk |
@@ -266,4 +309,6 @@ If asked "compared to Linktree/Mayar/Wati":
 
 ---
 
-*Versi 1.0 · 26 April 2026 · Pricing yang dignifying = pricing yang sustainable. Don't manipulate, don't apologize.*
+*Versi 1.1 · 28 April 2026 · Pricing yang dignifying = pricing yang sustainable. Don't manipulate, don't apologize.*
+
+*Changelog 1.1:* Added Phase-0 review banner — pricing tiers tentative pending real AI cost measurement + willingness-to-pay validation. Tiers may adjust ±RM 30 based on Phase 0 data. See `07-decisions.md` D-014.

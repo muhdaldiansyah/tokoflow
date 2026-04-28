@@ -309,6 +309,24 @@ Replace technical:
 | "Quota used" | (sembunyikan kalau bisa) |
 | "Push notification settings" | "Notifikasi" |
 
+### Internal Architecture Names — NEVER expose to user
+
+These are precision terms for engineering + strategy docs. **Customer-facing UI must never show these.** Honest, but jargon-free.
+
+| Internal name (docs/code) | Customer-facing language |
+|---|---|
+| "Digital twin" / "twin" | (never expose) — use "Tokoflow" or first-person *"saya"* |
+| "AI agent" / "agent" | (never expose) — use *"Tokoflow"* or *"otomatis"* |
+| "Background Twin" | (never expose) — describe *what was done*, not *who did it*: *"sudah saya urus"*, *"otomatis"* |
+| "Foreground Assist" | (never expose) — describe action: *"saya saran balas..."* |
+| "Mechanical residue" / "Tier 3" | (never expose) — describe specifics: *"admin"*, *"invoice"*, *"pajak"* |
+| "Three-Tier Reality" | (never expose) — internal compass only |
+| "Trust progression" | (never expose) — visible as track record number, not framework name |
+
+**Rule**: when describing what Tokoflow does, **describe the outcome (what happened) not the architecture (who did it)**. Bu Aisyah cares that her invoices are sent — not that "Background Twin" sent them.
+
+**Test the copy**: kalau Bu Aisyah baca, apakah dia perlu tanya "apa itu twin/agent/Tier 3?" Kalau ya → ganti.
+
 ---
 
 ## Component Principles
@@ -370,4 +388,6 @@ Apple-grade also means accessible.
 
 ---
 
-*Versi 1.0 · 26 April 2026 · Design system adalah manifestasi philosophy. Setiap pixel mengirim pesan.*
+*Versi 1.1 · 28 April 2026 · Design system adalah manifestasi philosophy. Setiap pixel mengirim pesan.*
+
+*Changelog 1.1:* Added "Internal Architecture Names — NEVER expose" section to Settings Labels. Customer-facing copy never uses "twin", "AI agent", "Tier 3", or any architecture jargon. Honest about being AI but specific about what was done, not who did it.

@@ -300,6 +300,161 @@ Setiap decision punya:
 
 ---
 
+## D-013 · Root Problem Refined: Three-Tier Reality
+
+**Tanggal**: 28 April 2026
+**Konteks**: 8 ultrathink rounds + Steve Jobs lateral framing + devil's advocate red-team. Original framing "operations ate craft" terlalu sweeping — operations bukan monolith.
+
+**Keputusan**: Root problem direframe sebagai **Three-Tier Reality**:
+1. **Tier 1 — Pure Craft**: yang merchant cintai (baking, design, writing). Tokoflow tidak masuk.
+2. **Tier 2 — Customer Relationship**: yang merchant sering hargai. Tokoflow amplifi (suggest), tidak menggantikan (send).
+3. **Tier 3 — Mechanical Residue**: payment match, invoice, pajak, status, repetitive Q&A. Tokoflow handle invisibly.
+
+Yang Tokoflow lakukan: **hapus Tier 3, lindungi Tier 2, kembalikan Tier 1.**
+
+**Reasoning**:
+1. Original "operations ate craft" memposisikan SEMUA non-baking time as burden — but customer relationships often VALUED, not burden
+2. Devil's advocate Attack #1: "Bu Aisyah might love customer chat" — true, harus distinguish
+3. Trust transfer issue (Attack #2) terselesaikan by NOT claiming twin replaces relationship — only assists
+4. Lebih honest, lebih achievable, lebih defensible
+5. Test 0 (above 5 tests) memaksa setiap fitur hit one of 3 tiers
+
+**Alternatif yang ditolak**:
+- "Operations ate craft" — too sweeping, romantic, mistakes valued ops as burden
+- "AI as team" — too founder-bahasa, tech-jargon, alien to Bu Aisyah
+- "Minimum viable team" — too Adam Smith, abstract
+- "Get back to making" — tagline aspirasional, less concrete than "Less admin. More making."
+
+**Kondisi revisit**:
+- End Phase 0 (Jul 2026): kalau interviews show <5/10 resonate dengan Three-Tier, reassess root
+- Setelah 50 paying (end Phase 2): re-validate dengan real merchant data
+
+---
+
+## D-014 · Solution Architecture: 2-Layer Twin (Background Autonomous + Foreground Assist)
+
+**Tanggal**: 28 April 2026
+**Konteks**: Original solution "digital twin runs business autonomously" gagal devil's advocate Attack #2 (trust transfer brittle pada relationship commerce). Customer akan rasakan AI tone, ONE bad incident = reputational collapse.
+
+**Keputusan**: Twin terdiri dari **2 layer terpisah**:
+- **Background Twin** (Tier 3): fully autonomous, invisible to customer, low trust risk. Handle: payment match, invoice, status update, stock, pajak, relationship memory.
+- **Foreground Assist** (Tier 2): suggests replies + surfaces patterns + drafts emotional responses, **merchant always sends**. Customer-facing layer stays merchant-controlled.
+
+Tokoflow **tidak pernah pretend to be Bu Aisyah** ke customer. Yang otomatis = invisible. Yang visible = human-mediated.
+
+**Reasoning**:
+1. Trust transfer issue (Attack #2) solved by scope reduction, bukan by trust theater
+2. WhatsApp constraint (Attack #4) accepted: hybrid send via merchant approval, not automation
+3. AI cost (Attack #3) lower karena Background ops butuh AI lebih sedikit dibanding "everything autonomous"
+4. Honest about what AI can/should do today
+5. Iconic feeling tetap powerful: "The Disappearing Work" (Tier 3 invisible removal)
+
+**Alternatif yang ditolak**:
+- Full autonomous twin (replies as merchant) — breaks trust
+- Twin as advisor only (pure suggest, no autonomous) — fails to deliver "less admin" promise
+- Hybrid where twin sends "as Tokoflow assistant" disclosure — confusing, friction
+
+**Kondisi revisit**:
+- Post Phase 1 (end Oct 2026): kalau alphas eksplisit minta autonomous customer reply AND smoke test confirms safe → consider opt-in autonomous mode
+- Kalau official WA Business API jadi viable AND merchant-customer trust mature → consider expanded autonomy
+
+---
+
+## D-015 · Lifestyle vs Venture-Scale Acceptance
+
+**Tanggal**: 28 April 2026
+**Konteks**: Devil's advocate Attack #13 — Shah Alam mompreneur cluster ceiling = 100-500 paying = RM 5-25K MRR. Lifestyle business, not Apple-scale. Bull case "global Apple parallel" might be aspirational cosplay.
+
+**Keputusan**: **Accept lifestyle SaaS sebagai default outcome, venture-scale as upside.** Plan execution, runway, team, hiring berdasarkan realistic Year 3-5 ceiling, not on hopium.
+
+**Operationally**:
+- Don't pretend bootstrap = no funding needed forever (might need angel $)
+- Don't pretend hyperlocal = automatic compounding (each segment expansion = new wedge to validate)
+- Don't claim "Apple-grade" publicly (internal compass only)
+- Be honest with potential investors: "RM 100-500K MRR realistic Year 3, anything bigger is upside"
+- Decision-making frame: optimize for sustainable + dignified, not hyper-growth
+
+**Reasoning**:
+1. Shah Alam cluster math: ~2K-5K target merchants × 10-30% capture × RM 49 = RM 10-75K MRR
+2. Klang Valley expansion adds 5-10x but each expansion is new wedge (no automatic compound)
+3. SEA expansion + creator/freelancer segments multiplicative but uncertain
+4. CatatOrder pattern (same founder, same culture) plateaued — venture upside not guaranteed
+5. Lifestyle business outcome is **excellent** if it serves Bu Aisyah well + Aldi sustainably
+6. Trying to force venture-scale narrative leads to bad decisions (premature scaling, premature funding, premature exits)
+
+**Alternatif yang ditolak**:
+- "Default to global Apple-scale" — sets up failure expectation, distorts decisions
+- "Pure lifestyle, never raise" — limits optionality kalau opportunity real
+- "Pivot to enterprise after MY proven" — anti-positioning, against Bu Aisyah focus
+
+**Kondisi revisit**:
+- End Phase 3 (Sep 2027): kalau 500+ Klang Valley + healthy cohort retention → reconsider venture trajectory
+- Quarterly: review whether outcome trajectory matches expectation, adjust if drift
+
+---
+
+## D-017 · Critique-Driven Refinements (2026-04-28 evening)
+
+**Tanggal**: 28 April 2026 (evening, post-critique)
+**Konteks**: Detailed critique flagged 6 unresolved tensions + 4 missing pieces in v1.1 bible. Resolutions logged here as one decision (not spread across many entries).
+
+**Keputusan**: 9 refinements committed to bible v1.2:
+
+1. **Wave 1-5 expansion hypothesis** locked in `06-roadmap.md` — vertical-first within MY (Wave 2: kosmetik/fashion/jasa) → geographic (Wave 3) → cross-pattern (Wave 4) → global (Wave 5). Bridges mission-wedge altitude gap.
+
+2. **Photo Magic v1 reframed extraction-only** — AI parses inventory/pricing dari photo, **leaves photo untouched**. Kitchen-protection preserved. Photo IS part of merchant's craft and brand. Updated `02-product-soul.md` + `03-features.md` + (P4 plan to be updated when revisited).
+
+3. **Real moat sharpened** in `01-positioning.md` — 4-dimensional articulation: (a) unstructured input parsing, (b) Bahasa-first conversational UX, (c) compliance silent gated to Pro+, (d) buyer experience. Replaces generic "AI labor" claim.
+
+4. **Tax demoted from Phase 1 hero** to Pro/Business gated. SST RM 500K threshold means most home F&B mompreneur Year 1 below. LHDN MyInvois surfaces only when merchant approaches threshold.
+
+5. **"Love" operationally defined** in `06-roadmap.md` Phase 1 Gate — Sean Ellis (40% "very disappointed") + DAU 70% + spontaneous referral + NPS 8 + 3 craft hours saved/week. Pre-committed before Phase 0 starts. Less than 4/5 metrics hit → fail.
+
+6. **Phase 2 reframed from milestone to underlying questions** — Q1 retention >70%, Q2 CAC payback <3mo, Q3 K-factor >0.3. 50 merchants is sample size, not goal.
+
+7. **Kill criteria Phase 0 pre-committed** — 5 explicit triggers (AI cost > RM 30, <5/10 interview resonance, smoke test customer feel AI, Ariff declines + Plan B unproven 4 weeks, Sdn Bhd structural block). Pre-commit prevents sunk cost rationalization.
+
+8. **Distribution hypothesis** added to `06-roadmap.md` — FB groups (Mommies Daily, Ibu-Ibu Bisnes Online MY), TikTok mompreneur creators, WhatsApp komuniti, Ariff direct. Anti-channels: LinkedIn, Twitter, paid Google, corporate sales.
+
+9. **"What we refuse to do" list** added to `00-manifesto.md` — 10-item explicit restraint declaration as marketing weapon. Don't DM customers, don't set prices, don't reply reviews, don't post social, don't beautify photos, don't claim customer ownership, don't gamify, don't sell data, don't lock in. Restraint > capability messaging.
+
+**Reasoning**:
+- Critique pointed out specific unresolved tensions in v1.1 — synthesis was good but not airtight
+- Each refinement makes bible more defensible + more honest + more shippable
+- "Refuse list" particularly powerful as positioning weapon di crowded "AI does everything" category
+- Photo Magic reframe preserves kitchen line that v1.1 was inadvertently violating
+
+**Alternatif yang ditolak**:
+- Defending v1.1 as-is — wouldn't be honest about real critique points
+- Spreading 9 refinements across 9 separate D-XXX entries — unnecessary fragmentation; these refinements share single intellectual root (response to critique)
+
+**Kondisi revisit**:
+- Phase 0 interviews validate atau invalidate Wave 2 hypothesis (do mompreneur in kosmetik/fashion verticals share same pain? Phase 0 interview spillover)
+- Tagline locked 2026-04-28 evening: **"We handle the receipts. Not the recipes."** (Bahasa: *"Resi kami urus. Resep kamu."*). "Less admin. More making." retired as generic.
+
+---
+
+## D-016 · Internal vs Customer-Facing Architecture Naming
+
+**Tanggal**: 28 April 2026
+**Konteks**: User flagged that "Digital Twin" (architecture name) is jargon Bu Aisyah won't understand.
+
+**Keputusan**: **Strict separation:**
+- **Internal docs + engineering code**: "Digital Twin", "Background Twin", "Foreground Assist", "Three-Tier Reality" — precision terms for strategy + engineering
+- **Customer-facing UI + marketing**: NEVER expose these. Use "Tokoflow" or first-person *"saya"* atau describe outcome (*"sudah saya urus"*)
+
+**Reasoning**:
+1. Manifesto + microcopy library already prohibit tech jargon — extend to architecture jargon
+2. Bu Aisyah needs to understand by FEELING, not by being taught taxonomy
+3. Honest about being AI is preserved (we don't pretend to be human) without exposing architecture
+4. Apple precedent: Touch ID is the customer name; "secure enclave biometric authentication" is internal
+
+**Settings Labels updated** in [`04-design-system.md`](./04-design-system.md).
+
+**Kondisi revisit**: Tidak akan revisit. Disiplin permanen.
+
+---
+
 ## Decisions yang BELUM Diputuskan (Pending)
 
 ### P-001 · Tier Partnership Ariff (advisor vs co-founder)
@@ -342,6 +497,10 @@ Setiap decision punya:
 
 ---
 
-*Versi 1.0 · 26 April 2026 · Decisions log adalah memory institutional. Tidak ada keputusan yang dibuat tanpa dicatat di sini.*
+*Versi 1.2 · 28 April 2026 · Decisions log adalah memory institutional. Tidak ada keputusan yang dibuat tanpa dicatat di sini.*
 
 **Update protocol**: Setiap major decision baru = create new D-XXX entry. Setiap revisit decision = update existing entry dengan revised section.
+
+*Changelog 1.1 (earlier same day):* Added D-013 (Three-Tier Reality root problem), D-014 (2-layer twin solution architecture), D-015 (lifestyle vs venture acceptance), D-016 (internal vs customer-facing naming separation). All 4 decisions were product of 8 ultrathink rounds + Steve Jobs lateral framing + devil's advocate red-team + bull/bear synthesis.
+
+*Changelog 1.2:* Added D-017 (Critique-driven refinements, 9 items: Wave hypothesis, Photo Magic reframe, sharper moat, tax demotion, "love" operational definition, Phase 2 questions, kill criteria, distribution hypothesis, refuse list).
