@@ -8,8 +8,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { registerSchema, type RegisterFormData } from "../schemas/auth.schema";
 import { signUpWithEmail } from "../services/auth-service";
 import { SocialAuthButtons } from "./SocialAuthButtons";
@@ -30,6 +28,66 @@ async function claimSlugAfterAuth(slug: string) {
     // best-effort — silent fail
   }
   document.cookie = "claimed_slug=; max-age=0; path=/; SameSite=Lax";
+}
+
+const PHOTO_MAGIC_PREVIEW_KEY = "photo_magic_preview_v1";
+
+function readPhotoMagicPreview(): unknown | null {
+  // Try localStorage first, fall back to cookie
+  try {
+    const stored = localStorage.getItem(PHOTO_MAGIC_PREVIEW_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch {
+    // localStorage unavailable
+  }
+  try {
+    const match = document.cookie
+      .split(";")
+      .map((c) => c.trim())
+      .find((c) => c.startsWith("photo_magic_preview="));
+    if (match) {
+      return JSON.parse(decodeURIComponent(match.slice("photo_magic_preview=".length)));
+    }
+  } catch {
+    // bad cookie payload
+  }
+  return null;
+}
+
+function clearPhotoMagicPreview() {
+  try {
+    localStorage.removeItem(PHOTO_MAGIC_PREVIEW_KEY);
+  } catch {
+    // ignore
+  }
+  document.cookie = "photo_magic_preview=; max-age=0; path=/; SameSite=Lax";
+}
+
+async function activatePhotoMagicAfterAuth(): Promise<{
+  activated: boolean;
+  productsCreated: number;
+}> {
+  const preview = readPhotoMagicPreview();
+  if (!preview) return { activated: false, productsCreated: 0 };
+
+  try {
+    const res = await fetch("/api/onboarding/activate-preview", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(preview),
+    });
+    if (!res.ok) {
+      return { activated: false, productsCreated: 0 };
+    }
+    const data = await res.json();
+    clearPhotoMagicPreview();
+    return {
+      activated: !!data.success,
+      productsCreated: data.productsCreated ?? 0,
+    };
+  } catch {
+    return { activated: false, productsCreated: 0 };
+  }
 }
 
 export function RegisterForm({ claimedSlug, referralCode, communityCode }: { claimedSlug?: string; referralCode?: string; communityCode?: string }) {
@@ -86,11 +144,24 @@ export function RegisterForm({ claimedSlug, referralCode, communityCode }: { cla
           document.cookie = "community_code=; max-age=0; path=/; SameSite=Lax";
         }
 
-        if (claimedSlug) {
+        // Photo Magic preview takes precedence — it includes business name
+        // + products + slug captured on the landing page. If present, activate
+        // it and skip the manual /setup wizard.
+        const photoMagic = await activatePhotoMagicAfterAuth();
+
+        if (!photoMagic.activated && claimedSlug) {
           await claimSlugAfterAuth(claimedSlug);
         }
+
         success("Account created!", "Welcome to Tokoflow");
-        router.push("/setup");
+
+        // If photo magic activated, jump to orders directly (setup is done).
+        // Otherwise fall back to manual /setup wizard.
+        if (photoMagic.activated && photoMagic.productsCreated > 0) {
+          router.push("/orders");
+        } else {
+          router.push("/setup");
+        }
       } else {
         // Email verification required
         success(

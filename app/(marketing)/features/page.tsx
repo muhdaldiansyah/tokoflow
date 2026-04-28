@@ -27,7 +27,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Features — From snap to sold | Tokoflow",
+  title: "Features — We handle the receipts. Not the recipes. | Tokoflow",
   description:
     "Designed around five iconic moments that make selling humane. The Photo Magic, The Voice Ask, The Vibrate, The Swipe Forward, and The Evening Embrace.",
   alternates: {

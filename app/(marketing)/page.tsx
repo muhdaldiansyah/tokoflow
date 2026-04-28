@@ -2,19 +2,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Camera,
-  ShoppingBag,
   Sparkles,
   ArrowRight,
   LinkIcon,
   Mic,
-  ClipboardPaste,
   MessageSquare,
   Heart,
   Sun,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { H1, Lead, P } from "@/components/ui/typography";
-import { ClaimSlugInput } from "./ClaimSlugInput";
+import { PhotoMagicHero } from "./PhotoMagicHero";
 import ComingSoon from "./ComingSoon";
 
 const isMaintenanceMode =
@@ -23,10 +21,10 @@ const isMaintenanceMode =
 export const metadata: Metadata = {
   title: isMaintenanceMode
     ? "Tokoflow — Coming Soon"
-    : "Tokoflow — From snap to sold",
+    : "Tokoflow — We handle the receipts. Not the recipes.",
   description: isMaintenanceMode
     ? "Tokoflow is coming soon. The simplest way for anyone to start selling — one photo to launch your shop."
-    : "The simplest way for anyone to start selling. One photo to launch your shop. AI handles the conversation, payment, and paperwork — so you can focus on what you make.",
+    : "Snap one photo. See your shop preview live. We handle the receipts (payment, invoices, tax) — your craft stays yours. Built for Malaysian home sellers.",
   alternates: {
     canonical: "https://tokoflow.com",
   },
@@ -112,7 +110,7 @@ const jsonLd = {
     description: "Free forever for your first 50 orders/month",
   },
   description:
-    "The simplest way for anyone to start selling. One photo to launch your shop. AI handles the conversation, payment, and paperwork.",
+    "We handle the receipts, not the recipes. Snap one photo, see your shop preview live, then sign up. Tokoflow handles payment matching, invoices, and tax silently.",
   featureList: [
     "1-photo onboarding — your shop in 60 seconds",
     "AI customer assistant — handles chat for you",
@@ -166,22 +164,23 @@ export default function HomePage() {
 
               <div className="space-y-5">
                 <H1 className="tracking-tight text-[#1E293B] text-3xl lg:text-4xl lg:leading-tight">
-                  From snap{" "}
-                  <br className="hidden md:block" />
+                  We handle the{" "}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#05A660] to-[#048C51]">
-                    to sold.
+                    receipts.
                   </span>
+                  <br className="hidden md:block" />
+                  Not the recipes.
                 </H1>
                 <Lead className="text-[#475569] leading-relaxed font-normal">
-                  The simplest way for anyone to start selling. One photo to launch your shop.
+                  Snap one photo. See your shop preview live — before you sign up.
                 </Lead>
                 <P className="text-[#475569] leading-relaxed">
-                  AI handles the conversation, payment, and paperwork. You focus on what you make. Sixty seconds from snap to live shop — no setup wizards, no forms.
+                  Tokoflow handles the admin (payment matching, invoices, tax) quietly in the background. Your kitchen, your customers, your craft — all yours.
                 </P>
               </div>
 
               <div className="pt-2">
-                <ClaimSlugInput />
+                <PhotoMagicHero />
               </div>
 
             </div>
