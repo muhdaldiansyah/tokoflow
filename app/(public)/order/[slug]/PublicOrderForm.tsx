@@ -1092,8 +1092,8 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
         </div>
       )}
 
-      {/* Subtle branding */}
-      <p className="text-center text-[11px] text-muted-foreground/50 mt-8 mb-6 px-4">
+      {/* Subtle branding — generous breathing room below the Order now button */}
+      <p className="text-center text-[11px] text-muted-foreground/50 mt-16 mb-12 px-4">
         Made with <a href="https://tokoflow.com" className="underline hover:text-muted-foreground">Tokoflow</a>
       </p>
 
