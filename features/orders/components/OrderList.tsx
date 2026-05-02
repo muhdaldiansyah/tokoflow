@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Plus, Search, ShoppingBag, ArrowRight, X, CircleDollarSign, ArrowRightCircle, Flame, CalendarDays, ChevronLeft, ChevronRight, Download, Loader2, Share2, Users, Clock } from "lucide-react";
+import { Plus, Search, ShoppingBag, ArrowRight, X, CircleDollarSign, ArrowRightCircle, Flame, CalendarDays, ChevronLeft, ChevronRight, Download, Loader2, Share2, Users, Clock, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import { getOrders, getOrder, getOrderCountsByMonth, getDeliveryCountsByMonth, bulkMarkPaid, bulkUpdateStatus, getTodaySummary } from "../services/order.service";
 import type { TodaySummary } from "../services/order.service";
@@ -99,6 +99,8 @@ export function OrderList() {
 
   const [ordersUsed, setOrdersUsed] = useState(0);
   const [profileData, setProfileData] = useState<Profile | null>(null);
+  // First-order card state — empty state on /orders for brand-new merchants.
+  const [storeLinkCopied, setStoreLinkCopied] = useState(false);
 
   const groups = useMemo(() => groupOrdersByDate(orders), [orders]);
 
@@ -949,33 +951,77 @@ export function OrderList() {
           ))}
         </div>
       ) : orders.length === 0 ? (
-        <div className="text-center py-12">
+        <div className="py-8">
           {search || statusFilter || preorderFilter || dineInFilter || dateFilter ? (
-            <p className="text-muted-foreground text-sm">{copy.empty.ordersNoMatch()}</p>
+            <p className="text-muted-foreground text-sm text-center">{copy.empty.ordersNoMatch()}</p>
           ) : (
-            <>
-              <div className="w-16 h-16 mx-auto rounded-2xl bg-muted flex items-center justify-center mb-4">
-                <ShoppingBag className="w-7 h-7 text-muted-foreground" />
+            <div className="max-w-md mx-auto rounded-xl border bg-card shadow-sm p-6 text-center">
+              <div className="w-14 h-14 mx-auto rounded-2xl bg-warm-green-light flex items-center justify-center mb-4">
+                <ShoppingBag className="w-6 h-6 text-warm-green" />
               </div>
               <h2 className="text-base font-semibold text-foreground mb-1">No orders yet</h2>
-              <p className="text-sm text-muted-foreground mb-6">{copy.empty.ordersFirstTime()}</p>
-              <div className="flex flex-col items-center gap-3">
+              <p className="text-sm text-muted-foreground mb-5">
+                {profileData?.slug
+                  ? "Share your store link — your first order is 30 seconds away."
+                  : copy.empty.ordersFirstTime()}
+              </p>
+
+              {profileData?.slug && (
+                <div className="flex items-center gap-1.5 rounded-lg border bg-muted/40 p-1 mb-4">
+                  <span className="flex-1 truncate text-xs text-foreground/70 px-2">
+                    tokoflow.com/{profileData.slug}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const link = `https://tokoflow.com/${profileData.slug}`;
+                      try {
+                        await navigator.clipboard.writeText(link);
+                        setStoreLinkCopied(true);
+                        toast.success("Link copied");
+                        setTimeout(() => setStoreLinkCopied(false), 2000);
+                      } catch {
+                        toast.error("Couldn't copy");
+                      }
+                    }}
+                    className="h-7 px-2.5 rounded-md bg-card border border-border text-xs font-medium text-foreground hover:bg-muted transition-colors inline-flex items-center gap-1"
+                  >
+                    {storeLinkCopied ? (
+                      <><Check className="w-3 h-3" /> Copied</>
+                    ) : (
+                      <><Copy className="w-3 h-3" /> Copy</>
+                    )}
+                  </button>
+                  <a
+                    href={`https://wa.me/?text=${encodeURIComponent(`Order from my shop:\nhttps://tokoflow.com/${profileData.slug}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-7 px-2.5 rounded-md bg-[#25D366] text-white text-xs font-medium hover:bg-[#25D366]/90 transition-colors inline-flex items-center gap-1"
+                  >
+                    <Share2 className="w-3 h-3" />
+                    Share
+                  </a>
+                </div>
+              )}
+
+              <div className="flex items-center justify-center gap-3 text-xs">
                 <Link
                   href="/orders/new"
-                  className="h-9 px-4 bg-warm-green text-white rounded-lg text-xs font-medium inline-flex items-center gap-1.5 hover:bg-warm-green-hover transition-colors"
+                  className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  <Plus className="w-5 h-5" />
-                  Log order
+                  <Plus className="w-3.5 h-3.5" />
+                  Log manually
                 </Link>
+                <span className="text-muted-foreground/40">·</span>
                 <Link
                   href="/orders/new?contoh=1"
-                  className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Try with a sample
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  Try a sample
+                  <ArrowRight className="w-3 h-3" />
                 </Link>
               </div>
-            </>
+            </div>
           )}
         </div>
       ) : (
