@@ -64,15 +64,12 @@ interface SidebarProps {
   totalOrders?: number;
 }
 
-// Cognitive cut: hide locked items entirely. Less to think about > "you can't
-// click this yet". Gates raised so secondary surfaces only appear when the
-// merchant has accumulated enough volume to actually want them.
-function getVisibleNav(totalOrders: number, isBisnisActive: boolean) {
+// Pro-gated items hide until the merchant upgrades; everything else is
+// visible from day 1. Hiding core surfaces (Orders, Customers, Recap) was
+// over-aggressive — they ARE the product, not advanced unlocks.
+function getVisibleNav(_totalOrders: number, isBisnisActive: boolean) {
   return dashboardNav.filter((item) => {
     if (item.requiresBisnis && !isBisnisActive) return false;
-    if (item.href === "/orders" && totalOrders < 10) return false;
-    if (item.href === "/customers" && totalOrders < 20) return false;
-    if (item.href === "/recap" && totalOrders < 20) return false;
     return true;
   });
 }

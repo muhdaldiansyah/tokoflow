@@ -22,9 +22,9 @@ export const marketingNav: NavItem[] = [
   { title: "Contact", href: "/contact" },
 ];
 
-// Cognitive-cut nav. Hide locked items entirely (don't dim).
-// Gates raised aggressively: secondary surfaces only appear once the merchant
-// has enough volume to actually want them. /today is the primary daily surface.
+// Day-1 nav: all core surfaces visible from the start. Only Invoices + Tax
+// hide behind the Pro gate (paid feature, not a volume gate). /today is the
+// daily landing; /orders is the full ledger.
 export const dashboardNav: NavItem[] = [
   { title: "Today", href: "/today", icon: "Sun" },
   { title: "Orders", href: "/orders", icon: "ShoppingBag" },

@@ -58,13 +58,11 @@ interface MobileHeaderProps {
   totalOrders?: number;
 }
 
-// Cognitive cut: hide locked items entirely. Mirrors Sidebar.getVisibleNav.
-function getVisibleNav(totalOrders: number, isBisnisActive: boolean) {
+// Mirrors Sidebar.getVisibleNav — only Pro gates Invoices/Tax; everything
+// else visible from day 1.
+function getVisibleNav(_totalOrders: number, isBisnisActive: boolean) {
   return dashboardNav.filter((item) => {
     if (item.requiresBisnis && !isBisnisActive) return false;
-    if (item.href === "/orders" && totalOrders < 10) return false;
-    if (item.href === "/customers" && totalOrders < 20) return false;
-    if (item.href === "/recap" && totalOrders < 20) return false;
     return true;
   });
 }
