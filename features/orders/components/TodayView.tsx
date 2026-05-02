@@ -88,21 +88,29 @@ export function TodayView({ activeOrders, doneToday, todayStr }: TodayViewProps)
 
   const empty = activeOrders.length === 0 && doneToday.length === 0;
 
+  const dateLabel = new Date().toLocaleDateString("en-MY", { weekday: "long", day: "numeric", month: "long" });
+  const statusLabel = empty
+    ? "Quiet day so far"
+    : `${activeOrders.length} order${activeOrders.length === 1 ? "" : "s"} active`;
+  const doneLabel = doneToday.length > 0 ? ` · ${doneToday.length} done · ${formatMYR(totalToday)} in` : "";
+
   return (
-    <div className="max-w-2xl mx-auto pb-24">
-      {/* Header strip */}
-      <div className="mb-6">
-        <p className="text-sm text-muted-foreground">
-          {new Date().toLocaleDateString("en-MY", { weekday: "long", day: "numeric", month: "long" })}
-        </p>
-        <h1 className="text-2xl font-semibold text-foreground mt-0.5">
-          {empty ? "Quiet day so far" : `${activeOrders.length} order${activeOrders.length === 1 ? "" : "s"} active`}
-        </h1>
-        {doneToday.length > 0 && (
-          <p className="text-sm text-muted-foreground mt-1">
-            {doneToday.length} done today · {formatMYR(totalToday)} in
+    <div className="max-w-2xl mx-auto space-y-3">
+      {/* Header — matches /orders + /products pattern: title left, CTA right */}
+      <div className="flex items-center justify-between gap-3 min-h-9">
+        <div className="min-w-0">
+          <h1 className="text-lg font-semibold text-foreground">Today</h1>
+          <p className="text-xs text-muted-foreground truncate">
+            {dateLabel} · {statusLabel}{doneLabel}
           </p>
-        )}
+        </div>
+        <Link
+          href="/orders/new"
+          className="shrink-0 inline-flex items-center gap-1.5 h-9 px-3 rounded-lg text-xs font-medium bg-warm-green text-white hover:bg-warm-green-hover active:bg-warm-green-hover transition-colors"
+        >
+          <Plus className="h-3.5 w-3.5" />
+          Log order
+        </Link>
       </div>
 
       {/* Empty state */}
@@ -170,15 +178,6 @@ export function TodayView({ activeOrders, doneToday, todayStr }: TodayViewProps)
         </div>
       )}
 
-      {/* Floating add button */}
-      <Link
-        href="/orders/new"
-        className="fixed bottom-20 lg:bottom-6 right-4 lg:right-6 inline-flex items-center gap-2 h-12 px-5 rounded-full bg-warm-green text-white text-sm font-semibold shadow-lg hover:opacity-90 transition-opacity z-30"
-        aria-label="Add new order"
-      >
-        <Plus className="h-5 w-5" />
-        New order
-      </Link>
     </div>
   );
 }
