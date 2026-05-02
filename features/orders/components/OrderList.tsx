@@ -968,7 +968,7 @@ export function OrderList() {
 
               {profileData?.slug && (
                 <div className="flex items-center gap-1.5 rounded-lg border bg-muted/40 p-1 mb-4">
-                  <span className="flex-1 truncate text-xs text-foreground/70 px-2">
+                  <span className="flex-1 truncate text-left text-xs text-foreground/70 px-2">
                     tokoflow.com/{profileData.slug}
                   </span>
                   <button
