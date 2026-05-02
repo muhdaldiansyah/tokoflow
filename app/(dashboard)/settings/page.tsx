@@ -438,31 +438,32 @@ export default function SettingsPage() {
           )}
         </div>
 
-        {/* Store mode — pick one. Drives which fields show on the public order form
-            (delivery date for pre-order, dine-in tags, recurring billing for subscription).
-            Set initially by /setup based on category; merchant changes here when their model evolves. */}
+        {/* Store mode — pick one. Drives which fields show on the public order form.
+            Subscription (langganan_enabled) is intentionally NOT surfaced here:
+            niche use case for Wave 1 (home F&B mompreneur), DB flag + storefront
+            logic stay intact for future re-introduction. */}
         <div className="border-t px-4 py-4 space-y-2">
           <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Store mode</p>
-          <div className="grid grid-cols-3 gap-1.5">
+          <div className="grid grid-cols-2 gap-1.5">
             {([
-              { key: "preorder", label: "Pre-order", desc: "Delivery date" },
-              { key: "dine_in", label: "Walk-in", desc: "On-the-spot" },
-              { key: "langganan", label: "Subscription", desc: "Recurring" },
+              { key: "preorder", label: "Pre-order", desc: "Customer picks a delivery date" },
+              { key: "dine_in", label: "Walk-in", desc: "On-the-spot, no date needed" },
             ] as const).map((mode) => {
               const active =
-                (mode.key === "preorder" && (profile?.preorder_enabled ?? true) && !profile?.dine_in_enabled && !profile?.langganan_enabled) ||
-                (mode.key === "dine_in" && profile?.dine_in_enabled && !profile?.langganan_enabled) ||
-                (mode.key === "langganan" && profile?.langganan_enabled);
+                (mode.key === "preorder" && (profile?.preorder_enabled ?? true) && !profile?.dine_in_enabled) ||
+                (mode.key === "dine_in" && profile?.dine_in_enabled);
               return (
                 <button
                   key={mode.key}
                   type="button"
                   onClick={async () => {
                     if (!profile) return;
+                    // Always force langganan_enabled false here — any stray true
+                    // state from older /setup runs gets cleaned up on first toggle.
                     const next = {
                       preorder_enabled: mode.key === "preorder",
                       dine_in_enabled: mode.key === "dine_in",
-                      langganan_enabled: mode.key === "langganan",
+                      langganan_enabled: false,
                     };
                     setProfile((prev) => prev ? { ...prev, ...next } : prev);
                     const ok = await updateProfile(next);
@@ -473,7 +474,7 @@ export default function SettingsPage() {
                       toast.error("Could not save");
                     }
                   }}
-                  className={`rounded-lg border px-2 py-2.5 text-left transition-colors ${
+                  className={`rounded-lg border px-3 py-2.5 text-left transition-colors ${
                     active
                       ? "border-warm-green bg-warm-green/5"
                       : "border-border bg-card hover:bg-muted/50"
