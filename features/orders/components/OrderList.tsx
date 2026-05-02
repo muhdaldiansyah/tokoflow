@@ -955,7 +955,7 @@ export function OrderList() {
           {search || statusFilter || preorderFilter || dineInFilter || dateFilter ? (
             <p className="text-muted-foreground text-sm text-center">{copy.empty.ordersNoMatch()}</p>
           ) : (
-            <div className="max-w-md mx-auto rounded-xl border bg-card shadow-sm p-6 text-center">
+            <div className="rounded-xl border bg-card shadow-sm p-6 text-center">
               <div className="w-14 h-14 mx-auto rounded-2xl bg-warm-green-light flex items-center justify-center mb-4">
                 <ShoppingBag className="w-6 h-6 text-warm-green" />
               </div>
