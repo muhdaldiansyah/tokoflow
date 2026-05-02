@@ -228,7 +228,7 @@ Legacy paths: `/pembayaran` (payment result), `/pengingat` (reminders), `/profil
 - **Realtime:** Supabase on `orders` INSERT (toast + sound) + UPDATE (payment claim toast).
 - **Offline:** Network-first + IDB fallback. FIFO sync + localStorage lock (30s TTL).
 - **Analytics:** `track(event, properties?)` → `events` table + UTM.
-- **Progressive disclosure:** Nav items by totalOrders — 0 → 3 menus, 1+ → Customers, 3+ → Community, 5+ → Prep/Recap, 10+ → Invoices.
+- **Day-1 nav:** All core surfaces (Today, Orders, Products, Customers, Recap, Settings) visible from signup. Only Invoices + Tax hide behind the Pro gate. The earlier volume-gated cognitive cut was rolled back — hiding Orders/Customers from new merchants made them feel the product was missing.
 - **Smart defaults:** `config/category-defaults.ts` — 28 entries map a `business_category` ID to mode (preorder/dine-in/booking), capacity, sample products, and suggested categories. Drives `/setup` step 1 → 2 transition.
 - **Pricing compass:** Traffic light 🟢🟡🔴⚫ in ProductForm (net margin after overhead). Peer benchmark via `/api/benchmark` (gated ≥10 users/cluster).
 - **Quiet hours:** `profiles.quiet_hours_start/end` (default 22:00–06:00 MYT). Push suppressed during window.
