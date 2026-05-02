@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 import { dashboardNav, adminNav } from "@/config/navigation";
+import { useDashboardRealtime } from "@/components/DashboardRealtimeProvider";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -85,6 +86,7 @@ export function Sidebar({
 }: SidebarProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const { unreadCount } = useDashboardRealtime();
 
   const isAdmin = userRole === "admin" || userRole === "moderator";
 
@@ -180,6 +182,7 @@ export function Sidebar({
               const isActive =
                 pathname === item.href ||
                 pathname.startsWith(item.href + "/");
+              const showUnreadDot = item.href === "/today" && unreadCount > 0;
 
               return (
                 <li key={item.href}>
@@ -194,7 +197,12 @@ export function Sidebar({
                     )}
                     title={collapsed ? item.title : undefined}
                   >
-                    {Icon && <Icon className="h-[18px] w-[18px] shrink-0" />}
+                    <span className="relative shrink-0">
+                      {Icon && <Icon className="h-[18px] w-[18px]" />}
+                      {showUnreadDot && (
+                        <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-warm-rose ring-2 ring-sidebar" aria-label={`${unreadCount} new`} />
+                      )}
+                    </span>
                     {!collapsed && <span className="flex-1">{item.title}</span>}
                   </Link>
                 </li>

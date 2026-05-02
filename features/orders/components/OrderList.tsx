@@ -5,16 +5,14 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Plus, Search, ShoppingBag, ArrowRight, X, CircleDollarSign, ArrowRightCircle, Flame, CalendarDays, ChevronLeft, ChevronRight, Download, Loader2, Share2, Users, Clock, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
-import { getOrders, getOrder, getOrderCountsByMonth, getDeliveryCountsByMonth, bulkMarkPaid, bulkUpdateStatus, getTodaySummary } from "../services/order.service";
+import { getOrders, getOrderCountsByMonth, getDeliveryCountsByMonth, bulkMarkPaid, bulkUpdateStatus, getTodaySummary } from "../services/order.service";
 import type { TodaySummary } from "../services/order.service";
 import { fetchOrdersWithCache, syncPendingOrders, pendingToDisplayOrders, startAutoSync } from "@/lib/offline/sync";
 import { getPendingOrders } from "@/lib/offline/db";
 import { getProfile } from "@/features/receipts/services/receipt.service";
 import type { Profile } from "@/features/receipts/types/receipt.types";
-import { buildOrderConfirmation, buildPreorderConfirmation } from "@/lib/utils/wa-messages";
-import { openWhatsApp } from "@/lib/utils/wa-open";
+import { buildOrderConfirmation } from "@/lib/utils/wa-messages";
 import { createClient } from "@/lib/supabase/client";
-import { playNotificationSound } from "@/lib/utils/notification-sound";
 import { hapticAction } from "@/lib/utils/haptics";
 import { track } from "@/lib/analytics";
 import { OnboardingChecklist } from "./OnboardingChecklist";
@@ -111,8 +109,6 @@ export function OrderList() {
   const [showStatusPicker, setShowStatusPicker] = useState(false);
   const [isBulkUpdating, setIsBulkUpdating] = useState(false);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // Tracks recent order INSERTs for the Mid-Rush acknowledgment trigger.
-  const recentOrderTimestamps = useRef<number[]>([]);
 
   // WA preview sheet
   const [waPreview, setWaPreview] = useState<{ order: Order } | null>(null);
@@ -244,88 +240,31 @@ export function OrderList() {
     loadProfile();
   }, []);
 
-  // Realtime: notify on new orders + payment claims
+  // Realtime — list refresh only. Toast/sound/mid-rush moved to
+  // DashboardRealtimeProvider so they work on every dashboard surface,
+  // not just /orders. This channel exists solely to refetch the list view.
   useEffect(() => {
     const supabase = createClient();
     const channel = supabase
-      .channel("orders-realtime")
+      .channel("orders-list-refresh")
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "orders" },
-        (payload: { new: { id?: string; source?: string; customer_name?: string; customer_phone?: string; order_number?: string } }) => {
-          if (payload.new.source === "order_link" || payload.new.source === "whatsapp") {
-            const name = payload.new.customer_name || "Customer";
-            const via = payload.new.source === "whatsapp" ? " via WA" : "";
-            const messages = [
-              `New order from ${name}${via}! 🔔`,
-              `${name} just ordered${via}! ✨`,
-              `Cha-ching! Order received from ${name}${via} 🎉`,
-              `Sales rolling in! ${name} placed an order${via} 🔥`,
-            ];
-            const msg = messages[Math.floor(Math.random() * messages.length)];
-            const orderId = payload.new.id;
-            toast.success(msg, {
-              description: payload.new.order_number,
-              duration: 12000,
-              action: orderId ? {
-                label: "Confirm via WA",
-                onClick: async () => {
-                  const found = await getOrder(orderId);
-                  if (found) {
-                    const waMsg = found.is_preorder
-                      ? buildPreorderConfirmation(found)
-                      : buildOrderConfirmation(found);
-                    openWhatsApp(waMsg, found.customer_phone);
-                  }
-                },
-              } : undefined,
-            });
-            playNotificationSound();
-          }
-
-          // Mid-Rush acknowledgment — empathy moment from positioning doc 02.
-          // Fire once when a merchant crosses 5 orders in the last 30 minutes,
-          // suppressed for an hour after to avoid being chatty.
-          const now = Date.now();
-          const cutoff = now - 30 * 60 * 1000;
-          recentOrderTimestamps.current = recentOrderTimestamps.current.filter((t) => t > cutoff);
-          recentOrderTimestamps.current.push(now);
-          if (recentOrderTimestamps.current.length === 5) {
-            const lastShown = Number(sessionStorage.getItem("tokoflow_midrush_last") || "0");
-            if (now - lastShown > 60 * 60 * 1000) {
-              toast("Looks busy — go on, we've got chat covered", {
-                description: "5 orders in the last half hour. Focus on cooking, we'll watch the link.",
-                duration: 8000,
-              });
-              sessionStorage.setItem("tokoflow_midrush_last", String(now));
-            }
-          }
-
-          // Refresh list for any new order
+        () => {
           loadOrders();
-        }
+        },
       )
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "orders" },
-        (payload: { old: { payment_claimed_at?: string | null }; new: { payment_claimed_at?: string | null; customer_name?: string; order_number?: string } }) => {
-          // Notify when customer claims payment (payment_claimed_at goes from null to a value)
-          if (!payload.old.payment_claimed_at && payload.new.payment_claimed_at) {
-            const name = payload.new.customer_name || "Customer";
-            toast.info(`${name} reports payment`, {
-              description: `${payload.new.order_number} — verify the payment, then mark as paid`,
-              duration: 10000,
-            });
-            playNotificationSound();
-          }
-          // Refresh list for any update
+        () => {
           loadOrders();
-        }
+        },
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      void supabase.removeChannel(channel);
     };
   }, []);
 

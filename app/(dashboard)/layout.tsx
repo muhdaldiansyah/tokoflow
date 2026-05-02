@@ -7,6 +7,7 @@ import { MobileHeader } from "@/components/layout/MobileHeader";
 import { PageViewTracker } from "@/components/PageViewTracker";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { TrialBanner } from "@/components/TrialBanner";
+import { DashboardRealtimeProvider } from "@/components/DashboardRealtimeProvider";
 import { getOrdersRemaining, getNudgeLevel, isBisnis } from "@/config/plans";
 
 
@@ -55,18 +56,19 @@ export default async function DashboardLayout({
   const isBisnisActive = profile ? isBisnis(profile) : false;
 
   return (
-    <div className="flex h-dvh overflow-hidden">
-      <Sidebar userName={displayName} userEmail={user.email} userRole={profile?.role} ordersRemaining={ordersRemaining} isBisnisActive={isBisnisActive} totalOrders={totalOrders ?? 0} />
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <MobileHeader userName={displayName} userEmail={user.email} userRole={profile?.role} ordersRemaining={ordersRemaining} isBisnisActive={isBisnisActive} totalOrders={totalOrders ?? 0} />
-        <OfflineIndicator />
-        <TrialBanner nudgeLevel={nudgeLevel} />
-        <main className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto p-4 lg:p-6">
-          {children}
-        </main>
-        <PageViewTracker />
-
+    <DashboardRealtimeProvider>
+      <div className="flex h-dvh overflow-hidden">
+        <Sidebar userName={displayName} userEmail={user.email} userRole={profile?.role} ordersRemaining={ordersRemaining} isBisnisActive={isBisnisActive} totalOrders={totalOrders ?? 0} />
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+          <MobileHeader userName={displayName} userEmail={user.email} userRole={profile?.role} ordersRemaining={ordersRemaining} isBisnisActive={isBisnisActive} totalOrders={totalOrders ?? 0} />
+          <OfflineIndicator />
+          <TrialBanner nudgeLevel={nudgeLevel} />
+          <main className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto p-4 lg:p-6">
+            {children}
+          </main>
+          <PageViewTracker />
+        </div>
       </div>
-    </div>
+    </DashboardRealtimeProvider>
   );
 }

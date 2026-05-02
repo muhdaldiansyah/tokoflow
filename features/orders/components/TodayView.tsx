@@ -1,10 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, CircleDollarSign, MessageCircle, Plus, Sparkles } from "lucide-react";
 import type { Order } from "../types/order.types";
 import { derivePaymentStatus } from "../types/order.types";
+import { useDashboardRealtime } from "@/components/DashboardRealtimeProvider";
+
+const NEW_SINCE_GAP_MS = 10 * 60 * 1000; // banner only after a 10-min absence
 
 interface TodayViewProps {
   activeOrders: Order[];
@@ -88,6 +91,42 @@ export function TodayView({ activeOrders, doneToday, todayStr }: TodayViewProps)
 
   const empty = activeOrders.length === 0 && doneToday.length === 0;
 
+  // "X new since you stepped away" banner — snapshot the previous lastSeenAt at
+  // mount time, then immediately reset so the next visit starts fresh.
+  const { markTodaySeen } = useDashboardRealtime();
+  const [snapshotSeenAt, setSnapshotSeenAt] = useState<number | null>(null);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const raw = window.localStorage.getItem("tokoflow_last_seen_today");
+    setSnapshotSeenAt(raw ? Number(raw) : null);
+    markTodaySeen();
+  }, [markTodaySeen]);
+
+  const newSinceLastSeen = useMemo(() => {
+    if (!snapshotSeenAt) return [];
+    if (Date.now() - snapshotSeenAt < NEW_SINCE_GAP_MS) return [];
+    return activeOrders.filter((o) => {
+      if (!o.created_at) return false;
+      return new Date(o.created_at).getTime() > snapshotSeenAt;
+    });
+  }, [snapshotSeenAt, activeOrders]);
+
+  const showNewBanner = !bannerDismissed && newSinceLastSeen.length > 0;
+  const bannerNames = useMemo(() => {
+    const names = newSinceLastSeen
+      .map((o) => o.customer_name?.trim() || "Walk-in")
+      .slice(0, 3);
+    const rest = newSinceLastSeen.length - names.length;
+    return rest > 0 ? `${names.join(", ")} +${rest} more` : names.join(", ");
+  }, [newSinceLastSeen]);
+  const bannerSinceLabel = useMemo(() => {
+    if (!snapshotSeenAt) return "";
+    const d = new Date(snapshotSeenAt);
+    return d.toLocaleTimeString("en-MY", { hour: "numeric", minute: "2-digit" });
+  }, [snapshotSeenAt]);
+
   const dateLabel = new Date().toLocaleDateString("en-MY", { weekday: "long", day: "numeric", month: "long" });
   const statusLabel = empty
     ? "Quiet day so far"
@@ -112,6 +151,31 @@ export function TodayView({ activeOrders, doneToday, todayStr }: TodayViewProps)
           Log order
         </Link>
       </div>
+
+      {/* Returning-merchant banner — only when last visit was >10 min ago AND
+          new orders landed in the gap. Auto-cleared on tab close (snapshot
+          uses the prior lastSeenAt; markTodaySeen ran on mount). */}
+      {showNewBanner && (
+        <div className="rounded-xl border border-warm-amber/30 bg-warm-amber-light/60 px-4 py-3 flex items-start gap-3">
+          <Sparkles className="h-4 w-4 text-warm-amber mt-0.5 shrink-0" />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium text-foreground">
+              {newSinceLastSeen.length} new since {bannerSinceLabel}
+            </p>
+            {bannerNames && (
+              <p className="text-xs text-muted-foreground truncate mt-0.5">{bannerNames}</p>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => setBannerDismissed(true)}
+            className="text-xs text-muted-foreground hover:text-foreground shrink-0"
+            aria-label="Dismiss"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Empty state */}
       {empty && (
