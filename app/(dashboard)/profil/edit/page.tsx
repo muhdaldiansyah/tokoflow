@@ -34,6 +34,7 @@ export default function ProfileEditPage() {
     business_address: "",
     business_phone: "",
     business_category: "",
+    business_type: "",
     business_description: "",
   });
 
@@ -55,6 +56,7 @@ export default function ProfileEditPage() {
           business_address: data.business_address || "",
           business_phone: data.business_phone || "",
           business_category: data.business_category || "",
+          business_type: data.business_type || "",
           business_description: data.business_description || "",
         });
         setLogoUrl(data.logo_url || null);
@@ -369,6 +371,17 @@ export default function ProfileEditPage() {
           value={form.business_category}
           onChange={(val) => setForm({ ...form, business_category: val })}
         />
+        <div>
+          <label className="text-xs text-muted-foreground mb-1 block">What you sell (specifics)</label>
+          <input
+            type="text"
+            value={form.business_type}
+            onChange={(e) => setForm({ ...form, business_type: e.target.value.slice(0, 80) })}
+            placeholder="e.g. Nasi lemak catering, batik baju kurung, baby sleep coaching"
+            className="w-full h-11 px-3 bg-card border rounded-lg shadow-sm text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-colors placeholder:text-muted-foreground/60"
+          />
+          <p className="text-[11px] text-muted-foreground/70 mt-1">Helps us give you more relevant peer benchmarks and pricing whisper.</p>
+        </div>
         <div>
           <label className="text-xs text-muted-foreground mb-1 block">Store description</label>
           <textarea

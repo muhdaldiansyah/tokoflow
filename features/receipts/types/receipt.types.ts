@@ -59,6 +59,7 @@ export interface Profile {
   booking_enabled?: boolean;
   business_type?: string;
   push_token?: string;
+  notify_new_order_email?: boolean;
   community_id?: string | null;
   total_views?: number;
   views_today?: number;

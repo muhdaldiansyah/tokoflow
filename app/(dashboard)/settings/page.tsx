@@ -438,6 +438,56 @@ export default function SettingsPage() {
           )}
         </div>
 
+        {/* Store mode — pick one. Drives which fields show on the public order form
+            (delivery date for pre-order, dine-in tags, recurring billing for subscription).
+            Set initially by /setup based on category; merchant changes here when their model evolves. */}
+        <div className="border-t px-4 py-4 space-y-2">
+          <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Store mode</p>
+          <div className="grid grid-cols-3 gap-1.5">
+            {([
+              { key: "preorder", label: "Pre-order", desc: "Delivery date" },
+              { key: "dine_in", label: "Walk-in", desc: "On-the-spot" },
+              { key: "langganan", label: "Subscription", desc: "Recurring" },
+            ] as const).map((mode) => {
+              const active =
+                (mode.key === "preorder" && (profile?.preorder_enabled ?? true) && !profile?.dine_in_enabled && !profile?.langganan_enabled) ||
+                (mode.key === "dine_in" && profile?.dine_in_enabled && !profile?.langganan_enabled) ||
+                (mode.key === "langganan" && profile?.langganan_enabled);
+              return (
+                <button
+                  key={mode.key}
+                  type="button"
+                  onClick={async () => {
+                    if (!profile) return;
+                    const next = {
+                      preorder_enabled: mode.key === "preorder",
+                      dine_in_enabled: mode.key === "dine_in",
+                      langganan_enabled: mode.key === "langganan",
+                    };
+                    setProfile((prev) => prev ? { ...prev, ...next } : prev);
+                    const ok = await updateProfile(next);
+                    if (ok) {
+                      track("store_mode_changed", { mode: mode.key });
+                      toast.success(`Mode: ${mode.label}`);
+                    } else {
+                      toast.error("Could not save");
+                    }
+                  }}
+                  className={`rounded-lg border px-2 py-2.5 text-left transition-colors ${
+                    active
+                      ? "border-warm-green bg-warm-green/5"
+                      : "border-border bg-card hover:bg-muted/50"
+                  }`}
+                >
+                  <p className={`text-xs font-medium ${active ? "text-warm-green" : "text-foreground"}`}>{mode.label}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{mode.desc}</p>
+                </button>
+              );
+            })}
+          </div>
+          <p className="text-[10px] text-muted-foreground">Switch any time. Past orders aren&rsquo;t affected.</p>
+        </div>
+
         {/* Order settings */}
         <div className="border-t px-4 py-4 space-y-3">
           <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Order settings</p>
@@ -459,6 +509,27 @@ export default function SettingsPage() {
               className={`relative w-9 h-5 rounded-full transition-colors ${profile?.booking_enabled ? "bg-warm-green" : "bg-muted"}`}
             >
               <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${profile?.booking_enabled ? "translate-x-4" : ""}`} />
+            </button>
+          </label>
+
+          {/* New-order email toggle. Default ON (migration 085). Email send lives in
+              app/api/public/orders/route.ts and respects this flag. */}
+          <label className="flex items-center justify-between py-1">
+            <span className="text-xs text-muted-foreground">Email me when a new order arrives</span>
+            <button
+              type="button"
+              onClick={async () => {
+                if (!profile) return;
+                const newVal = !(profile.notify_new_order_email ?? true);
+                const success = await updateProfile({ notify_new_order_email: newVal });
+                if (success) {
+                  setProfile((prev) => prev ? { ...prev, notify_new_order_email: newVal } : prev);
+                  track("notify_new_order_email_toggled", { enabled: newVal });
+                }
+              }}
+              className={`relative w-9 h-5 rounded-full transition-colors ${(profile?.notify_new_order_email ?? true) ? "bg-warm-green" : "bg-muted"}`}
+            >
+              <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${(profile?.notify_new_order_email ?? true) ? "translate-x-4" : ""}`} />
             </button>
           </label>
 
