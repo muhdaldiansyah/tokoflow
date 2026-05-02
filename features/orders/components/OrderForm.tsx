@@ -6,7 +6,7 @@ import { ArrowLeft, Plus, Minus, Trash2, User, Check, MessageSquare, FileText, P
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { toast } from "sonner";
-import { createOrder, updateOrder, updateOrderStatus, deleteOrder, getItemSuggestions, clearItemSuggestionsCache, getFrequentItems, getRecentOrdersByCustomer } from "../services/order.service";
+import { createOrder, updateOrder, updateOrderStatus, deleteOrder, undoOrder, getItemSuggestions, clearItemSuggestionsCache, getFrequentItems, getRecentOrdersByCustomer } from "../services/order.service";
 import type { ItemSuggestion, FrequentItem } from "../services/order.service";
 import { getProfile } from "@/features/receipts/services/receipt.service";
 import { createClient } from "@/lib/supabase/client";
@@ -90,8 +90,19 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
 
   // Edit-mode action state
   const [orderStatus, setOrderStatus] = useState<OrderStatus>(initialOrder?.status || "new");
-  const [confirmModal, setConfirmModal] = useState<"cancel" | "delete" | null>(null);
+  const [confirmModal, setConfirmModal] = useState<"cancel" | "delete" | "force-cancel" | null>(null);
   const [isDestructing, setIsDestructing] = useState(false);
+  // Status-change confirm modal (Ariff feedback 2026-05-02): anti-misclick +
+  // optional auto-WA so the merchant doesn't re-tap the WA menu after every
+  // status change.
+  const [pendingStatus, setPendingStatus] = useState<OrderStatus | null>(null);
+  const [notifyOnStatusChange, setNotifyOnStatusChange] = useState(true);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const undoWindowEndsAt = initialOrder?.undo_window_ends_at
+    ? new Date(initialOrder.undo_window_ends_at)
+    : null;
+  const isPastUndoWindow =
+    !!undoWindowEndsAt && undoWindowEndsAt.getTime() < Date.now();
   // Live order state for quick actions (separate from form state)
   const [liveOrder, setLiveOrder] = useState<Order | null>(initialOrder || null);
 
@@ -446,18 +457,64 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
   }
 
 
-  // Edit-mode: destructive actions
-  async function handleConfirmCancel() {
+  // Edit-mode: status change with confirm + optional auto-WA notify.
+  // Single tap sequence (pill → confirm → done) replaces the old four-tap
+  // sequence (pill → save → WA menu → confirm).
+  async function handleConfirmStatusChange() {
+    if (!initialOrder || !pendingStatus) return;
+    setIsUpdatingStatus(true);
+    const updated = await updateOrderStatus(initialOrder.id, pendingStatus);
+    if (updated) {
+      hapticSuccess();
+      setOrderStatus(pendingStatus);
+      setLiveOrder(updated);
+      toast.success(`Marked as ${ORDER_STATUS_LABELS[pendingStatus]}`, {
+        duration: 4000,
+      });
+      const customerHasPhone = !!(updated.customer_phone && updated.customer_phone.trim());
+      if (notifyOnStatusChange && customerHasPhone) {
+        // Open the WA preview prefilled with the new status — single click
+        // out of the modal lands them in WhatsApp.
+        setWaPreviewData({
+          message: buildOrderWithStatus(updated),
+          name: updated.customer_name,
+          phone: updated.customer_phone,
+        });
+      }
+    } else {
+      toast.error("Couldn't update status. Try again.");
+    }
+    setIsUpdatingStatus(false);
+    setPendingStatus(null);
+  }
+
+  // Edit-mode: destructive actions. Cancel is now a soft-undo with a 7-day
+  // window — within window the cancel restores stock + frees a quota slot;
+  // past window we surface a second-step force confirm.
+  async function handleConfirmCancel(force: boolean = false) {
     if (!initialOrder) return;
     setIsDestructing(true);
-    const updated = await updateOrderStatus(initialOrder.id, "cancelled");
-    if (updated) {
+    const result = await undoOrder(initialOrder.id, { force });
+    if (result.success) {
       hapticDestructive();
-      toast.success("Order cancelled", { duration: 5000 });
+      toast.success(
+        force
+          ? "Order cancelled (past undo window)"
+          : "Order cancelled — stock restored",
+        { duration: 5000 },
+      );
       router.push(`/orders/${initialOrder.id}`);
-    } else {
-      toast.error("Failed to cancel order");
+      setIsDestructing(false);
+      setConfirmModal(null);
+      return;
     }
+    if (result.windowExpired) {
+      // Bounce to force-confirm modal — user has to opt in explicitly.
+      setIsDestructing(false);
+      setConfirmModal("force-cancel");
+      return;
+    }
+    toast.error("Failed to cancel order");
     setIsDestructing(false);
     setConfirmModal(null);
   }
@@ -1614,7 +1671,13 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                   <button
                     key={status}
                     type="button"
-                    onClick={() => setOrderStatus(status)}
+                    onClick={() => {
+                      // No-op tap on the already-active status — avoid a
+                      // confirm modal asking to change to the current state.
+                      if (status === orderStatus) return;
+                      setPendingStatus(status);
+                      setNotifyOnStatusChange(true);
+                    }}
                     className={`h-7 px-2.5 text-xs font-medium rounded-full border transition-colors ${chipStyle}`}
                   >
                     {ORDER_STATUS_LABELS[status]}
@@ -1747,7 +1810,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
         </div>
       )}
 
-      {/* Confirmation modal for cancel/delete */}
+      {/* Confirmation modal for cancel/delete/force-cancel */}
       {confirmModal && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-end lg:items-center justify-center">
           <div className="bg-background rounded-t-2xl lg:rounded-2xl p-6 pb-8 w-full max-w-sm">
@@ -1756,12 +1819,20 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                 <Trash2 className="w-6 h-6 text-warm-rose" />
               </div>
               <h2 className="text-base font-semibold text-foreground mb-1">
-                {confirmModal === "cancel" ? "Cancel this order?" : "Delete this order?"}
+                {confirmModal === "cancel"
+                  ? "Cancel this order?"
+                  : confirmModal === "force-cancel"
+                    ? "Past the undo window"
+                    : "Delete this order?"}
               </h2>
               <p className="text-sm text-muted-foreground mb-5">
                 {confirmModal === "cancel"
-                  ? "Order will change to the Cancelled status. This cannot be undone."
-                  : "Order will be permanently deleted and cannot be restored."}
+                  ? isPastUndoWindow
+                    ? "More than 7 days have passed — cancellation is final and stock is not restored automatically."
+                    : "Stock returns to inventory. The cancellation can be reviewed in the order's history for 7 days."
+                  : confirmModal === "force-cancel"
+                    ? "It's been more than 7 days since this order was created. Cancelling now is final — stock is NOT restored. Continue?"
+                    : "Order will be permanently deleted and cannot be restored."}
               </p>
               <div className="flex gap-3 w-full">
                 <button
@@ -1770,19 +1841,27 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                   disabled={isDestructing}
                   className="flex-1 h-11 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted transition-colors disabled:opacity-50"
                 >
-                  Cancel
+                  Keep order
                 </button>
                 <button
                   type="button"
-                  onClick={confirmModal === "cancel" ? handleConfirmCancel : handleConfirmDelete}
+                  onClick={
+                    confirmModal === "cancel"
+                      ? () => handleConfirmCancel(false)
+                      : confirmModal === "force-cancel"
+                        ? () => handleConfirmCancel(true)
+                        : handleConfirmDelete
+                  }
                   disabled={isDestructing}
                   className="flex-1 h-11 rounded-lg bg-warm-rose text-white text-sm font-medium hover:bg-warm-rose/90 active:bg-warm-rose/80 transition-colors disabled:opacity-50"
                 >
                   {isDestructing
                     ? "Processing..."
                     : confirmModal === "cancel"
-                      ? "Ya, Batalkan"
-                      : "Yes, delete"}
+                      ? "Yes, cancel"
+                      : confirmModal === "force-cancel"
+                        ? "Cancel anyway"
+                        : "Yes, delete"}
                 </button>
               </div>
             </div>
@@ -1803,7 +1882,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                 First order logged!
               </h2>
               <p className="text-sm text-muted-foreground mb-4">
-                Kirim konfirmasi ke pelanggan lewat WA supaya terlihat profesional.
+                Send a confirmation to your customer via WhatsApp.
               </p>
               {/* Business name prompt — only if not set */}
               {!savedBusinessName && (
@@ -1844,6 +1923,59 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
               >
                 View order
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Status change confirm modal — Ariff feedback 2026-05-02 */}
+      {pendingStatus && initialOrder && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-end lg:items-center justify-center">
+          <div className="bg-background rounded-t-2xl lg:rounded-2xl p-6 pb-8 w-full max-w-sm">
+            <div className="flex flex-col items-center text-center">
+              <h2 className="text-base font-semibold text-foreground mb-1">
+                Mark order as {ORDER_STATUS_LABELS[pendingStatus]}?
+              </h2>
+              <p className="text-sm text-muted-foreground mb-4">
+                {pendingStatus === "processed"
+                  ? "Order moves to the prep queue."
+                  : pendingStatus === "shipped"
+                    ? "Customer will know it's on the way."
+                    : pendingStatus === "done"
+                      ? "Order is complete and moves to history."
+                      : "Status will be updated."}
+              </p>
+              {!!(initialOrder.customer_phone && initialOrder.customer_phone.trim()) && (
+                <label className="flex items-start gap-2.5 w-full mb-4 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={notifyOnStatusChange}
+                    onChange={(e) => setNotifyOnStatusChange(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 rounded border-border accent-warm-green"
+                  />
+                  <span className="text-sm text-foreground text-left">
+                    Send WhatsApp update to {initialOrder.customer_name || "customer"}
+                  </span>
+                </label>
+              )}
+              <div className="flex gap-3 w-full">
+                <button
+                  type="button"
+                  onClick={() => setPendingStatus(null)}
+                  disabled={isUpdatingStatus}
+                  className="flex-1 h-11 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmStatusChange}
+                  disabled={isUpdatingStatus}
+                  className="flex-1 h-11 rounded-lg bg-warm-green text-white text-sm font-medium hover:bg-warm-green-hover active:bg-warm-green-hover transition-colors disabled:opacity-50"
+                >
+                  {isUpdatingStatus ? "Updating..." : "Confirm"}
+                </button>
+              </div>
             </div>
           </div>
         </div>

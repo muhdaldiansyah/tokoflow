@@ -9,13 +9,12 @@ interface PageProps {
 
 export default async function OrderSuccessPage({ params, searchParams }: PageProps) {
   const { slug } = await params;
-  const { name, order, phone, oid, total, ta, preorder, langganan } = await searchParams;
+  const { name, order, phone, oid, total, preorder, langganan } = await searchParams;
 
   const business = await getPublicBusinessInfo(slug);
   const qrisUrl = business?.qrisUrl;
   const businessPhone = phone || business?.businessPhone;
   const totalAmount = total ? parseInt(total, 10) : 0;
-  const transferAmount = ta ? parseInt(ta, 10) : totalAmount;
   const isPreorder = preorder === "1";
   const isLangganan = langganan === "1";
 
@@ -47,7 +46,6 @@ export default async function OrderSuccessPage({ params, searchParams }: PagePro
         businessName={name || ""}
         slug={slug}
         totalFromUrl={totalAmount}
-        transferAmountFromUrl={transferAmount}
         isPreorder={isPreorder}
         isLangganan={isLangganan}
       />

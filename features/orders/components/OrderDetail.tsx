@@ -475,7 +475,7 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
                       : "bg-warm-blue hover:bg-warm-blue/90"
                   }`}
                 >
-                  {isQuickUpdating ? "Processing..." : "Ya, Lanjutkan"}
+                  {isQuickUpdating ? "Processing..." : "Yes, continue"}
                 </button>
               </div>
             </div>

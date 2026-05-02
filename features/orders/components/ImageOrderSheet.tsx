@@ -196,10 +196,10 @@ export function ImageOrderSheet({
                   </div>
                   <div className="text-center">
                     <p className="text-sm font-medium text-foreground">
-                      Pilih foto atau ambil gambar
+                      Choose a photo or take one
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Screenshot chat WhatsApp berisi pesanan
+                      A WhatsApp screenshot of the order
                     </p>
                   </div>
                 </button>
@@ -215,7 +215,7 @@ export function ImageOrderSheet({
               {isProcessing && (
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <div className="w-3 h-3 border-2 border-muted-foreground/30 border-t-muted-foreground rounded-full animate-spin" />
-                  Mengekstrak pesanan dari gambar...
+                  Extracting order from image...
                 </div>
               )}
 

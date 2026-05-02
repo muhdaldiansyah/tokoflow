@@ -170,8 +170,8 @@ export default async function CityPage({ params }: PageProps) {
             Caterers & bakeries in {cityName}
           </h1>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-            {merchants.length} toko menerima pesanan online di {cityName}.
-            Pesan langsung tanpa komisi besar.
+            {merchants.length} shops taking orders online in {cityName}.
+            Order directly — no big platform fees.
           </p>
         </div>
       </section>

@@ -199,14 +199,14 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
     <div className="space-y-4 pb-8">
       {/* Pendapatan */}
       <div className="rounded-xl border bg-card px-4 py-4 space-y-2 shadow-sm">
-          <p className="text-xs font-medium text-muted-foreground">Pendapatan</p>
+          <p className="text-xs font-medium text-muted-foreground">Revenue</p>
           <div className="divide-y">
             <div className="flex justify-between text-sm py-2">
               <span className="text-muted-foreground">Customers served</span>
-              <span className="font-medium text-foreground">{recap?.totalOrders || 0} pesanan</span>
+              <span className="font-medium text-foreground">{recap?.totalOrders || 0} orders</span>
             </div>
             <div className="flex justify-between text-sm py-2">
-              <span className="text-muted-foreground">Hasil Usaha</span>
+              <span className="text-muted-foreground">Total revenue</span>
               <span className="font-medium text-foreground">RM {(recap?.totalRevenue || 0).toLocaleString("en-MY")}</span>
             </div>
             <div className="flex justify-between text-sm py-2">
@@ -251,7 +251,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
           const totalLate = recap.lateOrders.reduce((sum, o) => sum + o.total, 0);
           insights.push({
             icon: "⏰",
-            text: `${recap.lateOrders.length} pesanan lewat tanggal kirim — RM ${totalLate.toLocaleString("en-MY")} tertahan. Update status supaya tidak menumpuk.`,
+            text: `${recap.lateOrders.length} orders past delivery date — RM ${totalLate.toLocaleString("en-MY")} held up. Update status to keep things flowing.`,
             color: "bg-orange-50 border-orange-100 text-orange-800",
             actionLabel: "View order",
             actionHref: "/orders",
@@ -309,7 +309,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
           if (recap.collectionRate >= 90) {
             insights.push({
               icon: "💚",
-              text: `Tingkat pembayaran ${Math.round(recap.collectionRate)}% — pelangganmu amanah.`,
+              text: `Collection rate ${Math.round(recap.collectionRate)}% — your customers pay reliably.`,
               color: "bg-emerald-50 border-emerald-100 text-emerald-800",
             });
           }
@@ -319,13 +319,13 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
         if (communityStats) {
           const cs = communityStats.today;
           const parts: string[] = [];
-          if (cs.totalOrders > 0) parts.push(`${cs.totalOrders} pesanan`);
-          if (cs.activeMembersToday > 0) parts.push(`${cs.activeMembersToday} member aktif`);
-          if (cs.membersAtCapacity > 0) parts.push(`${cs.membersAtCapacity} member penuh hari ini`);
+          if (cs.totalOrders > 0) parts.push(`${cs.totalOrders} orders`);
+          if (cs.activeMembersToday > 0) parts.push(`${cs.activeMembersToday} members active`);
+          if (cs.membersAtCapacity > 0) parts.push(`${cs.membersAtCapacity} fully booked today`);
           if (parts.length > 0) {
             insights.push({
               icon: "👥",
-              text: `Hari ini di ${communityStats.communityName}: ${parts.join(", ")}`,
+              text: `Today in ${communityStats.communityName}: ${parts.join(", ")}`,
               color: "bg-violet-50 border-violet-100 text-violet-800",
             });
           }
@@ -334,7 +334,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
           if ((communityStats.socialProof?.membersRaisedPrice ?? 0) >= 2) {
             insights.push({
               icon: "📈",
-              text: `${communityStats.socialProof!.membersRaisedPrice} member di ${communityStats.communityName} sudah naikkan harga minggu ini.`,
+              text: `${communityStats.socialProof!.membersRaisedPrice} members in ${communityStats.communityName} raised prices this week.`,
               color: "bg-blue-50 border-blue-100 text-blue-800",
             });
           }
@@ -549,10 +549,10 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
               const date = new Date(selectedDate);
               const dateLabel = date.toLocaleDateString("en-MY", { weekday: "long", day: "numeric", month: "long" });
               const text = [
-                `Rekap ${dateLabel}`,
-                `${recap.totalOrders} pelanggan dilayani`,
-                `RM ${recap.totalRevenue.toLocaleString("en-MY")} hasil usaha`,
-                recap.collectedRevenue > 0 ? `RM ${recap.collectedRevenue.toLocaleString("en-MY")} terkumpul` : "",
+                `Recap for ${dateLabel}`,
+                `${recap.totalOrders} customers served`,
+                `RM ${recap.totalRevenue.toLocaleString("en-MY")} revenue`,
+                recap.collectedRevenue > 0 ? `RM ${recap.collectedRevenue.toLocaleString("en-MY")} collected` : "",
                 "",
                 "From selling to a real business",
                 "https://tokoflow.com",
@@ -562,10 +562,10 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
             className="w-full h-10 rounded-lg bg-[#25D366] text-white text-sm font-medium hover:bg-[#25D366]/90 transition-colors flex items-center justify-center gap-2"
           >
             <Share2 className="h-4 w-4" />
-            Bagikan ke WA Status
+            Share to WA Status
           </button>
           <p className="text-[11px] text-muted-foreground text-center mt-2">
-            Teman UMKM yang melihat bisa tertarik mencoba
+            Other small business friends who see this might want to try it.
           </p>
         </div>
       )}

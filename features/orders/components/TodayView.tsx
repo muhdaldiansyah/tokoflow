@@ -35,22 +35,22 @@ function bucketize(orders: Order[], todayStr: string): CardOrder[] {
 
     if (hasUnverifiedClaim) {
       bucket = "now";
-      reason = "Customer dah claim bayar";
+      reason = "Customer says they paid";
     } else if (isOverdue) {
       bucket = "now";
-      reason = "Lewat tarikh hantar";
+      reason = "Past delivery date";
     } else if (o.status === "new" && !dueDate) {
       bucket = "now";
-      reason = "Order baru — confirm dulu";
+      reason = "New order — confirm first";
     } else if (isToday) {
       bucket = "today";
-      reason = o.status === "processed" ? "Sedang disiapkan" : o.status === "shipped" ? "Dah hantar" : "Hari ini";
+      reason = o.status === "processed" ? "Being prepared" : o.status === "shipped" ? "Shipped" : "Today";
     } else if (isFuture) {
       bucket = "later";
       reason = formatRelativeDate(dueDate, now);
     } else {
       bucket = "today";
-      reason = "Belum ada tarikh";
+      reason = "No date yet";
     }
 
     return { ...o, bucket, reason };
@@ -60,8 +60,8 @@ function bucketize(orders: Order[], todayStr: string): CardOrder[] {
 function formatRelativeDate(dateStr: string, now: Date): string {
   const d = new Date(dateStr + "T00:00");
   const diffDays = Math.round((d.getTime() - new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()) / 86400000);
-  if (diffDays === 1) return "Esok";
-  if (diffDays === 2) return "Lusa";
+  if (diffDays === 1) return "Tomorrow";
+  if (diffDays === 2) return "In 2 days";
   if (diffDays <= 7) return d.toLocaleDateString("en-MY", { weekday: "short" });
   return d.toLocaleDateString("en-MY", { day: "numeric", month: "short" });
 }
@@ -109,7 +109,7 @@ export function TodayView({ activeOrders, doneToday, todayStr }: TodayViewProps)
       {empty && (
         <div className="rounded-2xl border bg-card p-8 text-center">
           <Sparkles className="h-8 w-8 mx-auto text-muted-foreground/40 mb-3" />
-          <p className="text-foreground font-medium mb-1">Tiada order lagi hari ini</p>
+          <p className="text-foreground font-medium mb-1">No more orders today</p>
           <p className="text-sm text-muted-foreground mb-6">Share your store link or add an order yourself.</p>
           <Link
             href="/orders/new"

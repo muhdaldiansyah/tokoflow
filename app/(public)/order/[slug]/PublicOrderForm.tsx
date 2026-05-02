@@ -389,8 +389,7 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
 
       const phoneParam = businessPhone ? `&phone=${encodeURIComponent(businessPhone)}` : "";
       const orderIdParam = data.orderId ? `&oid=${encodeURIComponent(data.orderId)}` : "";
-      const transferAmount = data.transferAmount || subtotal;
-      const totalParam = subtotal > 0 ? `&total=${subtotal}&ta=${transferAmount}` : "";
+      const totalParam = subtotal > 0 ? `&total=${subtotal}` : "";
       const preorderParam = preorderEnabled ? "&preorder=1" : "";
       const langgananParam = langgananEnabled ? "&langganan=1" : "";
       router.push(`/${slug}/sukses?name=${encodeURIComponent(businessName)}&order=${encodeURIComponent(data.orderNumber)}${phoneParam}${orderIdParam}${totalParam}${preorderParam}${langgananParam}`);

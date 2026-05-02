@@ -329,7 +329,7 @@ export function AIOrderSheet({
                   />
                   {!text.trim() && (
                     <p className="text-xs text-muted-foreground">
-                      AI akan mengisi item, pelanggan, tanggal, catatan, dan pembayaran otomatis
+                      AI fills items, customer, date, notes, and payment automatically
                     </p>
                   )}
                   {pastePreview.length > 0 && (
@@ -431,7 +431,7 @@ export function AIOrderSheet({
                       onClick={() => { resetVoice(); setTimeout(() => startVoice(), 200); }}
                       className="h-9 px-4 text-sm font-medium text-warm-green hover:underline"
                     >
-                      Coba lagi
+                      Try again
                     </button>
                   )}
                 </div>

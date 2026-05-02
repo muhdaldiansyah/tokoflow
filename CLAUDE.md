@@ -406,6 +406,42 @@ Shipped across 5 commits (10bc895 → 6fa38c3). **Code complete from this pass:*
 
 ---
 
+## Positioning Loop — continuous radical search (started 2026-05-01)
+
+> **Mode operasi: CONTINUOUS LOOP.** A 20-cycle adversarial positioning search is wired up to find a positioning that beats v1.2 — radical, not refined. While the loop is running, this section governs cycle behavior.
+
+**What:** 20 cycles rotating through HYPOTHESIZE_RADICAL → RED_TEAM (3 personas: Bu Aisyah / Steve Jobs Maximalist / YC Devil's Advocate) → RESEARCH (competitor + cross-domain analogy) → SYNTHESIZE → LATERAL_JUMP → CONSTRAINT_HARDEN → DELETE_PASS, optimizing 8 dimensions toward all-≥9 convergence.
+
+**Brain:** [`docs/positioning/loop/LOOP_INSTRUCTIONS.md`](./docs/positioning/loop/LOOP_INSTRUCTIONS.md) — full mandate, mode procedures, scoreboard, convergence criteria, forbidden phrases.
+
+**Wrapper:** `scripts/run-positioning-loop.sh` — Layer 3 of the infinite-loop stack. Per-cycle = fresh `claude -p` session, context resets every cycle, MAX_CYCLES=20, CYCLE_TIMEOUT=2400s.
+
+**State (disk = truth):**
+- `runs/.loop-counter` — last completed cycle (wrapper-managed)
+- `docs/positioning/loop/current-best.md` — leading positioning hypothesis
+- `docs/positioning/loop/scoreboard.md` — 8-dim scores + history
+- `docs/positioning/loop/CHANGELOG.md` — one line per cycle
+- `docs/positioning/loop/{hypotheses,critiques,research,synthesis}/cycle-NNN.md` — per-cycle artifacts
+- `docs/positioning/loop/CONVERGED.md` — sentinel (wrapper detects → stops loop)
+
+**Per-cycle rules:**
+1. Read `$LOOP_CYCLE` env var → know your cycle number → look up mode in table.
+2. Read disk state first (current-best.md, scoreboard.md, last 3 CHANGELOG lines, latest cycle artifact).
+3. Execute exactly ONE cycle per the mode procedure in LOOP_INSTRUCTIONS.md. Use ultrathink.
+4. Write artifact to correct subdir, append CHANGELOG line, update INDEX/scoreboard.
+5. Exit cleanly. Wrapper handles next session.
+6. Never run multiple cycles in one session. Never ask the user mid-cycle. Never modify v1.2 archive files (`00-manifesto.md` through `08-the-disappearing-work.md`).
+
+**Recovery from compaction or fresh session mid-loop:**
+1. `cat runs/.loop-counter` → last completed cycle. Next = +1 (or read `$LOOP_CYCLE`).
+2. Read last 3 lines of `CHANGELOG.md` → know what was just done.
+3. Read latest artifact under `loop/{hypotheses,critiques,research,synthesis}/` → know prior context.
+4. Resume from the next cycle. Disk is the answer — do not ask the user "where were we?".
+
+**v1.2 baseline scoreboard (cycle 0):** SimpIT 6 / ZeroExt 3 / AInative 5 / JobsUX 5 / RevPot 5 / Magic 4 / 60sDemo 5 / Defense 6 → avg **4.9**. Goal: ≥9 across all 8.
+
+---
+
 ## Phase 4 — deferred (post-launch)
 
 | Item | Effort | Status |

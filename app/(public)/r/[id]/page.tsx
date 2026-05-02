@@ -248,7 +248,6 @@ export default async function PublicReceiptPage({ params }: PageProps) {
           slug={profile?.slug}
           qrisUrl={profile?.qris_url}
           total={order.total}
-          transferAmount={order.transfer_amount}
           showPayment={!isPaid && status !== "done" && status !== "cancelled"}
           businessName={businessName}
           paymentClaimedAt={order.payment_claimed_at}

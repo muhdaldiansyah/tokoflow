@@ -1,0 +1,13 @@
+[2026-05-01T09:41:37+08:00] ═══ positioning-loop START — project=/Users/muhamadaldiansyah/base/tokoflow max=20 timeout=2400s
+[2026-05-01T09:41:37+08:00] ── cycle 1 start
+/Users/muhamadaldiansyah/base/tokoflow/scripts/run-positioning-loop.sh: line 82: timeout: command not found
+[2026-05-01T09:41:37+08:00] ── cycle 1 end exit=127 duration=0s
+[2026-05-01T09:41:37+08:00] non-zero exit=127, cooling down 5min (rate limit?)
+[2026-05-01T09:43:07+08:00] ═══ positioning-loop START — project=/Users/muhamadaldiansyah/base/tokoflow max=20 timeout=2400s
+[2026-05-01T09:43:07+08:00] ── cycle 1 start
+[2026-05-01T09:45:42+08:00] received SIGINT/SIGTERM, exiting cleanly
+[2026-05-01T09:45:42+08:00] received SIGINT/SIGTERM, exiting cleanly
+[2026-05-01T09:46:08+08:00] ═══ positioning-loop START — project=/Users/muhamadaldiansyah/base/tokoflow max=20 timeout=2400s
+[2026-05-01T09:46:08+08:00] ── cycle 1 start
+[2026-05-01T09:49:41+08:00] received SIGINT/SIGTERM, exiting cleanly
+[2026-05-01T09:49:41+08:00] received SIGINT/SIGTERM, exiting cleanly

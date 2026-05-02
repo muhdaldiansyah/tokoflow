@@ -39,6 +39,12 @@ export interface Order {
   completed_at?: string;
   assigned_staff_id?: string | null;
   assigned_at?: string | null;
+  // 7-day undo window (migration 082). Set on insert; if undone_at is non-null
+  // the order has been cancelled via the soft-undo path (stock restored, quota
+  // freed, customer stats rolled back via trigger).
+  undone_at?: string | null;
+  undo_window_ends_at?: string | null;
+  undo_reason?: string | null;
   created_at: string;
   updated_at: string;
 }

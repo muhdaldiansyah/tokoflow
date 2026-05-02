@@ -771,7 +771,7 @@ export default function SettingsPage() {
           <div className="grid grid-cols-3 gap-2 text-center">
             <div className="rounded-lg bg-muted/50 p-2.5">
               <p className="text-sm font-semibold text-foreground">{referredUsers.length}</p>
-              <p className="text-[10px] text-muted-foreground">Teman Terdaftar</p>
+              <p className="text-[10px] text-muted-foreground">Friends signed up</p>
             </div>
             <div className="rounded-lg bg-muted/50 p-2.5">
               <p className="text-sm font-semibold text-foreground">{formatRupiah(profile.referral_total_earned ?? 0)}</p>
@@ -786,7 +786,7 @@ export default function SettingsPage() {
           {/* Referred users list */}
           {referredUsers.length > 0 && (
             <div className="space-y-1.5">
-              <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Teman yang Terdaftar</p>
+              <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Friends who signed up</p>
               <div className="divide-y divide-border rounded-lg border overflow-hidden">
                 {referredUsers.map((u) => (
                   <div key={u.id} className="px-3 py-2 flex items-center justify-between">

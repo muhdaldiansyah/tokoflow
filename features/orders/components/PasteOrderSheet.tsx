@@ -205,7 +205,7 @@ export function PasteOrderSheet({
               />
               {!text.trim() && (
                 <p className="text-xs text-muted-foreground">
-                  AI akan mengisi item, pelanggan, tanggal, catatan, dan pembayaran otomatis
+                  AI fills items, customer, date, notes, and payment automatically
                 </p>
               )}
 

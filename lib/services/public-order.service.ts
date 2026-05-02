@@ -1,6 +1,5 @@
 import { createServiceClient } from "@/lib/supabase/server";
 import { normalizePhone } from "@/lib/utils/phone";
-import { generateUniqueCode } from "@/lib/utils/unique-code";
 import { creditReferralSignupBonus } from "@/lib/services/referral-bonus.service";
 
 export interface PublicFrequentItem {
@@ -194,7 +193,7 @@ export async function createPublicOrder(params: {
   isPreorder?: boolean;
   isLangganan?: boolean;
   referralSource?: string;
-}): Promise<{ orderId: string; orderNumber: string; transferAmount: number } | null> {
+}): Promise<{ orderId: string; orderNumber: string; total: number } | null> {
   const supabase = await createServiceClient();
 
   // Generate sequential order number (service client — no auth.uid(), RPC handles it)
@@ -261,20 +260,8 @@ export async function createPublicOrder(params: {
     }
   }
 
-  // Generate unique code for transfer amount matching
-  let unique_code: number | null = null;
-  if (subtotal > 0) {
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
-    const { data: existing } = await supabase
-      .from("orders")
-      .select("unique_code")
-      .eq("user_id", params.businessId)
-      .eq("total", subtotal)
-      .gte("created_at", todayStart.toISOString())
-      .not("unique_code", "is", null);
-    unique_code = generateUniqueCode((existing || []).map((r: { unique_code: number }) => r.unique_code));
-  }
+  // Tokoflow MY: unique_code mechanism (CatatOrder ID) deprecated — Billplz
+  // ref + reconciliation engine handle matching. Leave column NULL.
 
   // Create order with customer_id already set (single insert)
   const { data, error } = await supabase
@@ -289,7 +276,6 @@ export async function createPublicOrder(params: {
       subtotal,
       discount: 0,
       total: subtotal,
-      unique_code,
       paid_amount: 0,
       notes: params.notes || null,
       delivery_date: params.deliveryDate || null,
@@ -299,7 +285,7 @@ export async function createPublicOrder(params: {
       status: orderStatus,
       referral_source: params.referralSource || null,
     })
-    .select("id, order_number, transfer_amount")
+    .select("id, order_number, total")
     .single();
 
   if (error) {
@@ -340,5 +326,5 @@ export async function createPublicOrder(params: {
 
   // Customer stats auto-updated by database trigger (053_customer_stats_trigger)
 
-  return { orderId: data.id, orderNumber: data.order_number, transferAmount: data.transfer_amount ?? subtotal };
+  return { orderId: data.id, orderNumber: data.order_number, total: data.total ?? subtotal };
 }

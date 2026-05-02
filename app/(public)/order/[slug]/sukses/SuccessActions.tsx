@@ -25,12 +25,11 @@ interface SuccessActionsProps {
   businessName: string;
   slug: string;
   totalFromUrl?: number;
-  transferAmountFromUrl?: number;
   isPreorder?: boolean;
   isLangganan?: boolean;
 }
 
-export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, businessName, slug, totalFromUrl, transferAmountFromUrl, isPreorder, isLangganan }: SuccessActionsProps) {
+export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, businessName, slug, totalFromUrl, isPreorder, isLangganan }: SuccessActionsProps) {
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
   const [copied, setCopied] = useState(false);
   const [paidConfirmed, setPaidConfirmed] = useState(false);
@@ -48,7 +47,6 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
   }, []);
 
   const displayTotal = orderDetails?.total || totalFromUrl || 0;
-  const displayTransferAmount = transferAmountFromUrl || displayTotal;
 
   async function handleCopyOrderNumber() {
     try {
@@ -373,11 +371,8 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
 
           {displayTotal > 0 && (
             <p className="text-2xl font-bold text-foreground">
-              RM {displayTransferAmount.toLocaleString("en-MY")}
+              RM {displayTotal.toLocaleString("en-MY")}
             </p>
-          )}
-          {displayTransferAmount !== displayTotal && displayTotal > 0 && (
-            <p className="text-xs text-muted-foreground -mt-1">Transfer this exact amount</p>
           )}
 
           <div className="relative mx-auto max-w-[260px] w-full aspect-square">

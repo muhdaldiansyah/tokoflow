@@ -12,14 +12,13 @@ interface ReceiptActionsProps {
   slug?: string | null;
   qrisUrl?: string | null;
   total: number;
-  transferAmount?: number;
   showPayment: boolean;
   businessName: string;
   paymentClaimedAt?: string | null;
   isPreorder?: boolean;
 }
 
-export function ReceiptActions({ orderId, orderNumber, waPhone, slug, qrisUrl, total, transferAmount, showPayment, businessName, paymentClaimedAt, isPreorder }: ReceiptActionsProps) {
+export function ReceiptActions({ orderId, orderNumber, waPhone, slug, qrisUrl, total, showPayment, businessName, paymentClaimedAt, isPreorder }: ReceiptActionsProps) {
   const [paidConfirmed, setPaidConfirmed] = useState(!!paymentClaimedAt);
   const [claiming, setClaiming] = useState(false);
 
@@ -60,7 +59,7 @@ export function ReceiptActions({ orderId, orderNumber, waPhone, slug, qrisUrl, t
 
           {total > 0 && (
             <p className="text-lg font-bold text-foreground">
-              RM {(transferAmount ?? total).toLocaleString("en-MY")}
+              RM {total.toLocaleString("en-MY")}
             </p>
           )}
 

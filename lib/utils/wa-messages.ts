@@ -34,9 +34,11 @@ function notesLine(order: Order): string {
   return `\nNote: ${order.notes}`;
 }
 
-function transferLine(order: Order): string {
-  if (!order.unique_code || !order.transfer_amount) return "";
-  return `\n*Transfer amount: RM ${order.transfer_amount.toLocaleString("en-MY")}*\n_Please transfer this exact amount so we can verify it quickly_`;
+// Tokoflow MY does not use the IDR-style unique_code mechanism. Payment
+// matching is handled by Billplz refs + the reconciliation engine. The
+// transfer-amount line is a no-op kept for legacy callers.
+function transferLine(_order: Order): string {
+  return "";
 }
 
 export function buildOrderConfirmation(order: Order): string {

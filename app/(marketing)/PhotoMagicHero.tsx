@@ -32,12 +32,12 @@ export function PhotoMagicHero() {
   const handleFile = useCallback(async (file: File) => {
     if (!file.type.startsWith("image/")) {
       setStage("error");
-      setErrorMsg("File harus foto (JPG, PNG, atau HEIC).");
+      setErrorMsg("Please choose a photo (JPG, PNG, or HEIC).");
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
       setStage("error");
-      setErrorMsg("Foto terlalu besar (max 5 MB). Coba foto baru.");
+      setErrorMsg("Photo is over 5 MB — try a smaller one.");
       return;
     }
 
@@ -60,7 +60,7 @@ export function PhotoMagicHero() {
         const data = await res.json().catch(() => ({}));
         setStage("error");
         setErrorMsg(
-          data.error ?? "Tidak bisa proses foto. Coba lagi sebentar.",
+          data.error ?? "Couldn't read this photo. Try another?",
         );
         track("photo_magic_failed", { status: res.status });
         return;
@@ -75,7 +75,7 @@ export function PhotoMagicHero() {
       });
     } catch {
       setStage("error");
-      setErrorMsg("Sambungannya kurang stabil. Coba lagi.");
+      setErrorMsg("Connection's a bit shaky. Try again?");
     }
   }, []);
 
@@ -146,11 +146,11 @@ export function PhotoMagicHero() {
       .filter((p) => p.name.length > 0);
 
     if (cleanProducts.length === 0) {
-      setErrorMsg("Tambah minimum 1 produk untuk lanjut.");
+      setErrorMsg("Add at least one product to continue.");
       return;
     }
     if (preview.businessName.trim().length < 2) {
-      setErrorMsg("Nama toko minimum 2 karakter.");
+      setErrorMsg("Shop name needs at least 2 characters.");
       return;
     }
 
@@ -229,10 +229,10 @@ export function PhotoMagicHero() {
             <Loader2 className="h-10 w-10 text-[#05A660] animate-spin" />
             <div className="text-center">
               <p className="text-sm font-semibold text-[#1E293B]">
-                Sedang baca foto kamu…
+                Reading your photo…
               </p>
               <p className="text-xs text-[#64748B] mt-0.5">
-                3 detik. AI bantu setup-kan toko.
+                ~3 seconds. AI sets your shop up.
               </p>
             </div>
           </>
@@ -241,10 +241,10 @@ export function PhotoMagicHero() {
             <X className="h-10 w-10 text-red-500" />
             <div className="text-center">
               <p className="text-sm font-semibold text-red-600">
-                {errorMsg || "Tidak bisa proses foto."}
+                {errorMsg || "Couldn't read this photo."}
               </p>
               <p className="text-xs text-[#64748B] mt-0.5">
-                Tap untuk coba lagi
+                Tap to try again
               </p>
             </div>
           </>
@@ -255,22 +255,22 @@ export function PhotoMagicHero() {
             </div>
             <div className="text-center">
               <p className="text-sm font-semibold text-[#1E293B]">
-                Foto produkmu untuk mulai
+                Snap a photo to start
               </p>
               <p className="text-xs text-[#64748B] mt-0.5">
-                Tap, atau drop foto di sini
+                Tap or drop a photo here
               </p>
             </div>
             <div className="flex items-center gap-1.5 text-[11px] text-[#94A3B8] pt-1">
               <Sparkles className="h-3 w-3" />
-              <span>60 detik · Lihat preview dulu, baru daftar</span>
+              <span>60 seconds · See preview first, sign up after</span>
             </div>
           </>
         )}
       </label>
 
       <p className="text-[11px] text-[#94A3B8] text-center mt-3 px-2">
-        Foto kamu tidak disimpan. Cuma diproses untuk preview ini.
+        Your photo isn't saved — only processed for this preview.
       </p>
     </div>
   );
@@ -305,7 +305,7 @@ function PreviewCard({
           <div className="flex items-center gap-2 mb-3">
             <Sparkles className="h-4 w-4 text-[#05A660]" />
             <span className="text-xs font-semibold text-[#05A660] uppercase tracking-wide">
-              Preview tokomu
+              Your shop preview
             </span>
           </div>
 
@@ -323,14 +323,14 @@ function PreviewCard({
               <EditableField
                 value={preview.businessName}
                 onChange={(v) => onEditField({ businessName: v })}
-                placeholder="Nama toko"
+                placeholder="Shop name"
                 className="text-base font-bold text-[#1E293B]"
                 maxLength={60}
               />
               <EditableField
                 value={preview.story}
                 onChange={(v) => onEditField({ story: v })}
-                placeholder="Cerita singkat (optional)"
+                placeholder="Short story (optional)"
                 className="text-xs text-[#64748B] mt-0.5 italic"
                 maxLength={200}
               />
@@ -345,14 +345,14 @@ function PreviewCard({
         <div className="p-4 space-y-2">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] font-bold text-[#1E293B]/50 uppercase tracking-wider">
-              Produk yang saya lihat
+              Products I can see
             </span>
             <span className="text-[10px] text-[#94A3B8]">
               {preview.confidence === "high"
-                ? "✓ jelas"
+                ? "✓ clear"
                 : preview.confidence === "medium"
-                  ? "agak jelas"
-                  : "kurang jelas"}
+                  ? "fairly clear"
+                  : "a bit unclear"}
             </span>
           </div>
 
@@ -365,7 +365,7 @@ function PreviewCard({
                 <EditableField
                   value={product.name}
                   onChange={(v) => onEditProduct(idx, { name: v })}
-                  placeholder="Nama produk"
+                  placeholder="Product name"
                   className="text-sm font-semibold text-[#1E293B]"
                   maxLength={80}
                 />
@@ -387,7 +387,7 @@ function PreviewCard({
                   type="button"
                   onClick={() => onRemoveProduct(idx)}
                   className="h-6 w-6 rounded-full text-[#94A3B8] hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-colors"
-                  aria-label="Hapus produk"
+                  aria-label="Remove product"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -401,7 +401,7 @@ function PreviewCard({
               onClick={onAddProduct}
               className="w-full rounded-xl border border-dashed border-[#E2E8F0] py-2.5 text-xs text-[#64748B] hover:border-[#05A660] hover:text-[#05A660] hover:bg-[#E8F6F0]/30 transition-colors"
             >
-              + Tambah produk
+              + Add product
             </button>
           )}
         </div>
@@ -417,7 +417,7 @@ function PreviewCard({
             className="w-full bg-[#05A660] text-white rounded-xl py-3 text-sm font-semibold shadow-lg shadow-[#05A660]/20 hover:bg-[#048C51] transition-colors flex items-center justify-center gap-2"
           >
             <Check className="h-4 w-4" />
-            Suka — daftar untuk activate
+            Looks good — sign up to activate
             <ArrowRight className="h-4 w-4" />
           </button>
           <button
@@ -425,13 +425,13 @@ function PreviewCard({
             onClick={onTryAnother}
             className="w-full text-xs text-[#64748B] hover:text-[#1E293B] py-2 transition-colors"
           >
-            Coba foto lain
+            Try another photo
           </button>
         </div>
       </div>
 
       <p className="text-[11px] text-[#94A3B8] text-center mt-3 px-2">
-        Belum daftar. Foto kamu tidak disimpan.
+        Not signed up yet. Your photo isn't saved.
       </p>
     </div>
   );

@@ -132,14 +132,7 @@ export const OrderCard = memo(function OrderCard({
         {/* Row 3: Total + grouped badges */}
         <div className="flex items-center justify-between gap-2">
           <span className="text-sm font-bold text-foreground">
-            {order.unique_code && order.payment_status !== "paid" ? (
-              <>
-                <span className="text-xs font-normal text-muted-foreground line-through mr-1">RM {order.total.toLocaleString("en-MY")}</span>
-                RM {(order.transfer_amount ?? order.total).toLocaleString("en-MY")}
-              </>
-            ) : (
-              `RM ${order.total.toLocaleString("en-MY")}`
-            )}
+            RM {order.total.toLocaleString("en-MY")}
           </span>
           <div className="flex items-center gap-1.5 flex-nowrap shrink-0">
             {order.source === "order_link" && (

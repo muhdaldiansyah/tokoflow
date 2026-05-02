@@ -266,7 +266,7 @@ export function OrderList() {
               description: payload.new.order_number,
               duration: 12000,
               action: orderId ? {
-                label: "Konfirmasi WA",
+                label: "Confirm via WA",
                 onClick: async () => {
                   const found = await getOrder(orderId);
                   if (found) {
@@ -311,7 +311,7 @@ export function OrderList() {
           if (!payload.old.payment_claimed_at && payload.new.payment_claimed_at) {
             const name = payload.new.customer_name || "Customer";
             toast.info(`${name} reports payment`, {
-              description: `${payload.new.order_number} — Cek pembayaran lalu tandai lunas`,
+              description: `${payload.new.order_number} — verify the payment, then mark as paid`,
               duration: 10000,
             });
             playNotificationSound();
@@ -344,8 +344,11 @@ export function OrderList() {
 
     const { dateFrom, dateTo } = getDateRange(dateFilter);
     const dateField = dateFilter && dateMode === "delivery" ? "delivery_date" as const : undefined;
+    // Default: hide done + cancelled. User opts into history by selecting the
+    // Completed / Cancelled chip explicitly (Ariff feedback 2026-05-02).
     const { orders: data, fromCache: cached } = await fetchOrdersWithCache({
       status: statusFilter || undefined,
+      activeOnly: !statusFilter ? true : undefined,
       preorderOnly: preorderFilter || undefined,
       dineInOnly: dineInFilter || undefined,
       dateFrom,
@@ -373,6 +376,7 @@ export function OrderList() {
     const dateField = dateFilter && dateMode === "delivery" ? "delivery_date" as const : undefined;
     const data = await getOrders({
       status: statusFilter || undefined,
+      activeOnly: !statusFilter ? true : undefined,
       preorderOnly: preorderFilter || undefined,
       dineInOnly: dineInFilter || undefined,
       dateFrom,
@@ -430,7 +434,7 @@ export function OrderList() {
     setIsBulkUpdating(false);
     if (count > 0) {
       hapticAction();
-      toast.success(`${count} orders ditandai lunas`);
+      toast.success(`${count} orders marked as paid`);
       exitSelectMode();
       loadOrders();
     } else {
@@ -460,11 +464,11 @@ export function OrderList() {
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
 
-    if (diffMins < 1) return "Baru saja";
-    if (diffMins < 60) return `${diffMins}m lalu`;
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60) return `${diffMins}m ago`;
 
     const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24) return `${diffHours}j lalu`;
+    if (diffHours < 24) return `${diffHours}h ago`;
 
     return date.toLocaleTimeString("en-MY", {
       hour: "2-digit",
@@ -482,8 +486,8 @@ export function OrderList() {
     const hasTime = date.getHours() !== 0 || date.getMinutes() !== 0;
     const timeStr = hasTime ? ` ${date.toLocaleTimeString("en-MY", { hour: "2-digit", minute: "2-digit" })}` : "";
 
-    if (deliveryDay.getTime() === today.getTime()) return `Hari ini${timeStr}`;
-    if (deliveryDay.getTime() === tomorrow.getTime()) return `Besok${timeStr}`;
+    if (deliveryDay.getTime() === today.getTime()) return `Today${timeStr}`;
+    if (deliveryDay.getTime() === tomorrow.getTime()) return `Tomorrow${timeStr}`;
 
     return date.toLocaleDateString("en-MY", { day: "numeric", month: "short" }) + timeStr;
   }, []);
@@ -575,7 +579,7 @@ export function OrderList() {
                 <X className="w-5 h-5 text-foreground" />
               </button>
               <h1 className="text-lg font-semibold text-foreground">
-                {selectedIds.size} dipilih
+                {selectedIds.size} selected
               </h1>
             </div>
           </>
@@ -640,7 +644,7 @@ export function OrderList() {
           {todaySummary && (todaySummary.unpaidCount > 0 || todaySummary.pendingCount > 0) && (
             <div className="flex items-center gap-2 pt-1 border-t">
               {todaySummary.pendingCount > 0 && (
-                <span className="text-xs font-medium text-foreground">{todaySummary.pendingCount} perlu diproses</span>
+                <span className="text-xs font-medium text-foreground">{todaySummary.pendingCount} to process</span>
               )}
               {todaySummary.pendingCount > 0 && todaySummary.unpaidCount > 0 && (
                 <span className="text-muted-foreground/40">·</span>
@@ -661,7 +665,7 @@ export function OrderList() {
         if (minutesSaved < 5) return null;
         const hours = Math.floor(minutesSaved / 60);
         const mins = minutesSaved % 60;
-        const timeStr = hours > 0 ? `${hours} jam ${mins > 0 ? `${mins} menit` : ""}` : `${mins} menit`;
+        const timeStr = hours > 0 ? `${hours}h ${mins > 0 ? `${mins}m` : ""}` : `${mins}m`;
         return (
           <div className="rounded-xl border bg-emerald-50/50 border-emerald-100 px-4 py-3 shadow-sm">
             <div className="flex items-center gap-2">
@@ -680,7 +684,7 @@ export function OrderList() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 min-w-0">
               <Users className="w-4 h-4 text-muted-foreground shrink-0" />
-              <p className="text-xs text-muted-foreground truncate">Kenal UMKM lain yang masih catat di kertas?</p>
+              <p className="text-xs text-muted-foreground truncate">Know other small businesses still tracking orders on paper?</p>
             </div>
             <button
               onClick={() => {
@@ -692,7 +696,7 @@ export function OrderList() {
               className="shrink-0 h-8 px-3 rounded-lg bg-[#25D366] text-white text-xs font-medium hover:bg-[#25D366]/90 transition-colors flex items-center gap-1.5"
             >
               <Share2 className="w-3 h-3" />
-              Ajak via WA
+              Invite via WA
             </button>
           </div>
         </div>
@@ -1080,7 +1084,7 @@ export function OrderList() {
                 className="flex-1 h-11 flex items-center justify-center gap-1.5 rounded-lg border border-border text-foreground text-sm font-medium hover:bg-muted active:bg-muted/80 disabled:opacity-50 transition-colors"
               >
                 <ArrowRightCircle className="w-4 h-4" />
-                Ubah Status ({selectedIds.size})
+                Update Status ({selectedIds.size})
               </button>
             </div>
           </div>

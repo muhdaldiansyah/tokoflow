@@ -1,6 +1,48 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getPublicBusinessInfo, createPublicOrder } from "@/lib/services/public-order.service";
 import { createServiceClient } from "@/lib/supabase/server";
+import { sendEmail } from "@/lib/utils/email";
+
+async function notifyMerchantOfNewOrder(params: {
+  businessId: string;
+  orderNumber: string;
+  orderId: string;
+  total: number;
+  customerName: string;
+  items: Array<{ name: string; qty: number; price: number }>;
+}): Promise<void> {
+  const svc = await createServiceClient();
+  const { data: profile } = await svc
+    .from("profiles")
+    .select("email, business_name, notify_new_order_email")
+    .eq("id", params.businessId)
+    .maybeSingle();
+  if (!profile?.email) return;
+  // Default ON when the column doesn't exist yet — column will land in a
+  // settings migration. Merchant can opt out via /settings.
+  if (profile.notify_new_order_email === false) return;
+
+  const itemLines = params.items
+    .map((i) => `  • ${i.qty}× ${i.name} — RM ${(i.price * i.qty).toLocaleString("en-MY")}`)
+    .join("\n");
+
+  await sendEmail({
+    to: profile.email,
+    subject: `New order — ${params.customerName} · RM ${params.total.toLocaleString("en-MY")}`,
+    text: [
+      `${params.customerName} just placed an order through your Tokoflow store link.`,
+      ``,
+      `Order: ${params.orderNumber}`,
+      itemLines,
+      ``,
+      `Total: RM ${params.total.toLocaleString("en-MY")}`,
+      ``,
+      `Open in dashboard: https://tokoflow.com/orders/${params.orderId}`,
+      ``,
+      `— Tokoflow`,
+    ].join("\n"),
+  });
+}
 
 // Simple in-memory rate limiter — best-effort on serverless
 const rateLimit = new Map<string, { count: number; resetAt: number }>();
@@ -175,11 +217,22 @@ export async function POST(request: NextRequest) {
       });
     } catch {}
 
+    // Email the merchant — covers the "dashboard tab closed" gap that
+    // realtime in-app toast can't catch (Ariff feedback 2026-05-02).
+    void notifyMerchantOfNewOrder({
+      businessId: business.businessId,
+      orderNumber: result.orderNumber,
+      orderId: result.orderId,
+      total: result.total,
+      customerName,
+      items: sanitizedItems,
+    }).catch(() => undefined);
+
     return NextResponse.json({
       success: true,
       orderId: result.orderId,
       orderNumber: result.orderNumber,
-      transferAmount: result.transferAmount,
+      total: result.total,
     });
   } catch {
     return NextResponse.json({ error: "An error occurred" }, { status: 500 });

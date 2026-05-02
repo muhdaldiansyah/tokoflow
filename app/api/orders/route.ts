@@ -3,7 +3,6 @@ import { getAuthenticatedClient } from "@/lib/supabase/api";
 import { derivePaymentStatus } from "@/features/orders/types/order.types";
 import { normalizePhone } from "@/lib/utils/phone";
 import { sanitizeSearch } from "@/lib/utils/sanitize";
-import { generateUniqueCode } from "@/lib/utils/unique-code";
 import { creditReferralSignupBonus } from "@/lib/services/referral-bonus.service";
 
 // GET - List orders with full filter support
@@ -204,20 +203,8 @@ export async function POST(request: NextRequest) {
     const resolvedPaidAmount = paid_amount ?? (payment_status === "paid" ? total : 0);
     const resolvedPaymentStatus = derivePaymentStatus(resolvedPaidAmount, total);
 
-    // Generate unique code for transfer amount matching
-    let unique_code: number | null = null;
-    if (total > 0) {
-      const todayStart = new Date();
-      todayStart.setHours(0, 0, 0, 0);
-      const { data: existing } = await supabase
-        .from("orders")
-        .select("unique_code")
-        .eq("user_id", user.id)
-        .eq("total", total)
-        .gte("created_at", todayStart.toISOString())
-        .not("unique_code", "is", null);
-      unique_code = generateUniqueCode((existing || []).map((r: { unique_code: number }) => r.unique_code));
-    }
+    // Tokoflow MY: unique_code mechanism deprecated (see migration 084).
+    // Billplz refs + reconciliation engine handle payment matching now.
 
     // Create order
     const { data, error } = await supabase
@@ -232,7 +219,6 @@ export async function POST(request: NextRequest) {
         subtotal,
         discount: discountAmount,
         total,
-        unique_code,
         paid_amount: resolvedPaidAmount,
         notes,
         delivery_date: delivery_date || null,

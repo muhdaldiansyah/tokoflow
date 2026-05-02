@@ -219,7 +219,7 @@ export default async function CommunityPage({
               </Link>
             </Button>
             <p className="text-center text-xs text-[#94A3B8] mt-2">
-              Kasih store link ke pelanggan — mereka pesan sendiri, pesanan tercatat rapi.
+              Share your store link — customers order themselves, orders land neatly in your dashboard.
             </p>
           </div>
         </div>

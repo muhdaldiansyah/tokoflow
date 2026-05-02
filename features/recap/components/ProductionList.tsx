@@ -194,10 +194,10 @@ _${businessName} · Tokoflow_`;
         <div className="rounded-lg border bg-card px-4 py-12 text-center shadow-sm">
           <ClipboardList className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">
-            No orders yet untuk tanggal ini
+            No orders for this date yet
           </p>
           <p className="text-xs text-muted-foreground/60 mt-2 max-w-xs mx-auto">
-            Saat pelanggan pesan lewat store link dengan tanggal pengiriman, total yang harus disiapkan akan muncul di sini otomatis
+            When customers order through your store link with a delivery date, prep totals will appear here automatically.
           </p>
         </div>
       </div>

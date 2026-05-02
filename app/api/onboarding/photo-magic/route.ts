@@ -44,8 +44,8 @@ export async function POST(request: NextRequest) {
         {
           error:
             limit.reason === "day"
-              ? "Demo limit reached for today. Daftar untuk lanjut tanpa batas."
-              : "Banyak request dari kamu sekarang. Coba lagi sebentar.",
+              ? "Demo limit reached for today. Sign up to continue without limits."
+              : "Too many requests right now. Try again in a moment.",
         },
         anonymousAiRateLimitResponseInit(limit),
       );
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
 
     if (image.length > MAX_IMAGE_PAYLOAD_CHARS) {
       return NextResponse.json(
-        { error: "Foto terlalu besar (max ~4.5 MB). Coba kompres dulu." },
+        { error: "Photo is over ~4.5 MB. Try compressing it first." },
         { status: 413 },
       );
     }
@@ -121,7 +121,7 @@ Output JSON ONLY:
 
     if (!aiRes.ok) {
       return NextResponse.json(
-        { error: "AI service tidak tersedia. Coba lagi sebentar." },
+        { error: "AI service is unavailable. Try again in a moment." },
         { status: 502 },
       );
     }
@@ -133,7 +133,7 @@ Output JSON ONLY:
       parsed = JSON.parse(text);
     } catch {
       return NextResponse.json(
-        { error: "AI response unparseable. Coba foto lain." },
+        { error: "Couldn't parse the AI response. Try another photo." },
         { status: 502 },
       );
     }
@@ -187,7 +187,7 @@ Output JSON ONLY:
     return NextResponse.json(preview);
   } catch {
     return NextResponse.json(
-      { error: "Tidak bisa proses foto. Coba lagi." },
+      { error: "Couldn't process the photo. Try again." },
       { status: 500 },
     );
   }

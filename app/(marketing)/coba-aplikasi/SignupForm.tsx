@@ -253,11 +253,11 @@ export default function SignupForm() {
         disabled={loading}
         className="w-full h-11 rounded-lg bg-[#05A660] text-white font-semibold text-sm hover:bg-[#048C51] disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2"
       >
-        {loading ? "Mendaftar..." : "Sign up"}
+        {loading ? "Signing up..." : "Sign up"}
       </button>
 
       <p className="text-center text-[10px] text-[#94A3B8]">
-        Kuota terbatas
+        Limited spots
       </p>
     </form>
   );

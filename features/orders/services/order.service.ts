@@ -203,6 +203,52 @@ export async function deleteOrder(id: string): Promise<boolean> {
   }
 }
 
+export interface UndoOrderResult {
+  success: boolean;
+  alreadyUndone?: boolean;
+  windowExpired?: boolean;
+  windowEndedAt?: string;
+  forced?: boolean;
+}
+
+/**
+ * Cancel an order with the 7-day soft-undo semantic. Within the window the
+ * call is plain `force=false`; if the API returns 410 the caller should ask
+ * the user to confirm a hard cancel and retry with `force=true`.
+ */
+export async function undoOrder(
+  id: string,
+  opts: { force?: boolean; reason?: string } = {},
+): Promise<UndoOrderResult> {
+  try {
+    cancelOrderReminders(id).catch(() => {});
+    const res = await fetch(`/api/orders/${id}/undo`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ force: !!opts.force, reason: opts.reason ?? null }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return {
+        success: true,
+        alreadyUndone: !!data.alreadyUndone,
+        forced: !!data.forced,
+      };
+    }
+    if (res.status === 410) {
+      const data = await res.json().catch(() => ({}));
+      return {
+        success: false,
+        windowExpired: true,
+        windowEndedAt: data.windowEndedAt,
+      };
+    }
+    return { success: false };
+  } catch {
+    return { success: false };
+  }
+}
+
 export async function recordPayment(id: string, amount: number): Promise<Order | null> {
   try {
     const res = await fetch(`/api/orders/${id}/payment`, {

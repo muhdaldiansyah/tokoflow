@@ -23,7 +23,7 @@ export function HeroSummaryCell({ refreshKey, onAllDone }: HeroSummaryCellProps)
 
   const parts: string[] = [];
   if (summary.pendingCount > 0) {
-    parts.push(`${summary.pendingCount} perlu diproses`);
+    parts.push(`${summary.pendingCount} to process`);
   }
   if (summary.unpaidCount > 0) {
     parts.push(`${summary.unpaidCount} unpaid`);
@@ -34,7 +34,7 @@ export function HeroSummaryCell({ refreshKey, onAllDone }: HeroSummaryCellProps)
   return (
     <p className="text-xs text-muted-foreground px-1">
       {summary.pendingCount > 0 && (
-        <span className="font-medium text-foreground">{summary.pendingCount} perlu diproses</span>
+        <span className="font-medium text-foreground">{summary.pendingCount} to process</span>
       )}
       {summary.pendingCount > 0 && summary.unpaidCount > 0 && (
         <span className="text-muted-foreground/50"> · </span>
