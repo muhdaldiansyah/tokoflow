@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Minus, Plus, Loader2, MapPin, Phone, QrCode, ShoppingBag, ImageIcon, CalendarDays, ChevronLeft, ChevronRight, ChevronDown, X, Clock, Store, Share2 } from "lucide-react";
 import { formatPhoneForWA } from "@/lib/utils/phone";
 import { validatePhone, normalizePhoneForStorage } from "@/components/PhoneInput";
+import { avatarColors } from "@/lib/utils/avatar-color";
 import type { PublicFrequentItem } from "@/lib/services/public-order.service";
 
 interface PublicOrderFormProps {
@@ -433,12 +434,12 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
           role="button"
           tabIndex={isOutOfStock ? -1 : 0}
           onClick={() => !isOutOfStock && updateQty(fi, 1)}
-          className={`flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors squish-press select-none ${
+          className={`flex items-center justify-between px-3 py-2.5 rounded-lg border transition-colors squish-press select-none ${
             isOutOfStock
-              ? "bg-white opacity-50 cursor-not-allowed"
+              ? "bg-white border-zinc-100 opacity-50 cursor-not-allowed"
               : isActive
-                ? "bg-warm-green-light ring-1 ring-warm-green/30 cursor-pointer"
-                : "bg-white hover:bg-[#1a4d35]/5 cursor-pointer"
+                ? "bg-warm-green-light border-warm-green/30 ring-1 ring-warm-green/20 cursor-pointer"
+                : "bg-white border-zinc-100 hover:border-zinc-200 hover:bg-zinc-50/50 cursor-pointer"
           }`}
         >
           <div className="flex items-center gap-2.5 min-w-0 flex-1">
@@ -479,12 +480,12 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
         role="button"
         tabIndex={isOutOfStock ? -1 : 0}
         onClick={() => !isOutOfStock && updateQty(fi, 1)}
-        className={`relative text-left rounded-lg p-2 transition-colors squish-press select-none ${
+        className={`relative text-left rounded-lg border p-2 transition-colors squish-press select-none ${
           isOutOfStock
-            ? "bg-white opacity-50 cursor-not-allowed"
+            ? "bg-white border-zinc-100 opacity-50 cursor-not-allowed"
             : isActive
-              ? "bg-warm-green-light ring-1.5 ring-warm-green/30 cursor-pointer"
-              : "bg-white cursor-pointer"
+              ? "bg-warm-green-light border-warm-green/30 ring-1 ring-warm-green/20 cursor-pointer"
+              : "bg-white border-zinc-100 hover:border-zinc-200 cursor-pointer"
         }`}
       >
         <div className="w-full text-left">
@@ -574,13 +575,20 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
         </button>
       </div>
 
-      {/* Hero header with warm atmosphere */}
-      <div className="px-4 pt-10 pb-6 text-center bg-gradient-to-b from-amber-50/40 to-transparent">
-        <div className="relative w-[72px] h-[72px] rounded-full bg-white flex items-center justify-center mx-auto mb-4 overflow-hidden shadow-md ring-2 ring-white">
+      {/* Hero header — white background lets the merchant's brand be the
+          surface, not Tokoflow's. Avatar color is hashed from the merchant
+          name so each shop gets a stable, distinct tint without ever
+          stamping Tokoflow's green. */}
+      <div className="px-4 pt-10 pb-6 text-center">
+        <div
+          className={`relative w-[72px] h-[72px] rounded-full ${
+            logoUrl ? "bg-white" : avatarColors(businessName).bg
+          } flex items-center justify-center mx-auto mb-4 overflow-hidden shadow-sm ring-1 ring-zinc-100`}
+        >
           {logoUrl ? (
             <Image src={logoUrl} alt="" fill className="object-cover" sizes="72px" />
           ) : (
-            <span className="text-lg font-bold text-warm-green">
+            <span className={`text-lg font-bold ${avatarColors(businessName).fg}`}>
               {businessName.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2)}
             </span>
           )}

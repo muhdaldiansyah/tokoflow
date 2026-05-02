@@ -4,7 +4,7 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen bg-white text-foreground">
       {children}
     </main>
   );
