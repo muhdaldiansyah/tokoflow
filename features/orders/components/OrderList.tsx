@@ -996,7 +996,7 @@ export function OrderList() {
                     href={`https://wa.me/?text=${encodeURIComponent(`Order from my shop:\nhttps://tokoflow.com/${profileData.slug}`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="h-7 px-2.5 rounded-md bg-[#25D366] text-white text-xs font-medium hover:bg-[#25D366]/90 transition-colors inline-flex items-center gap-1"
+                    className="h-7 px-2.5 rounded-md bg-warm-green text-white text-xs font-medium hover:bg-warm-green-hover transition-colors inline-flex items-center gap-1"
                   >
                     <Share2 className="w-3 h-3" />
                     Share
