@@ -21,15 +21,16 @@ export const metadata: Metadata = {
   },
 };
 
-// Restraint, by design — visible refuse list as marketing weapon. Each line
-// mirrors a clause from docs/positioning/00-manifesto.md "What we refuse to do".
-const refuses = [
-  "DM your customer on your behalf",
-  "Set the price of your products",
-  "Auto-reply to reviews or complaints",
-  "Gamify with streaks, badges, or daily-target shaming",
-  "Sell your data — ever",
-  "Lock you in. Cancel one tap, export everything",
+// Ownership statements — same six positioning truths as the bible's refuse
+// list, but framed as what stays YOURS. Visitor reads "your" six times instead
+// of six "no, no, no" statements before they know what we do.
+const ownership = [
+  { lead: "Your customers, your voice", tail: "we never message on your behalf" },
+  { lead: "Your prices, your judgment", tail: "we never set them for you" },
+  { lead: "Your reviews to answer", tail: "we never auto-reply" },
+  { lead: "Your pace", tail: "no streaks, no badges, no daily-target shaming" },
+  { lead: "Your data, always", tail: "never sold, ever" },
+  { lead: "Your freedom", tail: "cancel one tap, export everything" },
 ];
 
 const tiers = [
@@ -279,23 +280,29 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Restraint, by design — explicit refuse list as trust marketing. */}
+      {/* Yours. All of it. — positive ownership framing of the bible's
+          refuse list. Same content, opposite valence: lead with the value
+          (your customers / prices / voice / data) and let the refuse follow
+          as the reason. Visitor reads "your" six times. */}
       <section className="border-t border-[#E2E8F0] py-12 lg:py-16">
         <div className="max-w-3xl mx-auto px-4">
           <div className="text-center max-w-2xl mx-auto mb-10">
             <h2 className="text-2xl lg:text-3xl font-bold text-[#1E293B] tracking-tight">
-              Restraint, by design.
+              Yours. All of it.
             </h2>
             <p className="mt-3 text-[#475569] lg:text-lg">
-              Most automation tools have burned this audience before. Here&apos;s what Tokoflow will <span className="font-semibold text-[#1E293B]">never</span> do.
+              The kitchen, the customers, the voice — they were yours before Tokoflow, and they stay yours.
             </p>
           </div>
 
           <ul className="space-y-3 max-w-xl mx-auto">
-            {refuses.map((line) => (
-              <li key={line} className="flex items-start gap-3">
+            {ownership.map((item) => (
+              <li key={item.lead} className="flex items-start gap-3">
                 <span className="mt-2 h-1.5 w-1.5 rounded-full bg-warm-green shrink-0" aria-hidden />
-                <span className="text-[#475569] leading-relaxed">{line}</span>
+                <span className="text-[#475569] leading-relaxed">
+                  <span className="font-semibold text-[#1E293B]">{item.lead}</span>
+                  <span> — {item.tail}</span>
+                </span>
               </li>
             ))}
           </ul>
