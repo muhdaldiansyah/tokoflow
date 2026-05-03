@@ -11,6 +11,14 @@ import { copy } from "@/lib/copy";
 type SortKey = "name" | "price" | "sold";
 type SortDir = "asc" | "desc";
 
+// Higher = bubbles to top under implicit sort. 0 = neutral.
+function stockUrgency(p: Product): number {
+  if (p.stock === null || p.stock === undefined) return 0;
+  if (p.stock === 0) return 2;
+  if (p.stock <= 3) return 1;
+  return 0;
+}
+
 export function ProductList() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,7 +72,9 @@ export function ProductList() {
     return sales[product.name.toLowerCase()] || 0;
   }
 
-  // Filter + sort products
+  // Filter + sort products. When no explicit sort is chosen, low/out-of-stock
+  // products float to the top of their category — Tier-2 surfacing without
+  // a separate alerts section.
   const sorted = useMemo(() => {
     const q = debouncedSearch.toLowerCase();
     const filtered = q
@@ -82,6 +92,10 @@ export function ProductList() {
       filtered.sort((a, b) => sortDir === "asc" ? a.price - b.price : b.price - a.price);
     } else if (sortKey === "sold") {
       filtered.sort((a, b) => sortDir === "asc" ? getSold(a) - getSold(b) : getSold(b) - getSold(a));
+    } else {
+      // Implicit sort — bubble urgent stock states up.
+      // Out (0) > Low (1-3) > everything else, original order preserved within tier.
+      filtered.sort((a, b) => stockUrgency(b) - stockUrgency(a));
     }
 
     return filtered;
@@ -295,18 +309,30 @@ export function ProductList() {
                         </div>
                       </div>
 
-                      {/* Right stats */}
+                      {/* Right stats — stock state surfaces as a Tier-2 pill,
+                          not just colored text. Out + Low get the merchant's eye
+                          without a separate alerts section. */}
                       {(sold > 0 || (product.stock !== null && product.stock !== undefined)) && (
-                        <div className="flex flex-col items-end gap-0.5 shrink-0 pt-0.5">
+                        <div className="flex flex-col items-end gap-1 shrink-0 pt-0.5">
                           {sold > 0 && (
                             <span className="text-xs text-muted-foreground">
-                              Terjual {sold}
+                              Sold {sold}
                             </span>
                           )}
                           {product.stock !== null && product.stock !== undefined && (
-                            <span className={`text-xs ${product.stock <= 5 ? "text-warm-rose font-medium" : "text-muted-foreground"}`}>
-                              Sisa {product.stock}
-                            </span>
+                            product.stock === 0 ? (
+                              <span className="inline-flex items-center h-5 px-2 text-[10px] font-semibold rounded-full bg-warm-rose-light text-warm-rose">
+                                Out
+                              </span>
+                            ) : product.stock <= 3 ? (
+                              <span className="inline-flex items-center h-5 px-2 text-[10px] font-semibold rounded-full bg-warm-amber-light text-warm-amber">
+                                Low: {product.stock} left
+                              </span>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">
+                                {product.stock} left
+                              </span>
+                            )
                           )}
                         </div>
                       )}

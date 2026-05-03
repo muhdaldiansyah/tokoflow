@@ -14,6 +14,9 @@ interface TodayViewProps {
   doneToday: Pick<Order, "id" | "customer_name" | "customer_phone" | "items" | "total" | "completed_at">[];
   todayStr: string;
   tomorrowStr: string;
+  dailyCapacity?: number | null;
+  todayOrderCount?: number;
+  outOfStockInPlay?: string[];
 }
 
 type Bucket = "now" | "today" | "later";
@@ -81,7 +84,7 @@ function formatMYR(amount: number): string {
   return `RM ${(amount ?? 0).toFixed(0)}`;
 }
 
-export function TodayView({ activeOrders, doneToday, todayStr }: TodayViewProps) {
+export function TodayView({ activeOrders, doneToday, todayStr, dailyCapacity, todayOrderCount = 0, outOfStockInPlay = [] }: TodayViewProps) {
   const cards = useMemo(() => bucketize(activeOrders, todayStr), [activeOrders, todayStr]);
   const now = cards.filter((c) => c.bucket === "now");
   const today = cards.filter((c) => c.bucket === "today");
@@ -133,6 +136,13 @@ export function TodayView({ activeOrders, doneToday, todayStr }: TodayViewProps)
     : `${activeOrders.length} order${activeOrders.length === 1 ? "" : "s"} active`;
   const doneLabel = doneToday.length > 0 ? ` · ${doneToday.length} done · ${formatMYR(totalToday)} in` : "";
 
+  // Capacity meter — only when merchant set a daily cap. 80%+ = warm-amber,
+  // 100% = full strip below the header.
+  const hasCapacity = typeof dailyCapacity === "number" && dailyCapacity > 0;
+  const capacityPct = hasCapacity ? Math.round((todayOrderCount / dailyCapacity!) * 100) : 0;
+  const capacityWarn = hasCapacity && capacityPct >= 80 && capacityPct < 100;
+  const capacityFull = hasCapacity && capacityPct >= 100;
+
   return (
     <div className="max-w-2xl mx-auto space-y-3">
       {/* Header — matches /orders + /products pattern: title left, CTA right */}
@@ -141,6 +151,12 @@ export function TodayView({ activeOrders, doneToday, todayStr }: TodayViewProps)
           <h1 className="text-lg font-semibold text-foreground">Today</h1>
           <p className="text-xs text-muted-foreground truncate">
             {dateLabel} · {statusLabel}{doneLabel}
+            {hasCapacity && (
+              <span className={capacityWarn || capacityFull ? "text-warm-amber font-medium" : ""}>
+                {" · "}
+                {todayOrderCount}/{dailyCapacity} today
+              </span>
+            )}
           </p>
         </div>
         <Link
@@ -151,6 +167,33 @@ export function TodayView({ activeOrders, doneToday, todayStr }: TodayViewProps)
           Log order
         </Link>
       </div>
+
+      {/* Capacity-full strip — soft tone, not red. Pause guidance is advisory,
+          not enforced; the merchant decides. */}
+      {capacityFull && (
+        <div className="rounded-xl border border-warm-amber/30 bg-warm-amber-light/60 px-4 py-3 text-sm text-foreground">
+          <span className="font-medium">Today is full.</span>{" "}
+          <span className="text-muted-foreground">Pause your link if you need a break — find it in </span>
+          <Link href="/settings" className="underline text-warm-amber hover:text-warm-amber/80">Settings</Link>
+          <span className="text-muted-foreground">.</span>
+        </div>
+      )}
+
+      {/* Out-of-stock strip — only products that are actually in active orders.
+          Surfaces the conflict in context, no separate alerts inbox needed. */}
+      {outOfStockInPlay.length > 0 && (
+        <div className="rounded-xl border border-warm-rose/30 bg-warm-rose-light/40 px-4 py-3 text-sm">
+          <p className="font-medium text-foreground">
+            {outOfStockInPlay.length === 1 ? "Out of stock:" : `Out of stock (${outOfStockInPlay.length}):`}
+            <span className="font-normal text-muted-foreground"> {outOfStockInPlay.slice(0, 3).join(", ")}{outOfStockInPlay.length > 3 ? ` +${outOfStockInPlay.length - 3} more` : ""}</span>
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Restock or disable in{" "}
+            <Link href="/products" className="underline hover:text-foreground">Products</Link>{" "}
+            so customers don&rsquo;t order what you can&rsquo;t fulfil.
+          </p>
+        </div>
+      )}
 
       {/* Returning-merchant banner — only when last visit was >10 min ago AND
           new orders landed in the gap. Auto-cleared on tab close (snapshot

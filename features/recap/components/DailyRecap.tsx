@@ -5,8 +5,40 @@ import { Download, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { getRecapData, getDailyOrdersForExport } from "../services/recap.service";
 import { getProfile } from "@/features/receipts/services/receipt.service";
+import { createClient } from "@/lib/supabase/client";
 import { AIInsights } from "./AIInsights";
 import { VisitorAnalytics } from "./VisitorAnalytics";
+
+// Tier-3 memory cards — celebratory, no action required. Shown above the
+// Tier-2 insights so the merchant sees the win first, the work second.
+const MILESTONES = [10, 50, 100, 500, 1000] as const;
+const MILESTONE_KEY = "tokoflow_milestones_celebrated";
+const ANNIVERSARY_YEARS = [1, 3, 5] as const;
+const ANNIVERSARY_KEY = "tokoflow_anniversaries_celebrated";
+
+type MemoryCards = {
+  milestone?: { count: number; threshold: number };
+  anniversary?: { years: number; sinceLabel: string };
+};
+
+function loadCelebrated(key: string): Set<number> {
+  if (typeof window === "undefined") return new Set();
+  try {
+    const raw = window.localStorage.getItem(key);
+    if (!raw) return new Set();
+    const arr = JSON.parse(raw) as number[];
+    return new Set(Array.isArray(arr) ? arr : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function markCelebrated(key: string, value: number) {
+  if (typeof window === "undefined") return;
+  const set = loadCelebrated(key);
+  set.add(value);
+  window.localStorage.setItem(key, JSON.stringify([...set]));
+}
 import {
   generateExcel,
   workbookToArrayBuffer,
@@ -38,6 +70,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
     today: { totalOrders: number; totalRevenue: number; activeMembersToday: number; membersAtCapacity: number };
     socialProof?: { membersRaisedPrice: number; period: string };
   } | null>(null);
+  const [memoryCards, setMemoryCards] = useState<MemoryCards>({});
   const lastExportTrigger = useRef(exportTrigger);
 
   const handleAIDownloadReady = useCallback((fn: (() => void) | null) => {
@@ -70,6 +103,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
     const profile = await getProfile();
     if (profile) {
       setBusinessName(profile.business_name || "My Store");
+      void computeMemoryCards(profile.created_at);
     }
 
     // Fetch community stats (gated by API — returns null if <3 members)
@@ -79,6 +113,64 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
       .catch(() => {});
 
     setIsLoading(false);
+  }
+
+  async function computeMemoryCards(profileCreatedAt: string | undefined) {
+    const cards: MemoryCards = {};
+
+    // Milestone — surface the highest threshold not yet celebrated. One-time
+    // per threshold, dismissible from card. Counts non-deleted, non-cancelled.
+    try {
+      const supabase = createClient();
+      const { count } = await supabase
+        .from("orders")
+        .select("id", { count: "exact", head: true })
+        .is("deleted_at", null)
+        .not("status", "eq", "cancelled");
+      const total = count ?? 0;
+      const celebrated = loadCelebrated(MILESTONE_KEY);
+      const reached = MILESTONES.filter((m) => total >= m && !celebrated.has(m));
+      if (reached.length > 0) {
+        const top = reached[reached.length - 1];
+        cards.milestone = { count: total, threshold: top };
+      }
+    } catch {
+      // count is best-effort; never break recap render
+    }
+
+    // Anniversary — within ±7 days of the join date for 1y / 3y / 5y.
+    if (profileCreatedAt) {
+      const joined = new Date(profileCreatedAt);
+      if (!Number.isNaN(joined.getTime())) {
+        const now = new Date();
+        const celebrated = loadCelebrated(ANNIVERSARY_KEY);
+        for (const yrs of ANNIVERSARY_YEARS) {
+          if (celebrated.has(yrs)) continue;
+          const annivDate = new Date(joined);
+          annivDate.setFullYear(joined.getFullYear() + yrs);
+          const diffMs = Math.abs(now.getTime() - annivDate.getTime());
+          if (diffMs < 7 * 24 * 60 * 60 * 1000) {
+            cards.anniversary = {
+              years: yrs,
+              sinceLabel: joined.toLocaleDateString("en-MY", { month: "long", year: "numeric" }),
+            };
+            break;
+          }
+        }
+      }
+    }
+
+    setMemoryCards(cards);
+  }
+
+  function dismissMilestone(threshold: number) {
+    markCelebrated(MILESTONE_KEY, threshold);
+    setMemoryCards((prev) => ({ ...prev, milestone: undefined }));
+  }
+
+  function dismissAnniversary(years: number) {
+    markCelebrated(ANNIVERSARY_KEY, years);
+    setMemoryCards((prev) => ({ ...prev, anniversary: undefined }));
   }
 
   async function handleExport() {
@@ -227,6 +319,51 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
             )}
           </div>
         </div>
+
+      {/* Tier-3 memory cards — celebratory, no action needed. Sit above the
+          Tier-2 insights so the merchant sees the win first, the work second. */}
+      {memoryCards.milestone && (
+        <div className="rounded-xl border border-warm-green/30 bg-warm-green-light/40 px-4 py-3 flex items-start gap-3">
+          <span className="text-lg" aria-hidden>🎉</span>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-foreground">
+              {memoryCards.milestone.threshold} orders milestone
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {memoryCards.milestone.count.toLocaleString("en-MY")} customers served all-time. That&rsquo;s real work — well done.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => dismissMilestone(memoryCards.milestone!.threshold)}
+            className="text-xs text-muted-foreground hover:text-foreground shrink-0"
+            aria-label="Dismiss"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+      {memoryCards.anniversary && (
+        <div className="rounded-xl border border-warm-amber/30 bg-warm-amber-light/40 px-4 py-3 flex items-start gap-3">
+          <span className="text-lg" aria-hidden>✨</span>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-foreground">
+              {memoryCards.anniversary.years} year{memoryCards.anniversary.years === 1 ? "" : "s"} on Tokoflow
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              You started in {memoryCards.anniversary.sinceLabel}. Thanks for trusting us with the boring bits.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => dismissAnniversary(memoryCards.anniversary!.years)}
+            className="text-xs text-muted-foreground hover:text-foreground shrink-0"
+            aria-label="Dismiss"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Insight Cards */}
       {recap && (() => {
