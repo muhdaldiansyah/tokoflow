@@ -17,6 +17,9 @@ interface TodayViewProps {
   dailyCapacity?: number | null;
   todayOrderCount?: number;
   outOfStockInPlay?: string[];
+  firstName?: string;
+  invoicesToday?: number;
+  newCustomersToday?: number;
 }
 
 type Bucket = "now" | "today" | "later";
@@ -84,7 +87,54 @@ function formatMYR(amount: number): string {
   return `RM ${(amount ?? 0).toFixed(0)}`;
 }
 
-export function TodayView({ activeOrders, doneToday, todayStr, dailyCapacity, todayOrderCount = 0, outOfStockInPlay = [] }: TodayViewProps) {
+// Time-aware salutation. Asia/Kuala_Lumpur is the merchant context; we use
+// local-machine hour which on a deployed PWA matches the merchant's clock.
+function dayPhase(now: Date): string {
+  const h = now.getHours();
+  if (h < 5) return "Late night";
+  if (h < 11) return "Good morning";
+  if (h < 17) return "Good afternoon";
+  if (h < 21) return "Good evening";
+  return "Good night";
+}
+
+// One-line prose summary. Intentionally avoids feel-good lacquer ("doing
+// great", "running smoothly") per bible — calm acknowledgment, not praise.
+// Anti-anxiety: never mentions limits, never compares to past days here.
+function summaryLine({
+  empty,
+  capacityFull,
+  nowCount,
+  activeCount,
+  doneCount,
+}: {
+  empty: boolean;
+  capacityFull: boolean;
+  nowCount: number;
+  activeCount: number;
+  doneCount: number;
+}): string {
+  if (empty) return "Nothing on your plate yet.";
+  if (capacityFull) return "Today is full. You can pause your link if you need a break.";
+  if (nowCount === 1) return "One order asking for your attention.";
+  if (nowCount > 1) return `${nowCount} orders asking for your attention.`;
+  if (activeCount === 1 && doneCount === 0) return "One order in motion.";
+  if (activeCount > 1 && doneCount === 0) return `${activeCount} orders in motion.`;
+  if (activeCount === 0 && doneCount > 0) return `${doneCount} done so far. Quiet from here.`;
+  return `${activeCount} in motion · ${doneCount} done so far.`;
+}
+
+export function TodayView({
+  activeOrders,
+  doneToday,
+  todayStr,
+  dailyCapacity,
+  todayOrderCount = 0,
+  outOfStockInPlay = [],
+  firstName = "",
+  invoicesToday = 0,
+  newCustomersToday = 0,
+}: TodayViewProps) {
   const cards = useMemo(() => bucketize(activeOrders, todayStr), [activeOrders, todayStr]);
   const now = cards.filter((c) => c.bucket === "now");
   const today = cards.filter((c) => c.bucket === "today");
@@ -130,11 +180,8 @@ export function TodayView({ activeOrders, doneToday, todayStr, dailyCapacity, to
     return d.toLocaleTimeString("en-MY", { hour: "numeric", minute: "2-digit" });
   }, [snapshotSeenAt]);
 
-  const dateLabel = new Date().toLocaleDateString("en-MY", { weekday: "long", day: "numeric", month: "long" });
-  const statusLabel = empty
-    ? "Quiet day so far"
-    : `${activeOrders.length} order${activeOrders.length === 1 ? "" : "s"} active`;
-  const doneLabel = doneToday.length > 0 ? ` · ${doneToday.length} done · ${formatMYR(totalToday)} in` : "";
+  const nowDate = new Date();
+  const dateLabel = nowDate.toLocaleDateString("en-MY", { weekday: "long", day: "numeric", month: "long" });
 
   // Capacity meter — only when merchant set a daily cap. 80%+ = warm-amber,
   // 100% = full strip below the header.
@@ -143,30 +190,56 @@ export function TodayView({ activeOrders, doneToday, todayStr, dailyCapacity, to
   const capacityWarn = hasCapacity && capacityPct >= 80 && capacityPct < 100;
   const capacityFull = hasCapacity && capacityPct >= 100;
 
+  const greeting = `${dayPhase(nowDate)}${firstName ? `, ${firstName}` : ""}.`;
+  const summary = summaryLine({
+    empty,
+    capacityFull,
+    nowCount: now.length,
+    activeCount: activeOrders.length,
+    doneCount: doneToday.length,
+  });
+
+  // "Tokoflow handled today" — Tier 3 disappearing-work surfacing. Renders
+  // ONLY when there's something genuine to show, so the empty case stays
+  // empty (no zero-counts as decoration). Bible: the felt absence of work.
+  const handledFragments: string[] = [];
+  if (invoicesToday > 0) handledFragments.push(`${invoicesToday} invoice${invoicesToday === 1 ? "" : "s"} drafted`);
+  if (newCustomersToday > 0) handledFragments.push(`${newCustomersToday} new customer${newCustomersToday === 1 ? "" : "s"} saved`);
+  if (doneToday.length > 0 && totalToday > 0) handledFragments.push(`${formatMYR(totalToday)} settled`);
+
   return (
-    <div className="max-w-2xl mx-auto space-y-3">
-      {/* Header — matches /orders + /products pattern: title left, CTA right */}
-      <div className="flex items-center justify-between gap-3 min-h-9">
-        <div className="min-w-0">
-          <h1 className="text-lg font-semibold text-foreground">Today</h1>
-          <p className="text-xs text-muted-foreground truncate">
-            {dateLabel} · {statusLabel}{doneLabel}
-            {hasCapacity && (
-              <span className={capacityWarn || capacityFull ? "text-warm-amber font-medium" : ""}>
-                {" · "}
-                {todayOrderCount}/{dailyCapacity} today
-              </span>
+    <div className="max-w-2xl mx-auto space-y-6">
+      {/* Hero header — date small label up top, big greeting H1, prose summary
+          below. Bible: the homepage must dignify the merchant before listing
+          their tasks. Numbers come THROUGH PROSE (summary line), not chips. */}
+      <header className="flex items-start justify-between gap-3 pt-1">
+        <div className="min-w-0 space-y-1">
+          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.12em]">
+            {dateLabel}
+          </p>
+          <h1 className="text-xl lg:text-2xl font-semibold text-foreground tracking-tight">
+            {greeting}
+          </h1>
+          <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
+            {summary}
+            {hasCapacity && (capacityWarn || capacityFull) && (
+              <>
+                {" "}
+                <span className="text-warm-amber font-medium">
+                  ({todayOrderCount}/{dailyCapacity} today)
+                </span>
+              </>
             )}
           </p>
         </div>
         <Link
           href="/orders/new"
-          className="shrink-0 inline-flex items-center gap-1.5 h-9 px-3 rounded-lg text-xs font-medium bg-warm-green text-white hover:bg-warm-green-hover active:bg-warm-green-hover transition-colors"
+          className="shrink-0 inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg text-xs font-medium bg-warm-green text-white hover:bg-warm-green-hover active:bg-warm-green-hover transition-colors shadow-sm"
         >
           <Plus className="h-3.5 w-3.5" />
           Log order
         </Link>
-      </div>
+      </header>
 
       {/* Capacity-full strip — soft tone, not red. Pause guidance is advisory,
           not enforced; the merchant decides. */}
@@ -220,19 +293,33 @@ export function TodayView({ activeOrders, doneToday, todayStr, dailyCapacity, to
         </div>
       )}
 
-      {/* Empty state */}
+      {/* Empty state — conversational, not declarative. The hero summary
+          already tells the merchant the day is empty; this card offers the
+          two natural next moves without urgency. */}
       {empty && (
-        <div className="rounded-2xl border bg-card p-8 text-center">
-          <Sparkles className="h-8 w-8 mx-auto text-muted-foreground/40 mb-3" />
-          <p className="text-foreground font-medium mb-1">No more orders today</p>
-          <p className="text-sm text-muted-foreground mb-6">Share your store link or add an order yourself.</p>
-          <Link
-            href="/orders/new"
-            className="inline-flex items-center gap-2 h-10 px-4 rounded-lg bg-warm-green text-white text-sm font-medium hover:opacity-90 transition-opacity"
-          >
-            <Plus className="h-4 w-4" />
-            Add order
-          </Link>
+        <div className="rounded-2xl border border-dashed border-border bg-card/60 p-10 text-center space-y-4">
+          <Sparkles className="h-7 w-7 mx-auto text-warm-green/40" />
+          <div className="space-y-1">
+            <p className="text-foreground font-medium">A clean slate.</p>
+            <p className="text-sm text-muted-foreground">
+              Share your shop link with someone today, or log an order you took elsewhere.
+            </p>
+          </div>
+          <div className="flex items-center justify-center gap-2 pt-1">
+            <Link
+              href="/orders/new"
+              className="inline-flex items-center gap-1.5 h-10 px-4 rounded-lg bg-warm-green text-white text-sm font-medium hover:bg-warm-green-hover transition-colors"
+            >
+              <Plus className="h-4 w-4" />
+              Log order
+            </Link>
+            <Link
+              href="/settings"
+              className="inline-flex items-center gap-1.5 h-10 px-4 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted transition-colors"
+            >
+              Copy shop link
+            </Link>
+          </div>
         </div>
       )}
 
@@ -285,6 +372,19 @@ export function TodayView({ activeOrders, doneToday, todayStr, dailyCapacity, to
         </div>
       )}
 
+      {/* Tier 3 disappearing-work footer — the felt absence of mechanical
+          work, surfaced as a quiet kindness (bible iconic moment #6). Only
+          renders when there's something real to show; never decoration. The
+          phrasing is past-tense + first-person Tokoflow ("I drafted...")
+          to underscore that this work happened on its own. */}
+      {handledFragments.length > 0 && (
+        <div className="pt-4">
+          <p className="text-[11px] text-muted-foreground/80 italic text-center leading-relaxed">
+            While you were away — {handledFragments.join(" · ")}.
+          </p>
+        </div>
+      )}
+
     </div>
   );
 }
@@ -326,21 +426,29 @@ function ActionCard({ order, kind }: { order: CardOrder; kind: Bucket }) {
 
   const accent =
     kind === "now"
-      ? "border-warm-amber/30 bg-warm-amber-light/40"
-      : "border-border bg-card";
+      ? "border-warm-amber/40 bg-warm-amber-light/30 hover:bg-warm-amber-light/50"
+      : "border-border bg-card hover:bg-muted/30";
+
+  // Reason chip: warm-amber for "now" cards (urgent), muted for others.
+  // Promotes the signal from grey inline text to a small visible badge so
+  // "Past delivery date" etc. is immediately legible.
+  const reasonChipClass =
+    kind === "now"
+      ? "inline-flex items-center text-[10px] font-medium px-1.5 py-0.5 rounded bg-warm-amber/15 text-warm-amber"
+      : "inline-flex items-center text-[10px] font-medium px-1.5 py-0.5 rounded bg-muted text-muted-foreground";
 
   return (
     <Link
       href={`/orders/${order.id}/edit`}
-      className={`block rounded-xl border ${accent} px-4 py-3 hover:bg-muted/40 transition-colors`}
+      className={`group block rounded-xl border ${accent} px-4 py-3.5 transition-colors`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
             <p className="font-medium text-foreground truncate">{name}</p>
-            <span className="text-xs text-muted-foreground">· {order.reason}</span>
+            <span className={reasonChipClass}>{order.reason}</span>
           </div>
-          {items && <p className="text-sm text-muted-foreground truncate mt-0.5">{items}</p>}
+          {items && <p className="text-sm text-muted-foreground truncate mt-1">{items}</p>}
         </div>
         <div className="text-right shrink-0">
           <p className="text-sm font-semibold tabular-nums text-foreground">{formatMYR(order.total ?? 0)}</p>
@@ -349,9 +457,10 @@ function ActionCard({ order, kind }: { order: CardOrder; kind: Bucket }) {
           )}
         </div>
       </div>
-      <div className="mt-2.5 flex items-center justify-end gap-1.5 text-xs font-medium text-warm-green">
+      <div className="mt-3 flex items-center justify-end gap-1.5 text-xs font-medium text-warm-green group-hover:gap-2 transition-all">
         <ActionIcon className="h-3.5 w-3.5" />
         <span>{actionLabel}</span>
+        <ArrowRight className="h-3 w-3 opacity-0 -ml-1 group-hover:opacity-100 group-hover:ml-0 transition-all" />
       </div>
     </Link>
   );

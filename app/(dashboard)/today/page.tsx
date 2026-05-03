@@ -19,7 +19,7 @@ export default async function TodayPage() {
   const tomorrowStr = `${tomorrow.getFullYear()}-${pad(tomorrow.getMonth() + 1)}-${pad(tomorrow.getDate())}`;
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
 
-  const [{ data: activeOrders }, { data: doneToday }, { data: profile }, { data: outOfStockProducts }] = await Promise.all([
+  const [{ data: activeOrders }, { data: doneToday }, { data: profile }, { data: outOfStockProducts }, invoicesTodayResult, customersTodayResult] = await Promise.all([
     supabase
       .from("orders")
       .select("*")
@@ -40,7 +40,7 @@ export default async function TodayPage() {
       .limit(20),
     supabase
       .from("profiles")
-      .select("daily_order_capacity")
+      .select("daily_order_capacity, full_name, business_name")
       .eq("id", user.id)
       .single(),
     supabase
@@ -49,6 +49,18 @@ export default async function TodayPage() {
       .eq("user_id", user.id)
       .eq("is_available", true)
       .eq("stock", 0),
+    // Tier 3 visibility — count what Tokoflow auto-handled today. Cheap
+    // count-only queries; head:true returns no rows, just the count header.
+    supabase
+      .from("invoices")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .gte("created_at", startOfToday),
+    supabase
+      .from("customers")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .gte("created_at", startOfToday),
   ]);
 
   // Out-of-stock products that are actually in today's active or done orders.
@@ -70,6 +82,13 @@ export default async function TodayPage() {
     return new Date(o.created_at) >= new Date(startOfToday);
   }).length + doneArr.length;
 
+  // First name from full_name → "Aldiansyah Nugraha" → "Aldiansyah".
+  // Falls back to business_name first word, then nothing (header still
+  // looks dignified without a name — bible: never force fake personalization).
+  const fullName = profile?.full_name?.trim() ?? "";
+  const businessName = profile?.business_name?.trim() ?? "";
+  const firstName = fullName ? fullName.split(/\s+/)[0] : businessName ? businessName.split(/\s+/)[0] : "";
+
   return (
     <TodayView
       activeOrders={activeArr}
@@ -79,6 +98,9 @@ export default async function TodayPage() {
       dailyCapacity={profile?.daily_order_capacity ?? null}
       todayOrderCount={todayOrderCount}
       outOfStockInPlay={outOfStockInPlay}
+      firstName={firstName}
+      invoicesToday={invoicesTodayResult.count ?? 0}
+      newCustomersToday={customersTodayResult.count ?? 0}
     />
   );
 }
