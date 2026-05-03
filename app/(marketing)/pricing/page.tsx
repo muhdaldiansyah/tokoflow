@@ -40,7 +40,7 @@ const faqs = [
   {
     question: "Why upgrade to Pro?",
     answer:
-      "Pro (RM 49/month) gives you unlimited orders, the full AI companion (voice setup, voice ask, smart reminders, pricing whisper), the native mobile app, photo enhancement, and weekly stories. No watermark on your shop page. Most active sellers move to Pro within a few weeks.",
+      "Pro (RM 49/month) gives you unlimited orders, the full AI companion (voice setup, voice ask, smart reminders, pricing whisper), photo enhancement, and weekly stories. No watermark on your shop page. Most active sellers move to Pro within a few weeks.",
   },
   {
     question: "What does Business add?",
@@ -111,7 +111,6 @@ const tiers = [
       "Unlimited orders",
       "Voice setup + Voice Ask",
       "Photo enhancement",
-      "Native mobile app (iOS + Android)",
       "Pricing whisper, smart reminders",
       "Customer recognition + follow-up",
       "Weekly story, seasonal awareness",

@@ -28,7 +28,7 @@ const faqs = [
   {
     question: "Do I need to install an app?",
     answer:
-      "Not yet. Right now Tokoflow runs in your mobile browser — works great as a PWA when you add to home screen. Native iOS and Android apps come a few months after launch.",
+      "No. Tokoflow runs in your mobile browser and works great as a PWA when you add it to your home screen. No download, no App Store review, no install friction.",
   },
   {
     question: "Is my data secure?",

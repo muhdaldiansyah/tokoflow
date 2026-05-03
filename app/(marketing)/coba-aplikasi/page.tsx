@@ -19,7 +19,7 @@ const faqs = [
   },
   {
     question: "Do I need to install anything?",
-    answer: "No. Tokoflow runs in your mobile browser. Install as a PWA if you want an app icon. Native iOS / Android apps follow a few months after launch.",
+    answer: "No. Tokoflow runs in your mobile browser. Install as a PWA if you want an app icon — same speed, no App Store wait.",
   },
   {
     question: "When do I get the reload?",
