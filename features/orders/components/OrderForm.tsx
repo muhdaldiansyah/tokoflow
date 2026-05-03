@@ -6,7 +6,7 @@ import { ArrowLeft, Plus, Minus, Trash2, User, Check, MessageSquare, FileText, P
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { toast } from "sonner";
-import { createOrder, updateOrder, updateOrderStatus, deleteOrder, undoOrder, getItemSuggestions, clearItemSuggestionsCache, getFrequentItems, getRecentOrdersByCustomer } from "../services/order.service";
+import { createOrder, updateOrder, updateOrderStatus, deleteOrder, undoOrder, getItemSuggestions, clearItemSuggestionsCache, getFrequentItems, getRecentOrdersByCustomer, recordPayment } from "../services/order.service";
 import type { ItemSuggestion, FrequentItem } from "../services/order.service";
 import { getProfile } from "@/features/receipts/services/receipt.service";
 import { createClient } from "@/lib/supabase/client";
@@ -63,6 +63,16 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
       ? String(initialOrder.paid_amount)
       : ""
   );
+  // Incremental DP top-up state. The single cumulative-amount input (current
+  // dpAmount) is unintuitive when a customer makes a follow-up payment — the
+  // merchant has to mentally add (10 + 25 = 35) and overwrite. These fields
+  // power the new "+ Record additional payment" UX that takes an incremental
+  // amount and POSTs it to /api/orders/[id]/payment so the audit trail is
+  // accurate and we don't lose the partial-payment timeline.
+  const [showAddPayment, setShowAddPayment] = useState(false);
+  const [showEditDp, setShowEditDp] = useState(false);
+  const [addPaymentInput, setAddPaymentInput] = useState("");
+  const [recordingPayment, setRecordingPayment] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [deliveryDate, setDeliveryDate] = useState(() => {
     if (initialOrder?.delivery_date) {
@@ -532,6 +542,47 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
     }
     setIsDestructing(false);
     setConfirmModal(null);
+  }
+
+  // Record an incremental DP top-up. Hits /api/orders/[id]/payment which
+  // already caps at total + recomputes payment_status. We trust the server
+  // response over local math — survives stale form state and concurrent edits.
+  async function handleAddPayment() {
+    if (!initialOrder) return;
+    const amt = parseFloat(addPaymentInput) || 0;
+    if (amt <= 0) {
+      toast.error("Enter a valid amount");
+      return;
+    }
+    setRecordingPayment(true);
+    const updated = await recordPayment(initialOrder.id, amt);
+    setRecordingPayment(false);
+    if (!updated) {
+      toast.error("Could not record payment");
+      return;
+    }
+    hapticSuccess();
+    if (updated.payment_status === "paid") {
+      setPaymentMode("paid");
+      setDpAmount("");
+      toast.success("Now paid in full", { duration: 4000 });
+    } else {
+      setDpAmount(String(updated.paid_amount));
+      const newRemaining = Math.max(0, updated.total - updated.paid_amount);
+      toast.success(
+        `Payment recorded · RM ${newRemaining.toLocaleString("en-MY")} remaining`,
+        { duration: 4000 },
+      );
+    }
+    // Keep liveOrder in sync so the audit block + downstream UI reflect truth
+    // without a full refetch.
+    setLiveOrder((prev) =>
+      prev
+        ? { ...prev, paid_amount: updated.paid_amount, payment_status: updated.payment_status }
+        : prev,
+    );
+    setAddPaymentInput("");
+    setShowAddPayment(false);
   }
 
   function handleParsedItems(parsedItems: OrderItem[], source: "voice" | "paste" | "image") {
@@ -1695,7 +1746,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
           <div className="flex items-center gap-1.5">
             <button
               type="button"
-              onClick={() => { setPaymentMode("paid"); setDpAmount(""); }}
+              onClick={() => { setPaymentMode("paid"); setDpAmount(""); setShowAddPayment(false); setShowEditDp(false); setAddPaymentInput(""); }}
               className={`h-7 px-2.5 text-xs font-medium rounded-full border transition-colors ${
                 paymentMode === "paid"
                   ? "bg-warm-green-light border-warm-green/30 text-warm-green"
@@ -1717,7 +1768,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
             </button>
             <button
               type="button"
-              onClick={() => { setPaymentMode("unpaid"); setDpAmount(""); }}
+              onClick={() => { setPaymentMode("unpaid"); setDpAmount(""); setShowAddPayment(false); setShowEditDp(false); setAddPaymentInput(""); }}
               className={`h-7 px-2.5 text-xs font-medium rounded-full border transition-colors ${
                 paymentMode === "unpaid"
                   ? "bg-warm-rose-light border-warm-rose/30 text-warm-rose"
@@ -1727,16 +1778,97 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
               Unpaid
             </button>
           </div>
-          {paymentMode === "dp" && (
-            <input
-              type="number"
-              value={dpAmount}
-              onChange={(e) => setDpAmount(e.target.value)}
-              placeholder="Down payment (RM)"
-              autoFocus
-              className="w-full h-11 px-3 bg-muted/50 border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary/30 focus:bg-background transition-colors placeholder:text-muted-foreground"
-            />
-          )}
+          {paymentMode === "dp" && (() => {
+            const dpReceived = parseFloat(dpAmount) || 0;
+            const remaining = Math.max(0, total - dpReceived);
+            // Summary view shows only when there is already a recorded DP on
+            // an existing order — for a fresh order or zero-paid state the
+            // single input is still the right starting affordance.
+            const showSummary = isEdit && dpReceived > 0 && !showEditDp;
+
+            if (!showSummary) {
+              return (
+                <input
+                  type="number"
+                  value={dpAmount}
+                  onChange={(e) => setDpAmount(e.target.value)}
+                  placeholder="Down payment (RM)"
+                  autoFocus
+                  className="w-full h-11 px-3 bg-muted/50 border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary/30 focus:bg-background transition-colors placeholder:text-muted-foreground"
+                />
+              );
+            }
+
+            return (
+              <div className="space-y-2 rounded-lg bg-muted/30 border border-border p-3">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">DP received</span>
+                  <span className="font-semibold text-foreground tabular-nums">
+                    RM {dpReceived.toLocaleString("en-MY")}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">Remaining</span>
+                  <span className="font-semibold text-warm-amber tabular-nums">
+                    RM {remaining.toLocaleString("en-MY")}
+                  </span>
+                </div>
+
+                {showAddPayment ? (
+                  <div className="flex items-center gap-1.5 pt-1">
+                    <input
+                      type="number"
+                      value={addPaymentInput}
+                      onChange={(e) => setAddPaymentInput(e.target.value)}
+                      placeholder={`How much (max RM ${remaining.toLocaleString("en-MY")})`}
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleAddPayment();
+                        }
+                      }}
+                      className="flex-1 h-9 px-3 bg-background border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-colors"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddPayment}
+                      disabled={recordingPayment}
+                      className="h-9 px-3 rounded-lg bg-warm-green text-white text-xs font-medium hover:bg-warm-green-hover disabled:opacity-50 transition-colors"
+                    >
+                      {recordingPayment ? "..." : "Add"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setShowAddPayment(false); setAddPaymentInput(""); }}
+                      disabled={recordingPayment}
+                      className="h-9 px-2 text-xs text-muted-foreground hover:text-foreground disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setShowAddPayment(true)}
+                    className="w-full h-9 rounded-lg border border-dashed border-warm-green/40 text-xs font-medium text-warm-green hover:bg-warm-green-light/40 transition-colors"
+                  >
+                    + Record additional payment
+                  </button>
+                )}
+
+                {/* Escape hatch — for typo corrections or unusual cases the
+                    merchant can still overwrite the cumulative DP value. */}
+                <button
+                  type="button"
+                  onClick={() => setShowEditDp(true)}
+                  className="text-[11px] text-muted-foreground hover:text-foreground underline w-full text-center pt-0.5"
+                >
+                  Edit DP amount directly
+                </button>
+              </div>
+            );
+          })()}
         </div>
 
         {/* Edit-mode: Destructive actions */}
