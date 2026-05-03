@@ -222,7 +222,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
             ))}
           </div>
           <div className="border-t pt-4" />
-          {/* Pembayaran */}
+          {/* Payment */}
           <div className="h-3 bg-muted animate-pulse rounded w-24" />
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
@@ -271,7 +271,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                 <span className="font-medium text-foreground">{report.totalOrders}</span>
               </div>
               <div className="flex justify-between text-sm py-2">
-                <span className="text-muted-foreground">Total Penjualan</span>
+                <span className="text-muted-foreground">Total revenue</span>
                 <span className="font-medium text-foreground">RM {(report.totalRevenue || 0).toLocaleString("en-MY")}</span>
               </div>
               <div className="flex justify-between text-sm py-2">
@@ -424,7 +424,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
             </div>
           )}
 
-        {/* Pembayaran */}
+        {/* Payment */}
         {(report.paidCount > 0 || report.partialCount > 0 || report.unpaidCount > 0) && (
           <div className="rounded-xl border bg-card px-4 py-4 space-y-2 shadow-sm">
               <p className="text-xs font-medium text-muted-foreground">Payment</p>
@@ -603,10 +603,10 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
             </div>
           )}
 
-        {/* Rincian Harian */}
+        {/* Daily breakdown */}
         {report.dailyBreakdown.length > 0 && (
           <div className="rounded-xl border bg-card px-4 py-4 space-y-2 shadow-sm">
-              <p className="text-xs font-medium text-muted-foreground">Rincian Harian</p>
+              <p className="text-xs font-medium text-muted-foreground">Daily breakdown</p>
               <div className="overflow-x-auto -mx-4 px-4">
                 <table className="w-full text-xs sm:text-sm">
                   <thead>
@@ -683,7 +683,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
         <div className="fixed inset-0 z-50 bg-black/40 flex items-end lg:items-center justify-center" onClick={onCloseAI}>
           <div className="bg-background rounded-t-2xl lg:rounded-2xl w-full max-w-md max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="sticky top-0 bg-background border-b px-4 py-3 flex items-center justify-between rounded-t-2xl">
-              <h3 className="text-sm font-semibold text-foreground">Analisis Bisnis AI</h3>
+              <h3 className="text-sm font-semibold text-foreground">AI business insights</h3>
               <div className="flex items-center gap-1">
                 {aiDownloadFn && (
                   <button onClick={aiDownloadFn} className="h-8 px-2.5 flex items-center gap-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">

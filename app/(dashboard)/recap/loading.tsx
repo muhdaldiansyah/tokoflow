@@ -37,7 +37,7 @@ export default function RecapLoading() {
 
         <div className="border-t pt-4" />
 
-        {/* Pembayaran Section */}
+        {/* Payment Section */}
         <Skeleton className="h-3 w-24" />
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (

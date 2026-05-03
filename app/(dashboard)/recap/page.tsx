@@ -9,15 +9,15 @@ import { getOrderCountsByMonth } from "@/features/orders/services/order.service"
 import { getProfile } from "@/features/receipts/services/receipt.service";
 
 const TABS = [
-  { label: "Harian", value: "daily" },
-  { label: "Bulanan", value: "monthly" },
+  { label: "Daily", value: "daily" },
+  { label: "Monthly", value: "monthly" },
 ] as const;
 
 type Tab = (typeof TABS)[number]["value"];
 
-const MONTH_NAMES_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+const MONTH_NAMES_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const MONTH_NAMES_FULL = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-const DAY_LABELS = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"];
+const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 function getCalendarDays(year: number, month: number) {
   const firstDay = new Date(year, month, 1);
@@ -107,8 +107,8 @@ export default function RecapPage() {
       {/* Header: Title + Date Picker + Download */}
       <div className="flex items-center justify-between min-h-9">
         <div>
-          <h1 className="text-lg font-semibold text-foreground">Rekap</h1>
-          <p className="text-xs text-muted-foreground">Ringkasan penjualan dan performa tokomu</p>
+          <h1 className="text-lg font-semibold text-foreground">Recap</h1>
+          <p className="text-xs text-muted-foreground">Sales summary and store performance</p>
         </div>
         <div className="flex items-center gap-2">
           {/* Date/Month Picker */}
@@ -297,7 +297,7 @@ export default function RecapPage() {
             className="flex items-center gap-1.5 h-9 px-3 text-xs font-medium rounded-lg bg-card border border-border shadow-sm hover:bg-muted disabled:opacity-30 transition-colors"
           >
             <Sparkles className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Analisis</span>
+            <span className="hidden sm:inline">Analysis</span>
           </button>
 
           {/* Download */}

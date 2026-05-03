@@ -55,8 +55,8 @@ export async function GET(request: NextRequest) {
 
       const todayStr = now.toLocaleDateString("en-CA", { timeZone: "Asia/Kuala_Lumpur" });
       if (targetStr === todayStr) {
-        periodLabel = "hari ini";
-        previousLabel = "kemarin";
+        periodLabel = "today";
+        previousLabel = "yesterday";
       } else {
         const d = new Date(targetStr + "T12:00:00+08:00");
         periodLabel = d.toLocaleDateString("en-MY", { day: "numeric", month: "short", timeZone: "Asia/Kuala_Lumpur" });

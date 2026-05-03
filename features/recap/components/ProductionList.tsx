@@ -262,7 +262,7 @@ _${businessName} · Tokoflow_`;
         </div>
       </div>
 
-      {/* Status Pembayaran */}
+      {/* Payment status */}
       {(production.paidCount > 0 || production.partialCount > 0 || production.unpaidCount > 0) && (
         <div className="rounded-xl border bg-card px-4 py-4 space-y-2 shadow-sm">
           <p className="text-xs font-medium text-muted-foreground">Payment</p>
@@ -272,7 +272,7 @@ _${businessName} · Tokoflow_`;
               <span className="font-medium text-foreground">RM {production.totalRevenue.toLocaleString("en-MY")}</span>
             </div>
             <div className="flex justify-between text-sm py-2">
-              <span className="text-muted-foreground">Terkumpul</span>
+              <span className="text-muted-foreground">Collected</span>
               <span className={`font-medium ${production.collectedRevenue > 0 ? "text-green-600" : "text-foreground"}`}>
                 RM {production.collectedRevenue.toLocaleString("en-MY")}
               </span>

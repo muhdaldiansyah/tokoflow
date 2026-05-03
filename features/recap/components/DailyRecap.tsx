@@ -302,7 +302,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
               <span className="font-medium text-foreground">RM {(recap?.totalRevenue || 0).toLocaleString("en-MY")}</span>
             </div>
             <div className="flex justify-between text-sm py-2">
-              <span className="text-muted-foreground">Terkumpul</span>
+              <span className="text-muted-foreground">Collected</span>
               <span className={`font-medium ${(recap?.collectedRevenue || 0) > 0 ? "text-green-600" : "text-foreground"}`}>RM {(recap?.collectedRevenue || 0).toLocaleString("en-MY")}</span>
             </div>
             {(recap?.piutang || 0) > 0 && (
@@ -400,7 +400,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
           if (recap.growthRevenue > 20) {
             insights.push({
               icon: "🔥",
-              text: `Penjualan naik ${recap.growthRevenue}% dari kemarin! Usahamu berkembang.`,
+              text: `Sales up ${recap.growthRevenue}% from yesterday. Your business is growing.`,
               color: "bg-emerald-50 border-emerald-100 text-emerald-800",
             });
           } else if (recap.growthRevenue < -20) {
@@ -515,7 +515,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
                 <div key={item.name} className="flex items-center justify-between py-2">
                   <div className="min-w-0">
                     <p className="text-sm text-foreground truncate">{item.name}</p>
-                    <p className="text-xs text-muted-foreground">{item.qty} terjual</p>
+                    <p className="text-xs text-muted-foreground">{item.qty} sold</p>
                   </div>
                   <div className="text-right shrink-0 ml-3">
                     <p className="text-sm font-medium text-foreground">
@@ -537,7 +537,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
           </div>
         )}
 
-      {/* Pembayaran */}
+      {/* Payment */}
       {recap && (recap.paidCount > 0 || recap.partialCount > 0 || recap.unpaidCount > 0) && (
         <div className="rounded-xl border bg-card px-4 py-4 space-y-2 shadow-sm">
             <p className="text-xs font-medium text-muted-foreground">Payment</p>
@@ -612,13 +612,13 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
           </div>
         )}
 
-      {/* Penggunaan */}
+      {/* Usage */}
       <div className="rounded-xl border bg-card px-4 py-4 space-y-2 shadow-sm">
-          <p className="text-xs font-medium text-muted-foreground">Penggunaan Bulan Ini</p>
+          <p className="text-xs font-medium text-muted-foreground">Usage this month</p>
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Orders</span>
             <span className="font-medium text-foreground">
-              {ordersUsed} / {ordersLimit === -1 ? "Tak Terbatas" : ordersLimit}
+              {ordersUsed} / {ordersLimit === -1 ? "Unlimited" : ordersLimit}
             </span>
           </div>
           {ordersLimit !== -1 && (
@@ -639,7 +639,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
         <div className="fixed inset-0 z-50 bg-black/40 flex items-end lg:items-center justify-center" onClick={onCloseAI}>
           <div className="bg-background rounded-t-2xl lg:rounded-2xl w-full max-w-md max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="sticky top-0 bg-background border-b px-4 py-3 flex items-center justify-between rounded-t-2xl">
-              <h3 className="text-sm font-semibold text-foreground">Analisis Bisnis AI</h3>
+              <h3 className="text-sm font-semibold text-foreground">AI business insights</h3>
               <div className="flex items-center gap-1">
                 {aiDownloadFn && (
                   <button onClick={aiDownloadFn} className="h-8 px-2.5 flex items-center gap-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
@@ -680,7 +680,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
       {/* Share Recap to WA Status */}
       {recap && recap.totalOrders > 0 && (
         <div className="rounded-xl border bg-card px-4 py-4 shadow-sm">
-          <p className="text-xs font-medium text-muted-foreground mb-3">Bagikan Rekap</p>
+          <p className="text-xs font-medium text-muted-foreground mb-3">Share recap</p>
           <button
             onClick={() => {
               const date = new Date(selectedDate);
