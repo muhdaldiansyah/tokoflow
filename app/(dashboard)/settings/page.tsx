@@ -67,6 +67,7 @@ export default function SettingsPage() {
   // Store setup state
   const [productCount, setProductCount] = useState(0);
   const [productsWithImage, setProductsWithImage] = useState(0);
+  const [categoryLabel, setCategoryLabel] = useState<string | null>(null);
 
 
   // Show toast if redirected with slug_taken (from OAuth callback)
@@ -96,6 +97,18 @@ export default function SettingsPage() {
           fetch("/api/referral/users").then(r => r.json()).then(users => {
             if (Array.isArray(users)) setReferredUsers(users);
           }).catch(() => {});
+        }
+
+        // Resolve business_category id → label so the preview chip shows the
+        // human label (e.g. "Catering & Nasi Box"), not the raw slug.
+        if (data.business_category) {
+          fetch("/api/lookup?type=categories")
+            .then((r) => (r.ok ? r.json() : []))
+            .then((cats: { id: string; label: string }[]) => {
+              const match = Array.isArray(cats) ? cats.find((c) => c.id === data.business_category) : undefined;
+              if (match) setCategoryLabel(match.label);
+            })
+            .catch(() => {});
         }
       }
       setProductCount(products.length);
@@ -359,6 +372,11 @@ export default function SettingsPage() {
               <p className="text-xs text-muted-foreground truncate">
                 {[profile?.business_phone, profile?.email].filter(Boolean).join(" \u00b7 ") || "Complete your business profile"}
               </p>
+              {categoryLabel && (
+                <span className="inline-flex items-center mt-1.5 h-5 px-2 text-[10px] font-medium rounded-full bg-warm-green/10 text-warm-green">
+                  {categoryLabel}
+                </span>
+              )}
             </div>
             <Link
               href="/profil/edit"
