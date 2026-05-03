@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, MessageSquare, Heart } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { H1, Lead, P } from "@/components/ui/typography";
 import { PhotoMagicHero } from "./PhotoMagicHero";
@@ -234,49 +234,29 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Pain → Promise — strongest emotional copy on the page. */}
+      {/* Pain → Promise — left-bar accent instead of full cards. Lighter
+          visual weight, same emotional arc. Copy is intentionally factual:
+          Tokoflow does not auto-reply customers (Foreground Assist suggests,
+          merchant sends), so we say what actually happens. */}
       <section className="border-t border-[#E2E8F0] py-12 lg:py-16">
-        <div className="max-w-3xl mx-auto px-4">
-          <div className="space-y-8">
-            <div className="rounded-2xl border border-red-100 bg-red-50/50 p-6 lg:p-8">
-              <div className="flex items-start gap-4">
-                <div className="shrink-0 mt-1">
-                  <MessageSquare className="h-6 w-6 text-red-400" />
-                </div>
-                <div>
-                  <p className="text-[#1E293B] font-semibold mb-2">Right now</p>
-                  <p className="text-[#475569] leading-relaxed">
-                    Thirty unread messages on WhatsApp. Hands sticky from baking. You tally totals in your head. One order slips through — the customer walks. By evening you&apos;re tired, not sure if today went well, and admin still waits.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-center">
-              <ArrowRight className="h-6 w-6 text-warm-green rotate-90" />
-            </div>
-
-            {/* Promise — note: AI does NOT auto-reply customers (Foreground
-                Assist suggests, merchant sends). Copy below describes what
-                Tokoflow actually does, not what it pretends to do. */}
-            <div className="rounded-2xl border border-warm-green/20 bg-warm-green-light/50 p-6 lg:p-8">
-              <div className="flex items-start gap-4">
-                <div className="shrink-0 mt-1">
-                  <Heart className="h-6 w-6 text-warm-green" />
-                </div>
-                <div>
-                  <p className="text-[#1E293B] font-semibold mb-2">With Tokoflow</p>
-                  <p className="text-[#475569] leading-relaxed">
-                    Customers order through your link. Payments land. Invoices auto-generate. Status updates auto-send — quietly, in your name. By evening, you hear: <em>&ldquo;Today, you did well. 23 orders. Rest well.&rdquo;</em>
-                  </p>
-                </div>
-              </div>
-            </div>
+        <div className="max-w-2xl mx-auto px-4">
+          <div className="border-l-2 border-red-200 pl-5">
+            <p className="text-[11px] font-semibold text-red-400 uppercase tracking-[0.12em] mb-2">Right now</p>
+            <p className="text-[#475569] leading-relaxed">
+              30 unread WhatsApp messages. Hands sticky from baking. By evening you&apos;re tired, and admin still waits.
+            </p>
           </div>
 
-          <p className="text-center mt-8 text-sm text-[#475569]">
-            Zero commission. Your customers stay yours. The technology disappears — your work shines.
-          </p>
+          <div className="flex justify-center my-4">
+            <ArrowRight className="h-4 w-4 text-warm-green/50 rotate-90" />
+          </div>
+
+          <div className="border-l-2 border-warm-green pl-5">
+            <p className="text-[11px] font-semibold text-warm-green uppercase tracking-[0.12em] mb-2">With Tokoflow</p>
+            <p className="text-[#475569] leading-relaxed">
+              Customers order through your link. Payments land. Invoices auto-generate. By evening, you hear: <em className="not-italic font-medium text-[#1E293B]">&ldquo;Today, you did well. 23 orders. Rest well.&rdquo;</em>
+            </p>
+          </div>
         </div>
       </section>
 
