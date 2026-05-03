@@ -23,9 +23,13 @@ interface OrderPaymentsBlockProps {
   orderId: string;
 }
 
-// Map Billplz channel codes to human labels. Mirrors the success-page mapper
-// so the dashboard and customer view agree on terminology.
-function channelLabel(channel: string | null): string {
+// Map provider + Billplz channel codes to human labels. Mirrors the
+// success-page mapper so the dashboard and customer view agree on
+// terminology. Manual rows (cash, duitnow_manual) take precedence over
+// the channel mapper since payment_method is null for them.
+function channelLabel(provider: OrderPayment["provider"], channel: string | null): string {
+  if (provider === "cash") return "Cash";
+  if (provider === "duitnow_manual") return "DuitNow transfer";
   if (!channel) return "Online payment";
   const map: Record<string, string> = {
     FPX: "FPX online banking",
@@ -102,7 +106,7 @@ export function OrderPaymentsBlock({ orderId }: OrderPaymentsBlockProps) {
                   <div className="flex-1 min-w-0 space-y-1">
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-xs font-medium text-foreground">
-                        {visual.label} · {channelLabel(p.payment_method)}
+                        {visual.label} · {channelLabel(p.provider, p.payment_method)}
                       </p>
                       <p className="text-xs font-semibold text-foreground tabular-nums">
                         RM {Number(p.amount).toLocaleString("en-MY")}
