@@ -4,7 +4,7 @@ import { useState, useRef, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Minus, Plus, Loader2, MapPin, Phone, QrCode, ShoppingBag, ImageIcon, CalendarDays, ChevronLeft, ChevronRight, ChevronDown, X, Clock, Store, Share2 } from "lucide-react";
+import { Minus, Plus, Loader2, MapPin, Phone, QrCode, ShoppingBag, CalendarDays, ChevronLeft, ChevronRight, ChevronDown, X, Clock, Store, Share2 } from "lucide-react";
 import { formatPhoneForWA } from "@/lib/utils/phone";
 import { validatePhone, normalizePhoneForStorage } from "@/components/PhoneInput";
 import { avatarColors } from "@/lib/utils/avatar-color";
@@ -402,22 +402,6 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
 
   const totalItemCount = selectedItems.reduce((sum, fi) => sum + (itemQtys[fi.name] || 0), 0);
 
-  // Category emoji mapping for visual warmth without photos
-  function getCategoryEmoji(name: string, category?: string): string {
-    const text = (category || name).toLowerCase();
-    if (text.match(/nasi|rice|box/)) return "🍚";
-    if (text.match(/minum|drink|es |jus|kopi|teh/)) return "🥤";
-    if (text.match(/snack|cemilan|keripik/)) return "🍿";
-    if (text.match(/kue|cake|tart|brownies|roti|donat|pastry|cookies/)) return "🍰";
-    if (text.match(/sayur|vegetable|salad/)) return "🥬";
-    if (text.match(/ayam|chicken/)) return "🍗";
-    if (text.match(/sate|satay/)) return "🍢";
-    if (text.match(/mie|noodle|bakso/)) return "🍜";
-    if (text.match(/sambal|sauce|bumbu/)) return "🌶️";
-    if (text.match(/hampers|gift|parcel/)) return "🎁";
-    return "🍽️";
-  }
-
   function renderItemCard(fi: PublicFrequentItem) {
     const qty = itemQtys[fi.name] || 0;
     const isActive = qty > 0;
@@ -443,14 +427,18 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
           }`}
         >
           <div className="flex items-center gap-2.5 min-w-0 flex-1">
-            <span className="text-lg shrink-0">{getCategoryEmoji(fi.name, fi.category || undefined)}</span>
+            <div className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${avatarColors(fi.name).bg}`} aria-hidden>
+              <span className={`text-xs font-semibold ${avatarColors(fi.name).fg}`}>
+                {fi.name.trim().charAt(0).toUpperCase() || "·"}
+              </span>
+            </div>
             <div className="min-w-0">
               <p className="text-sm font-medium text-foreground truncate">{fi.name}</p>
               <p className="text-xs text-muted-foreground">
                 RM {fi.price.toLocaleString("en-MY")}
                 {fi.unit && <span> / {fi.unit}</span>}
                 {isLowStock && !isOutOfStock && <span className="text-warm-rose ml-2">{fi.stock} left</span>}
-                {isOutOfStock && <span className="text-muted-foreground ml-2">Habis</span>}
+                {isOutOfStock && <span className="text-muted-foreground ml-2">Out</span>}
               </p>
             </div>
           </div>
@@ -493,13 +481,15 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
             {fi.image_url ? (
               <Image src={fi.image_url} alt="" fill className="object-cover" sizes="(max-width: 512px) 45vw, 200px" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-warm-green-light/50 to-muted/30">
-                <ImageIcon className="w-8 h-8 text-muted-foreground/20" />
+              <div className={`w-full h-full flex items-center justify-center ${avatarColors(fi.name).bg}`}>
+                <span className={`text-3xl font-semibold ${avatarColors(fi.name).fg}`}>
+                  {fi.name.trim().charAt(0).toUpperCase() || "·"}
+                </span>
               </div>
             )}
             {isOutOfStock && (
               <div className="absolute inset-0 bg-background/60 flex items-center justify-center">
-                <span className="text-xs font-medium text-muted-foreground bg-background/80 px-2 py-1 rounded">Habis</span>
+                <span className="text-xs font-medium text-muted-foreground bg-background/80 px-2 py-1 rounded">Out</span>
               </div>
             )}
           </div>
@@ -516,7 +506,7 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
                 </p>
               )}
               {isLowStock && !isOutOfStock && <span className="text-[10px] text-warm-rose ml-auto">{fi.stock} left</span>}
-              {isOutOfStock && <span className="text-[10px] text-muted-foreground ml-auto">Habis</span>}
+              {isOutOfStock && <span className="text-[10px] text-muted-foreground ml-auto">Out</span>}
             </div>
           </div>
         </div>
@@ -535,8 +525,16 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
     );
   }
 
+  // Color band uses the merchant's hashed avatar bg as a 3px strip at the very
+  // top of the page — quiet identity, never Tokoflow green colonising the surface.
+  const heroBandClass = avatarColors(businessName).bg;
+
   return (
     <div className={`max-w-lg mx-auto ${hasItems ? "pb-32" : ""}`}>
+      {/* Hero color band — 3px strip wraps the page in the merchant's identity
+          color before any text loads. Cheap pride signal, no decoration. */}
+      <div className={`h-[3px] ${heroBandClass}`} aria-hidden />
+
       {/* Top bar — navigation + context + share */}
       <div className="flex items-center justify-between px-4 pt-3 pb-2">
         <div className="flex flex-col gap-0.5">
@@ -600,14 +598,14 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
           </span>
         )}
         {businessDescription ? (
-          <p className="text-sm text-muted-foreground mt-1.5">{businessDescription}</p>
+          <p className="text-sm text-muted-foreground mt-1.5 max-w-sm mx-auto leading-relaxed">{businessDescription}</p>
         ) : (
           <p className="text-sm text-muted-foreground mt-1.5">
-            {completedOrders >= 10
-              ? `${completedOrders} customers have ordered here`
-              : langgananEnabled ? "Order directly — no app, no sign-up"
-              : preorderEnabled ? "Order now, ready on your chosen date"
-              : "Order directly — no app, no sign-up"}
+            {langgananEnabled
+              ? "Sign up for recurring delivery"
+              : preorderEnabled
+                ? "Made fresh, delivered on your chosen date"
+                : "Walk-in welcome, on the spot"}
           </p>
         )}
 
@@ -638,9 +636,9 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
                 🔄 {repeatCustomerPct}% repeat customers
               </span>
             )}
-            {memberSince && completedOrders >= 10 && (
+            {memberSince && (
               <span className="inline-flex items-center gap-1">
-                📅 Active since {memberSince}
+                <span aria-hidden>📅</span> Active since {memberSince}
               </span>
             )}
             {businessAddress && (
@@ -716,17 +714,22 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
           {hasCategories ? (
               // Render grouped by category
               groupedCatalogItems.map((group) => (
-                <div key={group.category || "__uncategorized"} className="space-y-2">
+                <div key={group.category || "__uncategorized"} className="space-y-2.5">
                   {group.category && (
-                    <div className="bg-stone-50 px-3 py-1.5 rounded-md flex items-center gap-1.5">
-                      <span className="text-sm">{getCategoryEmoji("", group.category)}</span>
-                      <span className="text-xs font-bold text-foreground/80 uppercase tracking-wider">{group.category}</span>
+                    <div className="flex items-center gap-2 pt-1">
+                      <span className="text-[11px] font-semibold text-warm-green uppercase tracking-[0.12em]">
+                        {group.category}
+                      </span>
+                      <span className="flex-1 h-px bg-zinc-100" aria-hidden />
                     </div>
                   )}
                   {!group.category && groupedCatalogItems.length > 1 && (
-                    <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">
-                      Others
-                    </p>
+                    <div className="flex items-center gap-2 pt-1">
+                      <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.12em]">
+                        Others
+                      </span>
+                      <span className="flex-1 h-px bg-zinc-100" aria-hidden />
+                    </div>
                   )}
                   <div className={anyHasImage ? "grid grid-cols-2 gap-2.5" : "space-y-1"}>
                     {group.items.map(renderItemCard)}
