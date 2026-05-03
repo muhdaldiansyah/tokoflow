@@ -388,6 +388,16 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
         }));
       } catch { /* sessionStorage unavailable — success page degrades gracefully */ }
 
+      // ADR 0001 — when the merchant has Billplz in-flow payment on, the API
+      // returns a paymentUrl pointing to Billplz hosted checkout. Hand the
+      // customer off to it; on success Billplz redirects back to /sukses
+      // (configured server-side on the bill). Otherwise: classic flow with
+      // static QR + manual verify on the success page.
+      if (data.paymentUrl) {
+        window.location.href = data.paymentUrl;
+        return;
+      }
+
       const phoneParam = businessPhone ? `&phone=${encodeURIComponent(businessPhone)}` : "";
       const orderIdParam = data.orderId ? `&oid=${encodeURIComponent(data.orderId)}` : "";
       const totalParam = subtotal > 0 ? `&total=${subtotal}` : "";

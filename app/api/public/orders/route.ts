@@ -2,6 +2,81 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getPublicBusinessInfo, createPublicOrder } from "@/lib/services/public-order.service";
 import { createServiceClient } from "@/lib/supabase/server";
 import { sendEmail } from "@/lib/utils/email";
+import { createBill, ringgitToCents } from "@/lib/billplz";
+import { decryptSecret } from "@/lib/crypto/secret-box";
+
+// ADR 0001 — When the merchant has connected Billplz AND has the in-flow
+// payment toggle on, create a bill on THEIR Billplz account at order submit
+// time. Customer is redirected to Billplz hosted checkout; funds settle
+// directly to merchant's bank. Tokoflow records every transition via webhook.
+//
+// Returns { paymentUrl, billId } on success; returns null on any failure
+// (caller falls back to static DuitNow QR + manual verify).
+async function maybeCreateBillplzBill(params: {
+  businessId: string;
+  orderId: string;
+  orderNumber: string;
+  total: number;
+  customerName: string;
+  customerPhone: string;
+  customerEmail: string;
+  slug: string;
+}): Promise<{ paymentUrl: string; billId: string } | null> {
+  try {
+    const svc = await createServiceClient();
+    const { data: profile } = await svc
+      .from("profiles")
+      .select("billplz_payment_enabled, billplz_api_key_enc, billplz_collection_id")
+      .eq("id", params.businessId)
+      .maybeSingle();
+
+    if (!profile?.billplz_payment_enabled) return null;
+    if (!profile.billplz_api_key_enc || !profile.billplz_collection_id) return null;
+
+    const apiKey = decryptSecret(profile.billplz_api_key_enc);
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://tokoflow.com";
+
+    const bill = await createBill(
+      {
+        collectionId: profile.billplz_collection_id,
+        email: params.customerEmail || `noreply+${params.orderId}@tokoflow.com`,
+        mobile: params.customerPhone,
+        name: params.customerName,
+        amountCents: ringgitToCents(params.total),
+        description: `Order ${params.orderNumber}`,
+        callbackUrl: `${appUrl}/api/public/orders/billplz-webhook`,
+        redirectUrl: `${appUrl}/${params.slug}/sukses?oid=${params.orderId}`,
+        reference1Label: "Order ID",
+        reference1: params.orderId,
+        reference2Label: "Merchant ID",
+        reference2: params.businessId,
+      },
+      apiKey,
+    );
+
+    // Persist the order_payments row so the webhook handler has somewhere to
+    // write to. Status starts pending; webhook flips to paid/failed.
+    await svc.from("order_payments").insert({
+      order_id: params.orderId,
+      user_id: params.businessId,
+      amount: params.total,
+      status: "pending",
+      provider: "billplz",
+      billplz_bill_id: bill.id,
+      billplz_url: bill.url,
+      payer_name: params.customerName,
+      payer_email: params.customerEmail || null,
+      payer_phone: params.customerPhone,
+    });
+
+    return { paymentUrl: bill.url, billId: bill.id };
+  } catch (err) {
+    // Never block order creation on payment failure — the order is real,
+    // payment falls back to DuitNow QR + manual verify.
+    console.error("Billplz bill creation failed:", err);
+    return null;
+  }
+}
 
 async function notifyMerchantOfNewOrder(params: {
   businessId: string;
@@ -202,6 +277,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
     }
 
+    // ADR 0001 — try to spin up an in-flow Billplz bill on the merchant's
+    // own account. Returns null when disconnected/disabled/error → caller
+    // falls back to DuitNow QR + manual verify on the success page.
+    const customerEmail = typeof body.customerEmail === "string"
+      ? String(body.customerEmail).trim().slice(0, 100)
+      : "";
+    const billplzResult = await maybeCreateBillplzBill({
+      businessId: business.businessId,
+      orderId: result.orderId,
+      orderNumber: result.orderNumber,
+      total: result.total,
+      customerName: String(customerName).trim(),
+      customerPhone: String(customerPhone).trim(),
+      customerEmail,
+      slug,
+    });
+
     // Fire-and-forget analytics
     try {
       const svc = await createServiceClient();
@@ -213,6 +305,7 @@ export async function POST(request: NextRequest) {
           item_count: sanitizedItems.length,
           subtotal: sanitizedItems.reduce((s, i) => s + i.price * i.qty, 0),
           has_notes: Boolean(hasNotes),
+          payment_inflow: Boolean(billplzResult),
         },
       });
     } catch {}
@@ -233,6 +326,7 @@ export async function POST(request: NextRequest) {
       orderId: result.orderId,
       orderNumber: result.orderNumber,
       total: result.total,
+      paymentUrl: billplzResult?.paymentUrl ?? null,
     });
   } catch {
     return NextResponse.json({ error: "An error occurred" }, { status: 500 });

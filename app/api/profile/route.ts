@@ -137,6 +137,10 @@ export async function PUT(request: NextRequest) {
     if (body.daily_order_capacity !== undefined) updates.daily_order_capacity = body.daily_order_capacity;
     if (body.push_token !== undefined) updates.push_token = body.push_token;
     if (body.notify_new_order_email !== undefined) updates.notify_new_order_email = !!body.notify_new_order_email;
+    // Customer-payment toggle (ADR 0001). The KEYS are written via
+    // /api/payments/connect (validated against Billplz first); this flag
+    // just enables/disables the in-flow payment behavior on storefront.
+    if (body.billplz_payment_enabled !== undefined) updates.billplz_payment_enabled = !!body.billplz_payment_enabled;
     if (body.business_type !== undefined) updates.business_type = body.business_type;
     if (body.community_id !== undefined) updates.community_id = body.community_id;
 

@@ -7,6 +7,7 @@ import { Loader2, Pencil, KeyRound, LinkIcon, Copy, Check, Zap, Shield, ChevronR
 import { formatRupiah } from "@/lib/utils/format";
 import { toast } from "sonner";
 import { getProfile, updateProfile, updateSlug, updateOrderFormEnabled, updateDailyOrderCapacity, updateQuietHours } from "@/features/receipts/services/receipt.service";
+import { AcceptPaymentsCard } from "@/features/billing/components/AcceptPaymentsCard";
 import { isValidSlug, isReservedSlug, generateSlug } from "@/lib/utils/slug";
 import { track } from "@/lib/analytics";
 import { getOrdersRemaining, isOrderQuotaExhausted, isUnlimited, BISNIS_CODE, BISNIS_PRICE, isBisnis } from "@/config/plans";
@@ -807,6 +808,14 @@ export default function SettingsPage() {
           {isSavingTax ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save"}
         </button>
       </div>
+      )}
+
+      {/* ── SECTION: ACCEPT PAYMENTS ── */}
+      {profile && (
+        <AcceptPaymentsCard
+          profile={profile}
+          onProfileChange={(next) => setProfile((prev) => prev ? { ...prev, ...next } : prev)}
+        />
       )}
 
       {/* ── SECTION: STAFF ── */}

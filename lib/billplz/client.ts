@@ -8,28 +8,38 @@ function getBase(): string {
   return process.env.NODE_ENV === "production" ? DEFAULT_PROD : DEFAULT_SANDBOX;
 }
 
-function getApiKey(): string {
+function envApiKey(): string {
   const key = process.env.BILLPLZ_API_KEY;
   if (!key) {
     throw new Error(
-      "BILLPLZ_API_KEY is not set. Configure it in env before calling Billplz.",
+      "BILLPLZ_API_KEY is not set. Configure it in env before calling Billplz with the platform key.",
     );
   }
   return key;
 }
 
-function authHeader(): string {
-  const key = getApiKey();
-  return "Basic " + Buffer.from(`${key}:`).toString("base64");
+// Resolve the API key. If `override` is passed, use it (per-merchant flow).
+// Otherwise fall back to env (Tokoflow's own subscription billing).
+function resolveApiKey(override?: string): string {
+  const trimmed = override?.trim();
+  if (trimmed) return trimmed;
+  return envApiKey();
 }
 
-async function billplzFetch<T>(
-  path: string,
-  init: RequestInit & { form?: Record<string, string> } = {},
-): Promise<T> {
-  const { form, ...rest } = init;
+function authHeader(apiKey: string): string {
+  return "Basic " + Buffer.from(`${apiKey}:`).toString("base64");
+}
+
+interface FetchOptions extends RequestInit {
+  form?: Record<string, string>;
+  apiKey?: string;
+}
+
+async function billplzFetch<T>(path: string, init: FetchOptions = {}): Promise<T> {
+  const { form, apiKey: apiKeyOverride, ...rest } = init;
+  const apiKey = resolveApiKey(apiKeyOverride);
   const headers: Record<string, string> = {
-    Authorization: authHeader(),
+    Authorization: authHeader(apiKey),
     ...(rest.headers as Record<string, string> | undefined),
   };
 
@@ -47,7 +57,13 @@ async function billplzFetch<T>(
   return text ? (JSON.parse(text) as T) : ({} as T);
 }
 
-export async function createBill(input: BillplzCreateBillInput): Promise<BillplzBill> {
+// `apiKey` optional. When omitted, falls back to BILLPLZ_API_KEY env.
+// When provided (per-merchant flow), bills are created on the merchant's
+// own Billplz account — funds settle to their bank, not Tokoflow's.
+export async function createBill(
+  input: BillplzCreateBillInput,
+  apiKey?: string,
+): Promise<BillplzBill> {
   const form: Record<string, string> = {
     collection_id: input.collectionId,
     email: input.email,
@@ -65,11 +81,22 @@ export async function createBill(input: BillplzCreateBillInput): Promise<Billplz
   if (input.dueAt) form.due_at = input.dueAt;
   if (input.deliver !== undefined) form.deliver = input.deliver ? "true" : "false";
 
-  return billplzFetch<BillplzBill>("/bills", { method: "POST", form });
+  return billplzFetch<BillplzBill>("/bills", { method: "POST", form, apiKey });
 }
 
-export async function getBill(id: string): Promise<BillplzBill> {
-  return billplzFetch<BillplzBill>(`/bills/${id}`, { method: "GET" });
+export async function getBill(id: string, apiKey?: string): Promise<BillplzBill> {
+  return billplzFetch<BillplzBill>(`/bills/${id}`, { method: "GET", apiKey });
+}
+
+// Smoke test for merchant-pasted credentials. Calls a cheap GET that requires
+// a valid API key. We use /collections (lists merchant's collections) — a
+// successful response means the key authenticates. Returns the parsed body
+// so the caller can confirm the collection_id exists.
+export async function listCollections(apiKey: string): Promise<{ collections: Array<{ id: string; title: string }> }> {
+  return billplzFetch<{ collections: Array<{ id: string; title: string }> }>(
+    "/collections",
+    { method: "GET", apiKey },
+  );
 }
 
 // Stable merchant-side reference for pairing with our payment_orders row.

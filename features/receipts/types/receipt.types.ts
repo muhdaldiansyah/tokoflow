@@ -60,6 +60,10 @@ export interface Profile {
   business_type?: string;
   push_token?: string;
   notify_new_order_email?: boolean;
+  // Customer-payment via per-merchant Billplz (ADR 0001).
+  billplz_collection_id?: string | null;
+  billplz_payment_enabled?: boolean;
+  billplz_kyb_status?: string | null;
   community_id?: string | null;
   total_views?: number;
   views_today?: number;
