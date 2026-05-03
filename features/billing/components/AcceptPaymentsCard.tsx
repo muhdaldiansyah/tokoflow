@@ -134,8 +134,10 @@ export function AcceptPaymentsCard({ profile, onProfileChange }: AcceptPaymentsC
       {!isConnected && showForm && (
         <div className="space-y-3">
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Find these in your Billplz dashboard under <span className="font-medium text-foreground">Settings → API Keys</span>.
-            Paste them here — we validate and encrypt before saving.
+            In your Billplz dashboard:{" "}
+            <span className="font-medium text-foreground">Settings → API Keys</span> for the API + X-Signature keys,{" "}
+            <span className="font-medium text-foreground">Billing → Collections</span> for the Collection ID.
+            We validate and encrypt before saving.
           </p>
           <div className="space-y-2">
             <div>

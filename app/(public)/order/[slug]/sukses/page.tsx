@@ -19,7 +19,7 @@ function paymentChannelLabel(channel: string | null | undefined): string {
     BOOST: "Boost",
     GRABPAY: "GrabPay",
     SHOPEEPAY: "ShopeePay",
-    TNG: "Touch &rsquo;n Go eWallet",
+    TNG: "Touch ’n Go eWallet",
     CARD: "card",
     CREDITCARD: "card",
     DEBITCARD: "card",
@@ -89,7 +89,7 @@ export default async function OrderSuccessPage({ params, searchParams }: PagePro
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
           {paidViaBillplz
-            ? `${name || "The seller"} has been notified — they&rsquo;ll confirm via WhatsApp shortly.`
+            ? `${name || "The seller"} has been notified — they’ll confirm via WhatsApp shortly.`
             : isLangganan
               ? "Your order is recorded. Payment as agreed."
               : isPreorder
