@@ -53,9 +53,9 @@ const sections: { label: string; intro: string; features: Feature[] }[] = [
     intro: "A link with a face — your story, your menu, your customer's path from curious to confirmed.",
     features: [
       { icon: LinkIcon, title: "Beautiful shop page", desc: "Your photo, your story, your menu. Real personality, not a template." },
-      { icon: MessageSquare, title: "AI conversational order flow", desc: "Visual menu by default; AI handles questions, custom requests, and \"are you open?\" — quietly, on your behalf." },
+      { icon: MessageSquare, title: "Conversational order flow", desc: "Visual menu by default. Customers add items, set quantities, leave notes — and your link captures the order without you typing a single message." },
       { icon: Heart, title: "Personal story block", desc: "Two or three lines about who you are. Customers feel they're buying from a person, not a faceless seller." },
-      { icon: QrCode, title: "Instant payment", desc: "DuitNow QR, FPX, cards, e-wallets — pay in 30 seconds, no redirects." },
+      { icon: QrCode, title: "Customer payment, in flow", desc: "DuitNow QR, FPX, cards, e-wallets via Billplz. Funds settle direct to your bank — Tokoflow never touches the money. 0% commission. Optional, default off until you connect." },
       { icon: Sparkles, title: "1-tap reorder", desc: "Returning customers see \"Order the same as last week?\" — phone-based, no signup, no cookies." },
     ],
   },
@@ -73,9 +73,9 @@ const sections: { label: string; intro: string; features: Feature[] }[] = [
     label: "The Companion",
     intro: "A presence that knows when to help, and when to stay quiet.",
     features: [
-      { icon: MessageSquare, title: "AI customer assistant", desc: "Replies to standard questions on your behalf — hours, address, prices, custom requests. You only see the chats that matter." },
-      { icon: ClipboardList, title: "Auto customer follow-up", desc: "\"Your order's ready.\" \"Thank you, see you next time.\" Tokoflow keeps the relationship alive while you cook." },
-      { icon: ImageIcon, title: "Inventory by photo", desc: "Restocked? Take a photo. Tokoflow tracks. \"Chicken's running low — want me to remind your supplier?\"" },
+      { icon: MessageSquare, title: "Reply drafts, never autoreply", desc: "When a customer asks about hours, prices, or a custom request, Tokoflow drafts a reply ready for you to send. You always send — your voice, your judgment." },
+      { icon: ClipboardList, title: "Status messages on tap", desc: "\"Your order's ready.\" \"Out for delivery.\" \"Thank you.\" One tap fills the WhatsApp draft — you press send when it feels right." },
+      { icon: ImageIcon, title: "Inventory by photo", desc: "Restocked? Take a photo, Tokoflow updates stock. When a key item runs low, you see a heads-up in the dashboard — supplier reach-outs stay yours." },
       { icon: BarChart3, title: "Pricing whisper", desc: "Once a week, a gentle nudge: \"Peers in Shah Alam sell kuih lapis at RM 6, you're at RM 5. You could go a bit higher.\" Optional, never pushy." },
     ],
   },
@@ -95,7 +95,7 @@ const sections: { label: string; intro: string; features: Feature[] }[] = [
     features: [
       { icon: FileCheck, title: "LHDN MyInvois auto-submit", desc: "Each paid invoice flows into MyInvois automatically. UUID + Long ID stored. You never log in to LHDN." },
       { icon: Calculator, title: "SST, calculated", desc: "0% or 6%, applied per invoice or as default. Tokoflow does the math, files the records." },
-      { icon: Receipt, title: "Beautiful PDF receipts", desc: "Auto-generated, sent to WhatsApp on your behalf. Branded, dignified, with MyInvois reference." },
+      { icon: Receipt, title: "Beautiful PDF receipts", desc: "Auto-generated for every order — branded, dignified, with MyInvois reference. One tap to share via WhatsApp; you choose when to send." },
       { icon: Bell, title: "Tax reminder, gentle", desc: "\"This month's tax has been filed automatically.\" Information, not a task." },
     ],
   },

@@ -26,7 +26,12 @@ const faqs = [
   {
     question: "Is it really free?",
     answer:
-      "Yes. The Free tier is forever — your first 50 orders every month, no time limit, no credit card. The Photo Magic, your shop link, and basic AI customer assistant are all included.",
+      "Yes. The Free tier is forever — your first 50 orders every month, no time limit, no credit card. The Photo Magic, your shop link, and accepting customer payments are all included.",
+  },
+  {
+    question: "Can my customers pay through my shop link?",
+    answer:
+      "Yes — connect your own Billplz account in Settings (free for you to open with SSM registration). Customers pay via DuitNow QR, FPX, cards, or e-wallets, and the money settles directly to your bank. Tokoflow never holds your funds and never takes a commission. If you don't want this, you can keep using a static DuitNow QR with manual confirm — the choice is yours.",
   },
   {
     question: `What happens after ${FREE_MONTHLY_ORDERS} orders?`,
@@ -48,7 +53,7 @@ const faqs = [
       "No — Tokoflow calculates SST and prepares records, but the SST return itself is filed via MySST. Tokoflow keeps your numbers tidy so when filing time comes, the data is ready.",
   },
   {
-    question: "How do I pay?",
+    question: "How do I pay for my Pro / Business plan?",
     answer:
       "DuitNow QR, FPX online banking, or credit/debit card via Billplz. No hidden fees. No setup charges. Cancel anytime — your data stays accessible.",
   },
@@ -87,8 +92,8 @@ const tiers = [
       `${FREE_MONTHLY_ORDERS} orders/month, every month`,
       "1-Photo Onboarding magic",
       "Beautiful shop page with your link",
-      "DuitNow QR / FPX payment",
-      "Basic AI customer assistant",
+      "Customer payments — DuitNow QR / FPX / cards (0% commission, direct to your bank)",
+      "Reply drafts — you always send",
       "Daily summary",
       "Customer auto-directory",
     ],
@@ -255,7 +260,7 @@ export default function PricingPage() {
                 <span className="font-bold text-[#05A660]">RM {BUSINESS_PRICE}/mo</span>
               </div>
               <p className="mt-3 text-xs text-[#475569] text-center">
-                0% commission. No middlemen. Customers and data stay yours.
+                0% commission. Customer payments settle direct to your bank — Tokoflow never touches the money. Customers and data stay yours.
               </p>
             </div>
           </div>

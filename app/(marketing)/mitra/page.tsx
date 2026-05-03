@@ -52,13 +52,11 @@ export default function MitraPage() {
             <div className="flex items-start gap-3">
               <span className="text-green-600 font-bold shrink-0 text-base">30%</span>
               <div>
-                <p className="font-medium text-[#1E293B]">Payment commission</p>
-                <p className="text-xs text-[#64748B] mt-0.5">From every subscription or top-up your friend pays for 6 months:</p>
+                <p className="font-medium text-[#1E293B]">Subscription commission</p>
+                <p className="text-xs text-[#64748B] mt-0.5">From every subscription your friend pays for 6 months:</p>
                 <ul className="mt-1.5 space-y-0.5 text-xs text-[#64748B]">
-                  <li>Top-up 50 orders RM 5 &rarr; commission RM 1.50</li>
-                  <li>Top-up 100 orders RM 8 &rarr; commission RM 2.40</li>
-                  <li>Unlimited RM 13/mo &rarr; commission RM 3.90</li>
-                  <li>Pro RM 49/mo &rarr; commission RM 14.70</li>
+                  <li>Pro RM 49/mo &rarr; commission RM 14.70/mo</li>
+                  <li>Business RM 99/mo &rarr; commission RM 29.70/mo</li>
                 </ul>
               </div>
             </div>
@@ -68,9 +66,9 @@ export default function MitraPage() {
         <div className="rounded-xl border border-green-200 bg-green-50 p-6 mb-12">
           <h3 className="font-semibold text-[#1E293B] mb-2">Example: invite 10 friends</h3>
           <div className="space-y-1 text-sm text-[#475569]">
-            <p>10 friends sign up + place an order = <span className="font-semibold text-green-700">RM 20</span></p>
-            <p>3 of them go Unlimited = <span className="font-semibold text-green-700">RM 11.70</span></p>
-            <p className="pt-1 text-base font-semibold text-green-700">Total: RM 31.70/month</p>
+            <p>10 friends sign up + place an order = <span className="font-semibold text-green-700">RM 20</span> one-time</p>
+            <p>3 go Pro at RM 49/mo = <span className="font-semibold text-green-700">RM 44.10/mo</span> for 6 months</p>
+            <p className="pt-1 text-base font-semibold text-green-700">Up to RM 285 over 6 months — paid in cash</p>
           </div>
         </div>
 

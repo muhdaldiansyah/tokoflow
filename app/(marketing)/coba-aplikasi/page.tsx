@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 const faqs = [
   {
     question: "Is it really free?",
-    answer: "Yes. 50 orders/month free forever — including 1-Photo Onboarding, your shop link, and basic AI customer assistant.",
+    answer: "Yes. 50 orders/month free forever — including 1-Photo Onboarding, your shop link, and customer payments via your own Billplz (0% commission, funds direct to your bank).",
   },
   {
     question: "Do I need to install anything?",

@@ -84,7 +84,8 @@ const jsonLd = {
   // *suggests* drafts; merchant always sends).
   featureList: [
     "1-photo onboarding — your shop in 60 seconds",
-    "DuitNow QR / FPX / cards via Billplz",
+    "Customer payments — DuitNow QR, FPX, cards, e-wallets",
+    "0% commission · funds settle direct to your bank",
     "Voice and photo order parsing",
     "Beautiful shop link with your story",
     "1-tap reorder for returning customers",
@@ -92,7 +93,7 @@ const jsonLd = {
     "Daily evening summary in your language",
     "Silent LHDN MyInvois (Pro tier)",
     "Auto SST calculation",
-    "Customer recognition & follow-up",
+    "Customer auto-directory by phone",
     "Inventory tracking by stock count",
     "Auto receipt generation",
     "Works offline",
@@ -254,7 +255,7 @@ export default function HomePage() {
           <div className="border-l-2 border-warm-green pl-5">
             <p className="text-[11px] font-semibold text-warm-green uppercase tracking-[0.12em] mb-2">With Tokoflow</p>
             <p className="text-[#475569] leading-relaxed">
-              Customers order through your link. Payments land. Invoices auto-generate. By evening, you hear: <em className="not-italic font-medium text-[#1E293B]">&ldquo;Today, you did well. 23 orders. Rest well.&rdquo;</em>
+              Customers order through your link, pay direct to your bank, and get a clean receipt. Invoices auto-generate. By evening, you hear: <em className="not-italic font-medium text-[#1E293B]">&ldquo;Today, you did well. 23 orders. Rest well.&rdquo;</em>
             </p>
           </div>
         </div>

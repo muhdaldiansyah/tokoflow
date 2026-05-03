@@ -23,7 +23,7 @@ const faqs = [
   {
     question: "Is Tokoflow free?",
     answer:
-      "Yes. Free forever — 50 orders/month, including the Photo Magic onboarding, your shop link, AI customer assistant, and Daily Summary. Pro (RM 49/mo) unlocks unlimited orders and the full AI companion. Business (RM 99/mo) adds silent LHDN MyInvois compliance.",
+      "Yes. Free forever — 50 orders/month, including the Photo Magic onboarding, your shop link, customer payments (DuitNow QR / FPX / cards via your own Billplz, 0% commission), reply drafts, and Daily Summary. Pro (RM 49/mo) unlocks unlimited orders and the full AI companion. Business (RM 99/mo) adds silent LHDN MyInvois compliance.",
   },
   {
     question: "Do I need to install an app?",
