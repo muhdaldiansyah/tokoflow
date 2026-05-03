@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { getOrder } from "@/features/orders/services/order.service";
 import { OrderForm } from "@/features/orders/components/OrderForm";
 import { AssigneePicker } from "@/features/staff/components/AssigneePicker";
+import { OrderPaymentsBlock } from "@/features/billing/components/OrderPaymentsBlock";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Order } from "@/features/orders/types/order.types";
 
@@ -135,6 +136,7 @@ export default function EditOrderPage() {
           />
         </div>
       </div>
+      <OrderPaymentsBlock orderId={order.id} />
       <OrderForm initialOrder={order} />
     </div>
   );

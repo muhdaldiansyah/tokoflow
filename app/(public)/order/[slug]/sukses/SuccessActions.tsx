@@ -27,9 +27,12 @@ interface SuccessActionsProps {
   totalFromUrl?: number;
   isPreorder?: boolean;
   isLangganan?: boolean;
+  // Set when Billplz already settled this order. Hides the manual DuitNow
+  // QR + claim flow since payment is already confirmed.
+  alreadyPaid?: boolean;
 }
 
-export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, businessName, slug, totalFromUrl, isPreorder, isLangganan }: SuccessActionsProps) {
+export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, businessName, slug, totalFromUrl, isPreorder, isLangganan, alreadyPaid }: SuccessActionsProps) {
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
   const [copied, setCopied] = useState(false);
   const [paidConfirmed, setPaidConfirmed] = useState(false);
@@ -88,7 +91,9 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
       openWhatsAppPublic(message, businessPhone);
     } else {
       const receiptLink = orderId ? `\n\nReceipt: https://tokoflow.com/r/${orderId}` : "";
-      const prefix = qrisUrl ? "I've paid via DuitNow QR for order" : "I just placed an order";
+      const prefix = alreadyPaid
+        ? "I've paid for order"
+        : qrisUrl ? "I've paid via DuitNow QR for order" : "I just placed an order";
       const message = `Hi, ${prefix} *${orderNumber}*.${receiptLink}\n\nPlease confirm — thanks!`;
       openWhatsAppPublic(message, businessPhone);
     }
@@ -361,8 +366,9 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
         )}
       </div>
 
-      {/* QRIS payment — single unified card (hidden for preorder) */}
-      {qrisUrl && !paidConfirmed && !isPreorder && !isLangganan && (
+      {/* QRIS payment — single unified card (hidden for preorder, and when
+          Billplz already settled this order in-flow). */}
+      {qrisUrl && !paidConfirmed && !isPreorder && !isLangganan && !alreadyPaid && (
         <div className="rounded-xl border bg-card p-5 text-center space-y-4">
           <div className="flex items-center justify-center gap-2 text-sm font-medium text-foreground">
             <QrCode className="w-4 h-4" />
@@ -413,7 +419,7 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
       )}
 
       {/* After "Sudah Bayar" — confirmation state */}
-      {qrisUrl && paidConfirmed && !isPreorder && !isLangganan && (
+      {qrisUrl && paidConfirmed && !isPreorder && !isLangganan && !alreadyPaid && (
         <div className="rounded-xl border bg-card p-5 text-center space-y-3">
           <div className="w-12 h-12 rounded-full bg-warm-green-light flex items-center justify-center mx-auto">
             <Check className="w-6 h-6 text-warm-green" />
@@ -440,8 +446,27 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
         </div>
       )}
 
+      {/* Already paid — single confirm-via-WA card. Replaces both QR card
+          and next-steps block when Billplz settled the order. */}
+      {alreadyPaid && (
+        <div className="rounded-xl border bg-card p-5 text-center space-y-3">
+          <p className="text-sm font-medium text-foreground">All done</p>
+          <p className="text-xs text-muted-foreground">
+            Send a quick WhatsApp so {businessName || "the seller"} can prep your order.
+          </p>
+          <button
+            type="button"
+            onClick={handleWhatsApp}
+            className="w-full h-11 flex items-center justify-center gap-2 rounded-lg bg-warm-green text-white text-sm font-medium hover:bg-warm-green-hover active:bg-warm-green-hover transition-colors"
+          >
+            <MessageCircle className="w-4 h-4" />
+            Message on WhatsApp
+          </button>
+        </div>
+      )}
+
       {/* Next steps — for preorder and no-QRIS */}
-      {(isPreorder || isLangganan || !qrisUrl) && (
+      {!alreadyPaid && (isPreorder || isLangganan || !qrisUrl) && (
         <div className="rounded-xl border bg-card p-4 space-y-2">
           <p className="text-xs font-medium text-muted-foreground">Next steps</p>
           <ol className="space-y-1.5 text-sm text-muted-foreground">
