@@ -909,8 +909,8 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
             </>
           ) : (
             <div>
-              <h1 className="text-lg font-semibold text-foreground">Orders</h1>
-              <p className="text-xs text-muted-foreground">Log new orders from customers</p>
+              <h1 className="text-lg font-semibold text-foreground">New order</h1>
+              <p className="text-xs text-muted-foreground">Tap a product, or paste a WhatsApp chat</p>
             </div>
           )}
         </div>
@@ -994,9 +994,9 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
           isPreorder ? "bg-amber-50 text-amber-700 border border-amber-200" :
           "bg-orange-50 text-orange-700 border border-orange-200"
         }`}>
-          {isLangganan && "Subscription mode — date optional, pay later"}
-          {isPreorder && !isLangganan && "Pre-order mode — delivery date is required"}
-          {isDineIn && "Walk-in mode"}
+          {isLangganan && "Subscription — date optional, pay later"}
+          {isPreorder && !isLangganan && "Pre-order — pick a delivery date below"}
+          {isDineIn && "Walk-in order"}
         </div>
       )}
 
@@ -1005,7 +1005,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
         {/* Section: Order (always visible, first for natural flow) */}
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2">
-            <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider shrink-0">Orders</p>
+            <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider shrink-0">Items</p>
             <div className="flex items-center gap-2">
               {items.length > 0 && (
                 <p className="text-xs text-muted-foreground">
@@ -1020,7 +1020,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                     placeholder="Search..."
                     value={productSearch}
                     onChange={(e) => setProductSearch(e.target.value)}
-                    className={`w-44 h-7 pl-7 text-xs rounded-md border border-border bg-muted/50 focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-colors placeholder:text-muted-foreground ${productSearch ? "pr-6" : "pr-2"}`}
+                    className={`w-44 h-9 pl-7 text-xs rounded-md border border-border bg-muted/50 focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-colors placeholder:text-muted-foreground ${productSearch ? "pr-6" : "pr-2"}`}
                   />
                   {productSearch && (
                     <button
@@ -1108,10 +1108,10 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                           {fi.unit && <span> / {fi.unit}</span>}
                         </p>
                         {isLowStock && !isOutOfStock && (
-                          <span className="text-[10px] text-warm-rose ml-auto">Sisa {fi.stock}</span>
+                          <span className="text-[10px] text-warm-rose ml-auto">{fi.stock} left</span>
                         )}
                         {isOutOfStock && (
-                          <span className="text-[10px] text-muted-foreground ml-auto">Habis</span>
+                          <span className="text-[10px] text-muted-foreground ml-auto">Out of stock</span>
                         )}
                       </div>
                       <div className={`flex items-center gap-2 mt-1.5 pt-1.5 border-t transition-opacity ${existingItem ? "border-border/50 opacity-100" : "border-transparent opacity-0 pointer-events-none"}`} onClick={(e) => e.stopPropagation()}>
@@ -1159,7 +1159,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                       <p className="text-sm font-medium truncate text-foreground">{item.name}</p>
                       {editingIndex === index ? (
                         <div className="flex items-center gap-1 mt-0.5" onClick={(e) => e.stopPropagation()}>
-                          <span className="text-xs text-muted-foreground">Rp</span>
+                          <span className="text-xs text-muted-foreground">RM</span>
                           <input
                             type="text"
                             inputMode="numeric"
@@ -1176,7 +1176,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                           className={`text-xs mt-0.5 cursor-pointer ${item.price === 0 ? "text-warm-rose font-medium" : "text-muted-foreground"}`}
                           onClick={(e) => { e.stopPropagation(); setEditingIndex(index); }}
                         >
-                          {item.price === 0 ? "Isi harga" : `RM ${item.price.toLocaleString("en-MY")}`}
+                          {item.price === 0 ? "Set price" : `RM ${item.price.toLocaleString("en-MY")}`}
                         </p>
                       )}
                       <div className="flex items-center gap-2 mt-1.5 pt-1.5 border-t border-border/50">
@@ -1218,14 +1218,14 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                           setTimeout(() => itemNameRef.current?.focus(), 100);
                         }
                       }}
-                      className={`inline-flex h-7 px-2.5 text-xs font-medium rounded-full border items-center gap-1 transition-colors ${
+                      className={`inline-flex h-9 px-3 text-xs font-medium rounded-full border items-center gap-1 transition-colors ${
                         showManualInput
                           ? "bg-warm-green/10 border-warm-green/30 text-warm-green"
                           : "border-dashed border-border text-muted-foreground hover:bg-muted active:bg-muted/80"
                       }`}
                     >
                       <Plus className="w-3 h-3" />
-                      Item lain
+                      Other item
                     </button>
                   </div>
                 </div>
@@ -1348,7 +1348,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
             <input
               type="text"
               inputMode="numeric"
-              placeholder="Opsional"
+              placeholder="Optional"
               value={tableNumber}
               onChange={(e) => setTableNumber(e.target.value)}
               className="w-full h-11 px-3 bg-card border rounded-lg shadow-sm text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary/30 focus:bg-background transition-colors placeholder:text-muted-foreground/50"
@@ -1396,7 +1396,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
         {/* Delivery date — hidden in dine-in mode */}
         {!isDineIn && (() => {
           const MONTH_NAMES_CAL = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-          const DAY_LABELS_CAL = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"];
+          const DAY_LABELS_CAL = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
           function getCalendarDays(year: number, month: number) {
             const firstDay = new Date(year, month, 1);
@@ -1450,7 +1450,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                 <button
                   type="button"
                   onClick={() => { pickDate(todayStr); setShowCalendar(false); }}
-                  className={`h-8 px-3 text-xs font-medium rounded-lg border transition-colors ${
+                  className={`h-9 px-3 text-xs font-medium rounded-lg border transition-colors ${
                     activeChip === "today"
                       ? "bg-warm-green-light border-warm-green/30 text-warm-green"
                       : "bg-muted/50 border-border text-foreground/70 hover:bg-muted hover:text-foreground"
@@ -1461,7 +1461,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                 <button
                   type="button"
                   onClick={() => { pickDate(tmrStr); setShowCalendar(false); }}
-                  className={`h-8 px-3 text-xs font-medium rounded-lg border transition-colors ${
+                  className={`h-9 px-3 text-xs font-medium rounded-lg border transition-colors ${
                     activeChip === "tomorrow"
                       ? "bg-warm-green-light border-warm-green/30 text-warm-green"
                       : "bg-muted/50 border-border text-foreground/70 hover:bg-muted hover:text-foreground"
@@ -1472,7 +1472,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                 <button
                   type="button"
                   onClick={() => { pickDate(lusaStr); setShowCalendar(false); }}
-                  className={`h-8 px-3 text-xs font-medium rounded-lg border transition-colors ${
+                  className={`h-9 px-3 text-xs font-medium rounded-lg border transition-colors ${
                     activeChip === "lusa"
                       ? "bg-warm-green-light border-warm-green/30 text-warm-green"
                       : "bg-muted/50 border-border text-foreground/70 hover:bg-muted hover:text-foreground"
@@ -1492,7 +1492,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                     }
                     setShowCalendar(!showCalendar);
                   }}
-                  className={`h-8 px-3 text-xs font-medium rounded-lg border transition-colors ${
+                  className={`h-9 px-3 text-xs font-medium rounded-lg border transition-colors ${
                     activeChip === "other"
                       ? "bg-warm-green-light border-warm-green/30 text-warm-green"
                       : "bg-muted/50 border-border text-foreground/70 hover:bg-muted hover:text-foreground"
@@ -1729,7 +1729,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                       setPendingStatus(status);
                       setNotifyOnStatusChange(true);
                     }}
-                    className={`h-7 px-2.5 text-xs font-medium rounded-full border transition-colors ${chipStyle}`}
+                    className={`h-9 px-3 text-xs font-medium rounded-full border transition-colors ${chipStyle}`}
                   >
                     {ORDER_STATUS_LABELS[status]}
                   </button>
@@ -1747,7 +1747,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
             <button
               type="button"
               onClick={() => { setPaymentMode("paid"); setDpAmount(""); setShowAddPayment(false); setShowEditDp(false); setAddPaymentInput(""); }}
-              className={`h-7 px-2.5 text-xs font-medium rounded-full border transition-colors ${
+              className={`h-9 px-3 text-xs font-medium rounded-full border transition-colors ${
                 paymentMode === "paid"
                   ? "bg-warm-green-light border-warm-green/30 text-warm-green"
                   : "bg-muted/50 border-border text-foreground/70 hover:bg-muted hover:text-foreground"
@@ -1758,7 +1758,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
             <button
               type="button"
               onClick={() => { setPaymentMode("dp"); }}
-              className={`h-7 px-2.5 text-xs font-medium rounded-full border transition-colors ${
+              className={`h-9 px-3 text-xs font-medium rounded-full border transition-colors ${
                 paymentMode === "dp"
                   ? "bg-warm-amber-light border-warm-amber/30 text-warm-amber"
                   : "bg-muted/50 border-border text-foreground/70 hover:bg-muted hover:text-foreground"
@@ -1769,7 +1769,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
             <button
               type="button"
               onClick={() => { setPaymentMode("unpaid"); setDpAmount(""); setShowAddPayment(false); setShowEditDp(false); setAddPaymentInput(""); }}
-              className={`h-7 px-2.5 text-xs font-medium rounded-full border transition-colors ${
+              className={`h-9 px-3 text-xs font-medium rounded-full border transition-colors ${
                 paymentMode === "unpaid"
                   ? "bg-warm-rose-light border-warm-rose/30 text-warm-rose"
                   : "bg-muted/50 border-border text-foreground/70 hover:bg-muted hover:text-foreground"
@@ -1925,7 +1925,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                 disabled={isSaving}
                 className="ml-auto h-10 px-4 rounded-lg bg-card border border-border text-xs font-medium text-foreground hover:bg-muted active:bg-muted disabled:opacity-50 disabled:cursor-not-allowed squish-press transition-colors shadow-sm"
               >
-                {isSaving ? "Saving..." : "Order again"}
+                {isSaving ? "Saving..." : "Save & new"}
               </button>
             )}
             {!isPaymentLocked && (
@@ -2022,7 +2022,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                   <label className="text-xs text-muted-foreground text-left block mb-1.5">Business name (for WA signature)</label>
                   <input
                     type="text"
-                    placeholder="cth: Katering Bu Ani"
+                    placeholder="e.g. Aisyah's Catering"
                     value={celebrationBusinessName}
                     onChange={(e) => setCelebrationBusinessName(e.target.value)}
                     onBlur={async () => {
@@ -2046,7 +2046,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
                 className="w-full h-12 bg-warm-green text-white rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-warm-green-hover active:bg-warm-green-hover transition-colors"
               >
                 <MessageSquare className="w-5 h-5" />
-                Kirim ke WhatsApp
+                Send via WhatsApp
               </button>
               <button
                 type="button"
