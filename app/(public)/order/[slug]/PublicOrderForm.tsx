@@ -4,7 +4,7 @@ import { useState, useRef, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Minus, Plus, Loader2, MapPin, Phone, QrCode, ShoppingBag, CalendarDays, ChevronLeft, ChevronRight, ChevronDown, X, Clock, Store, Share2 } from "lucide-react";
+import { Minus, Plus, Loader2, MapPin, Phone, QrCode, ShoppingBag, CalendarDays, ChevronLeft, ChevronRight, ChevronDown, X, Clock, Store, Share2, Repeat } from "lucide-react";
 import { formatPhoneForWA } from "@/lib/utils/phone";
 import { validatePhone, normalizePhoneForStorage } from "@/components/PhoneInput";
 import { avatarColors } from "@/lib/utils/avatar-color";
@@ -453,18 +453,18 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
             </div>
           </div>
           {isActive ? (
-            <div className="flex items-center gap-1.5 shrink-0 ml-3" onClick={(e) => e.stopPropagation()}>
-              <button type="button" onClick={() => updateQty(fi, -1)} className="w-7 h-7 flex items-center justify-center rounded-full border border-[#1a4d35]/30 bg-white text-[#1a4d35]">
-                <Minus className="w-3 h-3" />
+            <div className="flex items-center gap-2 shrink-0 ml-3" onClick={(e) => e.stopPropagation()}>
+              <button type="button" onClick={() => updateQty(fi, -1)} aria-label={`Decrease ${fi.name} quantity`} className="w-9 h-9 flex items-center justify-center rounded-full border border-[#1a4d35]/30 bg-white text-[#1a4d35] hover:bg-[#1a4d35]/5 transition-colors">
+                <Minus className="w-3.5 h-3.5" />
               </button>
-              <span className="text-sm font-bold text-foreground w-5 text-center">{qty}</span>
-              <button type="button" onClick={() => updateQty(fi, 1)} disabled={atMax} className="w-7 h-7 flex items-center justify-center rounded-full bg-[#1a4d35] text-white disabled:opacity-30">
-                <Plus className="w-3 h-3" />
+              <span className="text-sm font-bold text-foreground w-5 text-center tabular-nums">{qty}</span>
+              <button type="button" onClick={() => updateQty(fi, 1)} disabled={atMax} aria-label={`Increase ${fi.name} quantity`} className="w-9 h-9 flex items-center justify-center rounded-full bg-[#1a4d35] text-white hover:bg-[#1a4d35]/90 disabled:opacity-30 transition-colors">
+                <Plus className="w-3.5 h-3.5" />
               </button>
             </div>
           ) : (
-            <div className="shrink-0 ml-3">
-              <Plus className="w-4 h-4 text-muted-foreground" />
+            <div className="shrink-0 ml-3 w-9 h-9 rounded-full bg-zinc-50 group-hover:bg-zinc-100 flex items-center justify-center" aria-hidden>
+              <Plus className="w-4 h-4 text-foreground/60" />
             </div>
           )}
         </div>
@@ -601,9 +601,9 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
             </span>
           )}
         </div>
-        <h1 className="text-xl font-bold text-foreground">{businessName}</h1>
+        <h1 className="text-2xl font-bold text-foreground tracking-tight">{businessName}</h1>
         {businessCategory && (
-          <span className="inline-block mt-1.5 text-[11px] font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">
+          <span className="inline-block mt-2 text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-warm-green-light text-warm-green">
             {businessCategory}
           </span>
         )}
@@ -643,12 +643,14 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
             )}
             {repeatCustomerPct >= 30 && completedOrders >= 10 && (
               <span className="inline-flex items-center gap-1 bg-warm-green-light text-warm-green font-medium px-2 py-0.5 rounded-full">
-                🔄 {repeatCustomerPct}% repeat customers
+                <Repeat className="w-3 h-3" />
+                {repeatCustomerPct}% repeat customers
               </span>
             )}
             {memberSince && (
               <span className="inline-flex items-center gap-1">
-                <span aria-hidden>📅</span> Active since {memberSince}
+                <CalendarDays className="w-3 h-3" />
+                Active since {memberSince}
               </span>
             )}
             {businessAddress && (
@@ -1055,7 +1057,7 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full h-14 rounded-xl bg-[#1a4d35] text-white text-base font-semibold hover:bg-[#1a4d35]/90 active:bg-[#1a4d35]/90 disabled:opacity-50 disabled:cursor-not-allowed squish-press transition-colors ${hasItems ? "hidden" : ""}`}
+            className={`w-full h-14 rounded-2xl bg-[#1a4d35] text-white text-base font-semibold hover:bg-[#1a4d35]/90 active:bg-[#1a4d35]/90 disabled:opacity-50 disabled:cursor-not-allowed squish-press transition-colors ${hasItems ? "hidden" : ""}`}
           >
             {isSubmitting ? (
               <Loader2 className="w-5 h-5 animate-spin mx-auto" />
@@ -1068,7 +1070,7 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
 
       {/* Sticky cart bar — visible when items selected */}
       {hasItems && (
-        <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/98 backdrop-blur-sm border-t border-border/50 shadow-[0_-4px_16px_rgba(0,0,0,0.06)] px-4 pt-3 pb-3 safe-area-pb">
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/85 backdrop-blur-md border-t border-border/40 shadow-[0_-8px_24px_rgba(0,0,0,0.04)] px-4 pt-3 pb-3 safe-area-pb">
           <div className="max-w-lg mx-auto">
             <button
               type="button"

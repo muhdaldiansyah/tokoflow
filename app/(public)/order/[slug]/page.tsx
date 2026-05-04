@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       type: "website",
       url,
-      title: `Pesan di ${business.businessName}`,
+      title: `Order from ${business.businessName}`,
       description,
       siteName: siteConfig.name,
       ...(business.logoUrl && {
@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     twitter: {
       card: "summary",
-      title: `Pesan di ${business.businessName}`,
+      title: `Order from ${business.businessName}`,
       description,
       ...(business.logoUrl && { images: [business.logoUrl] }),
     },
@@ -102,7 +102,7 @@ export default async function PublicOrderPage({ params }: PageProps) {
         "@type": "PostalAddress",
         streetAddress: business.businessAddress,
         ...(business.city && { addressLocality: business.city }),
-        addressCountry: "ID",
+        addressCountry: "MY",
       },
     }),
     ...(business.completedOrders >= 10 && {
