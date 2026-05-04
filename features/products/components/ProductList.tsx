@@ -131,7 +131,7 @@ export function ProductList() {
     return result;
   }, [sorted, sortKey]);
 
-  const chipBase = "inline-flex items-center h-7 px-2.5 text-[11px] font-medium rounded-full border whitespace-nowrap shrink-0 transition-colors cursor-pointer";
+  const chipBase = "inline-flex items-center h-9 px-3 text-xs font-medium rounded-full border whitespace-nowrap shrink-0 transition-colors cursor-pointer";
   const chipActive = "bg-warm-green-light border-warm-green/30 text-warm-green hover:bg-warm-green/20";
   const chipInactive = "bg-muted/50 border-border text-foreground/70 hover:bg-muted";
 
@@ -175,7 +175,7 @@ export function ProductList() {
               </span>
             )}
           </div>
-          <p className="text-xs text-muted-foreground">Product list and prices you sell</p>
+          <p className="text-xs text-muted-foreground">Your catalog and prices</p>
         </div>
         <Link
           href="/products/new"

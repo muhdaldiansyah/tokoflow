@@ -304,7 +304,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
                 type="button"
                 onClick={() => imageInputRef.current?.click()}
                 disabled={isUploading}
-                className="h-8 px-2.5 rounded-lg border border-border text-xs font-medium text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                className="h-9 px-3 rounded-lg border border-border text-xs font-medium text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 disabled:opacity-50"
               >
                 <Camera className="w-3.5 h-3.5" />
                 {imageUrl ? "Change photo" : "Upload photo"}
@@ -312,7 +312,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
               <button
                 type="button"
                 onClick={() => setIsAvailable(!isAvailable)}
-                className={`h-8 px-2.5 flex items-center gap-1.5 rounded-lg border transition-colors ${
+                className={`h-9 px-3 flex items-center gap-1.5 rounded-lg border transition-colors ${
                   isAvailable
                     ? "bg-warm-green-light border-warm-green/30 text-warm-green"
                     : "bg-muted/50 border-border text-foreground/70 hover:bg-muted"
@@ -326,7 +326,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
               <button
                 type="button"
                 onClick={removeImage}
-                className="h-8 px-2.5 rounded-lg text-xs font-medium text-warm-rose hover:bg-warm-rose-light transition-colors flex items-center gap-1.5"
+                className="h-9 px-3 rounded-lg text-xs font-medium text-warm-rose hover:bg-warm-rose-light transition-colors flex items-center gap-1.5"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 Remove photo
@@ -414,7 +414,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
           </div>
         </div>
 
-        {/* Biaya & Untung */}
+        {/* Cost & Profit */}
         {price && parseInt(price) > 0 && (
           <div className="space-y-1.5">
             <p className="text-xs font-medium text-muted-foreground">Cost &amp; Profit</p>
@@ -538,7 +538,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
           </button>
         )}
 
-        {/* Destructive actions (edit mode) — matching pesanan pattern */}
+        {/* Destructive actions (edit mode) — matching orders pattern */}
         {isEdit && (
           <div className="flex items-center justify-center gap-6 pt-4 mt-2 border-t border-border">
             <button
@@ -553,7 +553,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
         )}
       </div>
 
-      {/* Delete confirmation modal — bottom sheet (matching pesanan pattern) */}
+      {/* Delete confirmation modal — bottom sheet (matching orders pattern) */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-end lg:items-center justify-center">
           <div className="bg-background rounded-t-2xl lg:rounded-2xl p-6 pb-8 w-full max-w-sm">
