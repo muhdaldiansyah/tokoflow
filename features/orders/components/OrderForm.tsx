@@ -231,7 +231,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
           setShowDelivery(false);
           setIsPreorder(false);
         }
-        // Langganan mode: customer required, delivery date optional, QRIS hidden
+        // Subscription mode: customer required, delivery date optional, QR hidden
         if (profile.langganan_enabled) {
           setIsLangganan(true);
           setShowCustomer(true);

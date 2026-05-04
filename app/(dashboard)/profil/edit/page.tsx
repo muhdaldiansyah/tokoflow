@@ -395,7 +395,7 @@ export default function ProfileEditPage() {
         </div>
         {/* Jam Operasi — hidden for launch (katering/bakery don't have fixed hours) */}
 
-        {/* QRIS Upload */}
+        {/* DuitNow QR Upload */}
         <div>
           <label className="text-xs text-muted-foreground mb-1 block">DuitNow QR (payment)</label>
           <p className="text-[11px] text-muted-foreground/70 mb-2">
