@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, CircleDollarSign, MessageCircle, Plus, Sparkles } from "lucide-react";
+import { ArrowRight, CircleDollarSign, MessageCircle, Plus, Sparkles, X } from "lucide-react";
 import type { Order } from "../types/order.types";
 import { derivePaymentStatus } from "../types/order.types";
 import { useDashboardRealtime } from "@/components/DashboardRealtimeProvider";
@@ -217,7 +217,7 @@ export function TodayView({
           <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.12em]">
             {dateLabel}
           </p>
-          <h1 className="text-xl lg:text-2xl font-semibold text-foreground tracking-tight">
+          <h1 className="text-2xl lg:text-3xl font-semibold text-foreground tracking-tight">
             {greeting}
           </h1>
           <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
@@ -285,10 +285,10 @@ export function TodayView({
           <button
             type="button"
             onClick={() => setBannerDismissed(true)}
-            className="text-xs text-muted-foreground hover:text-foreground shrink-0"
+            className="text-muted-foreground hover:text-foreground shrink-0 p-0.5"
             aria-label="Dismiss"
           >
-            ✕
+            <X className="w-3.5 h-3.5" />
           </button>
         </div>
       )}
