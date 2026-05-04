@@ -84,7 +84,7 @@ export default async function OrderSuccessPage({ params, searchParams }: PagePro
         <div className="w-14 h-14 rounded-full bg-warm-green-light flex items-center justify-center mx-auto mb-3">
           <Check className="w-7 h-7 text-warm-green" />
         </div>
-        <h1 className="text-xl font-semibold text-foreground mb-1">
+        <h1 className="text-2xl font-semibold text-foreground tracking-tight mb-2">
           {paidViaBillplz ? "Payment received!" : "Order received!"}
         </h1>
         <p className="text-sm text-muted-foreground mt-1">

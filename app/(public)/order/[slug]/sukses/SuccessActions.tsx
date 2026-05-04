@@ -401,16 +401,27 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
             Save receipt
           </button>
 
-          <p className="text-xs text-muted-foreground pt-2 border-t border-border">
-            Save the image → open your bank / e-wallet → scan QR from gallery → pay → come back here
-          </p>
+          <ol className="text-xs text-muted-foreground pt-2 border-t border-border space-y-1.5 text-left">
+            <li className="flex gap-2">
+              <span className="text-warm-green font-semibold shrink-0">1.</span>
+              Save the image
+            </li>
+            <li className="flex gap-2">
+              <span className="text-warm-green font-semibold shrink-0">2.</span>
+              Pay via your bank or e-wallet
+            </li>
+            <li className="flex gap-2">
+              <span className="text-warm-green font-semibold shrink-0">3.</span>
+              Come back here to confirm
+            </li>
+          </ol>
 
-          {/* Primary CTA — Sudah Bayar */}
+          {/* Primary CTA — claim payment */}
           <button
             type="button"
             onClick={handleClaimPayment}
             disabled={claiming}
-            className="w-full h-12 flex items-center justify-center gap-2 rounded-lg bg-warm-green text-white text-sm font-semibold hover:bg-warm-green-hover active:bg-warm-green-hover transition-colors disabled:opacity-60"
+            className="w-full h-12 flex items-center justify-center gap-2 rounded-2xl bg-warm-green text-white text-sm font-semibold hover:bg-warm-green-hover active:bg-warm-green-hover transition-colors disabled:opacity-60"
           >
             <Check className="w-4 h-4" />
             {claiming ? "Saving..." : "I've paid"}
@@ -431,7 +442,7 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
           <button
             type="button"
             onClick={handleWhatsApp}
-            className="w-full h-11 flex items-center justify-center gap-2 rounded-lg bg-warm-green text-white text-sm font-medium hover:bg-warm-green-hover active:bg-warm-green-hover transition-colors"
+            className="w-full h-12 flex items-center justify-center gap-2 rounded-2xl bg-warm-green text-white text-sm font-medium hover:bg-warm-green-hover active:bg-warm-green-hover transition-colors"
           >
             <MessageCircle className="w-4 h-4" />
             Confirm on WhatsApp
@@ -457,7 +468,7 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
           <button
             type="button"
             onClick={handleWhatsApp}
-            className="w-full h-11 flex items-center justify-center gap-2 rounded-lg bg-warm-green text-white text-sm font-medium hover:bg-warm-green-hover active:bg-warm-green-hover transition-colors"
+            className="w-full h-12 flex items-center justify-center gap-2 rounded-2xl bg-warm-green text-white text-sm font-medium hover:bg-warm-green-hover active:bg-warm-green-hover transition-colors"
           >
             <MessageCircle className="w-4 h-4" />
             Message on WhatsApp
@@ -486,12 +497,12 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
         </div>
       )}
 
-      {/* Preorder — Konfirmasi via WA */}
+      {/* Preorder/Langganan — confirm via WA */}
       {(isPreorder || isLangganan) && businessPhone && (
         <button
           type="button"
           onClick={handleWhatsApp}
-          className="w-full h-12 flex items-center justify-center gap-2 rounded-lg bg-warm-green text-white text-sm font-medium hover:bg-warm-green-hover active:bg-warm-green-hover transition-colors"
+          className="w-full h-12 flex items-center justify-center gap-2 rounded-2xl bg-warm-green text-white text-sm font-medium hover:bg-warm-green-hover active:bg-warm-green-hover transition-colors"
         >
           <MessageCircle className="w-4.5 h-4.5" />
           Confirm order on WhatsApp
@@ -503,7 +514,7 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
         <button
           type="button"
           onClick={handleWhatsApp}
-          className="w-full h-12 flex items-center justify-center gap-2 rounded-lg bg-warm-green text-white text-sm font-medium hover:bg-warm-green-hover active:bg-warm-green-hover transition-colors"
+          className="w-full h-12 flex items-center justify-center gap-2 rounded-2xl bg-warm-green text-white text-sm font-medium hover:bg-warm-green-hover active:bg-warm-green-hover transition-colors"
         >
           <MessageCircle className="w-4.5 h-4.5" />
           Confirm order on WhatsApp
