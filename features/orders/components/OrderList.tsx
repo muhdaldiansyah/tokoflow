@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Plus, Search, ShoppingBag, ArrowRight, X, CircleDollarSign, ArrowRightCircle, Flame, CalendarDays, ChevronLeft, ChevronRight, Download, Loader2, Share2, Users, Clock, Copy, Check } from "lucide-react";
+import { Plus, Search, ShoppingBag, ArrowRight, X, CircleDollarSign, ArrowRightCircle, CalendarDays, ChevronLeft, ChevronRight, Download, Loader2, Share2, Users, Clock, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import { getOrders, getOrderCountsByMonth, getDeliveryCountsByMonth, bulkMarkPaid, bulkUpdateStatus, getTodaySummary } from "../services/order.service";
 import type { TodaySummary } from "../services/order.service";
@@ -84,6 +84,7 @@ export function OrderList() {
   const [pickerMonth, setPickerMonth] = useState(new Date().getMonth());
   const [pickerYear, setPickerYear] = useState(new Date().getFullYear());
   const [dateMode, setDateMode] = useState<"created" | "delivery">("created");
+  const dateModeInitialized = useRef(false);
   const [calendarCounts, setCalendarCounts] = useState<Record<string, number>>({});
   const dateCalendarRef = useRef<HTMLDivElement>(null);
   const [search, setSearch] = useState("");
@@ -115,6 +116,20 @@ export function OrderList() {
 
   // Swipe-to-action
   const [swipeConfirmOrder, setSwipeConfirmOrder] = useState<Order | null>(null);
+
+  // First-time swipe coach mark — undiscoverable gesture, deduped via localStorage
+  const [showSwipeCoach, setShowSwipeCoach] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const seen = localStorage.getItem("tokoflow_seen_swipe_coach_v1");
+      if (!seen) setShowSwipeCoach(true);
+    } catch {}
+  }, []);
+  const dismissSwipeCoach = useCallback(() => {
+    setShowSwipeCoach(false);
+    try { localStorage.setItem("tokoflow_seen_swipe_coach_v1", "1"); } catch {}
+  }, []);
 
   const [summaryKey, setSummaryKey] = useState(0);
 
@@ -235,6 +250,12 @@ export function OrderList() {
       if (profile) {
         setOrdersUsed(profile.orders_used || 0);
         setProfileData(profile);
+        // One-time default: preorder merchants think in delivery dates,
+        // not order-placed dates ("what do I deliver Thursday?" > "what came in Thursday?")
+        if (!dateModeInitialized.current && profile.preorder_enabled) {
+          setDateMode("delivery");
+        }
+        dateModeInitialized.current = true;
       }
     }
     loadProfile();
@@ -439,10 +460,12 @@ export function OrderList() {
 
   function handleSwipeAdvance(order: Order) {
     setSwipeConfirmOrder(order);
+    if (showSwipeCoach) dismissSwipeCoach();
   }
 
   function handleSwipeWA(order: Order) {
     setWaPreview({ order });
+    if (showSwipeCoach) dismissSwipeCoach();
   }
 
   function handleSwipeConfirm(updated: Order) {
@@ -535,14 +558,15 @@ export function OrderList() {
                   </span>
                 )}
               </div>
-              <p className="text-xs text-muted-foreground">All orders received from customers</p>
+              <p className="text-xs text-muted-foreground">{(() => {
+                if (!todaySummary) return " ";
+                const parts: string[] = [];
+                if (todaySummary.pendingCount > 0) parts.push(`${todaySummary.pendingCount} to process`);
+                if (todaySummary.unpaidCount > 0) parts.push(`${todaySummary.unpaidCount} unpaid`);
+                if (parts.length === 0) return orders.length > 0 ? "All caught up today" : " ";
+                return parts.join(" · ");
+              })()}</p>
             </div>
-            {isPeak && (
-              <span className="inline-flex h-6 px-2 text-[11px] font-medium rounded-full bg-warm-amber-light text-warm-amber border border-warm-amber/20 items-center gap-1">
-                <Flame className="w-3 h-3" />
-                Busy
-              </span>
-            )}
             <div className="flex items-center gap-1.5">
               <button
                 onClick={handleExportAll}
@@ -582,66 +606,58 @@ export function OrderList() {
             </div>
             <ArrowRight className="w-4 h-4 text-muted-foreground shrink-0 ml-2" />
           </Link>
-          {todaySummary && (todaySummary.unpaidCount > 0 || todaySummary.pendingCount > 0) && (
-            <div className="flex items-center gap-2 pt-1 border-t">
-              {todaySummary.pendingCount > 0 && (
-                <span className="text-xs font-medium text-foreground">{todaySummary.pendingCount} to process</span>
-              )}
-              {todaySummary.pendingCount > 0 && todaySummary.unpaidCount > 0 && (
-                <span className="text-muted-foreground/40">·</span>
-              )}
-              {todaySummary.unpaidCount > 0 && (
-                <span className="text-xs font-medium text-amber-600">{todaySummary.unpaidCount} unpaid</span>
-              )}
-            </div>
-          )}
         </div>
       )}
 
-      {/* Time Saved Estimate */}
+      {/* Secondary card — rotate one at a time. Time Saved (objective merchant value) takes priority over Champion Kit (asks for action). */}
       {profileData && (profileData.orders_used ?? 0) > 0 && (() => {
-        // Estimate: each Link Toko order saves ~5 min vs manual WA chat
+        // Priority 1: Time Saved — each Link Toko order saves ~5 min vs manual WA chat
         const linkOrders = orders.filter(o => o.source === "order_link").length;
         const minutesSaved = linkOrders * 5;
-        if (minutesSaved < 5) return null;
-        const hours = Math.floor(minutesSaved / 60);
-        const mins = minutesSaved % 60;
-        const timeStr = hours > 0 ? `${hours}h ${mins > 0 ? `${mins}m` : ""}` : `${mins}m`;
-        return (
-          <div className="rounded-xl border bg-emerald-50/50 border-emerald-100 px-4 py-3 shadow-sm">
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-emerald-600 shrink-0" />
-              <p className="text-xs text-emerald-800">
-                <span className="font-semibold">~{timeStr} saved</span> this month from {linkOrders} order{linkOrders === 1 ? "" : "s"} via Store Link
-              </p>
+        if (minutesSaved >= 5) {
+          const hours = Math.floor(minutesSaved / 60);
+          const mins = minutesSaved % 60;
+          const timeStr = hours > 0 ? `${hours}h ${mins > 0 ? `${mins}m` : ""}` : `${mins}m`;
+          return (
+            <div className="rounded-xl border bg-emerald-50/50 border-emerald-100 px-4 py-3 shadow-sm">
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4 text-emerald-600 shrink-0" />
+                <p className="text-xs text-emerald-800">
+                  <span className="font-semibold">~{timeStr} saved</span> this month from {linkOrders} order{linkOrders === 1 ? "" : "s"} via Store Link
+                </p>
+              </div>
             </div>
-          </div>
-        );
-      })()}
+          );
+        }
 
-      {/* Ajak Teman UMKM (Champion Kit) */}
-      {profileData && profileData.referral_code && (profileData.orders_used ?? 0) >= 3 && (
-        <div className="rounded-xl border bg-card px-4 py-3 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 min-w-0">
-              <Users className="w-4 h-4 text-muted-foreground shrink-0" />
-              <p className="text-xs text-muted-foreground truncate">Know other small businesses still tracking orders on paper?</p>
+        // Priority 2: Champion Kit — only when eligible and Time Saved didn't fire
+        if (profileData.referral_code && (profileData.orders_used ?? 0) >= 3) {
+          return (
+            <div className="rounded-xl border bg-card px-4 py-3 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 min-w-0">
+                  <Users className="w-4 h-4 text-muted-foreground shrink-0" />
+                  <p className="text-xs text-muted-foreground truncate">Know other small businesses still tracking orders on paper?</p>
+                </div>
+                <button
+                  onClick={() => {
+                    const link = `https://tokoflow.com/register?ref=${profileData.referral_code}`;
+                    const text = `Hai! I'm using Tokoflow to take orders.\nCustomers order through a link, and everything lands in my dashboard.\n\nTry it free: ${link}\n\n_From selling to a real business_`;
+                    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+                    track("champion_invite_tap");
+                  }}
+                  className="shrink-0 h-8 px-3 rounded-lg bg-[#25D366] text-white text-xs font-medium hover:bg-[#25D366]/90 transition-colors flex items-center gap-1.5"
+                >
+                  <Share2 className="w-3 h-3" />
+                  Invite via WA
+                </button>
+              </div>
             </div>
-            <button
-              onClick={() => {
-                const link = `https://tokoflow.com/register?ref=${profileData.referral_code}`;
-                const text = `Hai! I'm using Tokoflow to take orders.\nCustomers order through a link, and everything lands in my dashboard.\n\nTry it free: ${link}\n\n_From selling to a real business_`;
-                window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
-                track("champion_invite_tap");
-              }}
-              className="shrink-0 h-8 px-3 rounded-lg bg-[#25D366] text-white text-xs font-medium hover:bg-[#25D366]/90 transition-colors flex items-center gap-1.5"
-            >
-              <Share2 className="w-3 h-3" />
-              Invite via WA
-            </button>
-          </div>
-        </div>
-      )}
+          );
+        }
+
+        return null;
+      })()}
 
       {/* Search — hide when no orders (empty state takes priority) */}
       {orders.length > 0 && (
@@ -662,7 +678,7 @@ export function OrderList() {
       {(orders.length > 0 || search || statusFilter || dateFilter) && <div>
         {(() => {
           const hasAnyFilter = !!(statusFilter || dateFilter || preorderFilter || dineInFilter);
-          const chipBase = "inline-flex items-center h-7 px-2.5 text-[11px] font-medium rounded-full border whitespace-nowrap shrink-0 transition-colors cursor-pointer";
+          const chipBase = "inline-flex items-center h-9 px-3 text-xs font-medium rounded-full border whitespace-nowrap shrink-0 transition-colors cursor-pointer";
           const chipActive = "bg-warm-green-light border-warm-green/30 text-warm-green hover:bg-warm-green/20";
           const chipInactive = "bg-muted/50 border-border text-foreground/70 hover:bg-muted";
           return (
@@ -745,7 +761,7 @@ export function OrderList() {
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
                 const MONTH_NAMES_CAL = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                const DAY_LABELS_CAL = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"];
+                const DAY_LABELS_CAL = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
                 function getCalDays(y: number, m: number) {
                   const first = new Date(y, m, 1);
                   let start = first.getDay() - 1;
@@ -965,6 +981,19 @@ export function OrderList() {
         </div>
       ) : (
         <div className="space-y-4">
+          {showSwipeCoach && (
+            <div className="flex items-center gap-2 rounded-lg bg-warm-amber-light/40 border border-warm-amber/20 px-3 py-2 text-xs text-foreground/80">
+              <span className="flex-1">Tip: swipe a card right to advance status, left to message on WhatsApp.</span>
+              <button
+                type="button"
+                onClick={dismissSwipeCoach}
+                className="shrink-0 -mr-1 p-1 hover:bg-foreground/5 rounded"
+                aria-label="Dismiss tip"
+              >
+                <X className="w-3.5 h-3.5 text-muted-foreground" />
+              </button>
+            </div>
+          )}
           {groups.map((group) => (
             <div key={group.key}>
               {/* Sticky date header */}

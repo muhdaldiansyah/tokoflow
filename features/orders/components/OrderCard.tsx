@@ -113,11 +113,11 @@ export const OrderCard = memo(function OrderCard({
 
 
 
-        {/* Row 2b: Table number (dine-in) or Delivery date */}
+        {/* Row 2b: Critical context — delivery / table (visually prominent) */}
         {order.is_dine_in && order.table_number && (
           <p className="flex items-center gap-1 text-xs text-amber-600 mt-0.5">
             <UtensilsCrossed className="w-3 h-3" />
-            Meja {order.table_number}
+            Table {order.table_number}
           </p>
         )}
         {order.delivery_date && (
@@ -127,6 +127,27 @@ export const OrderCard = memo(function OrderCard({
           </p>
         )}
 
+        {/* Row 2c: Source / flags — secondary context (muted, max 2 visible in practice) */}
+        {(() => {
+          const labels = [
+            order.source === "order_link" && "Store Link",
+            order.source === "whatsapp" && "WhatsApp",
+            order.is_dine_in && !order.table_number && "Walk-in",
+            order.is_langganan && "Subscription",
+          ].filter(Boolean) as string[];
+          if (labels.length === 0) return null;
+          return (
+            <div className="flex flex-wrap items-center mt-0.5 text-xs text-muted-foreground">
+              {labels.map((label, i) => (
+                <span key={label} className="inline-flex items-center">
+                  {i > 0 && <span className="mx-1.5">·</span>}
+                  {label}
+                </span>
+              ))}
+            </div>
+          );
+        })()}
+
         <div className="h-1.5" />
 
         {/* Row 3: Total + grouped badges */}
@@ -135,31 +156,11 @@ export const OrderCard = memo(function OrderCard({
             RM {order.total.toLocaleString("en-MY")}
           </span>
           <div className="flex items-center gap-1.5 flex-nowrap shrink-0">
-            {order.source === "order_link" && (
-              <span className="inline-flex h-5 px-1.5 text-[10px] font-medium rounded-full border items-center bg-sky-50 text-sky-700 border-sky-200">
-                Link Toko
-              </span>
-            )}
-            {order.source === "whatsapp" && (
-              <span className="inline-flex h-5 px-1.5 text-[10px] font-medium rounded-full border items-center bg-green-50 text-green-700 border-green-200">
-                WhatsApp
-              </span>
-            )}
-            {order.is_dine_in && (
-              <span className="inline-flex h-5 px-1.5 text-[10px] font-medium rounded-full border items-center bg-amber-50 text-amber-700 border-amber-200">
-                Walk-in
-              </span>
-            )}
-            {order.is_langganan && (
-              <span className="inline-flex h-5 px-1.5 text-[10px] font-medium rounded-full border items-center bg-blue-50 text-blue-700 border-blue-200">
-                Langganan
-              </span>
-            )}
             <OrderStatusBadge status={order.status} />
             {paymentChip && (
               <span className={`inline-flex h-5 px-1.5 text-[10px] font-medium rounded-full border items-center ${paymentChip}`}>
                 {hasClaim
-                  ? "Sudah Bayar?"
+                  ? "Paid?"
                   : order.payment_status === "partial"
                     ? `DP RM ${(order.paid_amount || 0).toLocaleString("en-MY")}`
                     : "Unpaid"}
