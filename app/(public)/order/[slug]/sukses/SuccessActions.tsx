@@ -106,7 +106,7 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
       const pad = 32 * scale;
       const contentW = w - pad * 2;
 
-      // Load QRIS image first if available (skip for preorder)
+      // Load DuitNow QR image first if available (skip for preorder)
       let qrisImg: HTMLImageElement | null = null;
       if (qrisUrl && !isPreorder && !isLangganan) {
         qrisImg = await new Promise<HTMLImageElement>((resolve, reject) => {
@@ -142,11 +142,11 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
       if (orderDetails?.notes) h += lineH + 2 * scale;
       if (orderDetails?.deliveryDate) h += lineH + 2 * scale;
       if (qrisImg) {
-        h += sectionGap + smallFont + 6 * scale; // "Bayar via QRIS" label
+        h += sectionGap + smallFont + 6 * scale; // "Pay via DuitNow QR" label
         const qrisW = contentW * 0.55;
         const qrisAspect = qrisImg.naturalHeight / qrisImg.naturalWidth;
         const qrisH = qrisW * qrisAspect;
-        h += qrisH + sectionGap; // QRIS image
+        h += qrisH + sectionGap; // QR image
       }
       if (orderId) h += lineH + 2 * scale; // receipt URL
       h += sectionGap + tinyFont; // branding
@@ -243,7 +243,7 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
         y += lineH;
       }
 
-      // QRIS
+      // DuitNow QR
       if (qrisImg) {
         y += sectionGap;
         ctx.fillStyle = "#1a1a1a";
@@ -289,7 +289,7 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
         URL.revokeObjectURL(url);
       }, "image/png");
     } catch {
-      // Fallback: download just the QRIS image
+      // Fallback: download just the QR image
       if (qrisUrl) {
         try {
           const res = await fetch(qrisUrl);
@@ -297,7 +297,7 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
           const url = URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
-          a.download = `qris-${orderNumber}.jpg`;
+          a.download = `duitnow-qr-${orderNumber}.jpg`;
           a.click();
           URL.revokeObjectURL(url);
         } catch {
@@ -366,8 +366,8 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
         )}
       </div>
 
-      {/* QRIS payment — single unified card (hidden for preorder, and when
-          Billplz already settled this order in-flow). */}
+      {/* DuitNow QR payment — single unified card (hidden for preorder, and
+          when Billplz already settled this order in-flow). */}
       {qrisUrl && !paidConfirmed && !isPreorder && !isLangganan && !alreadyPaid && (
         <div className="rounded-xl border bg-card p-5 text-center space-y-4">
           <div className="flex items-center justify-center gap-2 text-sm font-medium text-foreground">
@@ -429,7 +429,7 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
         </div>
       )}
 
-      {/* After "Sudah Bayar" — confirmation state */}
+      {/* After claim — confirmation state */}
       {qrisUrl && paidConfirmed && !isPreorder && !isLangganan && !alreadyPaid && (
         <div className="rounded-xl border bg-card p-5 text-center space-y-3">
           <div className="w-12 h-12 rounded-full bg-warm-green-light flex items-center justify-center mx-auto">
@@ -476,7 +476,7 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
         </div>
       )}
 
-      {/* Next steps — for preorder and no-QRIS */}
+      {/* Next steps — for preorder and no-QR */}
       {!alreadyPaid && (isPreorder || isLangganan || !qrisUrl) && (
         <div className="rounded-xl border bg-card p-4 space-y-2">
           <p className="text-xs font-medium text-muted-foreground">Next steps</p>
@@ -509,7 +509,7 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
         </button>
       )}
 
-      {/* No QRIS — single WA button */}
+      {/* No QR — single WA button */}
       {!qrisUrl && !isPreorder && businessPhone && (
         <button
           type="button"

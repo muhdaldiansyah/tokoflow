@@ -666,7 +666,7 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
                 className={`inline-flex items-center gap-1 ${qrisUrl ? "text-warm-green hover:underline" : ""}`}
               >
                 <QrCode className="w-3 h-3" />
-                QRIS
+                DuitNow QR
               </button>
             )}
           </div>
@@ -1112,7 +1112,7 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
         Made with <a href="https://tokoflow.com" className="underline hover:text-muted-foreground">Tokoflow</a>
       </p>
 
-      {/* QRIS modal */}
+      {/* DuitNow QR modal */}
       {showQris && qrisUrl && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={() => setShowQris(false)}>
           <div className="bg-background rounded-xl p-5 max-w-xs w-full text-center space-y-3" onClick={(e) => e.stopPropagation()}>
@@ -1123,7 +1123,7 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
             <div className="relative mx-auto w-full aspect-square">
               <Image
                 src={qrisUrl}
-                alt="QRIS"
+                alt={`DuitNow QR ${businessName}`}
                 fill
                 className="object-contain rounded-lg"
                 sizes="280px"

@@ -39,7 +39,7 @@ export function ReceiptActions({ orderId, orderNumber, waPhone, slug, qrisUrl, t
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `qris-${orderNumber}.jpg`;
+      a.download = `duitnow-qr-${orderNumber}.jpg`;
       a.click();
       URL.revokeObjectURL(url);
     } catch {
@@ -49,7 +49,7 @@ export function ReceiptActions({ orderId, orderNumber, waPhone, slug, qrisUrl, t
 
   return (
     <div className="px-5 py-4 border-t space-y-3">
-      {/* QRIS + Sudah Bayar — only if unpaid and QRIS available (hidden for preorder) */}
+      {/* DuitNow QR + claim-payment — only if unpaid and QR available (hidden for preorder) */}
       {showPayment && qrisUrl && !paidConfirmed && !isPreorder && (
         <div className="rounded-lg border bg-muted/20 p-4 text-center space-y-3">
           <div className="flex items-center justify-center gap-2 text-xs font-medium text-foreground">
@@ -95,7 +95,7 @@ export function ReceiptActions({ orderId, orderNumber, waPhone, slug, qrisUrl, t
         </div>
       )}
 
-      {/* Sudah Bayar without QRIS — simple button (hidden for preorder) */}
+      {/* Claim-payment without QR — simple button (hidden for preorder) */}
       {showPayment && !qrisUrl && !paidConfirmed && !isPreorder && (
         <button
           type="button"
@@ -104,11 +104,11 @@ export function ReceiptActions({ orderId, orderNumber, waPhone, slug, qrisUrl, t
           className="w-full h-11 flex items-center justify-center gap-2 rounded-lg bg-warm-green text-white text-sm font-semibold hover:bg-warm-green-hover active:bg-warm-green-hover transition-colors disabled:opacity-60"
         >
           <Check className="w-4 h-4" />
-          {claiming ? "Menyimpan..." : "Sudah Bayar"}
+          {claiming ? "Saving..." : "I've paid"}
         </button>
       )}
 
-      {/* After "Sudah Bayar" — confirmation state (hidden for preorder) */}
+      {/* After claim — confirmation state (hidden for preorder) */}
       {showPayment && paidConfirmed && !isPreorder && (
         <div className="rounded-lg border bg-muted/20 p-4 text-center space-y-2">
           <div className="w-10 h-10 rounded-full bg-warm-green-light flex items-center justify-center mx-auto">
@@ -141,7 +141,7 @@ export function ReceiptActions({ orderId, orderNumber, waPhone, slug, qrisUrl, t
         </div>
       )}
 
-      {/* Hubungi Penjual — always show for preorder, otherwise only if NOT in payment flow */}
+      {/* Contact seller — always show for preorder, otherwise only if NOT in payment flow */}
       {waPhone && (isPreorder || ((!showPayment || (showPayment && !paidConfirmed && !qrisUrl)) && !paidConfirmed)) && (
         <a
           href={`https://wa.me/${waPhone}?text=${encodeURIComponent(`Hi, I have a question about order *${orderNumber}*`)}`}
