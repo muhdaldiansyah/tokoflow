@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { getCategoryDefaults, getProfileUpdatesFromCategory } from "@/config/category-defaults";
-import { ChevronRight, Copy, Share2, Check, Loader2, X } from "lucide-react";
+import { ChevronRight, Copy, Share2, Check, Loader2, X, Plus } from "lucide-react";
 
 interface ProductInput {
   name: string;
@@ -136,7 +136,7 @@ export default function SetupPage() {
   async function handleSaveBusinessName() {
     const name = businessName.trim();
     if (!name) {
-      toast.error("Type your business name");
+      toast.error("Enter your business name");
       return;
     }
     if (slugPreview.length < 3) {
@@ -213,7 +213,7 @@ export default function SetupPage() {
             <div className="text-center">
               <h1 className="text-2xl font-bold text-foreground">Your business category</h1>
               <p className="text-muted-foreground mt-1">
-                Pick one — order mode and defaults auto-adjust
+                Pick one — we'll set up the right defaults for you
               </p>
             </div>
 
@@ -301,16 +301,17 @@ export default function SetupPage() {
                 <button
                   type="button"
                   onClick={() => setProducts([...products, { name: "", price: "" }])}
-                  className="w-full h-10 rounded-xl border border-dashed border-border text-sm text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
+                  className="w-full h-10 rounded-xl border border-dashed border-border text-sm text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors inline-flex items-center justify-center gap-1.5"
                 >
-                  + Add product
+                  <Plus className="w-3.5 h-3.5" />
+                  Add product
                 </button>
               )}
             </div>
 
             {selectedDefaults && selectedDefaults.suggestedCategories.length > 0 && (
               <p className="text-xs text-muted-foreground text-center">
-                Auto categories: {selectedDefaults.suggestedCategories.join(", ")}
+                We'll group your products under: {selectedDefaults.suggestedCategories.join(", ")}
               </p>
             )}
 
