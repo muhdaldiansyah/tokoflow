@@ -1,11 +1,19 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import type { Metadata } from "next";
 import { createServiceClient } from "@/lib/supabase/server";
 import { Check, Clock, Truck, Package, CircleDot, Ban, CalendarDays } from "lucide-react";
 import { formatPhoneForWA } from "@/lib/utils/phone";
 import { CopyOrderNumber } from "./CopyOrderNumber";
 import { CopyTransferAmount } from "./CopyTransferAmount";
 import { ReceiptActions } from "./ReceiptActions";
+
+// Receipts contain customer PII (name, phone, items, total). Keep them
+// out of search engines — discovery is by direct WhatsApp share only.
+export const metadata: Metadata = {
+  title: "Order receipt",
+  robots: { index: false, follow: false, nocache: true },
+};
 
 interface PageProps {
   params: Promise<{ id: string }>;

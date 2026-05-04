@@ -1,7 +1,15 @@
 import { Check, ShieldCheck } from "lucide-react";
+import type { Metadata } from "next";
 import { getPublicBusinessInfo } from "@/lib/services/public-order.service";
 import { createServiceClient } from "@/lib/supabase/server";
 import { SuccessActions } from "./SuccessActions";
+
+// Order success pages carry the order number and total in the URL — keep
+// them out of search engines. Discovery is post-purchase only.
+export const metadata: Metadata = {
+  title: "Order received",
+  robots: { index: false, follow: false, nocache: true },
+};
 
 interface PageProps {
   params: Promise<{ slug: string }>;
