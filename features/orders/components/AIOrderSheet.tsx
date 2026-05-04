@@ -159,7 +159,7 @@ export function AIOrderSheet({
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > MAX_FILE_SIZE) {
-      setImageError("Ukuran file maksimal 10MB");
+      setImageError("Max file size is 10MB");
       return;
     }
     setImageError(null);
@@ -265,7 +265,7 @@ export function AIOrderSheet({
         <div className="px-4 py-3 border-b border-border shrink-0">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-sm font-semibold text-foreground">
-              {phase === "preview" ? "Review order" : "Isi Otomatis"}
+              {phase === "preview" ? "Review order" : "Auto-fill"}
             </h3>
             <button
               type="button"
@@ -285,7 +285,7 @@ export function AIOrderSheet({
                 }`}
               >
                 <ClipboardPaste className="w-3 h-3" />
-                Teks
+                Text
               </button>
               <button
                 type="button"
@@ -295,7 +295,7 @@ export function AIOrderSheet({
                 }`}
               >
                 <Camera className="w-3 h-3" />
-                Foto
+                Photo
               </button>
               {voiceSupported && (
                 <button
@@ -306,7 +306,7 @@ export function AIOrderSheet({
                   }`}
                 >
                   <Mic className="w-3 h-3" />
-                  Suara
+                  Voice
                 </button>
               )}
             </div>
@@ -369,7 +369,7 @@ export function AIOrderSheet({
                         }}
                         className="text-xs text-muted-foreground hover:text-foreground transition-colors text-center"
                       >
-                        Ganti gambar
+                        Change photo
                       </button>
                     </div>
                   ) : (
@@ -466,7 +466,7 @@ export function AIOrderSheet({
                           value={item.name}
                           onChange={(e) => updatePreviewItem(index, "name", e.target.value)}
                           className="w-full text-sm font-medium text-foreground bg-transparent border-0 p-0 focus:outline-none focus:ring-0"
-                          placeholder="Name item"
+                          placeholder="Item name"
                         />
                         <div className="flex items-center gap-2">
                           <div className="flex items-center gap-1">
@@ -480,12 +480,12 @@ export function AIOrderSheet({
                             />
                           </div>
                           <div className="flex items-center gap-1">
-                            <span className="text-xs text-muted-foreground">Rp</span>
+                            <span className="text-xs text-muted-foreground">RM</span>
                             <input
                               type="number"
                               value={item.price || ""}
                               onChange={(e) => updatePreviewItem(index, "price", Math.max(0, parseInt(e.target.value) || 0))}
-                              placeholder={item.price === 0 ? "Isi harga" : "0"}
+                              placeholder={item.price === 0 ? "Set price" : "0"}
                               className={`w-20 text-xs bg-transparent border-0 p-0 focus:outline-none focus:ring-0 ${
                                 item.price === 0 ? "text-red-500 placeholder:text-red-400" : "text-foreground"
                               }`}
@@ -507,15 +507,15 @@ export function AIOrderSheet({
 
               {hasExtra && !isProcessing && (
                 <div className="rounded-lg bg-muted/50 px-3 py-2.5 space-y-1">
-                  <p className="text-xs font-medium text-muted-foreground mb-1.5">Terdeteksi juga:</p>
+                  <p className="text-xs font-medium text-muted-foreground mb-1.5">Also detected:</p>
                   {extraData.customer_name && <p className="text-xs text-foreground">Customer: {extraData.customer_name}</p>}
-                  {extraData.customer_phone && <p className="text-xs text-foreground">HP: {extraData.customer_phone}</p>}
+                  {extraData.customer_phone && <p className="text-xs text-foreground">Phone: {extraData.customer_phone}</p>}
                   {extraData.delivery_date && <p className="text-xs text-foreground">Date: {extraData.delivery_date}</p>}
                   {extraData.notes && <p className="text-xs text-foreground">Note: {extraData.notes}</p>}
-                  {extraData.discount && <p className="text-xs text-foreground">Diskon: RM {extraData.discount.toLocaleString("en-MY")}</p>}
+                  {extraData.discount && <p className="text-xs text-foreground">Discount: RM {extraData.discount.toLocaleString("en-MY")}</p>}
                   {extraData.payment_status && (
                     <p className="text-xs text-foreground">
-                      Bayar: {extraData.payment_status === "paid" ? "Paid" : extraData.payment_status === "dp" ? `DP${extraData.dp_amount ? ` RM ${extraData.dp_amount.toLocaleString("en-MY")}` : ""}` : "Unpaid"}
+                      Payment: {extraData.payment_status === "paid" ? "Paid" : extraData.payment_status === "dp" ? `DP${extraData.dp_amount ? ` RM ${extraData.dp_amount.toLocaleString("en-MY")}` : ""}` : "Unpaid"}
                     </p>
                   )}
                 </div>
@@ -534,14 +534,14 @@ export function AIOrderSheet({
                 disabled={!canProcess}
                 className="w-full h-12 bg-warm-green text-white rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-warm-green-hover active:bg-warm-green-hover disabled:opacity-50 disabled:cursor-not-allowed squish-press transition-colors"
               >
-                {mode === "voice" ? "Completed" : "Proses"}
+                {mode === "voice" ? "Completed" : "Process"}
               </button>
               <button
                 type="button"
                 onClick={onClose}
                 className="w-full h-11 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                Batal
+                Cancel
               </button>
             </>
           ) : (
@@ -553,7 +553,7 @@ export function AIOrderSheet({
                 className="w-full h-12 bg-warm-green text-white rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-warm-green-hover active:bg-warm-green-hover disabled:opacity-50 disabled:cursor-not-allowed squish-press transition-colors"
               >
                 <Plus className="w-4 h-4" />
-                Order items{validCount > 0 ? ` (${validCount} item)` : ""}
+                Order items{validCount > 0 ? ` (${validCount} item${validCount === 1 ? "" : "s"})` : ""}
               </button>
               <div className="flex gap-2">
                 <button
@@ -562,14 +562,14 @@ export function AIOrderSheet({
                   className="flex-1 h-11 text-sm text-muted-foreground hover:text-foreground flex items-center justify-center gap-1.5 transition-colors"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
-                  Ulangi
+                  Retry
                 </button>
                 <button
                   type="button"
                   onClick={onClose}
                   className="flex-1 h-11 text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Batal
+                  Cancel
                 </button>
               </div>
             </>
