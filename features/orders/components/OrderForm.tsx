@@ -673,13 +673,13 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
 
     // Summary toast for extra fields
     const extras: string[] = [];
-    if (data.customer_name) extras.push("pelanggan");
-    if (data.delivery_date) extras.push("tanggal");
-    if (data.notes) extras.push("catatan");
-    if (data.discount) extras.push("diskon");
-    if (data.payment_status) extras.push("pembayaran");
+    if (data.customer_name) extras.push("customer");
+    if (data.delivery_date) extras.push("date");
+    if (data.notes) extras.push("note");
+    if (data.discount) extras.push("discount");
+    if (data.payment_status) extras.push("payment");
     if (extras.length > 0) {
-      toast.success(`Juga terisi: ${extras.join(", ")}`);
+      toast.success(`Auto-filled: ${extras.join(", ")}`);
     }
   }
 
@@ -1381,7 +1381,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
           </div>
         ) : (
           <div className={`space-y-1.5${isFormLocked ? ' pointer-events-none opacity-60' : ''}`}>
-            <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">Customers</p>
+            <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">Customer <span className="text-muted-foreground font-normal normal-case tracking-normal">(optional)</span></p>
             <CustomerPicker
               customerName={customerName}
               customerPhone={customerPhone}
@@ -1587,7 +1587,7 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
 
         {/* Note + Discount — combined row */}
         <div className={`space-y-1.5${isFormLocked ? ' pointer-events-none opacity-60' : ''}`}>
-          <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">Additional Details</p>
+          <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">Additional Details <span className="text-muted-foreground font-normal normal-case tracking-normal">(optional)</span></p>
           <div className="flex gap-2">
             <div className="flex-1 rounded-lg border bg-muted/50 transition-colors focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/30 focus-within:bg-background">
               <label className="block px-3 pt-1.5 text-[10px] font-medium text-muted-foreground">Note</label>
