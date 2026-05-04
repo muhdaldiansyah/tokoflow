@@ -286,7 +286,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
               )}
               {report.totalDiscount > 0 && (
                 <div className="flex justify-between text-sm py-2">
-                  <span className="text-muted-foreground">Diskon Diberikan</span>
+                  <span className="text-muted-foreground">Discount given</span>
                   <span className="font-medium text-muted-foreground">RM {report.totalDiscount.toLocaleString("en-MY")}</span>
                 </div>
               )}
@@ -340,14 +340,14 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
           if (report.collectionRate < 50 && report.totalOrders > 5) {
             insights.push({
               icon: "📋",
-              text: `Tingkat penagihan hanya ${report.collectionRate}%. Pertimbangkan kebijakan pembayaran di muka.`,
+              text: `Collection rate is only ${report.collectionRate}%. Consider asking for upfront payment.`,
               color: "bg-amber-50 border-amber-100 text-amber-800",
             });
           }
 
           // Piutang aging — very old debts
           if (report.piutangAging) {
-            const oldDebt = report.piutangAging.find((b: { label: string; count: number; amount: number }) => b.label === '> 30 hari' && b.count > 0);
+            const oldDebt = report.piutangAging.find((b: { label: string; count: number; amount: number }) => b.label === '> 30 days' && b.count > 0);
             if (oldDebt) {
               insights.push({
                 icon: "🚨",
@@ -385,7 +385,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
           );
         })()}
 
-        {/* Kunjungan Toko */}
+        {/* Store visits */}
         <VisitorAnalytics period="monthly" month={month} year={year} />
 
         {/* Top products — moved up */}
@@ -414,7 +414,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                           item.margin !== undefined && item.margin >= 30 ? "text-amber-600" :
                           "text-rose-500"
                         }`}>
-                          Untung RM {item.profit.toLocaleString("en-MY")} ({item.margin}%)
+                          Profit RM {item.profit.toLocaleString("en-MY")} ({item.margin}%)
                         </p>
                       )}
                     </div>
@@ -565,7 +565,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                 {report.stockAlerts.map((item) => (
                   <div key={item.name} className="flex justify-between text-sm py-2">
                     <span className="text-foreground">{item.name}</span>
-                    <span className="font-medium text-yellow-600">Sisa {item.stock}</span>
+                    <span className="font-medium text-yellow-600">{item.stock} left</span>
                   </div>
                 ))}
               </div>
@@ -582,7 +582,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                     <div className="min-w-0">
                       <p className="text-sm text-foreground truncate">{order.customerName}</p>
                       <p className="text-xs text-muted-foreground">
-                        {order.orderNumber} · Kirim {new Date(order.deliveryDate).toLocaleDateString("en-MY", { day: "numeric", month: "short", timeZone: "Asia/Kuala_Lumpur" })}
+                        {order.orderNumber} · Delivery {new Date(order.deliveryDate).toLocaleDateString("en-MY", { day: "numeric", month: "short", timeZone: "Asia/Kuala_Lumpur" })}
                       </p>
                     </div>
                     <span className="text-sm font-medium text-red-600 shrink-0 ml-3">

@@ -225,7 +225,7 @@ export async function POST(request: NextRequest) {
 
     const { data: profileData } = await supabase
       .from("profiles").select("business_name").eq("id", user.id).single();
-    const businessName = profileData?.business_name || "Toko Saya";
+    const businessName = profileData?.business_name || "My Store";
 
     // WA template sending removed — use WAPreviewSheet in dashboard instead
     return NextResponse.json({ error: "WA Cloud API integration removed. Use manual WA send from dashboard." }, { status: 410 });

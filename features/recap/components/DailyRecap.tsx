@@ -503,7 +503,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
         );
       })()}
 
-      {/* Kunjungan Toko */}
+      {/* Store visits */}
       <VisitorAnalytics period="daily" dateStr={dateStr} />
 
       {/* Top products */}
@@ -572,7 +572,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
               {recap.stockAlerts.map((item) => (
                 <div key={item.name} className="flex justify-between text-sm py-2">
                   <span className="text-foreground">{item.name}</span>
-                  <span className="font-medium text-yellow-600">Sisa {item.stock}</span>
+                  <span className="font-medium text-yellow-600">{item.stock} left</span>
                 </div>
               ))}
             </div>
@@ -591,7 +591,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
                   <div className="min-w-0">
                     <p className="text-sm text-foreground truncate">{order.customerName}</p>
                     <p className="text-xs text-muted-foreground">
-                      {order.orderNumber} · Kirim {new Date(order.deliveryDate).toLocaleDateString("en-MY", { day: "numeric", month: "short", timeZone: "Asia/Kuala_Lumpur" })}
+                      {order.orderNumber} · Delivery {new Date(order.deliveryDate).toLocaleDateString("en-MY", { day: "numeric", month: "short", timeZone: "Asia/Kuala_Lumpur" })}
                     </p>
                   </div>
                   <span className="text-sm font-medium text-red-600 shrink-0 ml-3">

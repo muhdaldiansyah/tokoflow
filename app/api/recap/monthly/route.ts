@@ -214,10 +214,10 @@ export async function GET(request: NextRequest) {
 
     // Piutang aging buckets (all-time unpaid orders)
     const piutangAging = [
-      { label: "0-7 hari", count: 0, amount: 0 },
-      { label: "8-14 hari", count: 0, amount: 0 },
-      { label: "15-30 hari", count: 0, amount: 0 },
-      { label: "> 30 hari", count: 0, amount: 0 },
+      { label: "0-7 days", count: 0, amount: 0 },
+      { label: "8-14 days", count: 0, amount: 0 },
+      { label: "15-30 days", count: 0, amount: 0 },
+      { label: "> 30 days", count: 0, amount: 0 },
     ];
     const nowTs = Date.now();
     for (const o of allUnpaidOrders || []) {

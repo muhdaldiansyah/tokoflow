@@ -73,7 +73,7 @@ export function ProductionList({ dateStr, selectedDate, exportTrigger, waTrigger
 
     const profile = await getProfile();
     if (profile) {
-      setBusinessName(profile.business_name || "Toko Saya");
+      setBusinessName(profile.business_name || "My Store");
     }
     setIsLoading(false);
   }
