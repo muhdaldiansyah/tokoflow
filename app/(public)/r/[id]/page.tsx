@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { createServiceClient } from "@/lib/supabase/server";
 import { Check, Clock, Truck, Package, CircleDot, Ban, CalendarDays } from "lucide-react";
+import { formatPhoneForWA } from "@/lib/utils/phone";
 import { CopyOrderNumber } from "./CopyOrderNumber";
 import { CopyTransferAmount } from "./CopyTransferAmount";
 import { ReceiptActions } from "./ReceiptActions";
@@ -92,10 +93,11 @@ export default async function PublicReceiptPage({ params }: PageProps) {
       })
     : null;
 
-  // WA link
-  const waPhone = profile?.business_phone
-    ? profile.business_phone.replace(/^0/, "62").replace(/\D/g, "")
-    : null;
+  // WA link — normalize via the shared MY (+60) helper. The previous
+  // inline regex was hardcoded to Indonesia (+62) — every "Confirm on
+  // WhatsApp" link from a shared receipt was pointing at a non-existent
+  // Indonesian number. CatatOrder ID leftover.
+  const waPhone = formatPhoneForWA(profile?.business_phone) || null;
 
   return (
     <div className="max-w-md mx-auto px-4 py-8">
