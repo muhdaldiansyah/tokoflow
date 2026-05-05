@@ -1,4 +1,8 @@
-const CACHE_NAME = "tokoflow-v1";
+// Bump this version whenever a JS bundle change must invalidate the SW cache.
+// The fetch handler caches *.js cache-first, so stale ProductForm chunks (the
+// most recent culprit: file picker not opening after deploy) survive forever
+// otherwise. The activate handler nukes any cache whose name doesn't match.
+const CACHE_NAME = "tokoflow-v2";
 const OFFLINE_URL = "/offline";
 const PRECACHE_URLS = [OFFLINE_URL, "/orders", "/orders/new"];
 
