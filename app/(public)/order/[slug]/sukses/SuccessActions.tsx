@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { MessageCircle, QrCode, Download, Copy, Check, RefreshCw, CalendarDays } from "lucide-react";
+import QRCode from "qrcode";
+import { MessageCircle, QrCode, Download, Copy, Check, RefreshCw, CalendarDays, ScanLine } from "lucide-react";
 import { openWhatsAppPublic } from "@/lib/utils/wa-open";
 import { buildCustomerOrderMessage, buildQrisConfirmationMessage } from "@/lib/utils/wa-messages";
 
@@ -118,6 +119,27 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
         });
       }
 
+      // Generate the tracking QR — encodes the public receipt URL, which
+      // shows live status (new → processed → shipped → done). Customer saves
+      // the receipt image once, scans the QR anytime to check progress. No
+      // account, no login, no track-form lookup. Skip when orderId missing
+      // (older orders or quota-blocked inserts).
+      let trackingQrImg: HTMLImageElement | null = null;
+      if (orderId) {
+        const trackingUrl = `https://tokoflow.com/r/${orderId}`;
+        const qrDataUrl = await QRCode.toDataURL(trackingUrl, {
+          width: 240 * scale,
+          margin: 1,
+          color: { dark: "#1a1a1a", light: "#ffffff" },
+        });
+        trackingQrImg = await new Promise<HTMLImageElement>((resolve, reject) => {
+          const img = new window.Image();
+          img.onload = () => resolve(img);
+          img.onerror = reject;
+          img.src = qrDataUrl;
+        });
+      }
+
       // Calculate height dynamically
       const items = orderDetails?.items || [];
       const fontSize = 13 * scale;
@@ -148,7 +170,15 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
         const qrisH = qrisW * qrisAspect;
         h += qrisH + sectionGap; // QR image
       }
-      if (orderId) h += lineH + 2 * scale; // receipt URL
+      // Tracking QR — bottom of receipt. Caption above, URL text below.
+      const trackingQrSize = contentW * 0.4;
+      if (trackingQrImg) {
+        h += sectionGap + smallFont + 6 * scale; // "Scan to track your order" label
+        h += trackingQrSize + 4 * scale; // QR
+        h += tinyFont + sectionGap; // URL text below QR
+      } else if (orderId) {
+        h += lineH + 2 * scale; // fallback: just the URL text
+      }
       h += sectionGap + tinyFont; // branding
       h += pad; // bottom padding
 
@@ -260,8 +290,29 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
         y += qrisH + sectionGap;
       }
 
-      // Receipt URL
-      if (orderId) {
+      // Tracking QR — encodes /r/[orderId]. Customer saves this receipt
+      // image, scans the QR with their phone camera anytime to see live
+      // order status. The URL is also printed beneath as a fallback for
+      // anyone who can't scan (old camera, screenshot of screenshot, etc.).
+      if (trackingQrImg) {
+        y += sectionGap;
+        ctx.fillStyle = "#1a1a1a";
+        ctx.font = `600 ${smallFont}px -apple-system, sans-serif`;
+        ctx.textAlign = "center";
+        ctx.fillText("Scan to track your order", w / 2, y + smallFont);
+        y += smallFont + 6 * scale;
+
+        const qrX = (w - trackingQrSize) / 2;
+        ctx.drawImage(trackingQrImg, qrX, y, trackingQrSize, trackingQrSize);
+        y += trackingQrSize + 4 * scale;
+
+        // URL fallback below QR
+        ctx.fillStyle = "#999999";
+        const urlFont = 8 * scale;
+        ctx.font = `${urlFont}px -apple-system, sans-serif`;
+        ctx.fillText(`tokoflow.com/r/${orderId}`, w / 2, y + urlFont);
+        y += urlFont + sectionGap;
+      } else if (orderId) {
         y += 2 * scale;
         ctx.fillStyle = "#999999";
         const urlFont = 8 * scale;
@@ -372,6 +423,21 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
           </p>
         )}
       </div>
+
+      {/* Track your order — primary persistent action. Links to the public
+          receipt page which reflects live status (new → processed → shipped
+          → done). The receipt image (download button below) embeds the same
+          URL as a QR, so customer can re-access via gallery scan even if
+          they lose this page. */}
+      {orderId && (
+        <Link
+          href={`/r/${orderId}`}
+          className="w-full h-12 flex items-center justify-center gap-2 rounded-2xl border border-warm-green/30 bg-warm-green-light text-warm-green text-sm font-semibold hover:bg-warm-green-light/80 transition-colors"
+        >
+          <ScanLine className="w-4 h-4" />
+          Track your order
+        </Link>
+      )}
 
       {/* DuitNow QR payment — single unified card (hidden for preorder, and
           when Billplz already settled this order in-flow). */}
@@ -544,6 +610,11 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
         <Download className="w-3.5 h-3.5" />
         Save receipt
       </button>
+      {orderId && (
+        <p className="text-center text-[11px] text-muted-foreground/70">
+          Receipt has a QR — scan anytime to track this order.
+        </p>
+      )}
     </div>
   );
 }
