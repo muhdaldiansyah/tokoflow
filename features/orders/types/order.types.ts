@@ -45,6 +45,12 @@ export interface Order {
   undone_at?: string | null;
   undo_window_ends_at?: string | null;
   undo_reason?: string | null;
+  // Customer delivery acknowledgement (migration 088). Token is generated
+  // lazily by /api/orders/[id]/request-customer-ack and surfaced to the
+  // customer via WA share. customer_ack_at is set atomically when the
+  // customer taps /a/[token].
+  customer_ack_token?: string | null;
+  customer_ack_at?: string | null;
   created_at: string;
   updated_at: string;
 }

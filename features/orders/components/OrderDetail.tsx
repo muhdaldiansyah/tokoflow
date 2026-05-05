@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, Bell, Receipt, Pencil, Camera, ChevronDown, ChevronUp, MessageSquare, CircleDollarSign, ArrowRight } from "lucide-react";
+import { ArrowLeft, Bell, Receipt, Pencil, Camera, ChevronDown, ChevronUp, MessageSquare, CircleDollarSign, ArrowRight, Check, PackageCheck } from "lucide-react";
 import { toast } from "sonner";
-import { buildOrderWithStatus, buildPaymentReminder } from "@/lib/utils/wa-messages";
+import { buildOrderWithStatus, buildPaymentReminder, buildDeliveryAckRequest } from "@/lib/utils/wa-messages";
 import { WAPreviewSheet } from "./WAPreviewSheet";
 import { getOrder, uploadPaymentProof, updateOrderStatus, recordPayment } from "../services/order.service";
 import { hapticSuccess } from "@/lib/utils/haptics";
@@ -47,6 +47,31 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
   function sendPaymentReminder() {
     if (!order) return;
     setWaPreview({ message: buildPaymentReminder(order) });
+  }
+
+  async function requestCustomerAck() {
+    if (!order) return;
+    try {
+      const res = await fetch(`/api/orders/${order.id}/request-customer-ack`, {
+        method: "POST",
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        toast.error(err.error || "Failed to generate confirmation link");
+        return;
+      }
+      const { ackUrl, businessName } = await res.json();
+      track("customer_ack_requested", { order_id: order.id, status: order.status });
+      setWaPreview({
+        message: buildDeliveryAckRequest({
+          order,
+          ackUrl,
+          businessName,
+        }),
+      });
+    } catch {
+      toast.error("Network error — try again");
+    }
   }
 
   function handleProofFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -205,6 +230,35 @@ export function OrderDetail({ orderId }: OrderDetailProps) {
           Edit
         </Link>
       </div>
+
+      {/* Customer delivery ack — only after handoff to courier (shipped/done) */}
+      {(order.status === "shipped" || order.status === "done") &&
+        !order.customer_ack_at &&
+        order.customer_phone && (
+          <div>
+            <button
+              type="button"
+              onClick={requestCustomerAck}
+              className="h-9 px-3 flex items-center gap-1.5 rounded-lg border border-warm-blue/30 bg-warm-blue-light text-warm-blue text-xs font-medium hover:bg-warm-blue-light/80 transition-colors"
+            >
+              <PackageCheck className="w-3.5 h-3.5" />
+              Request customer confirmation
+            </button>
+          </div>
+        )}
+
+      {order.customer_ack_at && (
+        <div className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-full bg-warm-green-light text-warm-green border border-warm-green/30 text-[11px] font-medium">
+          <Check className="w-3 h-3" />
+          Customer confirmed receipt ·{" "}
+          {new Date(order.customer_ack_at).toLocaleDateString("en-MY", {
+            day: "numeric",
+            month: "short",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </div>
+      )}
 
       {/* Quick status actions */}
       {order.status !== "cancelled" && order.status !== "done" && (

@@ -22,6 +22,7 @@ import {
   Users,
   WifiOff,
   FileCheck,
+  PackageCheck,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -75,6 +76,7 @@ const sections: { label: string; intro: string; features: Feature[] }[] = [
     features: [
       { icon: MessageSquare, title: "Reply drafts, never autoreply", desc: "When a customer asks about hours, prices, or a custom request, Tokoflow drafts a reply ready for you to send. You always send — your voice, your judgment." },
       { icon: ClipboardList, title: "Status messages on tap", desc: "\"Your order's ready.\" \"Out for delivery.\" \"Thank you.\" One tap fills the WhatsApp draft — you press send when it feels right." },
+      { icon: PackageCheck, title: "Customer-confirmed delivery", desc: "When an order goes out, send a one-tap confirmation link via WhatsApp. The customer taps when they receive — no more chasing \"is it there yet?\" Tokoflow doesn't track the courier; only the customer's confirmation matters." },
       { icon: ImageIcon, title: "Inventory by photo", desc: "Restocked? Take a photo, Tokoflow updates stock. When a key item runs low, you see a heads-up in the dashboard — supplier reach-outs stay yours." },
       { icon: BarChart3, title: "Pricing whisper", desc: "Once a week, a gentle nudge: \"Peers in Shah Alam sell kuih lapis at RM 6, you're at RM 5. You could go a bit higher.\" Optional, never pushy." },
     ],

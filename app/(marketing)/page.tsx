@@ -89,6 +89,7 @@ const jsonLd = {
     "Voice and photo order parsing",
     "Beautiful shop link with your story",
     "1-tap reorder for returning customers",
+    "Customer-confirmed delivery — one tap, no chasing",
     "Vibrate-only notifications (respect your flow)",
     "Daily evening summary in your language",
     "Silent LHDN MyInvois (Pro tier)",

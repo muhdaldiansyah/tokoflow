@@ -93,6 +93,7 @@ const tiers = [
       "1-Photo Onboarding magic",
       "Beautiful shop page with your link",
       "Customer payments — DuitNow QR / FPX / cards (0% commission, direct to your bank)",
+      "Customer-confirmed delivery — one tap, no chasing",
       "Reply drafts — you always send",
       "Daily summary",
       "Customer auto-directory",

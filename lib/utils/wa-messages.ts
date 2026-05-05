@@ -209,6 +209,33 @@ Please make payment at your earliest convenience. Thank you! 🙏
 ${BRANDING}`;
 }
 
+export function buildDeliveryAckRequest(params: {
+  order: Pick<Order, "order_number" | "customer_name" | "items" | "total">;
+  ackUrl: string;
+  businessName?: string;
+}): string {
+  const { order, ackUrl, businessName } = params;
+  const itemCount = order.items.reduce((sum, it) => sum + (it.qty || 0), 0);
+  const itemSummary =
+    order.items.length === 1
+      ? `${order.items[0].name}${order.items[0].qty > 1 ? ` x${order.items[0].qty}` : ""}`
+      : `${itemCount} item${itemCount > 1 ? "s" : ""}`;
+  const greeting = order.customer_name ? `Hi ${order.customer_name}` : "Hi";
+  const fromLine = businessName ? ` from *${businessName}*` : "";
+
+  return `${greeting}, your order${fromLine} is on the way.
+
+*${order.order_number}*
+${itemSummary} — RM ${order.total.toLocaleString("en-MY")}
+
+Tap to confirm when it arrives:
+${ackUrl}
+
+Thank you! 🙏
+
+${BRANDING}`;
+}
+
 export function buildCelebrationConfirmation(order: Order, businessName?: string): string {
   return `*Order ${order.order_number}*${deliveryLine(order)}
 ${DIVIDER}
