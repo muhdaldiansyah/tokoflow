@@ -1,10 +1,12 @@
 # Tokoflow Strategic Synthesis
 
-**Version**: 1.3
-**Date**: 2026-05-05
-**Status**: Phase 0 launch-ready, pending Aldi commit decision
+**Version**: 1.4
+**Date**: 2026-05-05 (last revised 2026-05-06)
+**Status**: Phase 0 **tooling shipped + DB live**, pending Aldi to begin Week 1 execution
 **Supersedes**: ad-hoc framework iterations from May 2026 strategic deliberation
 **Relationship to bible v1.2**: This is the *execution synthesis* derived from bible v1.2 strategic foundation. Bible v1.2 (`docs/positioning/00-08`) remains the locked strategic compass; this document is the field-applied playbook.
+
+> **2026-05-06 update**: Phase 0 admin tooling + Year-2 Background Twin/Foreground Assist scaffolds shipped overnight per founder override of "no Phase 1 build until Gate 0 passes" discipline. See **Part 10: Implementation Status** for what's wired vs what still requires human execution. The 8-week validation work itself has not started — Tools ≠ Validation.
 
 ---
 
@@ -490,6 +492,104 @@ What Aldi does Monday Week 1. Concrete, time-boxed.
 
 ---
 
+## Part 10: Implementation Status (2026-05-06)
+
+What's been **built** vs what still requires **execution**. Built ≠ done; the validation work itself remains.
+
+### 10.1 Phase 0 validation tooling — ✅ SHIPPED (`6f4d988` + `0775331` + `09e3efa`)
+
+Maps to Part 7.1 five validation tracks. Tooling is live; logging and decision-making are manual.
+
+| Track | What's wired | Where it lives |
+|---|---|---|
+| **T1 — Interviews (5 friendly + 5 hostile)** | `phase_0_interviews` table (RLS admin-only), entry form, table view, aggregate dashboard | `/admin/phase-0/interviews` · `/api/admin/phase-0/interviews` · migration 092 |
+| **T2 — Manual Twin smoke test (1 merchant, 14 days)** | `phase_0_smoke_test_log` table, daily diary entry form, hours/AI-tone/trust/complaint counters | `/admin/phase-0/smoke-test` · `/api/admin/phase-0/smoke-test` · migration 092 |
+| **T3 — AI cost measurement (50-order load)** | `scripts/phase-0/ai-cost/measure.ts` + 6 prompts (3 background + 3 foreground; REPLY_DRAFT mirrors production), tiered verdict (PASS_AMPLE / PASS_TARGET / WARNING / KILL) | `scripts/phase-0/ai-cost/` |
+| **T4 — Distribution validation (TikTok + komuniti)** | `phase_0_distribution_metrics` table, weekly snapshot form (followers / posts / comments / DM total / DM qualified) | `/admin/phase-0/distribution` · `/api/admin/phase-0/distribution` · migration 092 |
+| **T5 — Operational gates (Sdn Bhd + Ariff)** | Tracked outside dashboard; flagged as "external" in retrospective export so they don't gate the data-driven auto-decision | manual + `docs/positioning/07-decisions.md` |
+
+**Master dashboard** at `/admin/phase-0` aggregates the 4 in-dashboard tracks into 12 sub-metrics → maps to the 7 SYNTHESIS-level triggers (Part 5 + Part 7.3). Markdown retrospective export at `/api/admin/phase-0/export` produces a complete go/no-go memo with auto-decision (KILL / DATA-DRIVEN PASS / PARTIAL / PENDING) over data-driven triggers, with explicit warning to verify external triggers (AI cost / Ariff / SSM) manually.
+
+### 10.2 Year-2 features pulled forward — ⚠️ SHIPPED (founder override of synthesis discipline)
+
+Part 7.4 forbids "Build Phase 1 product (validation phase, not build phase)." These were shipped anyway 2026-05-06. Risk: if Phase 0 fires kill trigger, this code is wasted. Acceptance: founder explicitly override in writing.
+
+| Feature | Tier | Endpoint | Restraint guard |
+|---|---|---|---|
+| **Background Twin payment matcher** | T3 autonomous | `/api/twin/payment-match` | ESCALATE on <80% confidence; never email/message customers |
+| **Foreground Assist reply drafter** | T2 suggest-only | `/api/assist/reply-draft` | Response always carries reminder *"Tokoflow drafts. You send. Customer relationship stays with you."* |
+| **AI test console** | internal | `/admin/ai-test` | Calibration sandbox with sample DuitNow notif + WA history (BM/EN code-switch) preloaded |
+| **Photo Magic v1** | T3 onboarding | `/api/onboarding/photo-magic` (anonymous demo) + `/api/onboarding/photo-magic/persist` (auth) | Photo content untouched (kitchen-protection); AI extracts metadata only |
+| **Repeat Order** | T2 customer-ownership | `/api/customers/[id]/reorder` + Repeat button on customer detail | Klaviyo-pattern: merchant owns the relationship; we shave friction |
+
+Production prompts source-of-truth at `lib/ai/twin-prompts.ts` with `callTwinAI` helper (20s AbortController timeout, OpenRouter ranking headers, AI usage propagation in success returns).
+
+### 10.3 Database migrations — ✅ APPLIED (live Supabase `yhwjvdwmwboasehznlfv`)
+
+Verified via Supabase Management API on 2026-05-06.
+
+| Migration | Adds | Status |
+|---|---|---|
+| 089 | Unify money columns to NUMERIC(14,2) | ✅ applied |
+| 090 | JSONB shape CHECK constraints (orders.items, invoices.items, profiles.onboarding_drip) | ✅ applied |
+| 091 | Standalone FK index on `orders.assigned_staff_id` | ✅ applied |
+| 092 | `phase_0_interviews`, `phase_0_distribution_metrics`, `phase_0_smoke_test_log` + RLS policies + triggers | ✅ applied |
+| 093 | `profiles.bio` (TEXT), `products.source` (TEXT NOT NULL DEFAULT 'manual') with CHECK constraint | ✅ applied |
+
+Tracker `supabase_migrations.schema_migrations` synced — top entry is 093.
+
+### 10.4 Production environment — ✅ READY
+
+| Item | State |
+|---|---|
+| `OPENROUTER_API_KEY` in `.env.local` | ✅ set, smoke-tested ($0.000004/call at 11 tokens) |
+| `OPENROUTER_API_KEY` in Vercel production | ✅ canonical Tokoflow key (replaced older one 2026-05-06) |
+| Founder profile `role='admin'` on production Supabase | ✅ verified |
+| Build clean, TS-strict pass, lint-clean on touched files | ✅ |
+| Latest commit pushed to `origin/main` | ✅ `09e3efa` (BI cleanup) |
+
+### 10.5 Backup playbook — ✅ DOCUMENTED
+
+Part 7.5 scenario (c) backup playbook at `scripts/phase-0/backup-b2b/`:
+- Geographic plan (4 Shah Alam neighborhoods, 50 merchants total)
+- Qualification criteria (3 of 5)
+- 15-min demo flow
+- Conversion path
+- Tracking spreadsheet template
+
+Activates if Track 4 distribution kill fires Week 5 OR scenario (c) confirmed pre-launch.
+
+### 10.6 Audit pass — ✅ 11 BUGS FIXED IN BUILD SESSION
+
+`docs/CHANGES-2026-05-06.md` has the full diary. Highlights of bugs that would have surfaced during Phase 0 if shipped:
+- `callTwinAI` had no fetch timeout — would hang indefinitely on slow OpenRouter responses
+- Phase 0 export auto-decision was stuck in PARTIAL because external triggers were always PENDING (would have shown wrong recommendation at Week 8)
+- OrderForm double-decoded reorder items param — `%` in product names ("10% off") silently emptied carts
+- Phase 0 routes accepted dead `"founder"` role string — confusion-inviting dead code
+- `copy.empathy.midRush` said "I'll handle customer chat" — bible violation
+- Phase 0 entry forms swallowed network errors silently
+- PhotoMagicEntry called `.products.length` without array check — TypeError on malformed AI response
+- Production/script REPLY_DRAFT_PROMPT divergence — script now mirrors production, cost measurement reflects deployed reality
+- Plus dashboard header miscount, twin/assist usage propagation, indonesian leak fixes (Persiapan/Ringkasan/Batal/Salin/Hapus across 14 files)
+
+### 10.7 What is NOT done — execution still required
+
+**Tools without execution change nothing.** Phase 0 validation only "happens" when Aldi runs the actual work:
+
+- ❌ Interview script v1 not finalized (Part 9 step 5 — Aldi's Monday afternoon)
+- ❌ 10 candidates not recruited (Part 9 step 6)
+- ❌ First TikTok post not published (Part 7.2 Week 1 — Aldi's content track)
+- ❌ Smoke test merchant volunteer not onboarded
+- ❌ Ariff partnership conversation not scheduled
+- ❌ Sdn Bhd registration not submitted
+- ❌ Distribution skill scenario (a/b/c) not formally confirmed
+- ❌ AI cost measurement not yet run at 50-order load
+- ❌ Brand resonance test not yet asked of any merchant
+
+**Tools to run Phase 0 are live. The 8-week clock starts when Aldi opens `/admin/phase-0/interviews` and logs interview #1.**
+
+---
+
 ## Decision Log
 
 | Date | Decision | Reasoning |
@@ -505,6 +605,10 @@ What Aldi does Monday Week 1. Concrete, time-boxed.
 | 2026-05-05 (post-review) | Year 1 MRR target corrected from RM 25-50K to RM 5-15K | Math integrity over aspirational anchor — 50-200 merchants × locked Free/Pro RM 49/Business RM 99 tier cannot mathematically exceed RM ~14K MRR. False target damages Week 52 retrospective signal. |
 | 2026-05-05 (post-review) | Section 7.5 Backup Playbook added for scenario (c) | Distribution skill scenario (c) needs concrete operational fallback (geographic plan, qualification, demo flow, conversion path), not placeholder. 30 min pre-draft saves 2 weeks confusion if triggered. |
 | 2026-05-05 (post-review) | Three threshold tightenings applied | (a) Exec Summary updated to "seven triggers (six kill + one rebrand-flag)" matching Section 5; (b) AI cost tier explicit: ≤RM 25 pass / RM 25-30 warning + retest Week 6 / >RM 30 kill — removes ambiguous middle zone; (c) Brand friction single threshold ≥4/10 rebrand (was split <2 keep / >5 rebrand with undefined 3-4 zone) — Week 7 decision deterministic with bias-to-keep due to rebrand switching cost. |
+| 2026-05-06 | Phase 0 admin tooling shipped overnight | Built `/admin/phase-0` dashboard + 3 entry forms + Markdown retrospective export + AI cost script reconciliation. Migrations 092 + 093 applied to live Supabase. Tools live → Phase 0 8-week clock can start whenever Aldi commits. See Part 10.1, 10.3, 10.4. |
+| 2026-05-06 | Year-2 Background Twin + Foreground Assist scaffolds shipped (founder override) | Synthesis Part 7.4 forbids "Build Phase 1 product (validation phase, not build phase)." Founder explicit override: ship `/api/twin/payment-match` + `/api/assist/reply-draft` + `/admin/ai-test` + Photo Magic v1 + Repeat Order in parallel with Phase 0 prep. **Risk**: if Phase 0 fires kill trigger, this code is wasted. **Acceptance**: founder explicitly accepts in writing (this entry). See Part 10.2. |
+| 2026-05-06 | OpenRouter production key replaced with canonical Tokoflow key | Vercel had older key (`sk-or-v1-e1c5...`); replaced with canonical Tokoflow key (`sk-or-v1-d27d...`) matching `.env.local`. Cost smoke-test passed. |
+| 2026-05-06 | 11 audit-fix bugs corrected before Phase 0 launch | Bugs that would have surfaced during validation (no fetch timeout in callTwinAI, Phase 0 export decision logic stuck in PARTIAL, OrderForm % literal silent failure, dead "founder" role check, midRush restraint violation, etc.). See Part 10.6 + `docs/CHANGES-2026-05-06.md`. |
 
 ---
 
