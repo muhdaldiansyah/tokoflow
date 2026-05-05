@@ -278,14 +278,19 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
       ctx.textAlign = "center";
       ctx.fillText("Made with Tokoflow \u2014 tokoflow.com", w / 2, y + tinyFont);
 
-      // Download as PNG
+      // Download as PNG. The anchor MUST be in the DOM before .click() —
+      // otherwise Chrome/Safari ignore the `download` attr and fall back to
+      // the blob URL's UUID as the filename (saves "ee670654-..." with no
+      // extension instead of "order-CO-260505-000002.png").
       canvas.toBlob((blob) => {
         if (!blob) return;
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `order-${orderNumber}.png`;
+        a.download = `tokoflow-receipt-${orderNumber}.png`;
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
         URL.revokeObjectURL(url);
       }, "image/png");
     } catch {
@@ -297,8 +302,10 @@ export function SuccessActions({ qrisUrl, businessPhone, orderNumber, orderId, b
           const url = URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
-          a.download = `duitnow-qr-${orderNumber}.jpg`;
+          a.download = `tokoflow-duitnow-qr-${orderNumber}.jpg`;
+          document.body.appendChild(a);
           a.click();
+          document.body.removeChild(a);
           URL.revokeObjectURL(url);
         } catch {
           window.open(qrisUrl, "_blank");

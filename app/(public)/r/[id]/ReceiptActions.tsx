@@ -39,8 +39,13 @@ export function ReceiptActions({ orderId, orderNumber, waPhone, slug, qrisUrl, t
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `duitnow-qr-${orderNumber}.jpg`;
+      a.download = `tokoflow-duitnow-qr-${orderNumber}.jpg`;
+      // Anchor must be in DOM before click(), else Chrome/Safari ignore the
+      // `download` attr and save the file as the blob URL's UUID with no
+      // extension. Append → click → remove is the canonical pattern.
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch {
       window.open(qrisUrl, "_blank");
