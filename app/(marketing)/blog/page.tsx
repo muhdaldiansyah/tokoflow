@@ -4,7 +4,7 @@ import { ArrowRight, Home, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Blog — Tokoflow",
+  title: "Blog",
   description:
     "Guides, playbooks, and compliance notes for Malaysian merchants running on WhatsApp. Coming soon.",
   alternates: {

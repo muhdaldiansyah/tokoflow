@@ -1,7 +1,10 @@
 export const siteConfig = {
   name: "Tokoflow",
+  // Used as the global og:description / twitter:description fallback. Pages
+  // that don't override their own description fall back to this. ~155 chars
+  // is the SERP truncation point — keep at or under to avoid the "..." cut.
   description:
-    "From snap to sold. The simplest way for anyone to start selling — one photo to launch your shop. AI handles the conversation, payment, and paperwork so you can focus on what you make.",
+    "Launch your WhatsApp shop with one photo. Customer payments settle direct to your bank — 0% commission. We handle the receipts; your craft stays yours.",
   url: process.env.NEXT_PUBLIC_APP_URL || "https://tokoflow.com",
   // Support contact: replace with the real Tokoflow MY WhatsApp once the
   // company line is provisioned. Used by the marketing footer + /contact page.

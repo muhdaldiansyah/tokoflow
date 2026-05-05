@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Home, ChevronRight } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Tokoflow",
+  title: "Privacy Policy",
   description:
     "Tokoflow Privacy Policy — how we collect, use, and protect your data under Malaysia's Personal Data Protection Act (PDPA 2010).",
   alternates: {

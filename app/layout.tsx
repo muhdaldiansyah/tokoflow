@@ -17,7 +17,14 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const defaultTitle = `${siteConfig.name} — From WhatsApp chat to LHDN e-Invoice`;
+// Brand-level tagline per positioning bible v1.2. Leaks into og:title +
+// twitter:title for any page that doesn't override openGraph/twitter
+// itself, so this string is what Google + social cards show by default.
+// The older "From WhatsApp chat to LHDN e-Invoice" line (commit 0876626)
+// was scraped by Google before the v1.2 reposition; updating here so the
+// next crawl picks up the brand line and Google stops showing the old
+// LHDN-heavy / RM 1M–5M positioning.
+const defaultTitle = `${siteConfig.name} — We handle the receipts. Not the recipes.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),

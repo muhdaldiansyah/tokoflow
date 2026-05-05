@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Partner program — Tokoflow",
+  title: "Partner program",
   description:
     "Invite a friend to Tokoflow. Earn RM 2 when they place their first order, plus 30% commission on their payments for 6 months. Real cash, no points.",
 };

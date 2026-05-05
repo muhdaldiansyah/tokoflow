@@ -9,15 +9,34 @@ import ComingSoon from "./ComingSoon";
 const isMaintenanceMode =
   process.env.NEXT_PUBLIC_MAINTENANCE_MODE === "true";
 
+// Brand page — opt out of the layout's "%s | Tokoflow" template via
+// title.absolute so the homepage shows just "Tokoflow — We handle the
+// receipts. Not the recipes." rather than "Tokoflow — ... | Tokoflow".
+// openGraph + twitter blocks are explicit overrides because the layout's
+// defaults still reference siteConfig.description; the homepage wants
+// its own punchier line in social cards.
+const homepageTitle = isMaintenanceMode
+  ? "Tokoflow — Coming Soon"
+  : "Tokoflow — We handle the receipts. Not the recipes.";
+
+const homepageDescription = isMaintenanceMode
+  ? "Tokoflow is coming soon. The simplest way for anyone to start selling — one photo to launch your shop."
+  : "Snap one photo. See your shop preview live. We handle the receipts (payment, invoices, tax) — your craft stays yours. Built for Malaysian home sellers.";
+
 export const metadata: Metadata = {
-  title: isMaintenanceMode
-    ? "Tokoflow — Coming Soon"
-    : "Tokoflow — We handle the receipts. Not the recipes.",
-  description: isMaintenanceMode
-    ? "Tokoflow is coming soon. The simplest way for anyone to start selling — one photo to launch your shop."
-    : "Snap one photo. See your shop preview live. We handle the receipts (payment, invoices, tax) — your craft stays yours. Built for Malaysian home sellers.",
+  title: { absolute: homepageTitle },
+  description: homepageDescription,
   alternates: {
     canonical: "https://tokoflow.com",
+  },
+  openGraph: {
+    title: homepageTitle,
+    description: homepageDescription,
+    url: "https://tokoflow.com",
+  },
+  twitter: {
+    title: homepageTitle,
+    description: homepageDescription,
   },
 };
 

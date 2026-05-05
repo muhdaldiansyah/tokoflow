@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Home, ChevronRight } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — Tokoflow",
+  title: "Terms of Service",
   description:
     "Terms of service for Tokoflow — WhatsApp storefront, order management, and LHDN MyInvois e-Invoice for Malaysian small businesses.",
   alternates: {

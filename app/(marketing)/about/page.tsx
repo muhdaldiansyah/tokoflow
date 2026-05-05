@@ -19,7 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "About — Tokoflow",
+  title: "About",
   description:
     "Tokoflow exists to democratize selling for individuals — the way Apple democratized computing. Built for anyone with something to sell.",
   alternates: {

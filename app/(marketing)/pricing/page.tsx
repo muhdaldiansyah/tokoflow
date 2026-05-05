@@ -14,7 +14,7 @@ import {
 } from "@/config/plans";
 
 export const metadata: Metadata = {
-  title: "Pricing — We handle the receipts. Not the recipes. | Tokoflow",
+  title: "Pricing — We handle the receipts. Not the recipes.",
   description:
     "Free forever for your first 50 orders/month. Pro RM 49/month for unlimited orders and the full AI companion. Business RM 99/month adds LHDN MyInvois.",
   alternates: {

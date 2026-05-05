@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: `${siteConfig.url}/toko`,
-    title: "Discover sellers near you | Tokoflow",
+    title: "Discover sellers near you",
     description:
       "Real shops by real people. Order directly, no commissions, no middlemen.",
     siteName: siteConfig.name,

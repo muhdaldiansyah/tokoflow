@@ -11,7 +11,7 @@ import {
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "Contact Tokoflow",
+  title: "Contact",
   description:
     "Talk to us on WhatsApp or email. Real humans, honest answers. We reply within a day.",
   alternates: {
