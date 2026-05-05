@@ -313,13 +313,17 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
         </Link>
       </div>
 
-      {/* Hidden file input */}
+      {/* Hidden file input — `display: none` can silently break the
+          programmatic `.click()` flow on some Chrome builds, so we keep it
+          interactive but visually offscreen. */}
       <input
         ref={imageInputRef}
         type="file"
         accept="image/jpeg,image/png,image/webp"
         onChange={handleImageUpload}
-        className="hidden"
+        className="sr-only"
+        tabIndex={-1}
+        aria-hidden="true"
       />
 
       {/* Form card */}
