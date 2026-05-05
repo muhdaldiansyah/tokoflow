@@ -321,15 +321,19 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
 
       {/* Hidden file input. Triggered by <label htmlFor="product-photo-file">
           on both the photo preview and the Upload/Change button — native
-          browser behavior, no JS .click() call required. */}
+          browser behavior, no JS .click() call required.
+          IMPORTANT: do not add aria-hidden here. Chrome 124+ blocks the
+          picker when a focused element has aria-hidden ancestor (the label
+          click focuses the input, the a11y enforcement then refuses to open
+          the picker). sr-only already hides it visually while keeping it
+          accessible to screen readers — which is what we want for a real
+          form control. */}
       <input
         id="product-photo-file"
         type="file"
         accept="image/jpeg,image/png,image/webp"
         onChange={handleImageUpload}
         className="sr-only"
-        tabIndex={-1}
-        aria-hidden="true"
       />
 
       {/* Form card */}
