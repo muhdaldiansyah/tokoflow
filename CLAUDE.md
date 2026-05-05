@@ -7,7 +7,7 @@
 
 **Domain:** https://tokoflow.com · aliased to production deploy on Vercel
 **Target Year 1:** Malaysia, hyperlocal Shah Alam — home F&B mompreneur (Bu Aisyah persona, **PHASE-0-UNVALIDATED**). Wave 2 (Year 2): vertical-first within MY (kosmetik, modest fashion, jasa lokal). Wave 3+: geographic + cross-pattern.
-**Status:** Phase 1 + Phase 2 code **complete** · Photo Magic v1 + Repeat Order shipped 2026-05-06 (founder override of synthesis discipline) · Positioning bible v1.2 **locked** (2026-04-28) · 94 migrations applied (092 Phase 0 tracking + 093 Photo Magic columns) · Pre-launch — gated on **Phase 0 adversarial validation** (5 friendly + 5 hostile interviews + manual twin smoke test + AI cost measurement + distribution validation + brand resonance) + Sdn Bhd + Billplz KYB.
+**Status:** Phase 1 + Phase 2 + Year-2 scaffolds code **complete** · Phase 0 admin tooling shipped 2026-05-06 overnight build · Background Twin (`/api/twin/*`) + Foreground Assist (`/api/assist/*`) + Photo Magic v1 + Repeat Order live (founder override of synthesis discipline) · Positioning bible v1.2 **locked** (2026-04-28) · 94 migrations applied (089–093 verified via Management API on live Supabase) · Pre-launch — gated on **Phase 0 adversarial validation** (5 friendly + 5 hostile interviews + manual twin smoke test + AI cost measurement + distribution validation + brand resonance) + Sdn Bhd + Billplz KYB.
 
 > **Strategic compass:** [`docs/positioning/`](./docs/positioning/) is the bible — read [`00-manifesto.md`](./docs/positioning/00-manifesto.md) before any product decision. Every feature must pass **Test 0** (hits one of Three-Tier Reality: Pure Craft / Customer Relationship / Mechanical Residue) + the 5 tests below it.
 
@@ -148,27 +148,34 @@ app/
 ├── (public)/order/[slug]/   # Customer order form → /[slug] via rewrite (next.config.ts)
 ├── (public)/r/[id]/         # Public receipt page
 ├── (dashboard)/             # orders, products, customers, prep, recap, invoices, community, tax, settings, profil, laporan, pengingat, pembayaran
-├── (admin)/                 # Internal admin
+├── (admin)/                 # Internal admin: phase-0 (dashboard + interviews + distribution + smoke-test), ai-test, users, registrations, lookup, mitra, analytics
 ├── join/[code]/             # Community invite shortlink
-└── api/                     # ~100 routes + 5 cron jobs
+└── api/                     # ~115 routes + 5 cron jobs
     ├── billing/             # Billplz payments + webhook
     ├── invoices/[id]/myinvois-{submit,status,cancel}/  # Pro-plan LHDN submit
     ├── invoices/sst-summary/         # Monthly SST summary (RMCD SST-02 helper)
     ├── tax/summary/                  # Annual revenue + SST + MyInvois stats
     ├── staff/ + orders/[id]/assign/  # Phase 2 staff + assignment
-    └── public/order-history/         # Customer past-orders lookup (reorder)
+    ├── public/order-history/         # Customer past-orders lookup (reorder)
+    ├── twin/payment-match/           # Background Twin — Tier 3 autonomous payment matcher
+    ├── assist/reply-draft/           # Foreground Assist — Tier 2 reply suggestions (drafts only)
+    ├── customers/[id]/reorder/       # Repeat order shortcut (Klaviyo customer-ownership)
+    ├── onboarding/photo-magic/{persist}/  # Photo Magic v1 demo + auth persist
+    └── admin/phase-0/{interviews,distribution,smoke-test,export}/  # Phase 0 validation tooling
 
-features/{orders,customers,products,billing,recap,receipts,referral,invoices,staff,tax,auth}/
+features/{orders,customers,products,billing,recap,receipts,referral,invoices,staff,tax,auth,onboarding}/
 lib/
+├── ai/twin-prompts.ts       # ACTIVE — production prompts (PAYMENT_MATCH, CUSTOMER_MEMORY, REPLY_DRAFT, PATTERN_DETECTION) + callTwinAI helper with 20s timeout, AI usage propagation
 ├── billplz/                 # ACTIVE — types, client, verify
 ├── myinvois/                # ACTIVE — types, generate-json, client
 ├── copy/index.ts            # Microcopy library — empty/error/loading/confirm/success/empathy templates + jargon-free labels (per docs/positioning/04)
 ├── pdf/generate-invoice.ts  # EN + TIN/BRN/SST + MyInvois UUID ref
+├── utils/quiet-hours.ts     # Shared MYT quiet-hours boundary check across morning-brief, alerts, engagement crons
 └── supabase/, voice/, offline/, utils/
 
 config/{plans.ts, categories.ts, category-defaults.ts, site.ts, navigation.ts}
-scripts/phase-0/             # MyInvois + Billplz sandbox spikes + merchant interview
-supabase/migrations/         # 000 (baseline) + 001–080
+scripts/phase-0/             # MyInvois + Billplz sandbox spikes + merchant interview + ai-cost measurement + distribution README + backup-b2b playbook
+supabase/migrations/         # 000 (baseline) + 001–093 (94 total, all applied to live Supabase)
 middleware.ts                # Legacy-route 301s (pesanan→orders etc. + /baru→/new leaf)
 ```
 
@@ -377,6 +384,42 @@ Phase 0 = 8-week adversarial validation. **No Phase 1 build until Gate 0 passes.
 
 ## Recent strategic passes
 
+### 2026-05-06 · Overnight build — Phase 0 enabling infra + Year-2 AI scaffolds + audit pass
+
+Single overnight session (00:08 → 07:16). Founder override of synthesis discipline ("no Phase 1 build until Gate 0 passes") to ship validation tooling + Year-2 scaffolds in parallel. 26 features + 11 audit-fix bugs in commit `6f4d988`. Build clean, TS-strict pass, lint-clean on touched files. Full diary in [`docs/CHANGES-2026-05-06.md`](./docs/CHANGES-2026-05-06.md).
+
+**Phase 0 enabling infrastructure (all live):**
+- Migrations 089–093 applied to Supabase `yhwjvdwmwboasehznlfv` via Management API. 089 unify money types · 090 jsonb shape constraints · 091 FK index · **092 phase_0_* tracking tables** (interviews, distribution_metrics, smoke_test_log) · **093 photo_magic columns** (profiles.bio, products.source).
+- `/admin/phase-0` dashboard with 12 sub-metrics → 7 SYNTHESIS-level triggers (4 in-dashboard + 3 external).
+- `/admin/phase-0/{interviews,distribution,smoke-test}` entry forms.
+- `/api/admin/phase-0` aggregation + `/export` Markdown retrospective with auto-decision (KILL/PASS/PARTIAL/PENDING split correctly between data-driven vs external).
+- AI cost measurement script reconciled — script REPLY_DRAFT_PROMPT now mirrors production verbatim.
+
+**Year-2 features pulled forward (per founder override):**
+- **Background Twin** at `/api/twin/payment-match` — Tier 3 autonomous, ESCALATE on <80% confidence.
+- **Foreground Assist** at `/api/assist/reply-draft` — Tier 2, draft-only, response always carries reminder *"Tokoflow drafts. You send. Customer relationship stays with you."*
+- `lib/ai/twin-prompts.ts` — production prompts + `callTwinAI` helper (AbortController 20s timeout, OpenRouter rankings headers, AI usage propagation).
+- `/admin/ai-test` calibration console — sample DuitNow notif + WA history (BM/EN code-switch) preloaded.
+- **Photo Magic v1** — `PhotoMagicEntry` (camera capture + canvas resize 1024px max edge JPEG 0.85) + `/api/onboarding/photo-magic/persist` (atomic profile + products write, INSERT-then-DELETE order).
+- **Repeat Order** — `/api/customers/[id]/reorder` (Klaviyo customer-ownership inheritance) + Repeat button on customer detail.
+
+**Audit pass — 11 real bugs fixed:**
+- `callTwinAI` had no fetch timeout — added AbortController 20s default.
+- Phase 0 export auto-decision was stuck in PARTIAL because external triggers always PENDING — split data-driven vs external.
+- OrderForm double-decoded reorder items param; `%` literals throw URIError silently swallowed.
+- Phase 0 routes accepted dead `"founder"` role string not in `USER_ROLES` — removed across 5 routes.
+- `copy.empathy.midRush` said "I'll handle customer chat" — bible violation, rephrased to "I'll draft replies".
+- Phase 0 entry forms swallow network errors (try/finally with no catch) — added explicit catch.
+- PhotoMagicEntry called `.products.length` without array check — added shape guard.
+- Reconciled production/script REPLY_DRAFT_PROMPT divergence per CLAUDE.md "keep these in sync."
+- Plus dashboard header miscount, twin/assist usage propagation, surface fixes.
+
+**State for the morning:**
+- Pushed to `origin/main` as `6f4d988` (Vercel auto-deploys).
+- Local + Vercel production envs both have canonical Tokoflow OpenRouter key.
+- Founder profile `role='admin'` verified.
+- Phase 0 tools live → Aldi can begin Week 1 (interview script + smoke test diary).
+
 ### 2026-04-28 · Bible v1.2 — Three-Tier Reality + 2-Layer Twin (this session)
 
 8 ultrathink rounds + Steve Jobs lateral framing + devil's advocate red-team + critique-driven refinements. **Strategy locked, no code yet.** All in [`docs/positioning/`](./docs/positioning/) (versioned v1.2):
@@ -476,9 +519,11 @@ Shipped across 5 commits (10bc895 → 6fa38c3). **Code complete from this pass:*
 - [ ] MyInvois production certification (post Sdn Bhd verification)
 - [ ] MDEC Digitalisation Partner certification (6-8 week lag)
 - [x] `tokoflow.com` domain procured + Vercel alias live
-- [x] Supabase migrations 001-080 applied to project `yhwjvdwmwboasehznlfv`
+- [x] Supabase migrations 001-093 applied to project `yhwjvdwmwboasehznlfv` (089–093 applied 2026-05-06 via Management API)
+- [x] OpenRouter API key set in Vercel production env (canonical Tokoflow key, smoke-tested 2026-05-06)
+- [x] Founder profile `role='admin'` set on production Supabase
 - [ ] Supabase region migration Mumbai → Singapore (pre-launch)
-- [ ] Populate Billplz / MyInvois / OpenRouter / Gmail env vars in Vercel production (currently placeholder/empty for these)
+- [ ] Populate Billplz / MyInvois / Gmail env vars in Vercel production (currently placeholder/empty for these)
 - [ ] Publish Google OAuth consent screen (currently Testing mode — only test users can sign in)
 
 ---
@@ -500,4 +545,4 @@ Vault at `~/base/vault/credentials/tokoflow.md`:
 
 ---
 
-*Last updated: 2026-05-05 · Audit pass: cron schedules corrected, money types unified to NUMERIC(14,2) (089), JSONB shape CHECKs (090), FK index gap closed (091), MyInvois demoted off /features into a footnote, deprecated pack pricing removed from /pricing, quiet-hours now enforced in push crons, lib/copy wired into recap surfaces, Indonesian leak ("di bulan", stray "Rp") fixed in MonthlyReport, internal architecture names sanitised from code comments. Bible v1.2 strategy unchanged. Launch-blocked on **Phase 0 adversarial validation** (interviews + smoke test + AI cost measurement) + Sdn Bhd + Billplz KYB. Phase 1 build starts only after Gate 0 passes ~end Jul 2026.*
+*Last updated: 2026-05-06 · Overnight build session (00:08 → 07:16): 26 features + 11 audit-fix bugs in commit `6f4d988` pushed to main. Phase 0 admin tooling (`/admin/phase-0`, `/admin/ai-test`) live. Background Twin (`/api/twin/payment-match`) + Foreground Assist (`/api/assist/reply-draft`) wired with `lib/ai/twin-prompts.ts` production prompts. Photo Magic v1 + Repeat Order shipped. Migrations 089–093 applied to live Supabase. OpenRouter key set local + Vercel production. Bible v1.2 strategy unchanged. Launch-blocked on **Phase 0 adversarial validation** (interviews + smoke test + AI cost measurement) + Sdn Bhd + Billplz KYB. Tools to run Phase 0 are ready; the 8-week validation itself starts when Aldi picks up the merchant interview script.*
