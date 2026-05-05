@@ -64,7 +64,12 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
 
   // Refs
   const nameInputRef = useRef<HTMLInputElement>(null);
-  const imageInputRef = useRef<HTMLInputElement>(null);
+  // No imageInputRef on purpose — the upload trigger is wired as a <label
+  // htmlFor="product-photo-file"> wrapping the button content, which uses the
+  // browser's native label-to-input behavior. Going through a programmatic
+  // .click() can be silently no-op'd by some Chrome extensions, popup
+  // blockers, and SW edge cases (we hit one in production where the picker
+  // simply never opened on click).
 
   useEffect(() => {
     getCategories().then(setCategories);
@@ -142,7 +147,8 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
       toast.error("Failed to upload product photo");
     }
     setIsUploading(false);
-    if (imageInputRef.current) imageInputRef.current.value = "";
+    // Reset the native input so re-uploading the same file still fires onChange.
+    e.target.value = "";
   }
 
   // === AI Image Generation ===
@@ -313,11 +319,11 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
         </Link>
       </div>
 
-      {/* Hidden file input — `display: none` can silently break the
-          programmatic `.click()` flow on some Chrome builds, so we keep it
-          interactive but visually offscreen. */}
+      {/* Hidden file input. Triggered by <label htmlFor="product-photo-file">
+          on both the photo preview and the Upload/Change button — native
+          browser behavior, no JS .click() call required. */}
       <input
-        ref={imageInputRef}
+        id="product-photo-file"
         type="file"
         accept="image/jpeg,image/png,image/webp"
         onChange={handleImageUpload}
@@ -332,10 +338,13 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
 
         {/* Top row: buttons right, photo left */}
         <div className="flex items-start justify-between">
-          {/* Photo preview */}
-          <div
-            className="relative w-20 h-20 rounded-xl shrink-0 overflow-hidden border border-border bg-muted/30 flex items-center justify-center cursor-pointer"
-            onClick={() => imageInputRef.current?.click()}
+          {/* Photo preview — also a label so tapping the thumbnail opens the
+              picker natively. */}
+          <label
+            htmlFor="product-photo-file"
+            className={`relative w-20 h-20 rounded-xl shrink-0 overflow-hidden border border-border bg-muted/30 flex items-center justify-center ${
+              isUploading || isGeneratingAi ? "cursor-not-allowed opacity-60" : "cursor-pointer"
+            }`}
           >
             {isUploading ? (
               <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
@@ -344,20 +353,21 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
             ) : (
               <Camera className="w-5 h-5 text-muted-foreground/30" />
             )}
-          </div>
+          </label>
 
           {/* Top-right buttons */}
           <div className="flex flex-col items-end gap-1.5">
             <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => imageInputRef.current?.click()}
-                disabled={isUploading || isGeneratingAi}
-                className="h-9 px-3 rounded-lg border border-border text-xs font-medium text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 disabled:opacity-50"
+              <label
+                htmlFor="product-photo-file"
+                aria-disabled={isUploading || isGeneratingAi}
+                className={`h-9 px-3 rounded-lg border border-border text-xs font-medium text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 select-none ${
+                  isUploading || isGeneratingAi ? "opacity-50 cursor-not-allowed pointer-events-none" : "cursor-pointer"
+                }`}
               >
                 <Camera className="w-3.5 h-3.5" />
                 {imageUrl ? "Change photo" : "Upload photo"}
-              </button>
+              </label>
               <button
                 type="button"
                 onClick={() => setIsAvailable(!isAvailable)}
