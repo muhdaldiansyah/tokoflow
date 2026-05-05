@@ -100,10 +100,16 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
   }
 
   // === Image Upload ===
-  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  // Three independent paths can feed this. The native file picker is the
+  // primary, but some merchant Chrome environments silently swallow the
+  // click event chain (extensions, popup blockers, a11y enforcement),
+  // leaving them stuck. Drag-and-drop + Cmd/Ctrl-V paste are the two HTML5
+  // upload mechanisms the browser exposes that DON'T rely on the picker.
+  async function uploadFile(file: File) {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please drop an image file (JPG, PNG, or WEBP)");
+      return;
+    }
     if (file.size > 1024 * 1024) {
       toast.error("Max file size is 1MB");
       return;
@@ -147,9 +153,59 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
       toast.error("Failed to upload product photo");
     }
     setIsUploading(false);
-    // Reset the native input so re-uploading the same file still fires onChange.
+  }
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) await uploadFile(file);
+    // Reset so re-uploading the same file still fires onChange.
     e.target.value = "";
   }
+
+  // Drop zone handlers — the photo preview is also a drop target. Files
+  // dragged from Finder/Explorer land here without ever invoking a picker.
+  const [isDragOver, setIsDragOver] = useState(false);
+  function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    if (isUploading || isGeneratingAi) return;
+    setIsDragOver(true);
+  }
+  function handleDragLeave(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    setIsDragOver(false);
+  }
+  async function handleDrop(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    setIsDragOver(false);
+    if (isUploading || isGeneratingAi) return;
+    const file = e.dataTransfer.files?.[0];
+    if (file) await uploadFile(file);
+  }
+
+  // Clipboard paste — Cmd/Ctrl-V from any screenshot / copied image.
+  // Wired at the form scope so the user doesn't need to focus the photo area.
+  useEffect(() => {
+    function onPaste(e: ClipboardEvent) {
+      if (isUploading || isGeneratingAi) return;
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      for (const item of Array.from(items)) {
+        if (item.type.startsWith("image/")) {
+          const file = item.getAsFile();
+          if (file) {
+            e.preventDefault();
+            void uploadFile(file);
+            return;
+          }
+        }
+      }
+    }
+    document.addEventListener("paste", onPaste);
+    return () => document.removeEventListener("paste", onPaste);
+    // uploadFile is stable across renders for our purposes; we re-bind only
+    // when the upload/generate state flips so the early-return is current.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isUploading, isGeneratingAi, isEdit, initialProduct]);
 
   // === AI Image Generation ===
   // Generates a product photo from product name + description + category when
@@ -331,7 +387,14 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
               <input type="file"> element, so the browser opens the native
               picker without anything (extension, SW, a11y enforcement) sitting
               between the click and the picker dispatch. */}
-          <div className="relative w-20 h-20 rounded-xl shrink-0 overflow-hidden border border-border bg-muted/30 flex items-center justify-center">
+          <div
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={`relative w-20 h-20 rounded-xl shrink-0 overflow-hidden border-2 bg-muted/30 flex items-center justify-center transition-colors ${
+              isDragOver ? "border-warm-green border-dashed bg-warm-green-light/40" : "border-border"
+            }`}
+          >
             {isUploading ? (
               <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
             ) : imageUrl ? (
@@ -422,6 +485,17 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
             )}
           </div>
         </div>
+
+        {/* Upload hints — three independent paths in case the merchant's
+            browser blocks the file picker. Drag-and-drop and paste both
+            bypass the picker entirely. */}
+        <p className="text-[11px] text-muted-foreground -mt-1">
+          Tip: drag a photo into the box, or copy an image and paste with
+          {" "}
+          <kbd className="px-1 py-0.5 rounded border bg-muted/50 text-[10px] font-mono">⌘V</kbd>
+          {" "}/{" "}
+          <kbd className="px-1 py-0.5 rounded border bg-muted/50 text-[10px] font-mono">Ctrl+V</kbd>.
+        </p>
 
         {/* Required fields */}
         <div className="space-y-3">
