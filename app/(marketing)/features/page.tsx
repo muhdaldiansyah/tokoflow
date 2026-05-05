@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -38,9 +39,23 @@ export const metadata: Metadata = {
 
 type Feature = { icon: LucideIcon; title: string; desc: string };
 
-const sections: { label: string; intro: string; features: Feature[] }[] = [
+type Section = {
+  label: string;
+  intro: string;
+  features: Feature[];
+  // Optional anchor image — only the three "iconic moment" sections carry one
+  // (Photo Magic, Storefront, Evening Embrace). Keeping the rest icon-only
+  // preserves scannability and avoids visual fatigue.
+  image?: { src: string; alt: string };
+};
+
+const sections: Section[] = [
   {
     label: "The Photo Magic",
+    image: {
+      src: "/images/marketing/feature-photo-magic.webp",
+      alt: "Top-down view of a hand holding a smartphone over a flour-dusted counter, framing a tray of brown sugar kuih and karipap.",
+    },
     intro: "Sixty seconds from snap to live shop. No setup wizards, no business-type dropdowns, no forms. Just the camera you already use.",
     features: [
       { icon: Camera, title: "1-photo onboarding", desc: "Point your camera at your kitchen or your bakes. AI generates your shop name, story, menu, prices, and beautiful product photos in seconds." },
@@ -51,6 +66,10 @@ const sections: { label: string; intro: string; features: Feature[] }[] = [
   },
   {
     label: "The Storefront",
+    image: {
+      src: "/images/marketing/feature-storefront.webp",
+      alt: "A customer in a kopitiam holds a smartphone showing a clean shop page with a kuih lapis profile photo and a green Add to order button.",
+    },
     intro: "A link with a face — your story, your menu, your customer's path from curious to confirmed.",
     features: [
       { icon: LinkIcon, title: "Beautiful shop page", desc: "Your photo, your story, your menu. Real personality, not a template." },
@@ -83,6 +102,10 @@ const sections: { label: string; intro: string; features: Feature[] }[] = [
   },
   {
     label: "The Evening Embrace",
+    image: {
+      src: "/images/marketing/feature-evening.webp",
+      alt: "A clean wooden counter at dusk with a phone face-up showing a soft summary card glow; a hijab-wearing woman silhouetted at a dining table with teh tarik in the warm tungsten background.",
+    },
     intro: "Each evening, Tokoflow has something kind to say. Not charts — stories.",
     features: [
       { icon: Sun, title: "Daily summary, told kindly", desc: "\"You did well today. 23 orders, RM 1,247. Pak Andi said your kek lapis was wonderful.\" On slow days: \"Today was quieter. That's okay. Rest up.\"" },
@@ -146,6 +169,17 @@ export default function FeaturesPage() {
       {sections.map((section, i) => (
         <section key={section.label} className={`py-12 lg:py-14 ${i > 0 ? "border-t" : ""}`}>
           <div className="max-w-2xl mx-auto px-4">
+            {section.image && (
+              <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-border shadow-sm mb-6">
+                <Image
+                  src={section.image.src}
+                  alt={section.image.alt}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 672px"
+                  className="object-cover"
+                />
+              </div>
+            )}
             <p className="text-xs font-bold text-foreground/50 uppercase tracking-wider mb-2">
               {section.label}
             </p>

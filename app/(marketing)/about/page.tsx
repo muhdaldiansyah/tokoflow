@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
   Home,
@@ -103,6 +104,24 @@ export default function AboutPage() {
           </p>
         </div>
       </div>
+
+      {/* Hero image — sets the emotional register before any copy. The image
+          shows hands at craft, no phone, no Tokoflow product: this is the
+          moment we never enter. The page that follows explains why. */}
+      <section className="border-b">
+        <div className="max-w-5xl mx-auto px-4 py-8 lg:py-10">
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-[#E2E8F0] shadow-sm">
+            <Image
+              src="/images/marketing/about-hero.webp"
+              alt="Two hijab-sleeved hands knead soft dough on a flour-dusted wooden counter, warm side window light spilling across."
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 1024px"
+              className="object-cover"
+            />
+          </div>
+        </div>
+      </section>
 
       {/* Mission */}
       <section className="py-12 lg:py-16">

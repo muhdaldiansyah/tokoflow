@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -307,6 +308,26 @@ export default function HomePage() {
               </li>
             ))}
           </ul>
+        </div>
+      </section>
+
+      {/* Real shops anchor — image lands between ownership statements and
+          pricing so the visitor sees their own reality before they see what
+          it costs. No copy overlay; the image carries the meaning. */}
+      <section className="border-t border-[#E2E8F0]">
+        <div className="max-w-5xl mx-auto px-4 py-12 lg:py-16">
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-[#E2E8F0] shadow-sm">
+            <Image
+              src="/images/marketing/real-shops.webp"
+              alt="A Malaysian home seller arranges freshly baked kuih lapis on a wooden tray in a sunlit kitchen, smartphone resting on the counter."
+              fill
+              sizes="(max-width: 1024px) 100vw, 1024px"
+              className="object-cover"
+            />
+          </div>
+          <p className="mt-4 text-center text-sm text-[#475569]">
+            Your shop, in your kitchen, on your terms.
+          </p>
         </div>
       </section>
 
