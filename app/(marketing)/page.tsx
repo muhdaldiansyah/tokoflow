@@ -181,75 +181,24 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* Phone Mockup — uses the same warm-green tokens as the actual
-                product so the demo matches what visitors get post-signup. */}
+            {/* Hero image — cinematic editorial photograph (GPT-5.4 Image 2,
+                T2I leaderboard #1) replaces the previous CSS phone mockup.
+                Per positioning bible v1.2: "Background Twin invisible" — the
+                craft (kuih, hands, kitchen) is the protagonist; the phone is
+                a quiet helper in the frame. Reference: Toast / Square / Etsy
+                hero patterns where the maker leads, not the product. Square
+                1:1 keeps the right column visually balanced with the left
+                text column at desktop and stacks cleanly on mobile. */}
             <div className="relative flex justify-center lg:justify-end">
-              <div className="relative">
-                <div className="w-[300px] rounded-[3rem] border-[8px] border-[#1E293B] bg-[#1E293B] shadow-[0_32px_80px_-8px_rgba(0,0,0,0.10)] overflow-hidden">
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[24px] w-[120px] bg-[#1E293B] rounded-b-[18px] z-20" />
-
-                  <div className="h-[600px] w-full bg-gray-50 relative overflow-hidden flex flex-col">
-                    <div className="h-8 w-full bg-white z-10" />
-
-                    <div className="flex-1 px-4 pt-2 pb-16 flex flex-col font-sans overflow-hidden">
-                      <div className="flex flex-col items-center mb-4">
-                        <div className="h-12 w-12 rounded-full bg-warm-green-light flex items-center justify-center mb-1.5">
-                          <span className="text-xs font-bold text-warm-green">AS</span>
-                        </div>
-                        <span className="text-[13px] font-bold text-[#1E293B]">Aisyah Kuih Lapis</span>
-                        <span className="text-[9px] text-[#94A3B8] mt-0.5 italic">&ldquo;Grandma&apos;s recipe, made with love.&rdquo;</span>
-                      </div>
-
-                      <p className="text-[8px] font-bold text-[#1E293B]/50 uppercase tracking-wider mb-2">Pick your items</p>
-                      <div className="space-y-2">
-                        <div className="rounded-xl border border-warm-green/30 bg-warm-green-light p-3 flex items-center justify-between">
-                          <div>
-                            <span className="text-[11px] font-semibold text-warm-green">Kek Lapis Original</span>
-                            <span className="block text-[9px] text-warm-green/70">RM 25</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="h-6 w-6 rounded-lg bg-white border border-[#E2E8F0] flex items-center justify-center text-[10px] text-[#475569]">-</div>
-                            <span className="text-[11px] font-bold text-[#1E293B] w-4 text-center">2</span>
-                            <div className="h-6 w-6 rounded-lg bg-warm-green flex items-center justify-center text-[10px] text-white">+</div>
-                          </div>
-                        </div>
-                        <div className="rounded-xl border border-warm-green/30 bg-warm-green-light p-3 flex items-center justify-between">
-                          <div>
-                            <span className="text-[11px] font-semibold text-warm-green">Kuih Ros (12 pcs)</span>
-                            <span className="block text-[9px] text-warm-green/70">RM 18</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="h-6 w-6 rounded-lg bg-white border border-[#E2E8F0] flex items-center justify-center text-[10px] text-[#475569]">-</div>
-                            <span className="text-[11px] font-bold text-[#1E293B] w-4 text-center">1</span>
-                            <div className="h-6 w-6 rounded-lg bg-warm-green flex items-center justify-center text-[10px] text-white">+</div>
-                          </div>
-                        </div>
-                        <div className="rounded-xl border border-[#E2E8F0] bg-white p-3 flex items-center justify-between">
-                          <div>
-                            <span className="text-[11px] font-semibold text-[#1E293B]">Brownies (Box)</span>
-                            <span className="block text-[9px] text-[#94A3B8]">RM 35</span>
-                          </div>
-                        </div>
-                        <div className="rounded-xl border border-[#E2E8F0] bg-white p-3 flex items-center justify-between">
-                          <div>
-                            <span className="text-[11px] font-semibold text-[#1E293B]">Karipap (12 pcs)</span>
-                            <span className="block text-[9px] text-[#94A3B8]">RM 18</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="absolute bottom-0 w-full bg-white border-t border-[#E2E8F0] px-4 py-3 z-20">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[9px] text-[#94A3B8]">3 items</span>
-                        <span className="text-[12px] font-bold text-[#1E293B]">RM 68</span>
-                      </div>
-                      <div className="bg-warm-green text-white rounded-xl py-2.5 text-[11px] font-semibold text-center">
-                        Send order
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div className="relative aspect-square w-full max-w-[480px] overflow-hidden rounded-3xl shadow-[0_32px_80px_-8px_rgba(0,0,0,0.18)]">
+                <Image
+                  src="/images/marketing/hero-craft.webp"
+                  alt="A Malaysian home seller's hand holds a smartphone showing a clean shop page beside a tray of freshly baked kuih lapis on a flour-dusted counter at golden hour."
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 90vw, 480px"
+                  className="object-cover"
+                />
               </div>
             </div>
           </div>
