@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Camera, Loader2, Trash2, CircleMinus, CircleCheck } from "lucide-react";
+import { ArrowLeft, Camera, Loader2, Trash2, CircleMinus, CircleCheck, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { getCategories, createProduct, updateProduct, toggleAvailability, deleteProduct } from "../services/product.service";
 import { clearItemSuggestionsCache } from "@/features/orders/services/order.service";
@@ -42,6 +42,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
   // UI state
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isGeneratingAi, setIsGeneratingAi] = useState(false);
   const [categories, setCategories] = useState<string[]>([]);
   const [unitOptions, setUnitOptions] = useState<{ id: string; label: string }[]>([]);
   const [showCategorySuggestions, setShowCategorySuggestions] = useState(false);
@@ -142,6 +143,50 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
     }
     setIsUploading(false);
     if (imageInputRef.current) imageInputRef.current.value = "";
+  }
+
+  // === AI Image Generation ===
+  // Generates a product photo from product name + description + category when
+  // none exists, or improves an existing one (lighting + background only —
+  // the food itself stays untouched). Zero prompt required from the merchant
+  // — server-side templates handle it.
+  //
+  // Only available on saved products (we need the product ID for the storage
+  // path and DB update). For brand-new products the button stays hidden until
+  // first save.
+  async function handleAiGenerate() {
+    if (!isEdit || !initialProduct) return;
+    if (isGeneratingAi || isUploading) return;
+
+    const mode: "generate" | "enhance" = imageUrl ? "enhance" : "generate";
+    setIsGeneratingAi(true);
+    try {
+      const res = await fetch(
+        `/api/products/${initialProduct.id}/generate-image`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mode }),
+        },
+      );
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(data.error || "Couldn't generate photo");
+        return;
+      }
+      setImageUrl(data.imageUrl);
+      track("product_image_ai_generated", {
+        product_id: initialProduct.id,
+        mode,
+      });
+      toast.success(
+        mode === "enhance" ? "Photo enhanced" : "Photo generated",
+      );
+    } catch {
+      toast.error("Network error — try again");
+    } finally {
+      setIsGeneratingAi(false);
+    }
   }
 
   async function removeImage() {
@@ -303,7 +348,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
               <button
                 type="button"
                 onClick={() => imageInputRef.current?.click()}
-                disabled={isUploading}
+                disabled={isUploading || isGeneratingAi}
                 className="h-9 px-3 rounded-lg border border-border text-xs font-medium text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 disabled:opacity-50"
               >
                 <Camera className="w-3.5 h-3.5" />
@@ -322,11 +367,37 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
                 <span className="text-xs font-medium">{isAvailable ? "Active" : "Inactive"}</span>
               </button>
             </div>
+            {/* AI generate / enhance — appears only on saved products. The
+                button morphs based on whether a photo exists: empty →
+                "Generate", existing → "Enhance". Server-side prompt builder
+                pulls product name + description + category. */}
+            {isEdit && initialProduct && name.trim() && (
+              <button
+                type="button"
+                onClick={handleAiGenerate}
+                disabled={isGeneratingAi || isUploading}
+                className="h-9 px-3 rounded-lg border border-warm-green/30 bg-warm-green-light text-warm-green text-xs font-medium hover:bg-warm-green-light/80 transition-colors flex items-center gap-1.5 disabled:opacity-60"
+              >
+                {isGeneratingAi ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Sparkles className="w-3.5 h-3.5" />
+                )}
+                {isGeneratingAi
+                  ? imageUrl
+                    ? "Enhancing…"
+                    : "Generating…"
+                  : imageUrl
+                    ? "Enhance with AI"
+                    : "Generate with AI"}
+              </button>
+            )}
             {imageUrl && (
               <button
                 type="button"
                 onClick={removeImage}
-                className="h-9 px-3 rounded-lg text-xs font-medium text-warm-rose hover:bg-warm-rose-light transition-colors flex items-center gap-1.5"
+                disabled={isGeneratingAi}
+                className="h-9 px-3 rounded-lg text-xs font-medium text-warm-rose hover:bg-warm-rose-light transition-colors flex items-center gap-1.5 disabled:opacity-50"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 Remove photo
