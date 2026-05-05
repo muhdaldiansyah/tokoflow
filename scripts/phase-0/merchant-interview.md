@@ -156,7 +156,7 @@ NOW you can describe (one sentence, no product name, no jargon):
 **Probe:**
 - Apa reaksi pertama? (capture verbatim)
 - **Sean Ellis test**: "Kalau tool ini tutup esok, you akan rasa: (a) sangat kecewa (b) agak kecewa (c) tak peduli?"
-- Berapa willing to pay per month? Probe: RM 19? RM 29? RM 49? RM 79? RM 99?
+- Berapa willing to pay per month? Probe: RM 19? RM 29? RM 49? RM 99? (Pro RM 49 / Business RM 99 locked — probing RM 19/29 tests Free→Pro affordability gap)
 - Deal-breaker features — what MUST be in there?
 - What do you WORRY about?
 
@@ -177,7 +177,28 @@ NOW you can describe (one sentence, no product name, no jargon):
 
 ---
 
-### 8. Close (2 min)
+### 8. Brand resonance test (2 min) — added per SYNTHESIS-2026-05-05.md §6.1
+
+Single threshold to remove ambiguous middle: **friction <4/10 keep "Tokoflow", ≥4/10 trigger rebrand decision**. Bias toward keep because rebrand has 3-6 weeks switching cost.
+
+Show printed logo + name. Don't explain etymology.
+
+> "Last question — kami sedang pilih nama untuk tool ini. Nama yang dipertimbangkan: **Tokoflow**. Apa pikiran first kamu? Sounds Indonesian? Sounds Malaysian? Generic? Confusing?"
+
+**Probe (don't lead):**
+- "Kalau kawan kamu cakap 'cuba Tokoflow,' kamu nak click? Atau confused?"
+- "Ada nama lain yang kamu lebih comfortable dengan?"
+
+**Score 1-10 friction**:
+- 1-3 = "okay/no friction/sounds fine" → keep
+- 4-6 = "agak Indonesian/asing" → flag for rebrand decision
+- 7-10 = "kedengaran salah negara/turn-off" → strong rebrand signal
+
+**Log to interview log**: column "Brand friction 1-10" (added).
+
+---
+
+### 9. Close (2 min)
 
 - Ada kawan lain yang you rasa patut saya cakap dengan? (referral chain)
 - Kalau kami ada beta untuk 5 merchant friendly nanti — boleh contact you semula?
@@ -189,8 +210,8 @@ NOW you can describe (one sentence, no product name, no jargon):
 
 Keep in Google Sheet / Airtable. **One row per interview. Anonymized.**
 
-| # | Date | Friendly/Hostile | Vertical | Rev band | Tier 1 love mentioned | Tier 2 love mentioned | Top 3 pains (ID from §4) | Three-Tier resonance 1-10 | Sean Ellis answer (a/b/c) | WTP RM/mo | Trust concern | Wave 2 spillover names | Beta-willing? | Notes |
-|---|------|------------------|----------|----------|-----------------------|-----------------------|--------------------------|---------------------------|---------------------------|-----------|---------------|-----------------------|---------------|-------|
+| # | Date | Friendly/Hostile | Vertical | Rev band | Tier 1 love mentioned | Tier 2 love mentioned | Top 3 pains (ID from §4) | Three-Tier resonance 1-10 | Sean Ellis answer (a/b/c) | WTP RM/mo | Trust concern | Wave 2 spillover names | Brand friction 1-10 | Beta-willing? | Notes |
+|---|------|------------------|----------|----------|-----------------------|-----------------------|--------------------------|---------------------------|---------------------------|-----------|---------------|-----------------------|---------------------|---------------|-------|
 
 ---
 
@@ -205,6 +226,7 @@ Compute against pass/fail criteria:
 - [ ] Top pain Tier 3 cited: ≥3/10
 - [ ] Tier 2 love cited: ≥2/10
 - [ ] Wave 2 spillover names collected: ≥3/10
+- [ ] **Brand friction average <4/10** → keep Tokoflow. ≥4/10 average → trigger rebrand decision (not kill)
 
 ### Kill scores
 - [ ] Three-Tier resonance <5/10 average → **KILL trigger #2**

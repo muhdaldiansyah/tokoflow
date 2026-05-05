@@ -8,21 +8,17 @@ import {
   Heart,
   Sun,
   LinkIcon,
-  ClipboardPaste,
   Sparkles,
   ShoppingBag,
   CalendarClock,
   QrCode,
   MessageSquare,
   ClipboardList,
-  Calculator,
   ImageIcon,
   Bell,
-  Receipt,
   BarChart3,
   Users,
   WifiOff,
-  FileCheck,
   PackageCheck,
   type LucideIcon,
 } from "lucide-react";
@@ -115,16 +111,6 @@ const sections: Section[] = [
     ],
   },
   {
-    label: "Silent superpower (Business)",
-    intro: "Behind the scenes — invoices, SST, LHDN MyInvois — handled quietly. You'll never have to think about a tax form.",
-    features: [
-      { icon: FileCheck, title: "LHDN MyInvois auto-submit", desc: "Each paid invoice flows into MyInvois automatically. UUID + Long ID stored. You never log in to LHDN." },
-      { icon: Calculator, title: "SST, calculated", desc: "0% or 6%, applied per invoice or as default. Tokoflow does the math, files the records." },
-      { icon: Receipt, title: "Beautiful PDF receipts", desc: "Auto-generated for every order — branded, dignified, with MyInvois reference. One tap to share via WhatsApp; you choose when to send." },
-      { icon: Bell, title: "Tax reminder, gentle", desc: "\"This month's tax has been filed automatically.\" Information, not a task." },
-    ],
-  },
-  {
     label: "Reliability",
     intro: "Quiet things that just work. So you trust the tool, then forget it.",
     features: [
@@ -196,6 +182,20 @@ export default function FeaturesPage() {
           </div>
         </section>
       ))}
+
+      {/* Tax compliance — silent footnote, not a featured section. SST and
+          LHDN MyInvois only matter to a small slice of merchants and surface
+          only when the business needs them. Restraint is the point. */}
+      <section className="border-t py-10 lg:py-12">
+        <div className="max-w-2xl mx-auto px-4 text-center">
+          <p className="text-xs font-semibold text-foreground/50 uppercase tracking-wider mb-2">
+            One more thing
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            If you ever cross the SST threshold, Tokoflow handles LHDN MyInvois quietly in the background. You won&rsquo;t notice it until you need it — and you won&rsquo;t need it for a long time.
+          </p>
+        </div>
+      </section>
 
       {/* CTA */}
       <section className="border-t py-12 lg:py-16">

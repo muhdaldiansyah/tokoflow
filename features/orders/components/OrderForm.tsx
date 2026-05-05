@@ -38,9 +38,32 @@ export function OrderForm({ initialOrder }: OrderFormProps) {
   const searchParams = useSearchParams();
   const isPeak = usePeakMode();
 
-  const [items, setItems] = useState<OrderItem[]>(
-    initialOrder?.items || []
-  );
+  const [items, setItems] = useState<OrderItem[]>(() => {
+    if (initialOrder?.items) return initialOrder.items;
+    // Repeat-order shortcut: ?items= param accepts JSON-encoded OrderItem[].
+    // searchParams.get already URI-decodes, so feed it directly to JSON.parse —
+    // a second decodeURIComponent throws URIError on bare % literals (e.g.
+    // product name "10% off") and would silently drop the prefilled cart.
+    const itemsParam = searchParams.get("items");
+    if (itemsParam) {
+      try {
+        const parsed = JSON.parse(itemsParam);
+        if (Array.isArray(parsed)) {
+          return parsed
+            .filter((p) => p && typeof p.name === "string" && typeof p.qty === "number")
+            .slice(0, 50)
+            .map((p) => ({
+              name: String(p.name).slice(0, 100),
+              qty: Math.max(1, Math.round(p.qty)),
+              price: Math.max(0, Math.round(p.price ?? 0)),
+            }));
+        }
+      } catch {
+        // ignore malformed param
+      }
+    }
+    return [];
+  });
   const [customerName, setCustomerName] = useState(
     initialOrder?.customer_name || searchParams.get("nama") || ""
   );

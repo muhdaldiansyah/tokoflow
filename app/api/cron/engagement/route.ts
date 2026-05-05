@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { isWithinQuietHours } from "@/lib/utils/quiet-hours";
 
 const EXPO_PUSH_URL = "https://exp.host/--/api/v2/push/send";
 
@@ -93,7 +94,7 @@ export async function POST(request: NextRequest) {
   // Fetch all profiles with push tokens
   const { data: profiles } = await supabase
     .from("profiles")
-    .select("id, push_token, full_name, business_name, slug, orders_used, onboarding_drip, created_at")
+    .select("id, push_token, full_name, business_name, slug, orders_used, onboarding_drip, created_at, quiet_hours_start, quiet_hours_end")
     .not("push_token", "is", null);
 
   if (!profiles || profiles.length === 0) {
@@ -105,6 +106,8 @@ export async function POST(request: NextRequest) {
   const updates: { id: string; drip: Record<string, string> }[] = [];
 
   for (const profile of profiles) {
+    if (isWithinQuietHours(profile.quiet_hours_start, profile.quiet_hours_end, now)) continue;
+
     const drip: Record<string, string> = profile.onboarding_drip || {};
     const createdAt = new Date(profile.created_at);
     const ageDays = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24));

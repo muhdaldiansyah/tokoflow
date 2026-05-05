@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { isWithinQuietHours } from "@/lib/utils/quiet-hours";
 
 const EXPO_PUSH_URL = "https://exp.host/--/api/v2/push/send";
 
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest) {
   // Get all users with push tokens
   const { data: profiles } = await supabase
     .from("profiles")
-    .select("id, push_token, business_name, full_name, business_type")
+    .select("id, push_token, business_name, full_name, business_type, quiet_hours_start, quiet_hours_end")
     .not("push_token", "is", null);
 
   if (!profiles || profiles.length === 0) {
@@ -40,6 +41,8 @@ export async function POST(request: NextRequest) {
   const pushMessages: { to: string; title: string; body: string; sound: string; data: Record<string, unknown> }[] = [];
 
   for (const profile of profiles) {
+    if (isWithinQuietHours(profile.quiet_hours_start, profile.quiet_hours_end, now)) continue;
+
     // Get today's orders for this user
     const { data: todayOrders } = await supabase
       .from("orders")

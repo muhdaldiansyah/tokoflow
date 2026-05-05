@@ -26,7 +26,7 @@ export async function GET(request: Request) {
   const slug = searchParams.get("slug")?.toLowerCase().trim() || "";
 
   if (!isValidSlug(slug) || isReservedSlug(slug)) {
-    return NextResponse.json({ available: false });
+    return NextResponse.json({ available: false }, { status: 400 });
   }
 
   const supabase = await createServiceClient();
@@ -36,5 +36,5 @@ export async function GET(request: Request) {
     .eq("slug", slug)
     .maybeSingle();
 
-  return NextResponse.json({ available: !data });
+  return NextResponse.json({ available: !data }, { status: 200 });
 }

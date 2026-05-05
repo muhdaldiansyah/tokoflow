@@ -30,6 +30,15 @@ export const empty = {
   invoices: () => "Invoices appear here when an order is paid — or you can write one manually.",
   invoicesNoMatch: () => "No invoices match that filter.",
 
+  // Daily prep list (recap/Production view).
+  production: () => "No orders for this date yet.",
+  productionHint: () =>
+    "When customers order through your store link with a delivery date, prep totals appear here automatically.",
+
+  // Monthly recap report.
+  monthly: (monthName: string, year: number) =>
+    `No orders in ${monthName} ${year} yet.`,
+
   history: () => "Nothing here yet — your past orders will show up after the first sale.",
 } as const;
 
@@ -92,7 +101,7 @@ export const empathy = {
     "Ramadan in two weeks. Want a hand setting up a Ramadan menu?",
 
   midRush: () =>
-    "Looks busy — I'll handle customer chat. You focus on cooking.",
+    "Looks busy — I'll draft replies so you can keep cooking. Tap to send.",
 
   customerComplaint: (customer: string) =>
     `${customer} sounds unhappy with the last order. Want me to draft a calm, helpful reply?`,

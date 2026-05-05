@@ -109,7 +109,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Failed to delete receipt" }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("Delete receipt API error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

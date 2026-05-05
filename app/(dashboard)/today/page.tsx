@@ -49,8 +49,9 @@ export default async function TodayPage() {
       .eq("user_id", user.id)
       .eq("is_available", true)
       .eq("stock", 0),
-    // Tier 3 visibility — count what Tokoflow auto-handled today. Cheap
-    // count-only queries; head:true returns no rows, just the count header.
+    // Count what Tokoflow auto-handled today (invoices drafted, customers
+    // saved). Cheap count-only queries; head:true returns no rows, just the
+    // count header.
     supabase
       .from("invoices")
       .select("id", { count: "exact", head: true })

@@ -2,7 +2,7 @@
 
 > **Gate 0 master checklist.** Phase 0 must DISPROVE thesis if thesis is wrong, not just CONFIRM if confirmable. **No Phase 1 build until ALL Gate 0 criteria pass.**
 
-> **Strategic context**: see [`docs/positioning/06-roadmap.md` Phase 0](../../docs/positioning/06-roadmap.md#phase-0--validation-first-foundation-aprjul-2026-3-months) and [D-013 / D-014 / D-017](../../docs/positioning/07-decisions.md).
+> **Strategic context**: see [`docs/positioning/06-roadmap.md` Phase 0](../../docs/positioning/06-roadmap.md#phase-0--validation-first-foundation-aprjul-2026-3-months), [D-013 / D-014 / D-017](../../docs/positioning/07-decisions.md), and execution synthesis [SYNTHESIS-2026-05-05.md](../../docs/SYNTHESIS-2026-05-05.md).
 
 ---
 
@@ -19,12 +19,15 @@ Each track has its own validation deliverable. **All 6 must complete before Gate
 | **0.5** | Manual Twin smoke test | 2-week role-play per [`smoke-test/README.md`](./smoke-test/README.md) | 2 weeks, after interview merchant identified |
 | **0.6** | AI cost measurement | Real cost numbers per [`ai-cost/README.md`](./ai-cost/README.md) | 1 week of focused work |
 
-Plus operational:
+Plus operational + distribution + brand (added 2026-05-05 per [SYNTHESIS-2026-05-05.md](../../docs/SYNTHESIS-2026-05-05.md)):
 
-| # | Track | Status |
+| # | Track | Deliverable / Status |
 |---|---|---|
 | **0.7** | Ariff partnership formal lock | Kopi 2 jam → SAFE/MOU signed |
 | **0.8** | MDEC Digitalisation Partner application | Pending review |
+| **0.9** | Distribution validation (TikTok + komuniti) | ≥300 followers + ≥15 inbound DM by Week 8 — see [`distribution/README.md`](./distribution/README.md) |
+| **0.10** | Brand resonance test | Embedded in [`merchant-interview.md`](./merchant-interview.md) §8 — friction <4/10 keep / ≥4/10 rebrand decision |
+| **0.B** | Backup B2B playbook (scenario c contingency) | Activated if 0.9 fails or distribution skill scenario c — see [`backup-b2b/README.md`](./backup-b2b/README.md) |
 
 ---
 
@@ -50,7 +53,7 @@ Plus operational:
 
 ### From AI cost measurement ([`ai-cost/README.md`](./ai-cost/README.md))
 
-- [ ] Cost per merchant ≤ **RM 25/month** at 50-order projected scale (Pro RM 79 viable)
+- [ ] Cost per merchant ≤ **RM 25/month** at 50-order projected scale (Pro RM 49 locked, ≥49% margin); RM 25-30 = retest Week 6 must clear ≤RM 25; >RM 30 = kill
 
 ### From sandbox spikes
 
@@ -64,15 +67,17 @@ Plus operational:
 
 ---
 
-## Pre-committed kill triggers — ANY hit → kill or pivot
+## Pre-committed triggers — 7 total (6 kill + 1 rebrand-flag)
 
-> No rationalization when emotion arrives. Triggers can only be relaxed via formal D-XXX entry in `07-decisions.md` with reasoning logged.
+> No rationalization when emotion arrives. Triggers can only be relaxed via formal D-XXX entry in `07-decisions.md` with reasoning logged. Aligned with [SYNTHESIS-2026-05-05.md §5](../../docs/SYNTHESIS-2026-05-05.md).
 
-1. **AI cost** per active merchant > **RM 30/month** at RM 79 max price point → unit economics broken → kill
-2. **<5/10 interviews** resonate with Three-Tier framework → root problem wrong → reframe or kill
-3. **Smoke test**: customers consistently feel AI tone OR merchant reports trust degradation > 1 incident → relationship moat broken → reduce twin scope OR kill
+1. **AI cost**: ≤RM 25 pass / RM 25-30 warning + retest Week 6 / >RM 30 → unit economics broken → kill (Pro RM 49 locked)
+2. **<7/10 interviews** resonate with Three-Tier framework (kill); <5/10 = catastrophic kill, definitely no push-through
+3. **Smoke test**: customers detect AI tone OR merchant trust degrades OR rates <7/10 helpfulness → relationship moat broken → reduce twin scope to Foreground Assist only OR kill
 4. **Ariff** declines formal partnership AND Plan B distribution unproven within 4 weeks → kill
 5. **Sdn Bhd structurally blocked** AND sole-prop alternative makes Pro tier non-viable → kill
+6. **Distribution**: <300 followers + <15 inbound DM cumulative by Week 8 → distribution thesis fails → kill content-led playbook OR activate scenario (c) backup B2B
+7. **Brand friction** ≥4/10 average across 10 interviews → trigger rebrand decision Week 7 (NOT kill — flag; bias-toward-keep due to 3-6 week switching cost)
 
 ---
 
@@ -84,18 +89,22 @@ phase-0/
 ├── .env.phase-0.example            # Sandbox credentials template (don't commit filled .env.phase-0)
 ├── billplz-spike.ts                # 0.2: payment sandbox
 ├── myinvois-spike.ts               # 0.1: e-invoice sandbox
-├── merchant-interview.md           # 0.4: 10 interviews protocol (v2 adversarial)
+├── merchant-interview.md           # 0.4 + 0.10: 10 interviews protocol (v2 adversarial) + brand resonance test
 ├── smoke-test/                     # 0.5: manual twin role-play
 │   ├── README.md                   # Protocol overview
 │   ├── tracking-template.md        # Aldi's daily diary template
 │   └── customer-feel-survey.md     # Customer surveillance protocol
-└── ai-cost/                        # 0.6: AI cost measurement
-    ├── README.md                   # Methodology + thresholds
-    ├── measure.ts                  # Main measurement script
-    ├── scenarios.ts                # Realistic merchant scenarios
-    └── prompts/
-        ├── background-twin.ts      # Tier 3 system prompts
-        └── foreground-assist.ts    # Tier 2 system prompts
+├── ai-cost/                        # 0.6: AI cost measurement
+│   ├── README.md                   # Methodology + tiered thresholds (≤25 / 25-30 / >30)
+│   ├── measure.ts                  # Main measurement script
+│   ├── scenarios.ts                # Realistic merchant scenarios
+│   └── prompts/
+│       ├── background-twin.ts      # Tier 3 system prompts
+│       └── foreground-assist.ts    # Tier 2 system prompts
+├── distribution/                   # 0.9: TikTok + komuniti distribution validation (added 2026-05-05)
+│   └── README.md                   # Channel mix, content calendar, weekly checkpoints
+└── backup-b2b/                     # 0.B: scenario (c) backup playbook (added 2026-05-05)
+    └── README.md                   # Direct B2B outreach if content-led fails
 ```
 
 ---

@@ -4,11 +4,6 @@ import { ArrowRight, HelpCircle, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   FREE_MONTHLY_ORDERS,
-  PACK_ORDERS,
-  PACK_PRICE,
-  MEDIUM_PACK_ORDERS,
-  MEDIUM_PACK_PRICE,
-  UNLIMITED_PRICE,
   BISNIS_PRICE,
   BUSINESS_PRICE,
 } from "@/config/plans";
@@ -16,7 +11,7 @@ import {
 export const metadata: Metadata = {
   title: "Pricing — We handle the receipts. Not the recipes.",
   description:
-    "Free forever for your first 50 orders/month. Pro RM 49/month for unlimited orders and the full AI companion. Business RM 99/month adds LHDN MyInvois.",
+    "Free forever for your first 50 orders/month. Pro RM 49/month unlocks unlimited orders and the full companion. Business RM 99/month adds multi-staff accounts.",
   alternates: {
     canonical: "https://tokoflow.com/pricing",
   },
@@ -35,7 +30,7 @@ const faqs = [
   },
   {
     question: `What happens after ${FREE_MONTHLY_ORDERS} orders?`,
-    answer: `You have four ways to keep going. Top up RM ${PACK_PRICE} for ${PACK_ORDERS} more orders. Or RM ${MEDIUM_PACK_PRICE} for ${MEDIUM_PACK_ORDERS} (better value). Or upgrade to Pro at RM ${BISNIS_PRICE}/month for unlimited everything. Or Business at RM ${BUSINESS_PRICE}/month for LHDN MyInvois compliance built in. Pack credits never expire.`,
+    answer: `Upgrade to Pro at RM ${BISNIS_PRICE}/month for unlimited orders, or Business at RM ${BUSINESS_PRICE}/month if you also need silent compliance. Either way, your data stays — no lock-in, cancel any time.`,
   },
   {
     question: "Why upgrade to Pro?",
@@ -45,7 +40,7 @@ const faqs = [
   {
     question: "What does Business add?",
     answer:
-      "Business (RM 99/month) is for sellers who care about compliance. It includes everything in Pro, plus silent LHDN MyInvois auto-submit, automatic SST calculation, multi-staff accounts, and priority support. The compliance happens behind the scenes — you never log into LHDN.",
+      "Business (RM 99/month) is for sellers who run with help. Everything in Pro, plus multi-staff accounts and priority support. Compliance handling (SST, LHDN) is included for sellers who eventually need it — but it stays out of the way until you do.",
   },
   {
     question: "Will Tokoflow file my SST returns?",
@@ -125,15 +120,13 @@ const tiers = [
     name: "Business",
     price: `RM ${BUSINESS_PRICE}`,
     period: "/month",
-    tagline: "Compliance, handled silently.",
+    tagline: "For sellers running with help.",
     features: [
       "Everything in Pro",
-      "LHDN MyInvois auto-submit",
-      "SST 0% / 6% calculation",
-      "> RM 10K rule auto-flag",
       "Multi-staff accounts (2 included)",
       "Order assignment to staff",
       "Branded invoice PDF",
+      "Compliance ready when you need it (SST, LHDN MyInvois)",
       "Priority support (24h response)",
     ],
     cta: "Try Business",
@@ -211,17 +204,6 @@ export default function PricingPage() {
             ))}
           </div>
 
-          {/* Top-up note */}
-          <div className="mt-8 max-w-md mx-auto rounded-2xl border border-[#E2E8F0] bg-white p-6 text-center">
-            <p className="text-xs font-bold text-[#1E293B]/70 uppercase tracking-wider">
-              Or pay only when you grow
-            </p>
-            <p className="mt-2 text-sm text-[#475569]">
-              Hit {FREE_MONTHLY_ORDERS} orders? Top up RM {PACK_PRICE} for {PACK_ORDERS} more,
-              or RM {MEDIUM_PACK_PRICE} for {MEDIUM_PACK_ORDERS} (better value).
-              Pack credits never expire.
-            </p>
-          </div>
         </div>
       </section>
 
@@ -244,19 +226,13 @@ export default function PricingPage() {
                 RM 150–600/mo
               </span>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-[#475569]">Tax agent (LHDN compliance)</span>
-              <span className="font-semibold text-[#1E293B] line-through decoration-[#94A3B8]">
-                RM 500–2,000/mo
-              </span>
-            </div>
             <div className="border-t border-[#E2E8F0] pt-3">
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-[#05A660]">Tokoflow Pro</span>
                 <span className="font-bold text-[#05A660]">RM {BISNIS_PRICE}/mo</span>
               </div>
               <div className="flex items-center justify-between mt-1">
-                <span className="font-semibold text-[#05A660]">Tokoflow Business (with LHDN)</span>
+                <span className="font-semibold text-[#05A660]">Tokoflow Business</span>
                 <span className="font-bold text-[#05A660]">RM {BUSINESS_PRICE}/mo</span>
               </div>
               <p className="mt-3 text-xs text-[#475569] text-center">

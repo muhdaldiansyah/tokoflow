@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { getCategoryDefaults, getProfileUpdatesFromCategory } from "@/config/category-defaults";
 import { ChevronRight, Copy, Share2, Check, Loader2, X, Plus } from "lucide-react";
+import { PhotoMagicEntry } from "@/features/onboarding/components/PhotoMagicEntry";
 
 interface ProductInput {
   name: string;
@@ -19,6 +20,7 @@ interface CategoryOption {
 export default function SetupPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
+  const [photoMagicDismissed, setPhotoMagicDismissed] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [categories, setCategories] = useState<CategoryOption[]>([]);
   const [products, setProducts] = useState<ProductInput[]>([
@@ -30,6 +32,11 @@ export default function SetupPage() {
   const [businessName, setBusinessName] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  function handlePhotoMagicComplete(completedSlug: string) {
+    setSlug(completedSlug);
+    setStep(3); // jump to share/done step
+  }
 
   // Live preview of the slug the server will derive — keeps in sync with lib/utils/slug.ts
   const slugPreview = businessName
@@ -210,6 +217,13 @@ export default function SetupPage() {
         {/* Step 1: Category Selection */}
         {step === 1 && (
           <div className="space-y-6">
+            {!photoMagicDismissed && (
+              <PhotoMagicEntry
+                onComplete={handlePhotoMagicComplete}
+                onDismiss={() => setPhotoMagicDismissed(true)}
+              />
+            )}
+
             <div className="text-center">
               <h1 className="text-2xl font-bold text-foreground">Your business category</h1>
               <p className="text-muted-foreground mt-1">

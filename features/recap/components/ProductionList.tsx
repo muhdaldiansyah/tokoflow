@@ -6,9 +6,9 @@ import { toast } from "sonner";
 import { getProductionList, getProductionForExport } from "../services/production.service";
 import { getProfile } from "@/features/receipts/services/receipt.service";
 import { track } from "@/lib/analytics";
+import { copy } from "@/lib/copy";
 import type { ProductionSummary } from "../services/production.service";
 import {
-  generateExcel,
   workbookToArrayBuffer,
   downloadBlob,
 } from "@/lib/utils/export";
@@ -194,10 +194,10 @@ _${businessName} · Tokoflow_`;
         <div className="rounded-lg border bg-card px-4 py-12 text-center shadow-sm">
           <ClipboardList className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">
-            No orders for this date yet
+            {copy.empty.production()}
           </p>
           <p className="text-xs text-muted-foreground/60 mt-2 max-w-xs mx-auto">
-            When customers order through your store link with a delivery date, prep totals will appear here automatically.
+            {copy.empty.productionHint()}
           </p>
         </div>
       </div>

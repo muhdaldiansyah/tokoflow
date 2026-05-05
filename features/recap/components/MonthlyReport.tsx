@@ -11,6 +11,7 @@ import {
   getMonthlyOrdersForExport,
 } from "../services/report.service";
 import { track } from "@/lib/analytics";
+import { copy } from "@/lib/copy";
 import { getProfile } from "@/features/receipts/services/receipt.service";
 import { AIInsights } from "./AIInsights";
 import { VisitorAnalytics } from "./VisitorAnalytics";
@@ -255,7 +256,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
         <div className="rounded-lg border bg-card px-4 py-12 text-center shadow-sm">
           <ShoppingBag className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
           <p className="text-muted-foreground">
-            No orders yet di bulan {MONTH_NAMES[month - 1]} {year}
+            {copy.empty.monthly(MONTH_NAMES[month - 1], year)}
           </p>
         </div>
       )}
@@ -658,13 +659,13 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                         )}
                       </td>
                       <td className="py-2 px-2 text-right font-semibold text-foreground">
-                        Rp
+                        RM{" "}
                         {report.dailyBreakdown
                           .reduce((sum, d) => sum + d.revenue, 0)
                           .toLocaleString("en-MY")}
                       </td>
                       <td className={`py-2 px-2 text-right font-semibold ${report.dailyBreakdown.reduce((sum, d) => sum + d.collectedRevenue, 0) > 0 ? "text-green-600" : "text-foreground"}`}>
-                        Rp
+                        RM{" "}
                         {report.dailyBreakdown
                           .reduce((sum, d) => sum + d.collectedRevenue, 0)
                           .toLocaleString("en-MY")}

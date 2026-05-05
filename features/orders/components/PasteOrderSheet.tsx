@@ -275,7 +275,7 @@ export function PasteOrderSheet({
                             />
                           </div>
                           <div className="flex items-center gap-1">
-                            <span className="text-xs text-muted-foreground">Rp</span>
+                            <span className="text-xs text-muted-foreground">RM</span>
                             <input
                               type="number"
                               value={item.price || ""}

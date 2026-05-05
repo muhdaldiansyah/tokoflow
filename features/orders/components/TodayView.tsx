@@ -199,9 +199,9 @@ export function TodayView({
     doneCount: doneToday.length,
   });
 
-  // "Tokoflow handled today" — Tier 3 disappearing-work surfacing. Renders
+  // "Tokoflow handled today" — surfaces the auto-handled work. Renders
   // ONLY when there's something genuine to show, so the empty case stays
-  // empty (no zero-counts as decoration). Bible: the felt absence of work.
+  // empty (no zero-counts as decoration).
   const handledFragments: string[] = [];
   if (invoicesToday > 0) handledFragments.push(`${invoicesToday} invoice${invoicesToday === 1 ? "" : "s"} drafted`);
   if (newCustomersToday > 0) handledFragments.push(`${newCustomersToday} new customer${newCustomersToday === 1 ? "" : "s"} saved`);
@@ -372,11 +372,10 @@ export function TodayView({
         </div>
       )}
 
-      {/* Tier 3 disappearing-work footer — the felt absence of mechanical
-          work, surfaced as a quiet kindness (bible iconic moment #6). Only
-          renders when there's something real to show; never decoration. The
-          phrasing is past-tense + first-person Tokoflow ("I drafted...")
-          to underscore that this work happened on its own. */}
+      {/* "While you were away" footer — surfaces the auto-handled work as
+          a quiet kindness. Renders only when there's something real to show
+          (no zero-count decoration). Past-tense phrasing underscores that
+          the work happened on its own. */}
       {handledFragments.length > 0 && (
         <div className="pt-4">
           <p className="text-[11px] text-muted-foreground/80 italic text-center leading-relaxed">

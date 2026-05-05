@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { isWithinQuietHours } from "@/lib/utils/quiet-hours";
 
 const EXPO_PUSH_URL = "https://exp.host/--/api/v2/push/send";
 
-// Proactive alerts cron — runs daily at 08:00 MYT (01:00 UTC)
+// Proactive alerts cron — runs daily at 08:00 MYT (00:00 UTC)
 // Checks: stock running low, capacity almost full, customer re-order predictions
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest) {
   // Get all users with push tokens
   const { data: profiles } = await supabase
     .from("profiles")
-    .select("id, push_token, daily_order_capacity, orders_used, order_credits, unlimited_until")
+    .select("id, push_token, daily_order_capacity, orders_used, order_credits, unlimited_until, quiet_hours_start, quiet_hours_end")
     .not("push_token", "is", null);
 
   if (!profiles || profiles.length === 0) {
@@ -42,6 +43,7 @@ export async function POST(request: NextRequest) {
 
   for (const profile of profiles) {
     if (!profile.push_token) continue;
+    if (isWithinQuietHours(profile.quiet_hours_start, profile.quiet_hours_end, now)) continue;
 
     // Alert 1: Critical stock (products with stock <= 3)
     const { data: lowStock } = await supabase

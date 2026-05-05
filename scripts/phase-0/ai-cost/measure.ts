@@ -12,7 +12,12 @@
  *
  * Output: ai-cost-report-*.md in scripts/phase-0/ai-cost/output/
  *
- * Pre-committed kill criterion: cost > RM 30/merchant/month at RM 79 max → kill.
+ * Pricing tier is LOCKED at Pro RM 49 / Business RM 99 (config/plans.ts).
+ * Pre-committed tiered thresholds (SYNTHESIS-2026-05-05.md §5):
+ *   ≤RM 15 = PASS_AMPLE (margin 69%)
+ *   ≤RM 25 = PASS_TARGET (margin 49%)
+ *   RM 25-30 = WARNING — retest Week 6 with adjusted prompts/caching
+ *   >RM 30 = KILL TRIGGER #1 hits → unit economics broken
  */
 
 import { resolve } from "node:path";
@@ -75,7 +80,7 @@ interface AggregatedReport {
   >;
   totalMonthlyCostUsd: number;
   totalMonthlyCostMyr: number;
-  pricingTierVerdict: "PASS_RM49" | "PASS_RM79" | "MARGINAL" | "KILL";
+  pricingTierVerdict: "PASS_AMPLE" | "PASS_TARGET" | "WARNING" | "KILL";
   rawMeasurements: Measurement[];
 }
 
@@ -282,9 +287,9 @@ function aggregate(measurements: Measurement[]): AggregatedReport {
   const totalMonthlyCostMyr = totalMonthlyCostUsd * USD_TO_MYR;
 
   let pricingTierVerdict: AggregatedReport["pricingTierVerdict"];
-  if (totalMonthlyCostMyr <= 15) pricingTierVerdict = "PASS_RM49";
-  else if (totalMonthlyCostMyr <= 25) pricingTierVerdict = "PASS_RM79";
-  else if (totalMonthlyCostMyr <= 30) pricingTierVerdict = "MARGINAL";
+  if (totalMonthlyCostMyr <= 15) pricingTierVerdict = "PASS_AMPLE";
+  else if (totalMonthlyCostMyr <= 25) pricingTierVerdict = "PASS_TARGET";
+  else if (totalMonthlyCostMyr <= 30) pricingTierVerdict = "WARNING";
   else pricingTierVerdict = "KILL";
 
   return {
@@ -299,13 +304,13 @@ function aggregate(measurements: Measurement[]): AggregatedReport {
 
 function formatReport(report: AggregatedReport, dryRun: boolean): string {
   const verdict =
-    report.pricingTierVerdict === "PASS_RM49"
-      ? "✅ PASS — Pro tier RM 49 viable (margin >69%)"
-      : report.pricingTierVerdict === "PASS_RM79"
-      ? "✅ PASS — Pro tier RM 79 viable (margin >68%)"
-      : report.pricingTierVerdict === "MARGINAL"
-      ? "⚠️ MARGINAL — adjust scope or shift Pro tier upward"
-      : "❌ KILL TRIGGER #1 HIT — unit economics broken at RM 79 max";
+    report.pricingTierVerdict === "PASS_AMPLE"
+      ? "✅ PASS_AMPLE — Pro RM 49 viable with ≥69% margin (locked tier)"
+      : report.pricingTierVerdict === "PASS_TARGET"
+      ? "✅ PASS_TARGET — Pro RM 49 viable with 49-69% margin (target zone)"
+      : report.pricingTierVerdict === "WARNING"
+      ? "⚠️ WARNING — RM 25-30 cost zone. Retest Week 6 with adjusted prompts/caching. Must clear ≤RM 25 to pass Phase 0 Gate."
+      : "❌ KILL TRIGGER #1 HIT — cost >RM 30 at locked Pro RM 49 = unit economics broken";
 
   const lines: string[] = [];
   lines.push("# Phase 0 AI Cost Measurement Report");
@@ -346,23 +351,25 @@ function formatReport(report: AggregatedReport, dryRun: boolean): string {
   lines.push("## Pricing tier recommendation");
   lines.push("");
 
-  if (report.pricingTierVerdict === "PASS_RM49") {
-    lines.push("- **Pro**: RM 49/mo — margin sustainable");
+  if (report.pricingTierVerdict === "PASS_AMPLE") {
+    lines.push("- **Pro**: RM 49/mo — margin ≥69%, ample buffer");
     lines.push("- **Business**: RM 99/mo — comfortable margin");
     lines.push("- **Free**: cap at 50 orders/mo (subsidy ~RM 5/mo per Free user)");
-  } else if (report.pricingTierVerdict === "PASS_RM79") {
-    lines.push("- **Pro**: RM 79/mo (shift up from RM 49)");
-    lines.push("- **Business**: RM 99-129/mo");
-    lines.push("- **Free**: cap at 25 orders/mo to limit subsidy");
-    lines.push("");
-    lines.push("> Update [`05-pricing.md`](../../../docs/positioning/05-pricing.md) Pro tier to RM 79.");
-  } else if (report.pricingTierVerdict === "MARGINAL") {
+    lines.push("- **No re-spec needed**. Phase 0 Gate #3 cleared.");
+  } else if (report.pricingTierVerdict === "PASS_TARGET") {
+    lines.push("- **Pro**: RM 49/mo — margin 49-69%, target zone");
+    lines.push("- **Business**: RM 99/mo — solid margin");
+    lines.push("- **Free**: cap at 50 orders/mo");
+    lines.push("- **No re-spec needed**. Phase 0 Gate #3 cleared.");
+  } else if (report.pricingTierVerdict === "WARNING") {
+    lines.push("- **Pro stays RM 49 (locked)** — no price re-spec");
     lines.push("- Reduce scope: drop pattern_detection or pricing_whisper from Phase 1");
     lines.push("- Or test cheaper model variants (Gemini 1.5 Flash 8B already cheap; try DeepSeek or Llama 3.1 8B)");
-    lines.push("- Recompute after scope reduction");
+    lines.push("- Increase prompt caching aggressiveness");
+    lines.push("- **Retest Week 6** — must clear ≤RM 25 to pass Phase 0 Gate #3");
   } else {
-    lines.push("- **KILL TRIGGER HIT** — unit economics not viable at any pricing tier under RM 79");
-    lines.push("- Decision: re-architect (smaller twin scope) OR pivot segment OR accept lifestyle ceiling");
+    lines.push("- **KILL TRIGGER #1 HIT** — cost >RM 30 at locked Pro RM 49 = unit economics broken");
+    lines.push("- Decision: re-architect (smaller twin scope OR Foreground-Assist-only) OR pivot segment OR accept lifestyle ceiling");
     lines.push("- Update [`07-decisions.md`](../../../docs/positioning/07-decisions.md) with formal D-XXX entry before any code work resumes");
   }
 
@@ -408,7 +415,7 @@ async function main() {
   } else if (sampleArg) {
     const n = parseInt(sampleArg.split(/[\s=]/)[1] ?? "10");
     // Take 1 scenario from each type, repeat to fill n
-    const uniqueTypes = [...new Set(SCENARIOS.map((s) => s.type))];
+    const uniqueTypes = Array.from(new Set(SCENARIOS.map((s) => s.type)));
     scenariosToRun = [];
     let i = 0;
     while (scenariosToRun.length < n) {
@@ -432,7 +439,8 @@ async function main() {
   console.log("");
 
   const measurements: Measurement[] = [];
-  for (const [idx, scenario] of scenariosToRun.entries()) {
+  for (let idx = 0; idx < scenariosToRun.length; idx++) {
+    const scenario = scenariosToRun[idx];
     process.stdout.write(`  [${idx + 1}/${scenariosToRun.length}] ${scenario.id}... `);
     const m = await measureScenario(scenario, dryRun);
     if (m.error) {

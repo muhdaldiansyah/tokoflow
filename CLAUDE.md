@@ -7,9 +7,11 @@
 
 **Domain:** https://tokoflow.com · aliased to production deploy on Vercel
 **Target Year 1:** Malaysia, hyperlocal Shah Alam — home F&B mompreneur (Bu Aisyah persona, **PHASE-0-UNVALIDATED**). Wave 2 (Year 2): vertical-first within MY (kosmetik, modest fashion, jasa lokal). Wave 3+: geographic + cross-pattern.
-**Status:** Phase 1 + Phase 2 code **complete** · Positioning bible v1.2 **locked** (2026-04-28) · 80 migrations applied · Pre-launch — gated on **Phase 0 adversarial validation** (5 friendly + 5 hostile interviews + manual twin smoke test + AI cost measurement) + Sdn Bhd + Billplz KYB.
+**Status:** Phase 1 + Phase 2 code **complete** · Photo Magic v1 + Repeat Order shipped 2026-05-06 (founder override of synthesis discipline) · Positioning bible v1.2 **locked** (2026-04-28) · 94 migrations applied (092 Phase 0 tracking + 093 Photo Magic columns) · Pre-launch — gated on **Phase 0 adversarial validation** (5 friendly + 5 hostile interviews + manual twin smoke test + AI cost measurement + distribution validation + brand resonance) + Sdn Bhd + Billplz KYB.
 
 > **Strategic compass:** [`docs/positioning/`](./docs/positioning/) is the bible — read [`00-manifesto.md`](./docs/positioning/00-manifesto.md) before any product decision. Every feature must pass **Test 0** (hits one of Three-Tier Reality: Pure Craft / Customer Relationship / Mechanical Residue) + the 5 tests below it.
+
+> **Execution synthesis:** [`docs/SYNTHESIS-2026-05-05.md`](./docs/SYNTHESIS-2026-05-05.md) is the field-applied playbook derived from bible v1.2. Contains: locked decisions (sub-niche, framing arc, distribution thesis), strategic analog mapping (Owner.com + Klaviyo + Substack inheritance), Phase 0 8-week plan with 7 pre-committed triggers (6 kill + 1 rebrand-flag), backup B2B playbook for scenario (c). Refresh after Phase 0 retrospective.
 
 ---
 
@@ -75,7 +77,7 @@ Tokoflow and CatatOrder are **sister products**, not a unified codebase. See HAN
 
 ## Database schema
 
-All 81 migrations applied on the Tokoflow Supabase project (`yhwjvdwmwboasehznlfv`, Mumbai region — migrate to Singapore pre-launch). Migration tracker `supabase_migrations.schema_migrations` is in sync with `supabase/migrations/` on the CLI.
+All 92 migrations (000 baseline + 001–091) live on the Tokoflow Supabase project (`yhwjvdwmwboasehznlfv`, Mumbai region — migrate to Singapore pre-launch). Migrations 081–091 are post-bible-v1.2 additions: 081 service-role grants, 082 orders undo window, 083 payment_notifications, 084 drop unique-code constraint, 085 new-order email notify, 086 merchant Billplz keys, 087 order_payments, 088 customer delivery ack, 089 unify money columns to NUMERIC(14,2), 090 JSONB shape CHECKs, 091 standalone FK index on `orders.assigned_staff_id`. Migration tracker `supabase_migrations.schema_migrations` should be re-synced after applying 089–091.
 
 ### Phase 2 additions (this session)
 
@@ -320,17 +322,19 @@ Google OAuth client id/secret live inside Supabase auth config — **not** in `.
 
 ---
 
-## Phase 0 gates (revised 2026-04-28 — validation-first)
+## Phase 0 gates (revised 2026-05-05 — synthesis aligned)
 
-Phase 0 expanded to 3-month adversarial validation. **No Phase 1 build until Gate 0 passes.** Full plan in [`06-roadmap.md` Phase 0](./docs/positioning/06-roadmap.md#phase-0--validation-first-foundation-aprjul-2026-3-months).
+Phase 0 = 8-week adversarial validation. **No Phase 1 build until Gate 0 passes.** Full plans in [`06-roadmap.md` Phase 0](./docs/positioning/06-roadmap.md#phase-0--validation-first-foundation-aprjul-2026-3-months) (strategic) + [`SYNTHESIS-2026-05-05.md`](./docs/SYNTHESIS-2026-05-05.md) (execution) + [`scripts/phase-0/README.md`](./scripts/phase-0/README.md) (operational).
 
 ### Validation milestones
 
-- [ ] **5 friendly + 5 hostile interviews** Shah Alam mompreneur (NOT just observation — hostile q first: "what part of jualan you ENJOY?" then "why might Tokoflow NOT work for you?")
+- [ ] **5 friendly + 5 hostile interviews** Shah Alam mompreneur (NOT just observation — hostile q first: "what part of jualan you ENJOY?" then "why might Tokoflow NOT work for you?") + brand resonance test (Tokoflow name 1-10 friction)
 - [ ] **Manual Twin smoke test**: Aldi as Background Twin for 1 volunteer merchant for 2 weeks via WA admin (cheap, validates trust transfer architecturally)
 - [ ] **AI cost measurement** with production-grade prompts (Background Twin + Foreground Assist) at 50-order/month load
 - [ ] **Ariff partnership formal** — kopi 2 jam, decide tier (advisor 1.5% / co-founder 5–10%), sign SAFE/MOU. **No casual mode.**
 - [ ] Sdn Bhd registration submitted (SSM)
+- [ ] **Distribution validation**: Aldi TikTok + komuniti penetration → ≥300 followers + ≥15 inbound DM cumulative by Week 8 (or scenario c backup B2B activated)
+- [ ] **Brand resonance**: friction <4/10 average from 10 interviews → keep Tokoflow; ≥4/10 → trigger rebrand decision
 
 ### Spike scripts (still required)
 
@@ -338,21 +342,27 @@ Phase 0 expanded to 3-month adversarial validation. **No Phase 1 build until Gat
 - [ ] `billplz-spike.ts` passes X-Signature round-trip (genuine + tamper tests)
 - [ ] MDEC Digitalisation Partner application cleared (currently: applied, pending)
 
-### Gate 0 pass criteria (all must hit)
+### Gate 0 pass criteria (all 7 must hit)
 
-- ✓ 7/10 interviews resonate with Three-Tier framework (mechanical residue distinct from valued relationship + craft)
-- ✓ Smoke test merchant rates manual twin >7/10 helpfulness AND no customer noticed AI tone
-- ✓ AI cost measured ≤ RM 25/merchant/month at projected scale
-- ✓ Ariff formal partnership locked (signed)
-- ✓ Sdn Bhd in SSM queue
+1. ✓ ≥7/10 interviews resonate with Three-Tier framework (mechanical residue distinct from valued relationship + craft)
+2. ✓ Smoke test merchant rates manual twin >7/10 helpfulness AND no customer noticed AI tone
+3. ✓ AI cost ≤ **RM 25/merchant/month** at 50-order/month projected scale (RM 25-30 = retest Week 6 must clear ≤RM 25)
+4. ✓ Ariff formal partnership locked (signed) OR Plan B locked
+5. ✓ Sdn Bhd in SSM queue
+6. ✓ Distribution: ≥300 followers + ≥15 inbound DM cumulative
+7. ✓ Brand decision data-backed (keep <4/10 friction OR rebrand ≥4/10 friction)
 
-### Pre-committed kill triggers (no rationalization when emotion arrives)
+### Pre-committed triggers — 7 total (6 kill + 1 rebrand-flag)
 
-1. AI cost > **RM 30/merchant/month** at RM 79 max → unit economics broken → kill
-2. **<5/10 interviews** resonate with Three-Tier → root problem wrong → reframe or kill
-3. Smoke test: customer noticed AI tone OR merchant trust degradation → reduce scope OR kill
+> No rationalization when emotion arrives. Aligned with [SYNTHESIS-2026-05-05.md §5](./docs/SYNTHESIS-2026-05-05.md).
+
+1. **AI cost**: ≤RM 25 pass / RM 25-30 warning + retest Week 6 / >RM 30 → kill (Pro RM 49 locked)
+2. **<7/10 interviews** resonate Three-Tier (kill); <5/10 = catastrophic
+3. Smoke test: customer detects AI tone OR merchant trust degrades OR <7/10 helpfulness → reduce twin scope to Foreground Assist only OR kill
 4. Ariff declines + Plan B unproven 4 weeks → kill
 5. Sdn Bhd structural block + sole-prop alternative non-viable → kill
+6. **Distribution**: <300 followers + <15 inbound DM by Week 8 → kill content-led OR activate scenario (c) backup B2B
+7. **Brand friction ≥4/10 average** → trigger rebrand decision Week 7 (NOT kill — flag; bias toward keep due to 3-6 week switching cost)
 
 ### Phase 1 Gate (post-validation, end Oct 2026) — "Love" operationally defined
 
@@ -402,7 +412,7 @@ Shipped across 5 commits (10bc895 → 6fa38c3). **Code complete from this pass:*
 - **Cron copy rewrite** — removed comparison shaming, robotic factoids, pressure tone, Indonesian leaks
 - **Photo Magic plan** — [`P4-photo-magic-plan.md`](./docs/positioning/P4-photo-magic-plan.md) scopes 1-photo onboarding ticket
 
-> **Note on tagline migration**: shipped marketing copy still uses "From snap to sold." Bible v1.2 promotes that to *feature tagline for Photo Magic onboarding*. Brand-level tagline is now "We handle the receipts. Not the recipes." Marketing pages will be re-rewritten when Phase 1 build completes.
+> **Note on tagline migration** (resolved 2026-05-05): the brand-level tagline "We handle the receipts. Not the recipes." (BM: "Resi kami urus. Resep kamu.") is live on landing/features/pricing/layout metadata. "From snap to sold" and "Less admin. More making." have been retired from marketing copy. "From snap to sold" remains reserved as the Photo Magic onboarding feature-line per bible v1.2.
 
 ---
 
@@ -490,4 +500,4 @@ Vault at `~/base/vault/credentials/tokoflow.md`:
 
 ---
 
-*Last updated: 2026-04-28 · Positioning bible v1.2 locked: Three-Tier Reality + 2-layer twin + new tagline "We handle the receipts. Not the recipes." + 9 critique-driven refinements. Code unchanged this session. Launch-blocked on **Phase 0 adversarial validation** (interviews + smoke test + AI cost measurement) + Sdn Bhd + Billplz KYB. Phase 1 build starts only after Gate 0 passes ~end Jul 2026.*
+*Last updated: 2026-05-05 · Audit pass: cron schedules corrected, money types unified to NUMERIC(14,2) (089), JSONB shape CHECKs (090), FK index gap closed (091), MyInvois demoted off /features into a footnote, deprecated pack pricing removed from /pricing, quiet-hours now enforced in push crons, lib/copy wired into recap surfaces, Indonesian leak ("di bulan", stray "Rp") fixed in MonthlyReport, internal architecture names sanitised from code comments. Bible v1.2 strategy unchanged. Launch-blocked on **Phase 0 adversarial validation** (interviews + smoke test + AI cost measurement) + Sdn Bhd + Billplz KYB. Phase 1 build starts only after Gate 0 passes ~end Jul 2026.*

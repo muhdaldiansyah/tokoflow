@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, use } from "react";
 import Link from "next/link";
-import { ArrowLeft, MapPin, Pencil, MessageSquare, StickyNote, Calendar, X, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, MapPin, Pencil, MessageSquare, StickyNote, Calendar, X, Plus, Trash2, Repeat } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { getCustomer, updateCustomer, deleteCustomer } from "@/features/customers/services/customer.service";
@@ -104,6 +104,23 @@ export default function CustomerDetailPage({
     }
   }
 
+  async function handleRepeatOrder() {
+    try {
+      const res = await fetch(`/api/customers/${id}/reorder`);
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        toast.error(data.error || "No prior orders to repeat");
+        return;
+      }
+      const data = await res.json();
+      if (data.redirect) {
+        router.push(data.redirect);
+      }
+    } catch {
+      toast.error("Couldn't load past order");
+    }
+  }
+
   const orderGroups = useMemo(() => {
     if (orders.length === 0) return [];
     const now = new Date();
@@ -174,6 +191,16 @@ export default function CustomerDetailPage({
           )}
         </div>
         <div className="flex items-center gap-1">
+          {orders.length > 0 && (
+            <button
+              onClick={handleRepeatOrder}
+              className="h-9 px-3 flex items-center gap-1.5 rounded-lg text-xs font-medium bg-card border border-border shadow-sm hover:bg-muted transition-colors"
+              title="Same items as last order"
+            >
+              <Repeat className="w-3.5 h-3.5" />
+              Repeat
+            </button>
+          )}
           <Link
             href={`/orders/new?nama=${encodeURIComponent(customer.name)}&hp=${encodeURIComponent(customer.phone || "")}`}
             className="h-9 px-3 flex items-center gap-1.5 rounded-lg text-xs font-medium bg-warm-green text-white hover:bg-warm-green-hover active:bg-warm-green-hover transition-colors"

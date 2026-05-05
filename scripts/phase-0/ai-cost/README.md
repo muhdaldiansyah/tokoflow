@@ -1,6 +1,6 @@
 # Phase 0 AI Cost Measurement
 
-> **Purpose**: measure ACTUAL AI cost per active merchant before locking pricing tier. Pre-committed kill criterion: **AI cost > RM 30/month at RM 79 max → unit economics broken → kill** ([06-roadmap.md](../../../docs/positioning/06-roadmap.md#kill-criteria--phase-0-pre-committed-no-rationalization)).
+> **Purpose**: measure ACTUAL AI cost per active merchant. Pricing tier is locked at **Pro RM 49 / Business RM 99** ([config/plans.ts](../../../config/plans.ts)). Pre-committed kill criterion: **AI cost > RM 30/month at projected scale → unit economics broken → kill** ([06-roadmap.md](../../../docs/positioning/06-roadmap.md#kill-criteria--phase-0-pre-committed-no-rationalization), [SYNTHESIS-2026-05-05.md §5](../../../docs/SYNTHESIS-2026-05-05.md)).
 
 > **Method**: run realistic prompts (Background Twin + Foreground Assist) at projected 50-order/month merchant load via OpenRouter Gemini Flash Lite. Report cost in USD + RM with extrapolation.
 
@@ -119,22 +119,22 @@ Simulates 200 events at production scale. **Only run after small-sample validate
 
 ---
 
-## Pass / Fail thresholds
+## Pass / Fail thresholds (tiered per SYNTHESIS-2026-05-05.md §5)
 
-After full simulation:
+After full simulation, against locked Pro RM 49 tier:
 
-### PASS — pricing tiers viable
+### PASS — clean unit economics
 
-- ✓ Cost per merchant ≤ **RM 15/month** → Pro RM 49 viable (margin 69%)
-- ✓ Cost per merchant ≤ **RM 25/month** → Pro RM 79 viable (margin 68%)
+- ✓ Cost per merchant ≤ **RM 15/month** → margin 69% at Pro RM 49 (ample buffer)
+- ✓ Cost per merchant ≤ **RM 25/month** → margin 49% at Pro RM 49 (target zone)
 
-### MARGINAL — adjust scope
+### WARNING — retest Week 6 with adjusted prompts/caching
 
-- ⚠️ Cost RM 25-30/month → Pro tier shifts to RM 79 OR scope reduces (less Foreground Assist context)
+- ⚠️ Cost **RM 25-30/month** → margin 39-49% at Pro RM 49 (tight). Reduce Foreground Assist context window, increase prompt caching, defer Background Twin scope to Year 2. Re-measure Week 6. **Must clear ≤RM 25 to pass Phase 0 Gate.**
 
 ### KILL — unit economics broken
 
-- ✗ Cost > **RM 30/month** at RM 79 max → kill trigger #1 hits → reframe scope or kill
+- ✗ Cost > **RM 30/month** → kill trigger #1 hits → reframe scope or kill (no rationalization)
 
 ---
 
@@ -146,7 +146,7 @@ After measurement, produce `ai-cost-report.md` containing:
 2. **Per-event cost** breakdown table
 3. **Monthly cost projection** at 50-order load
 4. **Sensitivity analysis** — at 100 orders, 200 orders, peak Ramadan 5x
-5. **Pricing recommendation** — locked Pro tier price (RM 49 / 79 / 99)
+5. **Margin verification** at locked Pro RM 49 + Business RM 99 (no price re-spec)
 6. **Free tier subsidy bound** — max orders/month before subsidy bleeds
 
 This output → input to D-018 + locks 05-pricing.md tentative tiers.

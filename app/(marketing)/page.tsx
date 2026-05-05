@@ -67,7 +67,7 @@ const tiers = [
     name: "Pro",
     price: "RM 49",
     period: "/ month",
-    blurb: "Unlimited orders, voice + photo parsing, peer pricing whisper, MyInvois ready.",
+    blurb: "Unlimited orders, voice + photo parsing, and the full companion.",
     cta: "Try Pro",
     href: "/register",
     highlight: true,
@@ -112,8 +112,6 @@ const jsonLd = {
     "Customer-confirmed delivery — one tap, no chasing",
     "Vibrate-only notifications (respect your flow)",
     "Daily evening summary in your language",
-    "Silent LHDN MyInvois (Pro tier)",
-    "Auto SST calculation",
     "Customer auto-directory by phone",
     "Inventory tracking by stock count",
     "Auto receipt generation",
@@ -181,14 +179,10 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* Hero image — cinematic editorial photograph (GPT-5.4 Image 2,
-                T2I leaderboard #1) replaces the previous CSS phone mockup.
-                Per positioning bible v1.2: "Background Twin invisible" — the
-                craft (kuih, hands, kitchen) is the protagonist; the phone is
-                a quiet helper in the frame. Reference: Toast / Square / Etsy
-                hero patterns where the maker leads, not the product. Square
-                1:1 keeps the right column visually balanced with the left
-                text column at desktop and stacks cleanly on mobile. */}
+            {/* Hero image — editorial photograph of the merchant's craft as
+                protagonist; the phone sits as a quiet helper. Square 1:1
+                balances the text column at desktop and stacks cleanly on
+                mobile. */}
             <div className="relative flex justify-center lg:justify-end">
               <div className="relative aspect-square w-full max-w-[480px] overflow-hidden rounded-3xl shadow-[0_32px_80px_-8px_rgba(0,0,0,0.18)]">
                 <Image
@@ -206,9 +200,8 @@ export default function HomePage() {
       </section>
 
       {/* Pain → Promise — left-bar accent instead of full cards. Lighter
-          visual weight, same emotional arc. Copy is intentionally factual:
-          Tokoflow does not auto-reply customers (Foreground Assist suggests,
-          merchant sends), so we say what actually happens. */}
+          visual weight, same emotional arc. Tokoflow drafts replies; the
+          merchant always sends — copy reflects that, never overclaiming. */}
       <section className="border-t border-[#E2E8F0] py-12 lg:py-16">
         <div className="max-w-2xl mx-auto px-4">
           <div className="border-l-2 border-red-200 pl-5">

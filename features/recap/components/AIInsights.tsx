@@ -30,10 +30,14 @@ interface AIInsightsProps {
 
 type State = "empty" | "loading" | "result";
 
-function highlightRupiah(text: string) {
-  const parts = text.split(/(Rp[\d.]+)/g);
+// Highlight currency amounts in AI insight text. Catches "RM 1,500" / "RM1500"
+// (MY market). Legacy "Rp 1500" patterns are caught too since some cached
+// pre-MY analyses may still contain them — kept for backwards compat with
+// pre-2026-04 ai_analyses rows.
+function highlightCurrency(text: string) {
+  const parts = text.split(/(RM\s?[\d,.]+|Rp[\d.]+)/g);
   return parts.map((part, i) =>
-    /^Rp[\d.]+$/.test(part) ? (
+    /^(RM\s?[\d,.]+|Rp[\d.]+)$/.test(part) ? (
       <strong key={i} className="text-green-600">{part}</strong>
     ) : (
       <span key={i}>{part}</span>
@@ -245,7 +249,7 @@ export function AIInsights({ type, periodKey, hasData, totalOrders, businessName
             </button>
           )}
           <div className="text-sm text-foreground leading-relaxed whitespace-pre-line">
-            {highlightRupiah(insights)}
+            {highlightCurrency(insights)}
           </div>
         </div>
       )}

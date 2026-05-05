@@ -4,11 +4,11 @@
 **Model**: google/gemini-flash-1.5-8b
 **Scenarios run**: 12
 **Total monthly events per merchant**: 232.5
-**Generated**: 2026-04-28T12:10:30.034Z
+**Generated**: 2026-05-05T16:10:21.482Z
 
 ## Verdict
 
-✅ PASS — Pro tier RM 49 viable (margin >69%)
+✅ PASS_AMPLE — Pro RM 49 viable with ≥69% margin (locked tier)
 
 **Total monthly cost per merchant**: $0.0083 USD = RM 0.04 MYR
 
@@ -34,9 +34,10 @@
 
 ## Pricing tier recommendation
 
-- **Pro**: RM 49/mo — margin sustainable
+- **Pro**: RM 49/mo — margin ≥69%, ample buffer
 - **Business**: RM 99/mo — comfortable margin
 - **Free**: cap at 50 orders/mo (subsidy ~RM 5/mo per Free user)
+- **No re-spec needed**. Phase 0 Gate #3 cleared.
 
 ---
 
