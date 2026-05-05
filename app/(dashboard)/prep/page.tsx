@@ -77,8 +77,8 @@ export default function PrepPage() {
       {/* Header */}
       <div className="flex items-center justify-between min-h-9">
         <div>
-          <h1 className="text-lg font-semibold text-foreground">Persiapan</h1>
-          <p className="text-xs text-muted-foreground">Rangkuman item yang perlu disiapkan per tanggal kirim</p>
+          <h1 className="text-lg font-semibold text-foreground">Prep</h1>
+          <p className="text-xs text-muted-foreground">Items to prep by delivery date</p>
         </div>
         <div className="flex items-center gap-2">
           {/* Day navigation */}
@@ -183,7 +183,7 @@ export default function PrepPage() {
             className="flex items-center gap-1.5 h-9 px-3 text-xs font-medium rounded-lg bg-card border border-border shadow-sm hover:bg-muted disabled:opacity-30 transition-colors"
           >
             <Send className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Kirim WA</span>
+            <span className="hidden sm:inline">Send WA</span>
           </button>
 
           {/* Download */}

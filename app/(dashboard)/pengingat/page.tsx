@@ -445,7 +445,7 @@ export default function RemindersPage() {
                   onClick={() => { setDateFilter(null); setShowDateCalendar(false); }}
                   className="w-full text-xs text-muted-foreground hover:text-foreground py-1 transition-colors"
                 >
-                  Hapus filter tanggal
+                  Clear date filter
                 </button>
               )}
             </div>

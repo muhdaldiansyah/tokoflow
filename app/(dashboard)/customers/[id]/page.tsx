@@ -227,7 +227,7 @@ export default function CustomerDetailPage({
       {/* Customer Card */}
       <div className="rounded-xl border bg-card px-4 py-4 shadow-sm">
         <div className="flex items-center justify-between mb-2">
-          <p className="text-xs font-medium text-muted-foreground">Ringkasan</p>
+          <p className="text-xs font-medium text-muted-foreground">Summary</p>
           <button
             onClick={startEditing}
             className="h-8 px-2.5 flex items-center gap-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
@@ -242,7 +242,7 @@ export default function CustomerDetailPage({
             <span className="font-semibold text-foreground">{orders.length}</span>
           </div>
           <div className="flex justify-between text-sm py-2">
-            <span className="text-muted-foreground">Total Belanja</span>
+            <span className="text-muted-foreground">Total spent</span>
             <span className="font-semibold text-foreground">RM {totalSpent.toLocaleString("en-MY")}</span>
           </div>
           <div className="flex justify-between text-sm py-2">
@@ -381,7 +381,7 @@ export default function CustomerDetailPage({
                   onClick={() => setShowDeleteConfirm(false)}
                   className="flex-1 h-11 rounded-lg bg-card border border-border shadow-sm text-xs font-medium text-foreground hover:bg-muted transition-colors"
                 >
-                  Batal
+                  Cancel
                 </button>
                 <button
                   onClick={handleDelete}

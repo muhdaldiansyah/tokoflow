@@ -356,7 +356,7 @@ export function PasteOrderSheet({
                 onClick={handleClose}
                 className="w-full h-11 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                Batal
+                Cancel
               </button>
             </>
           ) : (
@@ -377,14 +377,14 @@ export function PasteOrderSheet({
                   className="flex-1 h-11 text-sm text-muted-foreground hover:text-foreground flex items-center justify-center gap-1.5 transition-colors"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
-                  Ulangi
+                  Retry
                 </button>
                 <button
                   type="button"
                   onClick={handleClose}
                   className="flex-1 h-11 text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Batal
+                  Cancel
                 </button>
               </div>
             </>

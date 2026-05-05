@@ -862,7 +862,7 @@ export default function SettingsPage() {
               className="shrink-0 h-9 px-3 mr-1 ml-auto rounded-md bg-warm-green text-white text-xs font-medium hover:bg-warm-green-hover transition-colors flex items-center gap-1.5"
             >
               {referralCopied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-              {referralCopied ? "Disalin" : "Salin"}
+              {referralCopied ? "Copied" : "Copy"}
             </button>
           </div>
 

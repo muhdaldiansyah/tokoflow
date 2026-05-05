@@ -450,7 +450,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                 )}
                 {report.cancelledCount > 0 && (
                   <div className="flex justify-between text-sm py-2">
-                    <span className="text-muted-foreground">Dibatalkan ({report.cancelledCount})</span>
+                    <span className="text-muted-foreground">Cancelled ({report.cancelledCount})</span>
                     <span className="font-medium text-muted-foreground">RM {report.cancelledValue.toLocaleString("en-MY")}</span>
                   </div>
                 )}

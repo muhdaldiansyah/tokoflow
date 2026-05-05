@@ -129,7 +129,7 @@ export function WAPreviewSheet({
             onClick={onClose}
             className="w-full h-11 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            Batal
+            Cancel
           </button>
         </div>
       </div>

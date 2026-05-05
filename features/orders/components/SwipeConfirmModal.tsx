@@ -70,7 +70,7 @@ export function SwipeConfirmModal({
               disabled={isUpdating}
               className="flex-1 h-11 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted transition-colors disabled:opacity-50"
             >
-              Batal
+              Cancel
             </button>
             <button
               type="button"

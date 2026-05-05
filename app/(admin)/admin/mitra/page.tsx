@@ -145,7 +145,7 @@ export default function AdminMitraPage() {
                               onClick={() => { setPayoutId(null); setPayoutAmount(""); }}
                               className="h-7 px-2 text-xs font-medium rounded-md border hover:bg-muted"
                             >
-                              Batal
+                              Cancel
                             </button>
                           </div>
                         ) : (
@@ -219,7 +219,7 @@ export default function AdminMitraPage() {
                         onClick={() => { setPayoutId(null); setPayoutAmount(""); }}
                         className="h-9 px-3 text-xs font-medium rounded-lg border hover:bg-muted"
                       >
-                        Batal
+                        Cancel
                       </button>
                     </div>
                   ) : (

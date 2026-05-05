@@ -31,8 +31,8 @@ export async function GET(request: NextRequest) {
     }
 
     const statusLabels: Record<string, string> = {
-      new: "Baru", processed: "Diproses", shipped: "Dikirim",
-      done: "Selesai", cancelled: "Dibatalkan",
+      new: "New", processed: "Processed", shipped: "Shipped",
+      done: "Done", cancelled: "Cancelled",
     };
     const paymentLabels: Record<string, string> = {
       paid: "Paid", partial: "Partial", unpaid: "Unpaid",

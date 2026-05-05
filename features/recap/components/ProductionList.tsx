@@ -119,11 +119,11 @@ export function ProductionList({ dateStr, selectedDate, exportTrigger, waTrigger
       const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
       summarySheet["!cols"] = [{ wch: 20 }, { wch: 15 }, { wch: 40 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 12 }];
       const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, summarySheet, "Persiapan");
+      XLSX.utils.book_append_sheet(workbook, summarySheet, "Prep");
 
       const buffer = await workbookToArrayBuffer(workbook);
       const dayLabel = selectedDate.toLocaleDateString("en-MY", { day: "numeric", month: "short", year: "numeric" }).replace(/ /g, "-");
-      const filename = `Persiapan-${dayLabel}.xlsx`;
+      const filename = `Prep-${dayLabel}.xlsx`;
       downloadBlob(buffer, filename, "xlsx");
       track("production_exported", { date: dateStr });
       toast.success(`Downloaded: ${filename}`);

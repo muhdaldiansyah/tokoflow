@@ -330,7 +330,7 @@ export function VoiceOrderSheet({
                 onClick={onClose}
                 className="w-full h-11 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                Batal
+                Cancel
               </button>
             </>
           ) : (
@@ -342,7 +342,7 @@ export function VoiceOrderSheet({
                 className="w-full h-12 bg-warm-green text-white rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-warm-green-hover active:bg-warm-green-hover disabled:opacity-50 disabled:cursor-not-allowed squish-press transition-colors"
               >
                 <Plus className="w-4 h-4" />
-                Tambahkan {validCount} item
+                Add {validCount} item{validCount === 1 ? "" : "s"}
               </button>
               <div className="flex gap-2">
                 <button
@@ -351,14 +351,14 @@ export function VoiceOrderSheet({
                   className="flex-1 h-11 text-sm text-muted-foreground hover:text-foreground flex items-center justify-center gap-1.5 transition-colors"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
-                  Ulangi
+                  Retry
                 </button>
                 <button
                   type="button"
                   onClick={onClose}
                   className="flex-1 h-11 text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Batal
+                  Cancel
                 </button>
               </div>
             </>
