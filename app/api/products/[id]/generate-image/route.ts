@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import sharp from "sharp";
 import { getAuthenticatedClient } from "@/lib/supabase/api";
 import { aiRateLimitResponseInit, checkAiRateLimit } from "@/lib/rate-limit/ai";
 import { generateProductImage, type ProductImageMode } from "@/lib/ai/product-image";
+
+// product-images bucket caps each upload at 1 MB (migration 026). AI-generated
+// PNGs come back at 1.3–2.0 MB, so we always recompress to WebP server-side
+// before upload. WebP at q=82 typically lands ~150–300 KB for a 1024×1024
+// product photo — well under the limit and faster to load on the storefront.
+const PRODUCT_IMAGE_MAX_BYTES = 1_000_000;
+const PRODUCT_IMAGE_MAX_DIMENSION = 1024;
 
 // POST /api/products/[id]/generate-image
 //
@@ -67,8 +75,7 @@ export async function POST(
       );
     }
 
-    let buffer: Buffer;
-    let mimeType: string;
+    let rawBuffer: Buffer;
     try {
       const result = await generateProductImage({
         name: product.name,
@@ -77,8 +84,7 @@ export async function POST(
         mode,
         existingImageUrl: mode === "enhance" ? product.image_url : undefined,
       });
-      buffer = result.buffer;
-      mimeType = result.mimeType;
+      rawBuffer = result.buffer;
     } catch (err) {
       console.error("AI image generation failed:", err);
       return NextResponse.json(
@@ -87,12 +93,53 @@ export async function POST(
       );
     }
 
-    const ext = mimeType === "image/jpeg" ? "jpg" : "png";
-    const path = `${user.id}/${product.id}-ai-${Date.now()}.${ext}`;
+    // Recompress to WebP under the 1 MB bucket limit. Step the quality down
+    // until we fit; quality 82 is the sweet spot for editorial product
+    // photos and almost always lands around 200 KB.
+    let imageBuffer: Buffer;
+    try {
+      const baseline = sharp(rawBuffer)
+        .rotate()
+        .resize({
+          width: PRODUCT_IMAGE_MAX_DIMENSION,
+          height: PRODUCT_IMAGE_MAX_DIMENSION,
+          fit: "inside",
+          withoutEnlargement: true,
+        });
+
+      let attempt: Buffer | null = null;
+      for (const quality of [82, 72, 60]) {
+        const candidate = await baseline.clone().webp({ quality }).toBuffer();
+        if (candidate.byteLength <= PRODUCT_IMAGE_MAX_BYTES) {
+          attempt = candidate;
+          break;
+        }
+      }
+      // Last resort: scale to 768px wide and re-encode.
+      if (!attempt) {
+        attempt = await sharp(rawBuffer)
+          .rotate()
+          .resize({ width: 768, height: 768, fit: "inside" })
+          .webp({ quality: 60 })
+          .toBuffer();
+      }
+      imageBuffer = attempt;
+    } catch (err) {
+      console.error("Sharp transcode failed:", err);
+      return NextResponse.json(
+        { error: "Couldn't process image. Try again in a moment." },
+        { status: 500 },
+      );
+    }
+
+    const path = `${user.id}/${product.id}-ai-${Date.now()}.webp`;
 
     const { error: uploadError } = await supabase.storage
       .from("product-images")
-      .upload(path, buffer, { contentType: mimeType, upsert: false });
+      .upload(path, imageBuffer, {
+        contentType: "image/webp",
+        upsert: false,
+      });
 
     if (uploadError) {
       console.error("Product image storage upload failed:", uploadError);
