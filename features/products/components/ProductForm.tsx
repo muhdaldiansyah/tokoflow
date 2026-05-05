@@ -100,14 +100,9 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
   }
 
   // === Image Upload ===
-  // Three independent paths can feed this. The native file picker is the
-  // primary, but some merchant Chrome environments silently swallow the
-  // click event chain (extensions, popup blockers, a11y enforcement),
-  // leaving them stuck. Drag-and-drop + Cmd/Ctrl-V paste are the two HTML5
-  // upload mechanisms the browser exposes that DON'T rely on the picker.
   async function uploadFile(file: File) {
     if (!file.type.startsWith("image/")) {
-      toast.error("Please drop an image file (JPG, PNG, or WEBP)");
+      toast.error("Please choose an image file (JPG, PNG, or WEBP)");
       return;
     }
     if (file.size > 1024 * 1024) {
@@ -161,51 +156,6 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
     // Reset so re-uploading the same file still fires onChange.
     e.target.value = "";
   }
-
-  // Drop zone handlers — the photo preview is also a drop target. Files
-  // dragged from Finder/Explorer land here without ever invoking a picker.
-  const [isDragOver, setIsDragOver] = useState(false);
-  function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
-    e.preventDefault();
-    if (isUploading || isGeneratingAi) return;
-    setIsDragOver(true);
-  }
-  function handleDragLeave(e: React.DragEvent<HTMLDivElement>) {
-    e.preventDefault();
-    setIsDragOver(false);
-  }
-  async function handleDrop(e: React.DragEvent<HTMLDivElement>) {
-    e.preventDefault();
-    setIsDragOver(false);
-    if (isUploading || isGeneratingAi) return;
-    const file = e.dataTransfer.files?.[0];
-    if (file) await uploadFile(file);
-  }
-
-  // Clipboard paste — Cmd/Ctrl-V from any screenshot / copied image.
-  // Wired at the form scope so the user doesn't need to focus the photo area.
-  useEffect(() => {
-    function onPaste(e: ClipboardEvent) {
-      if (isUploading || isGeneratingAi) return;
-      const items = e.clipboardData?.items;
-      if (!items) return;
-      for (const item of Array.from(items)) {
-        if (item.type.startsWith("image/")) {
-          const file = item.getAsFile();
-          if (file) {
-            e.preventDefault();
-            void uploadFile(file);
-            return;
-          }
-        }
-      }
-    }
-    document.addEventListener("paste", onPaste);
-    return () => document.removeEventListener("paste", onPaste);
-    // uploadFile is stable across renders for our purposes; we re-bind only
-    // when the upload/generate state flips so the early-return is current.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isUploading, isGeneratingAi, isEdit, initialProduct]);
 
   // === AI Image Generation ===
   // Generates a product photo from product name + description + category when
@@ -379,22 +329,11 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
       <div className="rounded-lg border bg-card px-4 py-4 space-y-4 shadow-sm">
         <p className="text-xs font-medium text-muted-foreground">Product information</p>
 
-        {/* Top row: buttons right, photo left */}
-        <div className="flex items-start justify-between">
-          {/* Photo preview — the file input is overlaid transparently and IS
-              the click target. No label-to-input forwarding, no JS .click(),
-              no aria-hidden indirection. The user is literally clicking the
-              <input type="file"> element, so the browser opens the native
-              picker without anything (extension, SW, a11y enforcement) sitting
-              between the click and the picker dispatch. */}
-          <div
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            className={`relative w-20 h-20 rounded-xl shrink-0 overflow-hidden border-2 bg-muted/30 flex items-center justify-center transition-colors ${
-              isDragOver ? "border-warm-green border-dashed bg-warm-green-light/40" : "border-border"
-            }`}
-          >
+        {/* Photo row. Standard pattern: visible <input type="file">. No
+            overlays, no labels, no JS click tricks — just the browser-native
+            control that always works in every browser. */}
+        <div className="flex items-start gap-3 flex-wrap">
+          <div className="relative w-20 h-20 rounded-xl shrink-0 overflow-hidden border border-border bg-muted/30 flex items-center justify-center">
             {isUploading ? (
               <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
             ) : imageUrl ? (
@@ -402,51 +341,35 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
             ) : (
               <Camera className="w-5 h-5 text-muted-foreground/30" />
             )}
+          </div>
+
+          <div className="flex-1 min-w-0 flex flex-col gap-2">
             <input
               type="file"
               accept="image/jpeg,image/png,image/webp"
               onChange={handleImageUpload}
               disabled={isUploading || isGeneratingAi}
-              aria-label="Upload product photo"
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+              aria-label={imageUrl ? "Change product photo" : "Upload product photo"}
+              className="block w-full text-xs text-foreground file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border file:border-border file:bg-card file:text-xs file:font-medium file:text-foreground hover:file:bg-muted file:cursor-pointer"
             />
+            <p className="text-[11px] text-muted-foreground">
+              JPG, PNG, or WEBP — up to 1 MB.
+            </p>
           </div>
 
-          {/* Top-right buttons */}
           <div className="flex flex-col items-end gap-1.5">
-            <div className="flex items-center gap-1.5">
-              <div className="relative inline-flex">
-                <span
-                  aria-hidden="true"
-                  className={`h-9 px-3 rounded-lg border border-border text-xs font-medium text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 select-none ${
-                    isUploading || isGeneratingAi ? "opacity-50" : ""
-                  }`}
-                >
-                  <Camera className="w-3.5 h-3.5" />
-                  {imageUrl ? "Change photo" : "Upload photo"}
-                </span>
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  onChange={handleImageUpload}
-                  disabled={isUploading || isGeneratingAi}
-                  aria-label={imageUrl ? "Change product photo" : "Upload product photo"}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
-                />
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsAvailable(!isAvailable)}
-                className={`h-9 px-3 flex items-center gap-1.5 rounded-lg border transition-colors ${
-                  isAvailable
-                    ? "bg-warm-green-light border-warm-green/30 text-warm-green"
-                    : "bg-muted/50 border-border text-foreground/70 hover:bg-muted"
-                }`}
-              >
-                {isAvailable ? <CircleCheck className="w-3.5 h-3.5" /> : <CircleMinus className="w-3.5 h-3.5" />}
-                <span className="text-xs font-medium">{isAvailable ? "Active" : "Inactive"}</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setIsAvailable(!isAvailable)}
+              className={`h-9 px-3 flex items-center gap-1.5 rounded-lg border transition-colors ${
+                isAvailable
+                  ? "bg-warm-green-light border-warm-green/30 text-warm-green"
+                  : "bg-muted/50 border-border text-foreground/70 hover:bg-muted"
+              }`}
+            >
+              {isAvailable ? <CircleCheck className="w-3.5 h-3.5" /> : <CircleMinus className="w-3.5 h-3.5" />}
+              <span className="text-xs font-medium">{isAvailable ? "Active" : "Inactive"}</span>
+            </button>
             {/* AI generate / enhance — appears only on saved products. The
                 button morphs based on whether a photo exists: empty →
                 "Generate", existing → "Enhance". Server-side prompt builder
@@ -485,17 +408,6 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
             )}
           </div>
         </div>
-
-        {/* Upload hints — three independent paths in case the merchant's
-            browser blocks the file picker. Drag-and-drop and paste both
-            bypass the picker entirely. */}
-        <p className="text-[11px] text-muted-foreground -mt-1">
-          Tip: drag a photo into the box, or copy an image and paste with
-          {" "}
-          <kbd className="px-1 py-0.5 rounded border bg-muted/50 text-[10px] font-mono">⌘V</kbd>
-          {" "}/{" "}
-          <kbd className="px-1 py-0.5 rounded border bg-muted/50 text-[10px] font-mono">Ctrl+V</kbd>.
-        </p>
 
         {/* Required fields */}
         <div className="space-y-3">
