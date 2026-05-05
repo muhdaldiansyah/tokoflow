@@ -43,3 +43,4 @@ package-lock.json
 *.tsbuildinfo
 next-env.d.ts
 .playwright-mcp/
+.claude/
