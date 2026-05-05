@@ -1,7 +1,7 @@
 /**
  * Supabase Configuration
  *
- * Tokoflow uses 'public' schema on dedicated Supabase instance (eafccoajzmanyflfidlg).
+ * Tokoflow uses 'public' schema on dedicated Supabase instance (yhwjvdwmwboasehznlfv).
  */
 
 export const APP_SCHEMA = process.env.NEXT_PUBLIC_APP_SCHEMA || 'public';

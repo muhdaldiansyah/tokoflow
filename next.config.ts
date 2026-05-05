@@ -13,13 +13,24 @@ const nextConfig: NextConfig = {
   },
   images: {
     remotePatterns: [
+      // Tokoflow's Supabase project. The previous hostname
+      // (eafccoajzmanyflfidlg) was the CatatOrder project ref carried over
+      // from the fork and silently broke product image rendering — next/image
+      // returns 400 for hosts not on this list.
       {
         protocol: "https",
-        hostname: "eafccoajzmanyflfidlg.supabase.co",
+        hostname: "yhwjvdwmwboasehznlfv.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
+      // Wildcard fallback so a future project-ref change (e.g. Singapore
+      // region migration) doesn't silently break images again.
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
     ],
-    formats: ["image/avif", "image/webp"], // Serve modern formats (40% smaller)
+    formats: ["image/avif", "image/webp"],
   },
   async headers() {
     return [
