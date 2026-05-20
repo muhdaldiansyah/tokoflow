@@ -1,548 +1,477 @@
-# Tokoflow
+# CLAUDE.md
 
-> **We handle the receipts. Not the recipes.**
-> *"Resi kami urus. Resep kamu."*
-> Tokoflow handles mechanical residue (admin, payment matching, invoicing, status updates) invisibly via Background Twin. Customer relationships stay merchant-controlled, amplified by Foreground Assist that suggests but never sends. Pure craft is protected — Tokoflow never enters the kitchen.
-> Forked from CatatOrder (ID) · Next.js 16 · React 19 · TypeScript · Supabase · Tailwind 4.
+Guidance for Claude Code (claude.ai/code) when working with this repo.
 
-**Domain:** https://tokoflow.com · aliased to production deploy on Vercel
-**Target Year 1:** Malaysia, hyperlocal Shah Alam — home F&B mompreneur (Bu Aisyah persona, **PHASE-0-UNVALIDATED**). Wave 2 (Year 2): vertical-first within MY (kosmetik, modest fashion, jasa lokal). Wave 3+: geographic + cross-pattern.
-**Status:** Phase 1 + Phase 2 + Year-2 scaffolds code **complete** · Phase 0 admin tooling shipped 2026-05-06 overnight build · Background Twin (`/api/twin/*`) + Foreground Assist (`/api/assist/*`) + Photo Magic v1 + Repeat Order live (founder override of synthesis discipline) · Positioning bible v1.2 **locked** (2026-04-28) · 94 migrations applied (089–093 verified via Management API on live Supabase) · Pre-launch — gated on **Phase 0 adversarial validation** (5 friendly + 5 hostile interviews + manual twin smoke test + AI cost measurement + distribution validation + brand resonance) + Sdn Bhd + Billplz KYB.
+## Quick start
 
-> **Strategic compass:** [`docs/positioning/`](./docs/positioning/) is the bible — read [`00-manifesto.md`](./docs/positioning/00-manifesto.md) before any product decision. Every feature must pass **Test 0** (hits one of Three-Tier Reality: Pure Craft / Customer Relationship / Mechanical Residue) + the 5 tests below it.
-
-> **Execution synthesis:** [`docs/SYNTHESIS-2026-05-05.md`](./docs/SYNTHESIS-2026-05-05.md) is the field-applied playbook derived from bible v1.2. Contains: locked decisions (sub-niche, framing arc, distribution thesis), strategic analog mapping (Owner.com + Klaviyo + Substack inheritance), Phase 0 8-week plan with 7 pre-committed triggers (6 kill + 1 rebrand-flag), backup B2B playbook for scenario (c). Refresh after Phase 0 retrospective.
-
----
-
-## Three-Tier Reality (root product framework)
-
-Hari setiap solo maker terbagi 3, bukan 2. Setiap fitur Tokoflow harus hit one of these tiers (Test 0):
-
-| Tier | What it is | Tokoflow's role | Architecture |
-|---|---|---|---|
-| **Tier 1 — Pure Craft** | What merchant loves (baking, design, writing) | Protect — never enter | (no surface) |
-| **Tier 2 — Customer Relationship** | What merchant often values (Pak Andi loyalty, school moms WA, custom orders) | Amplify with suggestions, never replace | Foreground Assist (suggests, merchant sends) |
-| **Tier 3 — Mechanical Residue** | Admin, payment match, invoice, status, repetitive Q&A | Remove invisibly | Background Twin (autonomous) |
-
-> **Internal naming**: "Background Twin", "Foreground Assist", "Three-Tier", "Tier 3" are precision terms for engineering + strategy. **Customer-facing UI must NEVER expose these.** Use "Tokoflow" or first-person *"saya urus"*. See [`04-design-system.md` Internal Architecture Names](./docs/positioning/04-design-system.md).
-
----
-
-## Wedges (refined 2026-04-28)
-
-1. **The Photo Magic v1 (Phase 1, planned):** foto → AI **extract** inventory + pricing metadata. **Photo itself stays untouched** — kitchen-protection: photo IS part of merchant's craft and brand, we don't regenerate or beautify. See [`P4-photo-magic-plan.md`](./docs/positioning/P4-photo-magic-plan.md).
-2. **Real moat (4-dimensional)**: **(a)** unstructured input parsing (WA chat screenshots, voice notes, mixed e-wallets) where competitors require structured forms · **(b)** Bahasa-first conversational UX (Manglish, code-switch BM/EN/Mandarin) · **(c)** compliance silent (gated to Pro+, never visible Free tier) · **(d)** buyer experience (storefront from photo + conversational order flow). AI labor is the underlying enabling shift; the moat is what we build on top.
-3. **AI-native (shipped):** paste WA chat → order, voice → order, screenshot → order. Gemini Flash Lite via OpenRouter. MY SMB vocab, +60 phones, Asia/Kuala_Lumpur.
-4. **Community data (shipped, density-gated):** peer benchmark live at `/api/benchmark` (≥10 users/cluster gate). Group-buy pooling deferred to Phase 4.
-5. **Silent superpower — LHDN MyInvois (demoted to Pro/Business gated):** one-tap submit at `/invoices`. **Not Phase 1 hero.** SST RM 500K threshold means most home F&B mompreneur Year 1 don't hit. Surfaces only when merchant approaches threshold. See [`01-positioning.md`](./docs/positioning/01-positioning.md) for full anti-positioning + refuse list.
-
-## What Tokoflow REFUSES to do (positioning weapon)
-
-Restraint > capability messaging. Tokoflow **never**:
-1. DM customer atas namamu (relationship is yours)
-2. Set harga produkmu (judgment is yours)
-3. Auto-reply review/komplain (voice is yours)
-4. Post ke social media (brand is yours)
-5. Regenerate/beautify foto produk (craft is yours)
-6. Klaim ownership customer (data tetap milikmu)
-7. Otomatisasi respon emosional (judgment kamu, draft kami)
-8. Gamify dengan streak/badge (anti-anxiety)
-9. Jual data kamu (never)
-10. Lock kamu di platform (cancel 1-tap, ekspor data full)
-
-Full list in [`00-manifesto.md` What We REFUSE to Do](./docs/positioning/00-manifesto.md#what-we-refuse-to-do-added-2026-04-28).
-
----
-
-## Stack differences from CatatOrder (Indonesia)
-
-| Dimension | CatatOrder (ID) | Tokoflow (MY) |
-|---|---|---|
-| Currency | IDR | MYR (whole ringgit) |
-| Locale | id-ID | en-MY |
-| Payment | Midtrans Snap QRIS | Billplz (FPX / DuitNow QR / cards) — `lib/billplz/` |
-| Tax | e-Faktur / NPWP / NITKU / DJP XML | SST 0%/6% · MyInvois UBL 2.1 JSON · TIN · BRN · SST reg |
-| e-Invoice | DJP Coretax upload | LHDN MyInvois API — `lib/myinvois/` |
-| Pricing tiers | Rp15K/25K/39K/99K | Free / Pro RM 49 / Business RM 99 (legacy RM 5/8/13 pack model `@deprecated` in `config/plans.ts`, kept for API+DB compat) |
-| Timezone | WIB (UTC+7), quiet hours 21:00–05:00 | MYT (UTC+8), quiet hours 22:00–06:00 |
-| Language | Bahasa Indonesia | English (BM = Phase 4, not shipped) |
-| Cities | 27 ID cities | 44 MY cities × 16 states (DB `cities` + `provinces`, seeded by migration 080) |
-| Phone prefix | +62 | +60 (normalised in `lib/utils/phone.ts`) |
-| Marketplace integration | Shipped into CatatOrder (commit `f81e083`) | Not ported — Phase 4 item |
-
-Tokoflow and CatatOrder are **sister products**, not a unified codebase. See HANDOFF.md for the multi-country decision rationale.
-
----
-
-## Database schema
-
-All 92 migrations (000 baseline + 001–091) live on the Tokoflow Supabase project (`yhwjvdwmwboasehznlfv`, Mumbai region — migrate to Singapore pre-launch). Migrations 081–091 are post-bible-v1.2 additions: 081 service-role grants, 082 orders undo window, 083 payment_notifications, 084 drop unique-code constraint, 085 new-order email notify, 086 merchant Billplz keys, 087 order_payments, 088 customer delivery ack, 089 unify money columns to NUMERIC(14,2), 090 JSONB shape CHECKs, 091 standalone FK index on `orders.assigned_staff_id`. Migration tracker `supabase_migrations.schema_migrations` should be re-synced after applying 089–091.
-
-### Phase 2 additions (this session)
-
-**Migration 077 — MY tax + MyInvois schema**
-| Table | New columns |
-|---|---|
-| `profiles` | `brn`, `tin`, `sst_registration_id`, `myinvois_client_id`, `myinvois_client_secret_enc`, `default_sst_rate`. Quiet-hours defaults → MYT 22:00–06:00. |
-| `customers` | `tin`, `sst_registration_id`, `brn` |
-| `invoices` | `sst_rate`, `sst_amount`, `myinvois_submission_uid`, `myinvois_uuid`, `myinvois_long_id`, `myinvois_status`, `myinvois_submitted_at`, `myinvois_validated_at`, `myinvois_errors`, `buyer_tin`, `buyer_brn`, `buyer_sst_id`, `requires_individual_einvoice` |
-| `payment_orders` | `billplz_bill_id`, `billplz_collection_id`, `billplz_url`, `billplz_paid_at` |
-
-**Migration 078 — seller-side MY tax snapshot**
-| Table | New columns |
-|---|---|
-| `invoices` | `seller_tin`, `seller_brn`, `seller_sst_registration_id` (captured at invoice-issue time for audit + PDF). |
-
-**Migration 079 — staff accounts + order assignment**
-| Table | Columns |
-|---|---|
-| `staff` (new) | `id`, `user_id` (owner FK), `name`, `phone`, `role` (`owner`\|`assistant`), `active` · RLS scoped to owner |
-| `orders` | `assigned_staff_id` FK, `assigned_at` |
-
-**Migration 080 — MY localization for lookup tables**
-| Table | Change |
-|---|---|
-| `business_categories` | Relabelled 16 ID rows to MY-English (`Catering & Nasi Box`, `Kopitiam & Food Stall`, …); added 8 service categories (`tailor`, `kosmetik`, `laundry`, `rental`, `elektronik`, `otomotif`, `pendidikan`, `desain`). 24 active rows. |
-| `product_units` | Relabelled 10 ID units (`porsi`→`pax`, `loyang`→`tray`, `gelas`→`glass`, `lembar`→`sheet`, `batang`→`stick`); added 7 (`set`, `cup`, `carton`, `litre`, `package`, `session`, `hour`). 17 active rows. |
-| `provinces` | Seeded 16 MY states + federal territories (KL, Selangor, Penang, …). Sort order surfaces Klang Valley first. |
-| `cities` | Seeded 44 MY cities mirroring (now-deleted) `config/my-cities.ts`, joined to `provinces` via FK. |
-
-### Core tables (inherited)
-
-| Table | Key columns |
-|---|---|
-| `profiles` | `orders_used`, `order_credits`, `unlimited_until`, `slug`, `order_form_enabled`, `preorder_enabled`, `bisnis_until`, `referral_code`, plus MY tax fields |
-| `communities` + `community_members` + `community_announcements` | Community infra (group-buy pooling still deferred) |
-| `orders` | `order_number` (CO-YYMMDD-XXXXXX), `items` JSONB, `subtotal/discount/total`, `paid_amount`, `delivery_date`, `is_preorder`, `status`, `source`, `assigned_staff_id` |
-| `customers` | `name`, `phone` (unique per user), `total_orders`, `total_spent`, MY tax fields |
-| `products` | `name`, `price`, `category`, `is_available`, `stock`, `unit`, `cost_price` |
-| `invoices` | `invoice_number` (INV-YYYY-XXXX), seller/buyer snapshots, MY tax + MyInvois tracking |
-| `invoice_counters` | `(user_id, year)` PK — atomic sequential |
-| `ai_analyses` | Cached AI recap insights |
-| `payment_orders` + `transactions` | Billplz billing |
-
-### Key DB functions
-
-`check_order_limit`, `increment/decrement_orders_used`, `add_order_pack`, `add_order_pack_with_credits`, `activate_unlimited`, `activate_bisnis`, `generate_order/invoice/receipt_number`, `recalculate_customer_stats` (trigger), `increment_referral_commission`, `decrement_product_stock`, `generate_community_invite_code`.
-
-### Legacy-column status
-
-Columns from CatatOrder still present for compat (dropped in a future migration):
-- `profiles.npwp`, `profiles.nitku`, `profiles.wp_type`, `profiles.wp_registered_year`
-- `invoices.ppn_rate`, `invoices.ppn_amount` — every write path mirrors sst_rate/sst_amount to these columns
-- `invoices.seller_npwp`, `invoices.seller_nitku`, `invoices.buyer_npwp`, `invoices.trx_code`
-- `customers.npwp`
-
-Every service and API route accepts the new MY field names and writes them alongside the legacy columns, so the drop is safe whenever it happens.
-
----
-
-## Project structure
-
-```
-app/
-├── (marketing)/             # /, /features, /pricing, /blog, /about, /contact, /toko, /toko/[city], /community/[slug], /mitra, /coba-aplikasi
-├── (auth)/                  # /login, /register, /forgot-password, /reset-password
-├── (onboarding)/setup/      # Business type → products → link ready
-├── (public)/order/[slug]/   # Customer order form → /[slug] via rewrite (next.config.ts)
-├── (public)/r/[id]/         # Public receipt page
-├── (dashboard)/             # orders, products, customers, prep, recap, invoices, community, tax, settings, profil, laporan, pengingat, pembayaran
-├── (admin)/                 # Internal admin: phase-0 (dashboard + interviews + distribution + smoke-test), ai-test, users, registrations, lookup, mitra, analytics
-├── join/[code]/             # Community invite shortlink
-└── api/                     # ~115 routes + 5 cron jobs
-    ├── billing/             # Billplz payments + webhook
-    ├── invoices/[id]/myinvois-{submit,status,cancel}/  # Pro-plan LHDN submit
-    ├── invoices/sst-summary/         # Monthly SST summary (RMCD SST-02 helper)
-    ├── tax/summary/                  # Annual revenue + SST + MyInvois stats
-    ├── staff/ + orders/[id]/assign/  # Phase 2 staff + assignment
-    ├── public/order-history/         # Customer past-orders lookup (reorder)
-    ├── twin/payment-match/           # Background Twin — Tier 3 autonomous payment matcher
-    ├── assist/reply-draft/           # Foreground Assist — Tier 2 reply suggestions (drafts only)
-    ├── customers/[id]/reorder/       # Repeat order shortcut (Klaviyo customer-ownership)
-    ├── onboarding/photo-magic/{persist}/  # Photo Magic v1 demo + auth persist
-    └── admin/phase-0/{interviews,distribution,smoke-test,export}/  # Phase 0 validation tooling
-
-features/{orders,customers,products,billing,recap,receipts,referral,invoices,staff,tax,auth,onboarding}/
-lib/
-├── ai/twin-prompts.ts       # ACTIVE — production prompts (PAYMENT_MATCH, CUSTOMER_MEMORY, REPLY_DRAFT, PATTERN_DETECTION) + callTwinAI helper with 20s timeout, AI usage propagation
-├── billplz/                 # ACTIVE — types, client, verify
-├── myinvois/                # ACTIVE — types, generate-json, client
-├── copy/index.ts            # Microcopy library — empty/error/loading/confirm/success/empathy templates + jargon-free labels (per docs/positioning/04)
-├── pdf/generate-invoice.ts  # EN + TIN/BRN/SST + MyInvois UUID ref
-├── utils/quiet-hours.ts     # Shared MYT quiet-hours boundary check across morning-brief, alerts, engagement crons
-└── supabase/, voice/, offline/, utils/
-
-config/{plans.ts, categories.ts, category-defaults.ts, site.ts, navigation.ts}
-scripts/phase-0/             # MyInvois + Billplz sandbox spikes + merchant interview + ai-cost measurement + distribution README + backup-b2b playbook
-supabase/migrations/         # 000 (baseline) + 001–093 (94 total, all applied to live Supabase)
-middleware.ts                # Legacy-route 301s (pesanan→orders etc. + /baru→/new leaf)
+```bash
+npm install
+cp .env.example .env.local       # then fill in Supabase URL + anon key
+npm run dev                       # http://localhost:3000
 ```
 
-Subpath renames: `/orders/new` (was `/pesanan/baru`), `/products/new`, `/invoices/new`, `/community/new`.
-Legacy paths: `/pembayaran` (payment result), `/pengingat` (reminders), `/profil`, `/laporan` — kept as-is for now (not in the rename map).
+The first user to register at `/register` is auto-promoted to **owner**; every
+subsequent signup defaults to **staff**. See [RBAC](#rbac) below.
 
----
+## Development commands
 
-## Integrations
+| Command | What it does |
+|---|---|
+| `npm run dev` | Start dev server with Turbopack |
+| `npm run build` | Production build (runs `prebuild.js` first to clean caches) |
+| `npm run start` | Serve the production build |
+| `npm run lint` | `next lint` (deprecated in Next 16; eslint CLI migration pending) |
+| `npm run verify-imports` | Walks `app/(public)` checking import paths |
+| `node --test lib/services/marketplace/**/*.test.js` | Run all 81 marketplace unit tests (signers, webhook verifiers, crypto round-trip). Zero dependencies — uses Node's built-in test runner. |
 
-### Billplz (payment — ACTIVE, sandbox pending real KYB)
+## Database
 
-- `lib/billplz/` — zero-SDK adapter: `types.ts`, `client.ts`, `verify.ts`, `index.ts`
-- Merchant redirects to Billplz-hosted payment page. No Snap popup, no client SDK.
-- Webhook verifies HMAC-SHA256 X-Signature with timing-safe comparison.
-- Wired at `/api/billing/payments` (create bill) + `/api/billing/webhook` (state changes → plan activation + referral commission).
-- Env: `BILLPLZ_API_KEY`, `BILLPLZ_COLLECTION_ID`, `BILLPLZ_X_SIGNATURE_KEY`, `BILLPLZ_BASE_URL` (optional).
+Tokoflow uses **Supabase** (Postgres + auth + storage). The full schema is
+checked into `db/schema.sql` and is the **single source of truth**. Re-running
+it on an existing DB is safe — every `create table` is `if not exists` and every
+column add is wrapped in an idempotent `do $$` migration block.
 
-### MyInvois (tax — ACTIVE, awaits LHDN production certification)
+### Apply schema to a fresh project
 
-- `lib/myinvois/` — UBL 2.1 JSON builder + OAuth client_credentials + submit/status/cancel/reject.
-- `features/invoices/services/myinvois-adapter.ts` — bridges DB invoice → MyInvois document (proportional discount allocation, walk-in buyer fallback, >RM 10K rule detection).
-- Routes: `/api/invoices/[id]/myinvois-{submit,status,cancel}` — Pro-plan gated, idempotent, 72h cancel window enforced. Submit is **one-tap from UI**, not automatic on paid.
-- Supplier state codes via `MY_STATE_CODES` in `lib/myinvois/generate-json.ts`.
-- Env: `MYINVOIS_CLIENT_ID`, `MYINVOIS_CLIENT_SECRET`, `MYINVOIS_BASE_URL` (defaults preprod in dev), `MYINVOIS_IDENTITY_BASE`.
+```bash
+# 1. Get your project ref + access token from the Supabase dashboard
+SUPABASE_PROJECT=yhwjvdwmwboasehznlfv         # or your project ref
+SUPABASE_TOKEN=sbp_xxxxxxxxxxxxxxxxxxx
 
-### Supabase
+# 2. Apply schema (idempotent)
+node -e "process.stdout.write(JSON.stringify({query:require('fs').readFileSync('db/schema.sql','utf8')}))" \
+  | curl -X POST "https://api.supabase.com/v1/projects/$SUPABASE_PROJECT/database/query" \
+      -H "Authorization: Bearer $SUPABASE_TOKEN" \
+      -H "Content-Type: application/json" \
+      --data-binary @-
 
-- Project ref: `yhwjvdwmwboasehznlfv` (Mumbai region — migrate to Singapore `ap-southeast-1` pre-launch).
-- `site_url`: `https://tokoflow.com` · `uri_allow_list`: tokoflow.com + www + localhost:3000 + localhost:3101
-- **Google OAuth enabled** (client ID in vault + in Supabase auth config). Consent screen is in **Testing** mode — add beta testers to the Test users list until the app is published.
-- Env: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`.
-- No auth users yet · 0 rows across tables · 5 storage buckets (order-images, payment-proofs, product-images, profile-photos, qris-codes) re-created by migrations.
-
-### Gemini Flash Lite (AI)
-
-- Via OpenRouter. Used in `/api/recap/analyze`, `/api/voice/parse`, `/api/image/parse`.
-- System prompts rewritten for Malaysian SMB context — Malay + English + Manglish examples, +60 phone formats, Asia/Kuala_Lumpur timezone.
-- Env: `OPENROUTER_API_KEY`.
-
----
-
-## Code patterns
-
-- **Service layer:** `fetch("/api/...")`, return null/[] on error. Zero direct Supabase in UI.
-- **API routes:** `getAuthenticatedClient(req)` — dual auth: Bearer (mobile) → cookies (web). Destructure as `{ supabase, user }`.
-- **Components:** `"use client"`, `useState`, toast via `sonner`.
-- **Customer auto-create:** Upsert on order. Phone match first, then name ilike. Stats auto-synced by trigger.
-- **Payment derivation:** `derivePaymentStatus()` — paid_amount vs total.
-- **Validation:** Items (name non-empty, price ≥ 0, qty ≥ 1), quota (402), delivery dates, slug, storage.
-- **View/edit separation:** `/orders/[id]` read-only (redirects to edit), `/orders/[id]/edit` mutations. `/invoices/[id]` detail, `/invoices/[id]/edit` mutations.
-- **Modals:** Bottom-sheet for destructive actions (no `confirm()`).
-- **Search:** 300ms debounce on all lists.
-- **WA messages:** 8 builders in `lib/utils/wa-messages.ts`, all branded `_Sent via Tokoflow — https://tokoflow.com_`.
-- **Slug:** `afterFiles` rewrite `/:slug` → `/order/:slug`. Reserved slugs in `lib/utils/slug.ts` include both EN (orders, invoices, …) and legacy ID slugs (pesanan, faktur, …) so legacy-prefix collisions can't happen.
-- **Route rename (MY):** `middleware.ts` 301-redirects every legacy ID prefix (`/pesanan` → `/orders`, etc.) and the `/baru` → `/new` leaf so WhatsApp and bookmark links survive.
-- **Stock:** Auto-decrement on order, auto-disable at 0, server-side race prevention.
-- **Swipe:** Right = advance status, Left = WA.
-- **Realtime:** Supabase on `orders` INSERT (toast + sound) + UPDATE (payment claim toast).
-- **Offline:** Network-first + IDB fallback. FIFO sync + localStorage lock (30s TTL).
-- **Analytics:** `track(event, properties?)` → `events` table + UTM.
-- **Day-1 nav:** All core surfaces (Today, Orders, Products, Customers, Recap, Settings) visible from signup. Only Invoices + Tax hide behind the Pro gate. The earlier volume-gated cognitive cut was rolled back — hiding Orders/Customers from new merchants made them feel the product was missing.
-- **Smart defaults:** `config/category-defaults.ts` — 28 entries map a `business_category` ID to mode (preorder/dine-in/booking), capacity, sample products, and suggested categories. Drives `/setup` step 1 → 2 transition.
-- **Pricing compass:** Traffic light 🟢🟡🔴⚫ in ProductForm (net margin after overhead). Peer benchmark via `/api/benchmark` (gated ≥10 users/cluster).
-- **Quiet hours:** `profiles.quiet_hours_start/end` (default 22:00–06:00 MYT). Push suppressed during window.
-- **Quota nudge:** two-state only — `"none"` until 50 orders used, then `"exhausted"`. No soft/medium/urgent thresholds, no `"X/50 used"` banners (anti-anxiety, see [`docs/positioning/03-features.md`](./docs/positioning/03-features.md)). `TrialBanner` shows a single quiet line at exhausted; settings page surfaces Pro upgrade as the only resolution path.
-- **Tax identity gating:** TIN/BRN/SST inputs in `/settings` only render for Pro merchants OR users who already have tax info entered — free-tier merchants don't see the form (compliance is silent superpower).
-- **Microcopy:** import from `lib/copy` for empty states, errors, loading, confirmations, success, and the 7 empathy moments. Adds new copy via this library, not inline.
-- **MyInvois submission (Pro):** One-tap from `/invoices/[id]` detail or `/invoices/[id]/edit`. Polls `/myinvois-status` every 5s until terminal (valid / invalid / cancelled / rejected) or 2 min timeout. Stores UUID + longId + validation state on the invoice row. 72h cancel modal with reason capture.
-- **SST calculation:** Per-invoice toggle (0% / 6%), seeded from `profile.default_sst_rate`. Not per-product-category (that would require schema extension).
-- **Staff assignment:** `AssigneePicker` component in `features/staff/components/`. Owner assigns from `/orders/[id]/edit`. Staff CRUD at `/settings/staff`. Phone+PIN staff login deferred to Phase 4.
-- **Customer reorder:** `/api/public/order-history` returns last 5 orders for a phone on a merchant. Storefront surfaces past orders with a Reorder button that prefills the cart.
-- **Community join:** Cookie `community_code` → auth callback → upsert member + set community_id + set organizer as referrer.
-
----
-
-## UI patterns
-
-### Dashboard
-- Colors: warm bg `hsl(35 20% 97%)`, cards `hsl(36 15% 99%)`. Marketing: `bg-white`
-- Cards: `rounded-xl border bg-card shadow-sm`
-- Primary CTA: `h-9 px-3 bg-warm-green text-white rounded-lg`
-- Text hierarchy: L1 `font-semibold text-foreground` → L2 values → L3 `text-foreground` → L4 `text-muted-foreground`
-- Inputs: `h-11 px-3 bg-card border rounded-lg shadow-sm`
-- Touch targets: min `h-11` (44px)
-
-### Marketing
-- Containers: `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8`
-- CTAs: `bg-green-600 text-white hover:bg-green-700`
-- Voice: conversational English, SMB-friendly. Honest copy — never claim something that isn't shipped.
-
-### SEO
-- Title: `%s | Tokoflow`. OG 1200×630. `lang="en"`
-- JSON-LD: SoftwareApplication (landing), LocalBusiness (store), Organization (community), FAQPage (pricing, contact)
-- noindex: auth, dashboard, admin
-
----
-
-## Cron jobs (`vercel.json`)
-
-| Job | Schedule (UTC) | MYT | Function |
-|---|---|---|---|
-| invoice-overdue | 07:00 | 15:00 | Mark overdue invoices |
-| morning-brief | 22:00 | 06:00 | Push: today's lineup + cost trend (food cost delta ≥ 5pp) + **Hari Sepi** variant when today's revenue <30% of 7-day avg (with >RM 50/day baseline) |
-| engagement | 00:00 | 08:00 | Push: onboarding drip · milestone (10/50/100/500/1000) · monthly recap · **Anniversary** (1y/3y/5y) · **Customer Returns** (3+ orders, drip-deduped) · **Pre-Ramadan** (14d before, hard-coded dates 2027-2030) |
-| alerts | 00:00 | 08:00 | Push: stock ≤ 3, capacity ≥ 80%, quota exhausted (single trigger at 50, no pre-exhaustion banner per anti-anxiety rules) |
-| tax-reminder | 02:00 on day 10 | 10:00 | Pro merchants with unsubmitted invoices, quiet-hours aware (warm tone, not pressure) |
-
-**Mid-Rush** (client-side, not cron): the dashboard's realtime listener counts INSERTs in a 30-min sliding window and surfaces a one-time supportive toast at 5+ orders, 60-min suppressed via sessionStorage.
-
----
-
-## Environment variables
-
-```
-# App
-NEXT_PUBLIC_APP_URL=https://tokoflow.com      # required — logout redirect + billing callback
-NEXT_PUBLIC_APP_NAME=Tokoflow
-NEXT_PUBLIC_APP_DESCRIPTION=…
-NEXT_PUBLIC_APP_SCHEMA=public                 # optional — defaults to public
-
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=https://yhwjvdwmwboasehznlfv.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=…
-SUPABASE_SERVICE_ROLE_KEY=…
-
-# Billplz (payment)
-BILLPLZ_API_KEY=
-BILLPLZ_COLLECTION_ID=
-BILLPLZ_X_SIGNATURE_KEY=
-BILLPLZ_BASE_URL=                             # optional — defaults by NODE_ENV
-
-# MyInvois (e-Invoice, Pro plan)
-MYINVOIS_CLIENT_ID=
-MYINVOIS_CLIENT_SECRET=
-MYINVOIS_BASE_URL=                            # optional — defaults to preprod in dev
-MYINVOIS_IDENTITY_BASE=
-
-# AI
-OPENROUTER_API_KEY=
-
-# Cron
-CRON_SECRET=
-
-# Transactional email (password reset, receipts)
-GMAIL_USER=
-GMAIL_APP_PASSWORD=
+# 3. Apply seed (default marketplace channels + early-access plan)
+node -e "process.stdout.write(JSON.stringify({query:require('fs').readFileSync('db/seed.sql','utf8')}))" \
+  | curl -X POST "https://api.supabase.com/v1/projects/$SUPABASE_PROJECT/database/query" \
+      -H "Authorization: Bearer $SUPABASE_TOKEN" \
+      -H "Content-Type: application/json" \
+      --data-binary @-
 ```
 
-Google OAuth client id/secret live inside Supabase auth config — **not** in `.env.local`. Supabase handles the OAuth flow server-side.
+### Tables
 
----
+| Table | Purpose |
+|---|---|
+| `av_profiles` | User profile (1:1 with `auth.users`). Includes `role text` (owner/staff). |
+| `tf_products` | Product catalog. Has `low_stock_threshold` and a generated `stock_status` column (`negative` / `zero` / `low` / `normal`). |
+| `tf_product_costs` | Per-SKU modal/packing/affiliate costs. 1:1 with `tf_products` via SKU. |
+| `tf_marketplace_fees` | Fee % per channel (Shopee, Tokopedia, etc.). |
+| `tf_sales_input` | Staging table — sales pending finalization. Status flows `pending → ok → processed`. |
+| `tf_sales_transactions` | Finalized sales with full financial breakdown (revenue, profit, all costs). FK to `tf_customers`. |
+| `tf_incoming_goods_input` / `tf_incoming_goods` | Same staging→final pattern for stock receipts. |
+| `tf_stock_adjustments` | Manual stock corrections with reason + audit trail. |
+| `tf_product_compositions` | Bundle/parent → component decomposition. Channel-aware. |
+| `tf_customers` | Lightweight customer directory (name, phone, notes). Sales transactions FK to this. |
+| `tf_warehouses` | Stock locations. Each product belongs to ONE warehouse via `tf_products.warehouse_id`. |
+| `tf_alert_acks` | Per-user (PK = user_id+sku) acknowledgement of stock alerts. |
+| `tf_marketplace_connections` | OAuth state for marketplace integrations. Holds encrypted tokens (`access_token_enc` / `refresh_token_enc` — AES-256-GCM), `shop_cipher` (TikTok Shop only), `last_sync_cursor` watermark, `seller_type` (distinguishes Tokopedia Shop from TikTok Shop), and a `connection_meta` jsonb stash. Legacy plaintext columns `access_token` / `refresh_token` exist but are unused by new code. |
+| `tf_webhook_events` | Inbox for marketplace webhook deliveries. Webhook routes verify signature + insert row fast; cron `/api/cron/webhook-events-process` drains. Dedup via the partial unique index on `tf_sales_input`. |
+| `kn_membership_plans` | Subscription/credit plans (read by `/plans` and `/checkout`). Legacy `kn_` prefix from sibling project. |
+| `kn_transactions` | Payment transaction log. |
 
-## Phase 0 gates (revised 2026-05-05 — synthesis aligned)
+The `tf_sales_input` and `tf_sales_transactions` tables also have marketplace
+back-reference columns — `external_source`, `external_order_id`, `external_item_id`,
+`external_update_time`, `marketplace_raw` on input; plus `fee_reconciled_at` on
+transactions. A partial unique index `tf_sales_input_external_uniq` on
+`(external_source, external_order_id, external_item_id) where external_order_id is not null`
+is the hard dedup boundary — duplicate webhook/poll retries upsert cleanly without
+double-counting. Manual `/sales` entries have all three NULL and are unaffected.
 
-Phase 0 = 8-week adversarial validation. **No Phase 1 build until Gate 0 passes.** Full plans in [`06-roadmap.md` Phase 0](./docs/positioning/06-roadmap.md#phase-0--validation-first-foundation-aprjul-2026-3-months) (strategic) + [`SYNTHESIS-2026-05-05.md`](./docs/SYNTHESIS-2026-05-05.md) (execution) + [`scripts/phase-0/README.md`](./scripts/phase-0/README.md) (operational).
+### Views
 
-### Validation milestones
+- `v_products_with_costs` — joins `tf_products` + `tf_product_costs` + `tf_warehouses`. Includes a `search_tsv` tsvector for full-text search via the `public.simple_unaccent` config.
 
-- [ ] **5 friendly + 5 hostile interviews** Shah Alam mompreneur (NOT just observation — hostile q first: "what part of jualan you ENJOY?" then "why might Tokoflow NOT work for you?") + brand resonance test (Tokoflow name 1-10 friction)
-- [ ] **Manual Twin smoke test**: Aldi as Background Twin for 1 volunteer merchant for 2 weeks via WA admin (cheap, validates trust transfer architecturally)
-- [ ] **AI cost measurement** with production-grade prompts (Background Twin + Foreground Assist) at 50-order/month load
-- [ ] **Ariff partnership formal** — kopi 2 jam, decide tier (advisor 1.5% / co-founder 5–10%), sign SAFE/MOU. **No casual mode.**
-- [ ] Sdn Bhd registration submitted (SSM)
-- [ ] **Distribution validation**: Aldi TikTok + komuniti penetration → ≥300 followers + ≥15 inbound DM cumulative by Week 8 (or scenario c backup B2B activated)
-- [ ] **Brand resonance**: friction <4/10 average from 10 interviews → keep Tokoflow; ≥4/10 → trigger rebrand decision
+### Naming prefixes
 
-### Spike scripts (still required)
+- `tf_*` — Tokoflow operational tables
+- `kn_*` — membership/billing (legacy from sibling project, kept as-is)
+- `av_*` — profile (legacy from sibling project)
+- `v_*`  — views
 
-- [ ] `myinvois-spike.ts` returns `submissionUid` + accepted `uuid` from LHDN preprod
-- [ ] `billplz-spike.ts` passes X-Signature round-trip (genuine + tamper tests)
-- [ ] MDEC Digitalisation Partner application cleared (currently: applied, pending)
+## Architecture
 
-### Gate 0 pass criteria (all 7 must hit)
+Tokoflow is a Next.js 15 (App Router, Turbopack) app with mixed JS/TS,
+deployed on Vercel, backed by Supabase. The performance work in `lib/cache/`,
+`lib/http/`, and `lib/state/` is real — ETag, cursor pagination, output cache,
+HTTP keepalive — match those patterns when adding new endpoints.
 
-1. ✓ ≥7/10 interviews resonate with Three-Tier framework (mechanical residue distinct from valued relationship + craft)
-2. ✓ Smoke test merchant rates manual twin >7/10 helpfulness AND no customer noticed AI tone
-3. ✓ AI cost ≤ **RM 25/merchant/month** at 50-order/month projected scale (RM 25-30 = retest Week 6 must clear ≤RM 25)
-4. ✓ Ariff formal partnership locked (signed) OR Plan B locked
-5. ✓ Sdn Bhd in SSM queue
-6. ✓ Distribution: ≥300 followers + ≥15 inbound DM cumulative
-7. ✓ Brand decision data-backed (keep <4/10 friction OR rebrand ≥4/10 friction)
+### Route organization
 
-### Pre-committed triggers — 7 total (6 kill + 1 rebrand-flag)
+- `app/(private)/` — authenticated routes (dashboard, inventory, sales, customers, scanner, etc.)
+- `app/(public)/` — unauthenticated routes (landing, login, register, marketing pages)
+- `app/api/` — API routes organized by feature
+- Auth gate: `middleware.js` redirects unauthenticated users on private routes to `/login`. The matcher is the source of truth for which top-level paths are private.
 
-> No rationalization when emotion arrives. Aligned with [SYNTHESIS-2026-05-05.md §5](./docs/SYNTHESIS-2026-05-05.md).
+### Key directories
 
-1. **AI cost**: ≤RM 25 pass / RM 25-30 warning + retest Week 6 / >RM 30 → kill (Pro RM 49 locked)
-2. **<7/10 interviews** resonate Three-Tier (kill); <5/10 = catastrophic
-3. Smoke test: customer detects AI tone OR merchant trust degrades OR <7/10 helpfulness → reduce twin scope to Foreground Assist only OR kill
-4. Ariff declines + Plan B unproven 4 weeks → kill
-5. Sdn Bhd structural block + sole-prop alternative non-viable → kill
-6. **Distribution**: <300 followers + <15 inbound DM by Week 8 → kill content-led OR activate scenario (c) backup B2B
-7. **Brand friction ≥4/10 average** → trigger rebrand decision Week 7 (NOT kill — flag; bias toward keep due to 3-6 week switching cost)
+| Path | Purpose |
+|---|---|
+| `app/(private)/dashboard/` | Wired to `/api/dashboard` + `/api/customers?with_stats=1`. Shows real metrics, channels, top products, top customers. |
+| `app/(private)/products/` | List + new + edit. Server-side data fetch via the view. |
+| `app/(private)/sales/` | Sales input form + pending sales table. Customer dropdown is optional. |
+| `app/(private)/sales-history/` | Transactions + per-channel/per-product/per-date summary toggle + filters. |
+| `app/(private)/customers/` | Customer directory + per-customer detail page (`[id]/page.js`). |
+| `app/(private)/warehouses/` | Warehouse CRUD (owner only). |
+| `app/(private)/marketplace/` | Marketplace integration management (owner only). Per-shop cards with real sync status, last_webhook_at, seller_type badge, OAuth callback feedback via `?connected=`/`?error=` query params. |
+| `app/(private)/scanner/` | Barcode scanner page using `BarcodeDetector` API. |
+| `app/(private)/admin/users/` | Owner-only user management with role promotion/demotion. |
+| `app/(private)/inventory/` | Stock list with negative/zero/low/normal/alert filters and per-product threshold display. |
+| `app/api/marketplace/connect/[provider]/` | POST — builds signed OAuth redirect URL per provider, returns `{ redirect_url }`. Owner-only. Tokopedia returns 410 (absorbed into TikTok Shop). |
+| `app/api/marketplace/callback/[provider]/` | GET — OAuth callback handler. Verifies signed `state`, exchanges auth_code for tokens, fetches `shop_cipher` (TikTok Shop), upserts connection with encrypted tokens via `upsertConnectionWithTokens`. Redirects back to `/marketplace?connected=…`. |
+| `app/api/marketplace/sync/[id]/` | POST — manual sync trigger. Uses the service-role Supabase client and calls `syncTikTokShopConnection` / `syncShopeeConnection`. Owner-only. |
+| `app/api/webhooks/{tiktok-shop,shopee}/` | POST — verify signature against raw body, find connection by `shop_id`, insert into `tf_webhook_events` inbox, handle urgent events (deauthorization) inline. Return 200 fast. Uses service-role client (no session). |
+| `app/api/cron/marketplace-sync/` | Vercel Cron every 15 min. Auth via `Bearer $CRON_SECRET`. Fans out `syncTikTokShopConnection` / `syncShopeeConnection` over all active connections, sequentially. |
+| `app/api/cron/webhook-events-process/` | Vercel Cron every 2 min. Drains `tf_webhook_events` where status='pending' by running the same sync functions, grouped by connection so multiple events for one shop collapse into one sync call. |
+| `app/api/cron/marketplace-fee-reconcile/` | Vercel Cron daily at 03:00. Pulls escrow (Shopee) / statement transactions (TikTok Shop — WIP) for finalized transactions older than 24h and overwrites `marketplace_fee` + `net_profit` with the authoritative settlement numbers. |
+| `lib/database/supabase/` | Browser Supabase client. |
+| `lib/database/supabase-server/` | Server Supabase client (reads cookies via `next/headers`). **Also exports `createServiceRoleClient()`** — bypasses RLS for webhook handlers and cron jobs. Server-only; requires `SUPABASE_SERVICE_ROLE_KEY`. |
+| `lib/services/` | Business logic — inventory, sales, composition, incoming-goods. **Sales/incoming processors copy `customer_id` from input → finalized transaction.** |
+| `lib/services/marketplace/` | Marketplace integration plumbing + providers. `crypto.js` (AES-GCM token encryption + HMAC helpers), `errors.js` (MarketplaceError taxonomy + provider classifiers), `http.js` (fetch wrapper with retry/backoff/timeout), `connections.js` (token-aware data access). Provider subfolders `tiktok-shop/` and `shopee/` each contain `signer.js`, `auth.js`, `orders.js`, `webhooks.js`, `sync.js` + colocated `*.test.js` files. |
+| `lib/auth/role.js` | `requireOwner(auth)` and `getCurrentRole(auth)` helpers for API gates. |
+| `lib/utils/api-response.js` | `successResponse`, `errorResponse`, `handleSupabaseError`. |
+| `lib/utils/auth-helpers.js` | `authenticateRequest(request)` — entry point for every API route. |
+| `lib/cache/`, `lib/http/`, `lib/state/` | Performance plumbing — LRU cache, cursor encoder, ETag helpers, server timing, global state tags. |
 
-### Phase 1 Gate (post-validation, end Oct 2026) — "Love" operationally defined
+## RBAC
 
-≥4/5 must hit:
-- Sean Ellis test: ≥40% answer "very disappointed" without Tokoflow
-- DAU consistency: ≥70% daily active over 4 weeks
-- Spontaneous referral: ≥1 alpha tells another merchant unprompted
-- NPS: ≥8 from all 5 alphas
-- Self-reported craft hours saved: ≥3 hours/week median
+Two roles, gated at both API and UI level.
 
----
+- **owner** — full access. First user to sign up is auto-promoted via the `handle_new_user` trigger.
+- **staff** — operational access. Cannot edit cost data, marketplace fees, delete products/customers, or manage warehouses/users/marketplace connections.
 
-## Recent strategic passes
+### How to gate a new API route
 
-### 2026-05-06 · Overnight build — Phase 0 enabling infra + Year-2 AI scaffolds + audit pass
+```js
+import { requireOwner } from '../../../lib/auth/role.js';
 
-Single overnight session (00:08 → 07:16). Founder override of synthesis discipline ("no Phase 1 build until Gate 0 passes") to ship validation tooling + Year-2 scaffolds in parallel. 26 features + 11 audit-fix bugs in commit `6f4d988`. Build clean, TS-strict pass, lint-clean on touched files. Full diary in [`docs/CHANGES-2026-05-06.md`](./docs/CHANGES-2026-05-06.md).
+export async function POST(request) {
+  const auth = await authenticateRequest(request);
+  if (!auth.ok) return errorResponse(auth.error, auth.status || 401);
 
-**Phase 0 enabling infrastructure (all live):**
-- Migrations 089–093 applied to Supabase `yhwjvdwmwboasehznlfv` via Management API. 089 unify money types · 090 jsonb shape constraints · 091 FK index · **092 phase_0_* tracking tables** (interviews, distribution_metrics, smoke_test_log) · **093 photo_magic columns** (profiles.bio, products.source).
-- `/admin/phase-0` dashboard with 12 sub-metrics → 7 SYNTHESIS-level triggers (4 in-dashboard + 3 external).
-- `/admin/phase-0/{interviews,distribution,smoke-test}` entry forms.
-- `/api/admin/phase-0` aggregation + `/export` Markdown retrospective with auto-decision (KILL/PASS/PARTIAL/PENDING split correctly between data-driven vs external).
-- AI cost measurement script reconciled — script REPLY_DRAFT_PROMPT now mirrors production verbatim.
+  const gate = await requireOwner(auth);
+  if (!gate.ok) return gate.response;        // returns 403 with Indonesian message
 
-**Year-2 features pulled forward (per founder override):**
-- **Background Twin** at `/api/twin/payment-match` — Tier 3 autonomous, ESCALATE on <80% confidence.
-- **Foreground Assist** at `/api/assist/reply-draft` — Tier 2, draft-only, response always carries reminder *"Tokoflow drafts. You send. Customer relationship stays with you."*
-- `lib/ai/twin-prompts.ts` — production prompts + `callTwinAI` helper (AbortController 20s timeout, OpenRouter rankings headers, AI usage propagation).
-- `/admin/ai-test` calibration console — sample DuitNow notif + WA history (BM/EN code-switch) preloaded.
-- **Photo Magic v1** — `PhotoMagicEntry` (camera capture + canvas resize 1024px max edge JPEG 0.85) + `/api/onboarding/photo-magic/persist` (atomic profile + products write, INSERT-then-DELETE order).
-- **Repeat Order** — `/api/customers/[id]/reorder` (Klaviyo customer-ownership inheritance) + Repeat button on customer detail.
+  // ... privileged action
+}
+```
 
-**Audit pass — 11 real bugs fixed:**
-- `callTwinAI` had no fetch timeout — added AbortController 20s default.
-- Phase 0 export auto-decision was stuck in PARTIAL because external triggers always PENDING — split data-driven vs external.
-- OrderForm double-decoded reorder items param; `%` literals throw URIError silently swallowed.
-- Phase 0 routes accepted dead `"founder"` role string not in `USER_ROLES` — removed across 5 routes.
-- `copy.empathy.midRush` said "I'll handle customer chat" — bible violation, rephrased to "I'll draft replies".
-- Phase 0 entry forms swallow network errors (try/finally with no catch) — added explicit catch.
-- PhotoMagicEntry called `.products.length` without array check — added shape guard.
-- Reconciled production/script REPLY_DRAFT_PROMPT divergence per CLAUDE.md "keep these in sync."
-- Plus dashboard header miscount, twin/assist usage propagation, surface fixes.
+For per-field gates (e.g. PATCH allows name but not cost), use `getCurrentRole(auth)`
+and check before applying the field — see `app/api/products/[param]/route.js` PATCH
+for the pattern.
 
-**State for the morning:**
-- Pushed to `origin/main` as `6f4d988` (Vercel auto-deploys).
-- Local + Vercel production envs both have canonical Tokoflow OpenRouter key.
-- Founder profile `role='admin'` verified.
-- Phase 0 tools live → Aldi can begin Week 1 (interview script + smoke test diary).
+### How to hide UI from staff
 
-### 2026-04-28 · Bible v1.2 — Three-Tier Reality + 2-Layer Twin (this session)
+`PrivateNav` filters menu items via `OWNER_ONLY_PREFIXES`. For per-button hiding:
 
-8 ultrathink rounds + Steve Jobs lateral framing + devil's advocate red-team + critique-driven refinements. **Strategy locked, no code yet.** All in [`docs/positioning/`](./docs/positioning/) (versioned v1.2):
+```jsx
+const { profile } = useAuth();
+const isOwner = profile?.role === 'owner';
+{isOwner && <button onClick={handleDelete}>Delete</button>}
+```
 
-- **Root problem refined**: "operations ate craft" (sweeping) → **Three-Tier Reality** (Pure Craft / Customer Relationship / Mechanical Residue) — D-013
-- **Solution architecture**: monolithic "autonomous twin" → **2-layer twin**: Background Twin (Tier 3, autonomous, invisible) + Foreground Assist (Tier 2, suggests, merchant sends). Trust transfer protected. — D-014
-- **New tagline**: **"We handle the receipts. Not the recipes."** (Bahasa: *"Resi kami urus. Resep kamu."*). Kitchen line literal. "Less admin. More making." retired as generic. "From snap to sold" demoted to Photo Magic feature tagline.
-- **6th iconic moment**: **The Disappearing Work** — felt absence of Tier 3 work, like Touch ID replacing password. New doc [`08-the-disappearing-work.md`](./docs/positioning/08-the-disappearing-work.md).
-- **Photo Magic v1 reframed extraction-only** — AI parses inventory/pricing, **leaves photo untouched**. Kitchen-protection enforced.
-- **Real moat sharpened** — 4-dimensional: unstructured input + Bahasa-first conversational + compliance silent + buyer experience. Not "AI labor" generic.
-- **Wave 1-5 expansion hypothesis** — Wave 1 mompreneur F&B Shah Alam → Wave 2 vertical-first MY (kosmetik/fashion/jasa) → Wave 3 geographic (KL/Penang/SG) → Wave 4 cross-pattern (creator/freelancer) → Wave 5 global. Bridges mission-wedge altitude gap.
-- **Phase 0 expanded** — 5 friendly + 5 hostile interviews + manual twin smoke test + AI cost measurement. 5 pre-committed kill triggers.
-- **"Love" operationally defined** — Sean Ellis 40% + DAU 70% + spontaneous referral + NPS 8 + 3hr/week craft saved.
-- **Phase 2 reframed** — milestone (50 paying) → underlying questions (Q1 retention >70%, Q2 CAC payback <3mo, Q3 K-factor >0.3).
-- **Tax demoted** — LHDN MyInvois moved Phase 1 hero → Pro/Business gated (SST RM 500K threshold reality).
-- **"What we refuse to do" list** — 10-item explicit restraint declaration as marketing weapon.
-- **Distribution hypothesis** — FB groups (Mommies Daily, Ibu-Ibu Bisnes Online MY), TikTok mompreneur creators, WhatsApp komuniti. Anti-channels: LinkedIn, Twitter/X, paid Google Ads.
-- **Lifestyle vs venture-scale acceptance** — RM 100-300K MRR ceiling realistic Year 3-5; venture-scale upside not assumption — D-015.
-- **Internal vs customer-facing naming discipline** — "Twin/Background/Foreground/Tier 3" never expose to user — D-016.
+### Last-owner safeguard
 
-Decision logs: D-013, D-014, D-015, D-016, D-017 (9 critique-driven refinements).
+`PATCH /api/users/[id]/role` refuses to demote a user from `owner` to `staff`
+if it's the only remaining owner (HTTP 409). Don't bypass this in code.
 
-### 2026-04-27 · "From snap to sold" + anti-anxiety + microcopy
+## Stock alerts
 
-Shipped across 5 commits (10bc895 → 6fa38c3). **Code complete from this pass:**
+Alerts are derived live from `tf_products.stock_status` (the generated column).
+There's no separate "alerts table" — instead `tf_alert_acks` tracks which
+SKU+status combinations the current user has already acknowledged. The unread
+feed is the LEFT JOIN difference. This means alerts auto-resolve when stock
+returns to normal, and re-fire when a SKU drops back below threshold.
 
-- **Marketing reposition** — landing, features, pricing, about, contact, mitra, toko, coba-aplikasi rewritten; LHDN demoted from hero to silent superpower
-- **Pricing collapsed** — UI shows Free / Pro RM 49 / Business RM 99 only; legacy pack constants `@deprecated`
-- **Anti-anxiety sweep** — `BeresCelebration` deleted, `OnboardingChecklist` reframed as suggestions, `TrialBanner` quiet line at exhausted only, `getNudgeLevel` simplified to `"none" \| "exhausted"`
-- **Compliance gating** — TIN/BRN/SST inputs in settings gated to Pro merchants or those with tax info entered
-- **Microcopy library** — `lib/copy/index.ts` wired into 4 list empty states
-- **Empathy moments shipped** — Hari Sepi, Customer Returns, Anniversary, Pre-Ramadan, Mid-Rush
-- **Cron copy rewrite** — removed comparison shaming, robotic factoids, pressure tone, Indonesian leaks
-- **Photo Magic plan** — [`P4-photo-magic-plan.md`](./docs/positioning/P4-photo-magic-plan.md) scopes 1-photo onboarding ticket
+- `GET /api/alerts` returns `{ alerts, counts: { negative, zero, low, total, unread } }`
+- `POST /api/alerts/ack` accepts `{ sku, status }` (single) or `{ acknowledge_all: true }` (bulk)
+- The bell icon in `PrivateNav` polls every 60s and shows the unread count
 
-> **Note on tagline migration** (resolved 2026-05-05): the brand-level tagline "We handle the receipts. Not the recipes." (BM: "Resi kami urus. Resep kamu.") is live on landing/features/pricing/layout metadata. "From snap to sold" and "Less admin. More making." have been retired from marketing copy. "From snap to sold" remains reserved as the Photo Magic onboarding feature-line per bible v1.2.
+## Multi-warehouse
 
----
+**Minimum viable:** each product belongs to ONE warehouse via `tf_products.warehouse_id`.
+A merchant models "cabang Jakarta" vs "cabang Surabaya" by creating separate SKUs
+per branch (`ABC-JKT`, `ABC-SBY`). True per-warehouse-stock-per-product is a
+Tier 4 follow-up that requires a `tf_product_inventory` pivot table and rewriting
+every inventory query.
 
-## Positioning Loop — continuous radical search (started 2026-05-01)
+The migration in `db/schema.sql` backfills all existing products to the
+default warehouse so nothing is left with `NULL`.
 
-> **Mode operasi: CONTINUOUS LOOP.** A 20-cycle adversarial positioning search is wired up to find a positioning that beats v1.2 — radical, not refined. While the loop is running, this section governs cycle behavior.
+## Marketplace integration
 
-**What:** 20 cycles rotating through HYPOTHESIZE_RADICAL → RED_TEAM (3 personas: Bu Aisyah / Steve Jobs Maximalist / YC Devil's Advocate) → RESEARCH (competitor + cross-domain analogy) → SYNTHESIZE → LATERAL_JUMP → CONSTRAINT_HARDEN → DELETE_PASS, optimizing 8 dimensions toward all-≥9 convergence.
+**Real integration, not scaffolding.** Two providers are supported: **TikTok
+Shop Partner Center** and **Shopee Open Platform v2**. Tokopedia is
+intentionally NOT a separate integration — the legacy `developer.tokopedia.com`
+OpenAPI is being terminated and Tokopedia storefronts are absorbed into TikTok
+Shop Partner Center under `seller_type: "Tokopedia Shop"`. One TikTok Shop
+OAuth covers both platforms for merchants who have migrated.
 
-**Brain:** [`docs/positioning/loop/LOOP_INSTRUCTIONS.md`](./docs/positioning/loop/LOOP_INSTRUCTIONS.md) — full mandate, mode procedures, scoreboard, convergence criteria, forbidden phrases.
+The `POST /api/marketplace/connect/tokopedia` endpoint returns **HTTP 410 Gone**
+with a message explaining the migration. Don't re-add a Tokopedia-specific
+path without reading the research in `memory/` first.
 
-**Wrapper:** `scripts/run-positioning-loop.sh` — Layer 3 of the infinite-loop stack. Per-cycle = fresh `claude -p` session, context resets every cycle, MAX_CYCLES=20, CYCLE_TIMEOUT=2400s.
+### Architecture — ISV pattern
 
-**State (disk = truth):**
-- `runs/.loop-counter` — last completed cycle (wrapper-managed)
-- `docs/positioning/loop/current-best.md` — leading positioning hypothesis
-- `docs/positioning/loop/scoreboard.md` — 8-dim scores + history
-- `docs/positioning/loop/CHANGELOG.md` — one line per cycle
-- `docs/positioning/loop/{hypotheses,critiques,research,synthesis}/cycle-NNN.md` — per-cycle artifacts
-- `docs/positioning/loop/CONVERGED.md` — sentinel (wrapper detects → stops loop)
+One set of developer credentials belongs to Tokoflow-the-product:
 
-**Per-cycle rules:**
-1. Read `$LOOP_CYCLE` env var → know your cycle number → look up mode in table.
-2. Read disk state first (current-best.md, scoreboard.md, last 3 CHANGELOG lines, latest cycle artifact).
-3. Execute exactly ONE cycle per the mode procedure in LOOP_INSTRUCTIONS.md. Use ultrathink.
-4. Write artifact to correct subdir, append CHANGELOG line, update INDEX/scoreboard.
-5. Exit cleanly. Wrapper handles next session.
-6. Never run multiple cycles in one session. Never ask the user mid-cycle. Never modify v1.2 archive files (`00-manifesto.md` through `08-the-disappearing-work.md`).
+```
+TIKTOKSHOP_APP_KEY  + TIKTOKSHOP_APP_SECRET   (one per install)
+SHOPEE_PARTNER_ID   + SHOPEE_PARTNER_KEY      (one per install)
+```
 
-**Recovery from compaction or fresh session mid-loop:**
-1. `cat runs/.loop-counter` → last completed cycle. Next = +1 (or read `$LOOP_CYCLE`).
-2. Read last 3 lines of `CHANGELOG.md` → know what was just done.
-3. Read latest artifact under `loop/{hypotheses,critiques,research,synthesis}/` → know prior context.
-4. Resume from the next cycle. Disk is the answer — do not ask the user "where were we?".
+Every merchant OAuths their own shop into these same credentials. Merchants
+never see a developer portal — they only click "Connect" in `/marketplace`
+and approve on the platform's consent screen. The resulting per-shop
+`access_token` / `refresh_token` get AES-256-GCM encrypted via
+`lib/services/marketplace/crypto.js` and stored in
+`tf_marketplace_connections.access_token_enc` / `refresh_token_enc`.
 
-**v1.2 baseline scoreboard (cycle 0):** SimpIT 6 / ZeroExt 3 / AInative 5 / JobsUX 5 / RevPot 5 / Magic 4 / 60sDemo 5 / Defense 6 → avg **4.9**. Goal: ≥9 across all 8.
+The memory file `feedback_user_no_dev_friction.md` documents this principle:
+merchants are end users, NEVER developers. Do not add any flow that asks a
+merchant to obtain API keys themselves.
 
----
+### OAuth flow
 
-## Phase 4 — deferred (post-launch)
+1. **Connect** — `POST /api/marketplace/connect/:provider` builds a signed
+   redirect URL via the provider's `buildAuthorizeUrl`. A signed `state`
+   token (HMAC-SHA256 of `user_id.ts` with `CRON_SECRET` as key) gets
+   embedded so the callback can verify CSRF + session continuity.
+2. **Merchant approves** on the platform — TikTok Shop scopes are configured
+   per-app in Partner Center (not via query param); Shopee approves the shop
+   via its auth_partner flow.
+3. **Callback** — `GET /api/marketplace/callback/:provider` verifies state,
+   exchanges auth_code for tokens via `exchangeAuthCode`, then:
+   - **TikTok Shop**: calls `fetchAuthorizedShops` (`GET /authorization/202309/shops`)
+     to get one-or-more `shop_cipher` values per authorized shop. Upserts one
+     `tf_marketplace_connections` row per shop.
+   - **Shopee**: single shop per callback (shop_id comes on the redirect).
+     One row per connect.
+4. **Redirect back** to `/marketplace?connected=<provider>&shops=N` with a
+   success toast, or `?error=<code>` with a failure message.
 
-| Item | Effort | Status |
-|---|---|---|
-| AI order parsing | ~16h | **Shipped** (voice, image, paste — all 3 in `features/orders/components/`) |
-| Peer benchmark | ~24h | **Shipped** (`/api/benchmark` + pricing-compass in ProductForm) |
-| Komunitas group-buy finish | ~28h | Tables + pages exist; group-buy pooling + announcement push not built |
-| TikTok Shop MY sync | ~40h | Not ported. Lives in CatatOrder commit `f81e083`; needs TS port + schema for Tokoflow |
-| Shopee MY sync | ~15h after TikTok | 0% |
-| BM localization | ~40h | 0% — i18n scaffold not in place |
-| Accounting sync (SQL Account, Bukku, AutoCount) | ~60h | 0% |
-| Franchise / multi-outlet (Business tier RM 99) | ~60h | 0% |
-| Singapore + Brunei cross-border | ~40h | 0% |
+### Signing — the two provider schemes
 
----
+**TikTok Shop** (authoritative source: `lib/services/marketplace/tiktok-shop/signer.js`,
+algorithm matches the `EcomPHP/tiktokshop-php` SDK's `Client.php#prepareSignature()`):
 
-## Real-world ops (user action — code can't do)
+```
+query = { ...callerParams, app_key, timestamp, shop_cipher? }
+signable = path +
+           sort_keys(query).map(k => k + query[k]).join('') +
+           (method!=GET && !multipart ? JSON.stringify(body) : '')
+wrapped  = app_secret + signable + app_secret
+sign     = lowercase_hex(hmac_sha256(app_secret, wrapped))
+```
 
-- [ ] Sdn Bhd registration (~4-8 weeks, nominee director acceptable)
-- [ ] Malaysian bank account (prereq for Billplz KYB)
-- [ ] Billplz merchant account — upload Sdn Bhd docs
-- [ ] MyInvois production certification (post Sdn Bhd verification)
-- [ ] MDEC Digitalisation Partner certification (6-8 week lag)
-- [x] `tokoflow.com` domain procured + Vercel alias live
-- [x] Supabase migrations 001-093 applied to project `yhwjvdwmwboasehznlfv` (089–093 applied 2026-05-06 via Management API)
-- [x] OpenRouter API key set in Vercel production env (canonical Tokoflow key, smoke-tested 2026-05-06)
-- [x] Founder profile `role='admin'` set on production Supabase
-- [ ] Supabase region migration Mumbai → Singapore (pre-launch)
-- [ ] Populate Billplz / MyInvois / Gmail env vars in Vercel production (currently placeholder/empty for these)
-- [ ] Publish Google OAuth consent screen (currently Testing mode — only test users can sign in)
+Passed as `?sign=<hex>`. Access token goes in `x-tts-access-token` header,
+NOT `Authorization: Bearer`. Shopless paths (`/authorization/*`, `/seller/*`,
+some product uploads) don't need `shop_cipher`.
 
----
+**Shopee v2** (authoritative source: `lib/services/marketplace/shopee/signer.js`):
 
-## Known issues (as of 2026-04-24)
+```
+# Public endpoints (auth_partner, token/get, access_token/get):
+base = partner_id + path + timestamp
+sign = lowercase_hex(hmac_sha256(partner_key, base))
 
-- ~~**Vercel auto-deploy is silent.**~~ Resolved 2026-04-27. GitHub App grant + `vercel git disconnect && vercel git connect` flushed the stale link. Pushes to `main` now deploy automatically again.
-- **Vercel production env vars** were stored as empty encrypted strings when the project was set up. Sync from `.env.local` → Vercel via the REST API (not the CLI — CLI stdin piping silently stored empties). Some Phase 0 service env vars (`BILLPLZ_*`, `MYINVOIS_*`, `OPENROUTER_API_KEY`, `GMAIL_*`) are still unset in production because we don't have the creds yet.
-- **Test-mode Google OAuth.** Only emails added to the Test users list in Google Cloud Console can sign in. Publish the consent screen before private beta.
-- **Supabase region** is Mumbai — move to Singapore (`ap-southeast-1`) before public launch for MYT latency.
+# Shop-level endpoints (get_order_list, get_order_detail, get_escrow_detail):
+base = partner_id + path + timestamp + access_token + shop_id
+sign = lowercase_hex(hmac_sha256(partner_key, base))
+```
 
----
+No sorted params, no body signing, no separators. Passed as `?sign=<hex>`.
 
-## Credentials
+**Both signers are unit-tested** against known vectors (21 TikTok Shop tests,
+16 Shopee tests). Before touching either signer, run
+`node --test lib/services/marketplace/<provider>/signer.test.js` to confirm
+you haven't regressed. The test file is the specification.
 
-Vault at `~/base/vault/credentials/tokoflow.md`:
-- Supabase project ref, anon key, service role key, access token (never in repo, never in .env.example)
-- Google OAuth client id + secret (enabled on Supabase auth, not in app env)
+### Sync strategy — webhook + cron backup
 
----
+- **Primary path: webhook.** `POST /api/webhooks/{tiktok-shop,shopee}` verifies
+  signature against the raw body (must read `await request.text()` BEFORE JSON
+  parsing), inserts into `tf_webhook_events` inbox, returns 200 within ~100ms.
+  The inbox drain cron (`/api/cron/webhook-events-process`, every 2 min)
+  picks up pending rows and runs `syncConnection` for each distinct
+  `(source, connection_id)`. One sync covers all recent changes via the
+  `update_time` cursor.
+- **Backstop path: periodic poll.** `/api/cron/marketplace-sync` runs every 15
+  minutes, iterates all `is_active=true` connections, and calls the same
+  `syncConnection` functions. Catches dropped webhooks and gaps during
+  downtime. The sync function reads `last_sync_cursor` and queries
+  `update_time_ge = cursor - 5min` (5-minute overlap for safety).
+- **Fee reconciliation.** `/api/cron/marketplace-fee-reconcile` runs daily at
+  03:00. For Shopee orders older than 24h without `fee_reconciled_at`, it
+  calls `get_escrow_detail` to fetch real `commission_fee` / `service_fee`,
+  prorates across line items by value, and overwrites
+  `tf_sales_transactions.marketplace_fee` + `net_profit`. TikTok Shop
+  finance-API reconciliation is scaffolded but not yet implemented — see
+  the TODO in that file.
 
-*Last updated: 2026-05-06 · Overnight build session (00:08 → 07:16): 26 features + 11 audit-fix bugs in commit `6f4d988` pushed to main. Phase 0 admin tooling (`/admin/phase-0`, `/admin/ai-test`) live. Background Twin (`/api/twin/payment-match`) + Foreground Assist (`/api/assist/reply-draft`) wired with `lib/ai/twin-prompts.ts` production prompts. Photo Magic v1 + Repeat Order shipped. Migrations 089–093 applied to live Supabase. OpenRouter key set local + Vercel production. Bible v1.2 strategy unchanged. Launch-blocked on **Phase 0 adversarial validation** (interviews + smoke test + AI cost measurement) + Sdn Bhd + Billplz KYB. Tools to run Phase 0 are ready; the 8-week validation itself starts when Aldi picks up the merchant interview script.*
+All three cron endpoints require `Authorization: Bearer $CRON_SECRET`. Vercel
+Cron sets this header automatically for scheduled invocations. Direct calls
+without the header return 401.
+
+### Idempotency
+
+`tf_sales_input` has a partial unique index on
+`(external_source, external_order_id, external_item_id) where external_order_id is not null`.
+The sync function uses `.upsert(rows, { onConflict: '...', ignoreDuplicates: true })`
+so duplicate webhook/poll retries are safe — first write wins and subsequent
+identical rows are skipped. Manual `/sales` entries have all three external_*
+columns NULL and are unaffected by the constraint.
+
+### Required env vars
+
+```
+# Server-side Supabase (bypass RLS for webhook handlers + cron)
+SUPABASE_SERVICE_ROLE_KEY=<from Supabase dashboard → Settings → API>
+
+# Token encryption — 32-byte AES-GCM key, base64 encoded
+# Generate: node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+# ⚠️ Losing this key makes every stored access_token / refresh_token unrecoverable
+MARKETPLACE_ENCRYPTION_KEY=<base64 32 bytes>
+
+# Cron shared secret
+CRON_SECRET=<any random string, used in Authorization: Bearer header>
+
+# TikTok Shop Partner Center
+TIKTOKSHOP_APP_KEY=
+TIKTOKSHOP_APP_SECRET=
+TIKTOKSHOP_REDIRECT_URI=https://<domain>/api/marketplace/callback/tiktok-shop
+
+# Shopee Open Platform
+SHOPEE_PARTNER_ID=
+SHOPEE_PARTNER_KEY=
+SHOPEE_REDIRECT_URI=https://<domain>/api/marketplace/callback/shopee
+SHOPEE_ENVIRONMENT=test    # 'test' = UAT host, 'live' = production
+```
+
+### Running marketplace tests
+
+There's no npm script yet. Invoke Node's built-in test runner directly:
+
+```bash
+# All marketplace tests (81 tests, ~100ms)
+node --test lib/services/marketplace/**/*.test.js
+
+# A specific file
+node --test lib/services/marketplace/tiktok-shop/signer.test.js
+```
+
+The signer and webhook tests are the critical ones — they prove the HMAC
+formulas match what the platforms expect. Any change to a signer MUST keep
+these tests green.
+
+### Adding a new marketplace (e.g., Lazada)
+
+The plumbing is reusable. Steps:
+
+1. New folder `lib/services/marketplace/lazada/` with `signer.js`, `auth.js`,
+   `orders.js`, `webhooks.js`, `sync.js` following the Shopee/TikTok Shop
+   pattern.
+2. Add `'lazada'` to `VALID_CHANNELS` / `SUPPORTED_PROVIDERS` in
+   `/api/marketplace/route.js`, `/api/marketplace/connect/[provider]/route.js`,
+   and the callback route.
+3. Add a Lazada card to `PROVIDER_INFO` in `app/(private)/marketplace/page.js`.
+4. Add a `syncLazadaConnection` branch in both cron endpoints
+   (`marketplace-sync` and `webhook-events-process`).
+5. Add `app/api/webhooks/lazada/route.js`.
+6. Write `signer.test.js` and `webhooks.test.js` with known vectors before
+   any integration attempt.
+
+Expected effort: 1-2 days per marketplace because `crypto.js`, `http.js`,
+`errors.js`, `connections.js` are already reusable.
+
+## Payment
+
+`/checkout` and `/plans` are **feature-flagged off** in middleware. Both
+routes redirect to `/dashboard` with `?notice=payment-disabled` unless
+`NEXT_PUBLIC_PAYMENT_ENABLED=true`. The flag is off because `/api/payment/*`
+endpoints (which the checkout page would call) don't exist yet.
+
+To re-enable: build the Midtrans Snap backend (`create-transaction` + webhook
+handler + manual-update), then set the env var to `true`.
+
+## PWA + barcode scanner
+
+- `public/site.webmanifest` — Tokoflow PWA manifest with launcher shortcuts
+- `public/sw.js` — service worker, network-first for `/api/*` and navigations, cache-first for static. POST/PATCH/DELETE pass through (no offline mutation queue)
+- `app/components/ServiceWorkerRegister.js` — registers the SW in production only
+- `app/(private)/scanner/page.js` — uses native `BarcodeDetector` API. Falls back to manual SKU input on Safari/Firefox (those browsers don't ship the Shape Detection API). Looks up SKU via `/api/products/[sku]` and offers Catat Penjualan / Tambah produk baru actions.
+
+## Conventions
+
+### When adding a new API route
+
+1. Use `authenticateRequest(request)` from `lib/utils/auth-helpers.js`
+2. Use `successResponse` / `errorResponse` / `handleSupabaseError` from `lib/utils/api-response.js`
+3. For owner-gated mutations, use `requireOwner(auth)` from `lib/auth/role.js`
+4. Add ETag support via `makeETag` + `maybeNotModified` for read-heavy endpoints
+5. Use cursor pagination via `lib/http/paging.js` if the result set can grow
+6. Match the existing performance patterns — see `app/api/products/route.js` for the reference style
+
+### When adding a new private page
+
+1. Place under `app/(private)/<route>/page.js`
+2. Add the route prefix to **both** the `isPrivateRoute` check and the `matcher` array in `middleware.js`
+3. Add a nav entry to `app/components/PrivateNav.js` `rawMenu`
+4. If it's owner-only, add the route prefix to `OWNER_ONLY_PREFIXES` and gate inside the page with `useAuth().profile?.role === 'owner'` (and consider an inner `router.replace('/dashboard')` for hard-blocking)
+
+### When adding a new schema element
+
+1. Add it to `db/schema.sql` (the source of truth)
+2. Wrap any column add in an idempotent `do $$` block so re-running on existing installs works
+3. If it's a new table, add it to: the `enable row level security` list, the operational-tables policy loop in the `do $$` policy block, and the `_touch_updated_at` trigger array (if it has `updated_at`)
+4. Apply via the management API curl pattern at the top of this file
+5. Verify with an `information_schema.columns` probe
+6. Run a smoke test that mirrors the API query path
+
+### Don't
+
+- Don't fake external API integration. If credentials are missing, return 501 with a clear message about which env vars are needed. If a feature requires real credentials to test, say so — don't add mock-mode code paths that pretend to work. The user rejected `MARKETPLACE_MOCK_MODE` for exactly this reason.
+- Don't bypass the marketplace signer modules and call fetch directly from a route. Every TikTok Shop or Shopee API call must go through `signTikTokShopRequest` / `buildShopeeShopRequest` → `marketplaceFetch` so retries, backoff, and error classification are consistent. The signer test vectors are the contract.
+- Don't store marketplace tokens in plaintext. `tf_marketplace_connections.access_token` / `refresh_token` (plain columns) exist for backward compatibility but new code must use `upsertConnectionWithTokens` / `loadConnectionById` from `connections.js`, which encrypt via AES-256-GCM on write and decrypt on read. Losing `MARKETPLACE_ENCRYPTION_KEY` makes all stored tokens unrecoverable.
+- Don't re-add a Tokopedia-specific integration path. The legacy Tokopedia OpenAPI is being terminated; Tokopedia storefronts are now accessible via TikTok Shop Partner Center under `seller_type: "Tokopedia Shop"`. The `/api/marketplace/connect/tokopedia` endpoint returns 410 with an explanation — keep it that way.
+- Don't ask merchants to create developer accounts, register marketplace apps, or obtain API keys themselves. Merchants are end users, not engineers. The ISV pattern is: one set of developer credentials for Tokoflow, every merchant OAuths into it. See `memory/feedback_user_no_dev_friction.md`.
+- Don't call a user-facing API directly from the webhook or cron routes — they have no Supabase session. Use `createServiceRoleClient()` from `lib/database/supabase-server/index.js` instead. That client bypasses RLS and must only be used in server-only paths that have already authenticated themselves (webhook HMAC signature, cron `CRON_SECRET`).
+- Don't re-introduce false marketing claims. The honest "Early Access" positioning is in place across all visible pages; don't promise features that don't exist (multi-warehouse beyond v0.1, payment, etc.)
+- Don't bypass the `requireOwner` gates client-side without also gating the API. Both layers are intentional defense in depth.
+- Don't remove the dead-code header comment in `app/page_data.js` — it documents which exports are stale and shouldn't be wired up.
+- Don't refactor unrelated code while making targeted changes. The pre-existing `authResult` undefined bug in `app/api/products/[param]/route.js` was only fixed in Phase 9 because the new RBAC gate made the buggy line reachable.
+
+## Tech stack snapshot
+
+- **Framework:** Next.js 15 (App Router) + Turbopack
+- **Language:** Mixed JS / TS (TS config exists, not strictly enforced)
+- **Styling:** Tailwind CSS
+- **Database:** Supabase (Postgres + auth)
+- **UI:** `lucide-react` icons, `framer-motion`, `sonner` toasts, `@tanstack/react-virtual` for long lists
+- **State:** React state + Supabase realtime cookies. No global store.
+
+## Business context
+
+Tokoflow is for Indonesian UMKM (small/medium merchants). The differentiator
+is **per-transaction profit calculation** with full cost breakdown
+(modal + packing + affiliate + marketplace fee), paired with real marketplace
+integration for TikTok Shop and Shopee. Bundle / composition support and
+channel-aware fee config are also real and working.
+
+The strategic doc at `docs/strategic-analysis.md` is dated 2026-04-07 and was
+written BEFORE the decision to build real marketplace integration in Tokoflow.
+It recommends porting Tokoflow features to CatatOrder — **that recommendation
+is superseded** as of 2026-04-09 (see `memory/project_tokoflow_marketplace_pivot.md`).
+The current direction is: Tokoflow is the active product for marketplace/
+inventory/profit work, CatatOrder stays in its lane for order/invoice/
+receivables. Read the strategic doc for historical context; don't treat its
+action plan as current.
+
+Deployment model: "1 install per merchant, no multi-tenancy" (per the
+`first user = auto-owner` auth pattern). For customer #1 (Bu Clarice) this
+is fine — she's the only merchant on her install. Multi-tenancy can be
+revisited when customer #2 arrives.
