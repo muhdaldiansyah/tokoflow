@@ -1,0 +1,12 @@
+{
+  "name": "tokoflow-import-parser",
+  "version": "0.1.0",
+  "description": "Marketplace CSV import parser playground — Tokoflow assisted imports",
+  "main": "index.js",
+  "scripts": {
+    "parse": "node index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
