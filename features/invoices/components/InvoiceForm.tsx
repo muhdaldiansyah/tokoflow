@@ -437,7 +437,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
               Phone
             </label>
             <div className="flex items-center px-3 pb-2 pt-0 gap-1">
-              <span className="text-xs text-muted-foreground shrink-0 select-none">🇲🇾+60</span>
+              <span className="text-xs text-muted-foreground shrink-0 select-none">🇮🇩+62</span>
               <span className="w-px h-3.5 bg-border shrink-0" />
               <input
                 type="tel"

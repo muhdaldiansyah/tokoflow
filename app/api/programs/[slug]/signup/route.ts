@@ -51,10 +51,10 @@ export async function POST(
       );
     }
 
-    // Normalize phone: remove spaces, ensure starts with 01 (Malaysian mobile).
-    // Accepts +60xx, 60xx, 01xx — outputs the leading-zero form 01xxxxxxxx.
-    const normalizedPhone = phone.replace(/\s+/g, "").replace(/^(\+60|60)/, "0");
-    if (!/^01\d{8,9}$/.test(normalizedPhone)) {
+    // Normalize phone: remove spaces, ensure starts with 08 (Indonesian mobile).
+    // Accepts +62xx, 62xx, 08xx — outputs the leading-zero form 08xxxxxxxx.
+    const normalizedPhone = phone.replace(/\s+/g, "").replace(/^(\+62|62)/, "0");
+    if (!/^08\d{8,11}$/.test(normalizedPhone)) {
       return NextResponse.json(
         { error: "Invalid WhatsApp number format" },
         { status: 400 }

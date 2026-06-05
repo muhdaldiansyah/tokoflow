@@ -140,7 +140,7 @@ export function CustomerPicker({
       <div className="rounded-lg border bg-muted/50 transition-colors focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/30 focus-within:bg-background">
         <label className="block px-3 pt-1.5 text-[10px] font-medium text-muted-foreground">WhatsApp number</label>
         <div className="flex items-center px-3 pb-2 pt-0 gap-1.5">
-          <span className="text-sm text-muted-foreground shrink-0 select-none">🇲🇾+60</span>
+          <span className="text-sm text-muted-foreground shrink-0 select-none">🇮🇩+62</span>
           <span className="w-px h-3.5 bg-border shrink-0" />
           <input
             type="tel"

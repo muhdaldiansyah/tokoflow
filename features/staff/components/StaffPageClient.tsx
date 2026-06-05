@@ -112,7 +112,7 @@ export function StaffPageClient({ initialStaff }: { initialStaff: Staff[] }) {
             className="w-full h-11 px-3 bg-card border rounded-lg shadow-sm text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary/30"
           />
           <div className="flex items-center border rounded-lg shadow-sm px-3 h-11 bg-card">
-            <span className="text-sm text-muted-foreground mr-2">🇲🇾 +60</span>
+            <span className="text-sm text-muted-foreground mr-2">🇮🇩 +62</span>
             <span className="w-px h-4 bg-border mr-2" />
             <input
               type="tel"

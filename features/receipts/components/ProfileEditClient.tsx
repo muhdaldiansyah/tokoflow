@@ -265,7 +265,7 @@ export function ProfileEditClient({
         <div className="rounded-lg border bg-card shadow-sm transition-colors focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/30">
           <label className="block px-3 pt-1.5 text-[10px] font-medium text-muted-foreground">Business WhatsApp number</label>
           <div className="flex items-center px-3 pb-2 pt-0 gap-2">
-            <span className="text-sm text-muted-foreground shrink-0 select-none mr-2">🇲🇾 +60</span>
+            <span className="text-sm text-muted-foreground shrink-0 select-none mr-2">🇮🇩 +62</span>
             <span className="w-px h-4 bg-border shrink-0 mr-2" />
             <input
               type="tel"

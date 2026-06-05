@@ -150,12 +150,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "WhatsApp number is required" }, { status: 400 });
     }
 
-    // Validate phone format — Malaysian mobile numbers (+60 ...).
+    // Validate phone format — Indonesian mobile numbers (+62 ...).
     const phoneDigits = String(customerPhone).replace(/\D/g, "");
     if (
       phoneDigits.length < 9
       || phoneDigits.length > 13
-      || !(phoneDigits.startsWith("0") || phoneDigits.startsWith("60"))
+      || !(phoneDigits.startsWith("0") || phoneDigits.startsWith("62"))
     ) {
       return NextResponse.json({ error: "Invalid WhatsApp number format" }, { status: 400 });
     }

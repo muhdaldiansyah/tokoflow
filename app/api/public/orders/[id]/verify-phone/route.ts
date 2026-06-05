@@ -45,7 +45,7 @@ export async function POST(
     return NextResponse.json({ verified: false });
   }
 
-  // Normalise both sides to +60 format before comparing
+  // Normalise both sides via the country-aware helper (ID → +62) before comparing
   const inputNorm = normalizePhone(rawPhone) ?? rawPhone.replace(/\D/g, "");
   const orderNorm = normalizePhone(order.customer_phone) ?? order.customer_phone.replace(/\D/g, "");
   const verified = inputNorm === orderNorm;

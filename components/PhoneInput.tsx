@@ -1,11 +1,11 @@
 "use client";
 
 /**
- * Phone input with 🇲🇾 +60 prefix.
- * User types: 12 345 6789 (without 0 or 60)
- * Stored as: 60123456789 (via normalizePhone)
+ * Phone input with 🇮🇩 +62 prefix (Tokoflow = Indonesia deployment).
+ * User types: 812 3456 7890 (without 0 or 62)
+ * Stored as: 62812345678901 (via normalizePhoneForStorage)
  *
- * Handles legacy values: if value starts with "0" or "60", strips prefix for display.
+ * Handles legacy values: if value starts with "0" or "62", strips prefix for display.
  */
 
 interface PhoneInputProps {
@@ -21,10 +21,10 @@ interface PhoneInputProps {
   compact?: boolean;
 }
 
-// Strip prefix for display: "0123456789" → "123456789", "60123456789" → "123456789"
+// Strip prefix for display: "0812345678" → "812345678", "62812345678" → "812345678"
 function toDisplayValue(value: string): string {
   const digits = value.replace(/\D/g, "");
-  if (digits.startsWith("60")) return digits.slice(2);
+  if (digits.startsWith("62")) return digits.slice(2);
   if (digits.startsWith("0")) return digits.slice(1);
   return digits;
 }
@@ -33,7 +33,7 @@ export function PhoneInput({
   value,
   onChange,
   label = "WhatsApp number",
-  placeholder = "12 345 6789",
+  placeholder = "812 3456 7890",
   error,
   helperText,
   required = false,
@@ -45,8 +45,8 @@ export function PhoneInput({
   function handleChange(raw: string) {
     // Only keep digits
     const digits = raw.replace(/\D/g, "");
-    // Strip leading 0 or 60 if user pastes full number
-    if (digits.startsWith("60")) {
+    // Strip leading 0 or 62 if user pastes full number
+    if (digits.startsWith("62")) {
       onChange(digits.slice(2));
     } else if (digits.startsWith("0")) {
       onChange(digits.slice(1));
@@ -59,7 +59,7 @@ export function PhoneInput({
     return (
       <div>
         <div className={`flex items-center h-12 px-3 bg-white border rounded-lg transition-colors focus-within:border-orange-500/40 focus-within:ring-2 focus-within:ring-orange-500/20 ${error ? "border-red-400" : ""}`}>
-          <span className="text-sm text-muted-foreground shrink-0 select-none mr-2">🇲🇾 +60</span>
+          <span className="text-sm text-muted-foreground shrink-0 select-none mr-2">🇮🇩 +62</span>
           <span className="w-px h-4 bg-border shrink-0 mr-2" />
           <input
             type="tel"
@@ -84,7 +84,7 @@ export function PhoneInput({
           {label} {required && <span className="text-red-400">*</span>}
         </label>
         <div className="flex items-center px-3 pb-2.5 pt-0.5 gap-2">
-          <span className="text-sm text-muted-foreground shrink-0 select-none">🇲🇾 +60</span>
+          <span className="text-sm text-muted-foreground shrink-0 select-none">🇮🇩 +62</span>
           <span className="w-px h-4 bg-border shrink-0" />
           <input
             type="tel"
@@ -103,28 +103,28 @@ export function PhoneInput({
 }
 
 /**
- * Validate a Malaysian mobile phone. Returns an error message or null.
- * Malaysian mobile numbers start with 1 (after the +60 prefix) and the local
- * portion is 9 or 10 digits — total 10–11 digits including the leading 0.
+ * Validate an Indonesian mobile phone. Returns an error message or null.
+ * Indonesian mobile numbers start with 8 (after the 0 / +62 prefix); the local
+ * portion is 9–12 digits (e.g. 0812-3456-7890).
  */
 export function validatePhone(value: string): string | null {
   const digits = value.replace(/\D/g, "");
   if (!digits) return "WhatsApp number is required";
   // Strip prefix for validation
   let num = digits;
-  if (num.startsWith("60")) num = num.slice(2);
+  if (num.startsWith("62")) num = num.slice(2);
   else if (num.startsWith("0")) num = num.slice(1);
-  if (!num.startsWith("1")) return "Number must start with 1 (e.g. 012, 013, 016)";
+  if (!num.startsWith("8")) return "Number must start with 8 (e.g. 0812, 0813, 0856)";
   if (num.length < 9) return "Number is too short";
-  if (num.length > 10) return "Number is too long";
+  if (num.length > 12) return "Number is too long";
   return null;
 }
 
-/** Normalize for storage: always returns "60xxx" (e.g. 60123456789). */
+/** Normalize for storage: always returns "62xxx" (e.g. 62812345678901). */
 export function normalizePhoneForStorage(value: string): string {
   const digits = value.replace(/\D/g, "");
-  if (digits.startsWith("60")) return digits;
-  if (digits.startsWith("0")) return "60" + digits.slice(1);
-  if (digits.startsWith("1")) return "60" + digits;
-  return "60" + digits;
+  if (digits.startsWith("62")) return digits;
+  if (digits.startsWith("0")) return "62" + digits.slice(1);
+  if (digits.startsWith("8")) return "62" + digits;
+  return "62" + digits;
 }

@@ -197,7 +197,7 @@ export default function SignupForm() {
 
       <Field label="WhatsApp number *">
         <div className="flex items-center px-3 pb-2 pt-0 gap-2">
-          <span className="text-sm text-[#94A3B8] shrink-0 select-none">{"\u{1F1F2}\u{1F1FE}"} +60</span>
+          <span className="text-sm text-[#94A3B8] shrink-0 select-none">{"\u{1F1EE}\u{1F1E9}"} +62</span>
           <span className="w-px h-4 bg-[#E2E8F0] shrink-0" />
           <input
             type="tel"

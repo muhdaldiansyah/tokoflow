@@ -195,7 +195,7 @@ export function SuccessActions({
       const receiptLink = orderId ? `\n\nReceipt: https://tokoflow.com/r/${orderId}` : "";
       const prefix = alreadyPaid
         ? "I've paid for order"
-        : qrisUrl ? "I've paid via DuitNow QR for order" : "I just placed an order";
+        : qrisUrl ? "I've paid via QRIS for order" : "I just placed an order";
       const message = `Hi, ${prefix} *${orderNumber}*.${receiptLink}\n\nPlease confirm — thanks!`;
       openWhatsAppPublic(message, businessPhone);
     }
@@ -362,7 +362,7 @@ export function SuccessActions({
         ctx.fillStyle = "#1a1a1a";
         ctx.font = `600 ${smallFont}px -apple-system, sans-serif`;
         ctx.textAlign = "center";
-        ctx.fillText("Pay via DuitNow QR", w / 2, y + smallFont);
+        ctx.fillText("Pay via QRIS", w / 2, y + smallFont);
         y += smallFont + 6 * scale;
         const qrisW = contentW * 0.55;
         const qrisAspect = qrisImg.naturalHeight / qrisImg.naturalWidth;
@@ -472,17 +472,17 @@ export function SuccessActions({
             </div>
           )}
 
-          {/* Step 1 — Pay via DuitNow QR */}
+          {/* Step 1 — Pay via QRIS */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <span className="w-5 h-5 rounded-full bg-warm-green text-white text-[11px] font-bold flex items-center justify-center shrink-0">1</span>
-              <p className="text-sm font-semibold text-foreground">Pay with DuitNow QR</p>
+              <p className="text-sm font-semibold text-foreground">Pay with QRIS</p>
             </div>
 
             <div className="relative mx-auto max-w-[240px] w-full aspect-square">
               <Image
                 src={qrisUrl}
-                alt="DuitNow QR payment"
+                alt="QRIS payment"
                 fill
                 className="object-contain rounded-2xl border border-border"
                 sizes="240px"
@@ -699,12 +699,12 @@ export function SuccessActions({
         )}
       </div>
 
-      {/* DuitNow QR payment card — legacy flow (hidden in payFirst which shows QR above) */}
+      {/* QRIS payment card — legacy flow (hidden in payFirst which shows QR above) */}
       {qrisUrl && !paidConfirmed && !isLangganan && !alreadyPaid && !payFirst && (
         <div className="rounded-xl border bg-card p-5 text-center space-y-4">
           <div className="flex items-center justify-center gap-2 text-sm font-medium text-foreground">
             <QrCode className="w-4 h-4" />
-            Pay via DuitNow QR
+            Pay via QRIS
           </div>
 
           {displayTotal > 0 && (
@@ -716,7 +716,7 @@ export function SuccessActions({
           <div className="relative mx-auto max-w-[260px] w-full aspect-square">
             <Image
               src={qrisUrl}
-              alt={`DuitNow QR payment for ${businessName}`}
+              alt={`QRIS payment for ${businessName}`}
               fill
               className="object-contain rounded-lg border border-border"
               sizes="260px"

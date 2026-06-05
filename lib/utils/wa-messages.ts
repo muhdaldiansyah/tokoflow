@@ -1,33 +1,37 @@
 import type { Order } from "@/features/orders/types/order.types";
 import { ORDER_STATUS_LABELS } from "@/features/orders/types/order.types";
 import { detectCourier } from "./courier";
+import { formatMoney } from "@/lib/currency/format";
+
+// Money helper — country-aware, defaults to ID → "Rp 75.000".
+const money = (amount: number) => formatMoney(amount);
 
 const DIVIDER = "─".repeat(20);
-const BRANDING = "_Sent via Tokoflow — https://tokoflow.com_";
+const BRANDING = "_Dikirim via Tokoflow — https://tokoflow.co.id_";
 
 function formatItemsDash(items: Order["items"]): string {
   return items
-    .map((item) => `- ${item.name} x${item.qty}: RM ${(item.price * item.qty).toLocaleString("en-MY")}`)
+    .map((item) => `- ${item.name} x${item.qty}: ${money(item.price * item.qty)}`)
     .join("\n");
 }
 
 function formatItemsBullet(items: Order["items"]): string {
   return items
-    .map((item) => `• ${item.name} x${item.qty}: RM ${(item.price * item.qty).toLocaleString("en-MY")}`)
+    .map((item) => `• ${item.name} x${item.qty}: ${money(item.price * item.qty)}`)
     .join("\n");
 }
 
 function paymentLine(order: Order): string {
   const remaining = order.total - (order.paid_amount || 0);
   if (order.paid_amount > 0 && order.paid_amount < order.total) {
-    return `\nPaid: RM ${order.paid_amount.toLocaleString("en-MY")}\n*Balance: RM ${remaining.toLocaleString("en-MY")}*`;
+    return `\nDibayar: ${money(order.paid_amount)}\n*Sisa: ${money(remaining)}*`;
   }
   return "";
 }
 
 function deliveryLine(order: Order): string {
   if (!order.delivery_date) return "";
-  return `\nDate: ${new Date(order.delivery_date).toLocaleDateString("en-MY", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}`;
+  return `\nTanggal: ${new Date(order.delivery_date).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}`;
 }
 
 // Dine-in orders skip address rendering — they're not going anywhere.
@@ -36,10 +40,10 @@ function deliveryLine(order: Order): string {
 function addressLine(order: Order): string {
   if (order.is_dine_in) return "";
   if (!order.delivery_address) return "";
-  return `\nAddress: ${order.delivery_address}`;
+  return `\nAlamat: ${order.delivery_address}`;
 }
 
-// Renders tracking as "Tracking: <number> (<courier>)" when both are known.
+// Renders tracking as "Resi: <number> (<courier>)" when both are known.
 // Prefers the courier the merchant picked; falls back to detecting from the
 // number prefix; if neither, prints the number alone.
 function trackingLine(order: Order): string {
@@ -49,32 +53,32 @@ function trackingLine(order: Order): string {
   const detected = detectCourier(trimmed);
   const courier = order.courier_name?.trim() || detected?.name || null;
   return courier
-    ? `\nTracking: ${trimmed} (${courier})`
-    : `\nTracking: ${trimmed}`;
+    ? `\nResi: ${trimmed} (${courier})`
+    : `\nResi: ${trimmed}`;
 }
 
 function notesLine(order: Order): string {
   if (!order.notes) return "";
-  return `\nNote: ${order.notes}`;
+  return `\nCatatan: ${order.notes}`;
 }
 
 function chargeLines(order: Order): string {
   const deliveryFee = Math.max(0, Number(order.delivery_fee ?? 0) || 0);
   const lines: string[] = [];
   if ((order.discount && order.discount > 0) || deliveryFee > 0) {
-    lines.push(`Subtotal: RM ${order.subtotal.toLocaleString("en-MY")}`);
+    lines.push(`Subtotal: ${money(order.subtotal)}`);
   }
   if (order.discount && order.discount > 0) {
-    lines.push(`Discount: -RM ${order.discount.toLocaleString("en-MY")}`);
+    lines.push(`Diskon: -${money(order.discount)}`);
   }
   if (deliveryFee > 0) {
-    lines.push(`Delivery: RM ${deliveryFee.toLocaleString("en-MY")}`);
+    lines.push(`Ongkir: ${money(deliveryFee)}`);
   }
   return lines.length > 0 ? `\n${lines.join("\n")}` : "";
 }
 
-// Tokoflow MY does not use the IDR-style unique_code mechanism. Payment
-// matching is handled by Billplz refs + the reconciliation engine. The
+// Tokoflow ID uses Midtrans (QRIS / VA / e-wallet) for gateway payments; payment
+// matching is handled by gateway refs + the reconciliation engine. The
 // transfer-amount line is a no-op kept for legacy callers.
 function transferLine(_order: Order): string {
   return "";
@@ -85,9 +89,9 @@ export function buildOrderConfirmation(order: Order): string {
 ${DIVIDER}
 ${formatItemsDash(order.items)}
 ${DIVIDER}${chargeLines(order)}
-*Total: RM ${order.total.toLocaleString("en-MY")}*${transferLine(order)}${paymentLine(order)}${notesLine(order)}
+*Total: ${money(order.total)}*${transferLine(order)}${paymentLine(order)}${notesLine(order)}
 
-Thank you!
+Terima kasih!
 
 ${BRANDING}`;
 }
@@ -99,9 +103,9 @@ Status: ${statusText}${deliveryLine(order)}${addressLine(order)}${trackingLine(o
 ${DIVIDER}
 ${formatItemsDash(order.items)}
 ${DIVIDER}${chargeLines(order)}
-*Total: RM ${order.total.toLocaleString("en-MY")}*${transferLine(order)}${paymentLine(order)}${notesLine(order)}
+*Total: ${money(order.total)}*${transferLine(order)}${paymentLine(order)}${notesLine(order)}
 
-Thank you!
+Terima kasih!
 
 ${BRANDING}`;
 }
@@ -109,19 +113,19 @@ ${BRANDING}`;
 export function buildPaymentReminder(order: Order): string {
   const remaining = order.total - (order.paid_amount || 0);
   const dpLine = order.paid_amount > 0 && order.paid_amount < order.total
-    ? `\nAlready paid: RM ${order.paid_amount.toLocaleString("en-MY")}`
+    ? `\nSudah dibayar: ${money(order.paid_amount)}`
     : "";
 
-  return `Hi ${order.customer_name || "there"},
+  return `Halo ${order.customer_name || "kak"},
 
-Friendly reminder for order *${order.order_number}*:
+Pengingat ramah untuk order *${order.order_number}*:
 
 ${formatItemsBullet(order.items)}
 
-Total: RM ${order.total.toLocaleString("en-MY")}${dpLine}
-*Balance due: RM ${remaining.toLocaleString("en-MY")}*
+Total: ${money(order.total)}${dpLine}
+*Sisa tagihan: ${money(remaining)}*
 
-Please make payment when you can. Thank you! 🙏
+Mohon lakukan pembayaran ya. Terima kasih! 🙏
 
 ${BRANDING}`;
 }
@@ -136,26 +140,26 @@ export function buildCustomerOrderMessage(params: {
   notes?: string;
 }): string {
   const itemLines = params.items
-    .map((item) => `• ${item.name} x${item.qty} — RM ${(item.price * item.qty).toLocaleString("en-MY")}`)
+    .map((item) => `• ${item.name} x${item.qty} — ${money(item.price * item.qty)}`)
     .join("\n");
 
   const deliveryFee = Math.max(0, Number(params.deliveryFee ?? 0) || 0);
   const subtotal = params.items.reduce((sum, item) => sum + item.price * item.qty, 0);
   const deliveryText = deliveryFee > 0
-    ? `\nSubtotal: RM ${subtotal.toLocaleString("en-MY")}\nDelivery: RM ${deliveryFee.toLocaleString("en-MY")}`
+    ? `\nSubtotal: ${money(subtotal)}\nOngkir: ${money(deliveryFee)}`
     : "";
-  const notesText = params.notes ? `\n_Note: ${params.notes}_` : "";
-  const receiptLink = params.orderId ? `\n\nReceipt: https://tokoflow.com/r/${params.orderId}` : "";
+  const notesText = params.notes ? `\n_Catatan: ${params.notes}_` : "";
+  const receiptLink = params.orderId ? `\n\nResi/Struk: https://tokoflow.co.id/r/${params.orderId}` : "";
 
-  return `Hi, I'm *${params.customerName}*. I just placed an order:
+  return `Halo, saya *${params.customerName}*. Saya baru saja pesan:
 
 *${params.orderNumber}*
 ${itemLines}
 ${deliveryText}
 
-*Total: RM ${params.total.toLocaleString("en-MY")}*${notesText}${receiptLink}
+*Total: ${money(params.total)}*${notesText}${receiptLink}
 
-Please confirm — thanks!
+Mohon dikonfirmasi ya — terima kasih!
 
 ${BRANDING}`;
 }
@@ -171,31 +175,31 @@ export function buildQrisConfirmationMessage(params: {
 }): string {
   if (params.items && params.items.length > 0) {
     const itemLines = params.items
-      .map((item) => `• ${item.name} x${item.qty} — RM ${(item.price * item.qty).toLocaleString("en-MY")}`)
+      .map((item) => `• ${item.name} x${item.qty} — ${money(item.price * item.qty)}`)
       .join("\n");
 
     const deliveryFee = Math.max(0, Number(params.deliveryFee ?? 0) || 0);
     const subtotal = params.items.reduce((sum, item) => sum + item.price * item.qty, 0);
     const deliveryText = deliveryFee > 0
-      ? `\nSubtotal: RM ${subtotal.toLocaleString("en-MY")}\nDelivery: RM ${deliveryFee.toLocaleString("en-MY")}`
+      ? `\nSubtotal: ${money(subtotal)}\nOngkir: ${money(deliveryFee)}`
       : "";
-    const notesText = params.notes ? `\n_Note: ${params.notes}_` : "";
-    const receiptLink = params.orderId ? `\n\nReceipt: https://tokoflow.com/r/${params.orderId}` : "";
+    const notesText = params.notes ? `\n_Catatan: ${params.notes}_` : "";
+    const receiptLink = params.orderId ? `\n\nResi/Struk: https://tokoflow.co.id/r/${params.orderId}` : "";
 
-    return `Hi, I'm *${params.customerName}*. I've paid via DuitNow QR for this order:
+    return `Halo, saya *${params.customerName}*. Saya sudah bayar via QRIS untuk order ini:
 
 *${params.orderNumber}*
 ${itemLines}
 ${deliveryText}
 
-*Total: RM ${(params.total || 0).toLocaleString("en-MY")}*${notesText}${receiptLink}
+*Total: ${money(params.total || 0)}*${notesText}${receiptLink}
 
-Please confirm — thanks!
+Mohon dikonfirmasi ya — terima kasih!
 
 ${BRANDING}`;
   }
 
-  return `Hi, I'm ${params.customerName}. I've paid via DuitNow QR for order *${params.orderNumber}*. Please confirm — thanks!
+  return `Halo, saya ${params.customerName}. Saya sudah bayar via QRIS untuk order *${params.orderNumber}*. Mohon dikonfirmasi ya — terima kasih!
 
 ${BRANDING}`;
 }
@@ -205,9 +209,9 @@ export function buildPreorderConfirmation(order: Order): string {
 ${DIVIDER}
 ${formatItemsDash(order.items)}
 ${DIVIDER}${chargeLines(order)}
-*Total: RM ${order.total.toLocaleString("en-MY")}*${transferLine(order)}${paymentLine(order)}${notesLine(order)}
+*Total: ${money(order.total)}*${transferLine(order)}${paymentLine(order)}${notesLine(order)}
 
-Order received! We'll reach out before delivery. Thank you! 🙏
+Pesanan diterima! Kami akan menghubungi sebelum pengiriman. Terima kasih! 🙏
 
 ${BRANDING}`;
 }
@@ -228,10 +232,11 @@ export function buildInvoiceMessage(invoice: {
   payment_terms?: string;
   notes?: string;
 }): string {
-  const sstRate = invoice.sst_rate ?? invoice.ppn_rate ?? 0;
-  const sstAmount = invoice.sst_amount ?? invoice.ppn_amount ?? 0;
+  // ppn_* is the ID (active) field; sst_* is the dormant MY mirror.
+  const ppnRate = invoice.ppn_rate ?? invoice.sst_rate ?? 0;
+  const ppnAmount = invoice.ppn_amount ?? invoice.sst_amount ?? 0;
   const itemLines = invoice.items
-    .map((item) => `- ${item.name} x${item.qty}: RM ${(item.price * item.qty).toLocaleString("en-MY")}`)
+    .map((item) => `- ${item.name} x${item.qty}: ${money(item.price * item.qty)}`)
     .join("\n");
 
   const remaining = invoice.total - (invoice.paid_amount || 0);
@@ -239,25 +244,25 @@ export function buildInvoiceMessage(invoice: {
 
   let paymentInfo = "";
   if (invoice.paid_amount > 0 && remaining > 0) {
-    paymentInfo = `\nPaid: RM ${invoice.paid_amount.toLocaleString("en-MY")}\n*Balance: RM ${remaining.toLocaleString("en-MY")}*`;
+    paymentInfo = `\nDibayar: ${money(invoice.paid_amount)}\n*Sisa: ${money(remaining)}*`;
   }
 
   const dueLine = invoice.due_date
-    ? `\nDue date: ${new Date(invoice.due_date).toLocaleDateString("en-MY", { day: "numeric", month: "long", year: "numeric" })}`
+    ? `\nJatuh tempo: ${new Date(invoice.due_date).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}`
     : "";
 
-  const notesText = invoice.notes ? `\nNote: ${invoice.notes}` : "";
+  const notesText = invoice.notes ? `\nCatatan: ${invoice.notes}` : "";
 
-  return `*INVOICE ${invoice.invoice_number}*
+  return `*FAKTUR ${invoice.invoice_number}*
 ${DIVIDER}
 ${itemLines}
 ${DIVIDER}
-Subtotal: RM ${invoice.subtotal.toLocaleString("en-MY")}${invoice.discount > 0 ? `\nDiscount: -RM ${invoice.discount.toLocaleString("en-MY")}` : ""}
-Taxable: RM ${netAmount.toLocaleString("en-MY")}
-SST ${sstRate}%: RM ${sstAmount.toLocaleString("en-MY")}
-*Total: RM ${invoice.total.toLocaleString("en-MY")}*${paymentInfo}${dueLine}${notesText}
+Subtotal: ${money(invoice.subtotal)}${invoice.discount > 0 ? `\nDiskon: -${money(invoice.discount)}` : ""}
+Dasar pengenaan: ${money(netAmount)}
+PPN ${ppnRate}%: ${money(ppnAmount)}
+*Total: ${money(invoice.total)}*${paymentInfo}${dueLine}${notesText}
 
-Please make payment at your earliest convenience. Thank you! 🙏
+Mohon lakukan pembayaran secepatnya. Terima kasih! 🙏
 
 ${BRANDING}`;
 }
@@ -272,19 +277,19 @@ export function buildDeliveryAckRequest(params: {
   const itemSummary =
     order.items.length === 1
       ? `${order.items[0].name}${order.items[0].qty > 1 ? ` x${order.items[0].qty}` : ""}`
-      : `${itemCount} item${itemCount > 1 ? "s" : ""}`;
-  const greeting = order.customer_name ? `Hi ${order.customer_name}` : "Hi";
-  const fromLine = businessName ? ` from *${businessName}*` : "";
+      : `${itemCount} item`;
+  const greeting = order.customer_name ? `Halo ${order.customer_name}` : "Halo";
+  const fromLine = businessName ? ` dari *${businessName}*` : "";
 
-  return `${greeting}, your order${fromLine} is on the way.
+  return `${greeting}, pesananmu${fromLine} sedang dalam perjalanan.
 
 *${order.order_number}*
-${itemSummary} — RM ${order.total.toLocaleString("en-MY")}
+${itemSummary} — ${money(order.total)}
 
-Tap to confirm when it arrives:
+Tap untuk konfirmasi saat sudah sampai:
 ${ackUrl}
 
-Thank you! 🙏
+Terima kasih! 🙏
 
 ${BRANDING}`;
 }
@@ -294,9 +299,9 @@ export function buildCelebrationConfirmation(order: Order, businessName?: string
 ${DIVIDER}
 ${formatItemsDash(order.items)}
 ${DIVIDER}${chargeLines(order)}
-*Total: RM ${order.total.toLocaleString("en-MY")}*${transferLine(order)}${paymentLine(order)}${notesLine(order)}
+*Total: ${money(order.total)}*${transferLine(order)}${paymentLine(order)}${notesLine(order)}
 
-Thank you!
+Terima kasih!
 ${businessName ? `\n- ${businessName}\n` : ""}
 ${BRANDING}`;
 }

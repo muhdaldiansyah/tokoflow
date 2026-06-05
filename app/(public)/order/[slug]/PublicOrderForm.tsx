@@ -804,7 +804,7 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
                 className={`inline-flex items-center gap-1 ${qrisUrl ? "text-warm-green hover:underline" : ""}`}
               >
                 <QrCode className="w-3 h-3" />
-                DuitNow QR
+                QRIS
               </button>
             )}
           </div>
@@ -973,7 +973,7 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
                     WhatsApp number <span className="text-warm-rose">*</span>
                   </label>
                   <div className="flex items-center px-3 pb-2.5 pt-0.5 gap-2">
-                    <span className="text-sm text-muted-foreground shrink-0 select-none">🇲🇾 +60</span>
+                    <span className="text-sm text-muted-foreground shrink-0 select-none">🇮🇩 +62</span>
                     <span className="w-px h-4 bg-border shrink-0" />
                     <input
                       type="tel"
@@ -1331,7 +1331,7 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
               <QrCode className="w-5 h-5 text-warm-green" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-foreground">FPX / eWallet</p>
+              <p className="text-sm font-semibold text-foreground">Transfer Bank / e-Wallet</p>
               <p className="text-[11px] text-muted-foreground">Secure online payment — you&apos;ll be redirected after ordering</p>
             </div>
           </div>
@@ -1351,7 +1351,7 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
                 <QrCode className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-foreground">DuitNow QR</p>
+                <p className="text-sm font-semibold text-foreground">QRIS</p>
                 <p className="text-[11px] text-muted-foreground">Pay now, then upload the receipt after ordering</p>
               </div>
               <div className="w-5 h-5 rounded-full border-2 border-warm-green flex items-center justify-center shrink-0">
@@ -1457,16 +1457,16 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
         </p>
       )}
 
-      {/* DuitNow QR preview modal (from header badge tap) */}
+      {/* QRIS preview modal (from header badge tap) */}
       {showQris && qrisUrl && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={() => setShowQris(false)}>
           <div className="bg-background rounded-xl p-5 max-w-xs w-full text-center space-y-3" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-center gap-2 text-sm font-medium text-foreground">
               <QrCode className="w-4 h-4" />
-              DuitNow QR
+              QRIS
             </div>
             <div className="relative mx-auto w-full aspect-square">
-              <Image src={qrisUrl} alt={`DuitNow QR ${businessName}`} fill className="object-contain rounded-lg" sizes="280px" unoptimized />
+              <Image src={qrisUrl} alt={`QRIS ${businessName}`} fill className="object-contain rounded-lg" sizes="280px" unoptimized />
             </div>
             <a
               href={qrisUrl}

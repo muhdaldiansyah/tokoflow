@@ -94,7 +94,7 @@ export async function POST(
     }
 
     const expectedAmount = Number(order.total) || 0;
-    const prompt = `You are verifying a payment receipt screenshot for a Malaysian merchant. The customer should have transferred ${formatMoney(expectedAmount, ctx)} via DuitNow QR or a bank / e-wallet app. Read the screenshot and extract the payment details. Do NOT guess — if a field is not clearly visible, use null.
+    const prompt = `You are verifying a payment receipt screenshot for an Indonesian merchant. The customer should have transferred ${formatMoney(expectedAmount, ctx)} via QRIS, bank transfer (BCA / Mandiri / BRI / BNI / virtual account), or an e-wallet (GoPay / OVO / DANA / ShopeePay / LinkAja). Read the screenshot and extract the payment details. Do NOT guess — if a field is not clearly visible, use null.
 
 Respond ONLY as JSON with exactly these keys:
 {
@@ -109,10 +109,10 @@ Respond ONLY as JSON with exactly these keys:
 }
 
 - amount_paid: numeric amount transferred (e.g. 28 or 28.00), NO currency symbol.
-- status: the exact status text shown (e.g. "Successful", "Transfer Successful", "Pending", "Failed", "Berjaya").
+- status: the exact status text shown (e.g. "Berhasil", "Transaksi Berhasil", "Sukses", "Pending", "Gagal", "Successful").
 - datetime: the transaction date/time, CONVERTED to ISO 8601 (YYYY-MM-DDTHH:mm, e.g. 2026-06-03T21:45). Convert from whatever format the receipt shows. Use null only if no date is visible.
 - recipient: the payee name or account shown.
-- bank_or_wallet: e.g. "Maybank", "CIMB", "Touch 'n Go", "DuitNow".
+- bank_or_wallet: e.g. "BCA", "Mandiri", "BRI", "BNI", "GoPay", "OVO", "DANA", "ShopeePay", "QRIS".
 - reference: transaction reference / receipt number.
 - is_payment_receipt: true ONLY if this looks like a genuine bank / e-wallet transfer receipt — false for a product photo, the QR code image itself, or any unrelated image.`;
 
