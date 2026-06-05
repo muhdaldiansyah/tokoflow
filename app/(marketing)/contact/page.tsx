@@ -11,39 +11,39 @@ import {
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "Contact",
+  title: "Kontak",
   description:
-    "Talk to us on WhatsApp or email. Real humans, honest answers. We reply within a day.",
+    "Hubungi kami via WhatsApp atau email. Manusia sungguhan, jawaban jujur. Kami balas dalam sehari.",
   alternates: {
-    canonical: "https://tokoflow.com/contact",
+    canonical: "https://tokoflow.co.id/contact",
   },
 };
 
 const faqs = [
   {
-    question: "Is Tokoflow free?",
+    question: "Apakah Tokoflow gratis?",
     answer:
-      "Yes. Your first 50 orders are free, including the Photo Magic onboarding, your shop link, customer payments (DuitNow QR / FPX / cards via your own Billplz, 0% commission), reply drafts, Daily Summary, and a free listing on the Tokoflow directory. Pro (RM 49/mo) unlocks unlimited orders, the full AI companion, and silent LHDN MyInvois + SST compliance. Business (RM 99/mo) adds multi-staff accounts.",
+      "Ya. 50 order pertamamu gratis, termasuk onboarding Photo Magic, link tokomu, pembayaran pelanggan (QRIS / transfer bank / e-wallet via Midtrans, 0% komisi), draft balasan, Ringkasan Harian, dan listing gratis di direktori Tokoflow. Pro (Rp 99.000/bln) membuka order tanpa batas, companion AI penuh, dan kepatuhan e-Faktur + PPN yang senyap. Business (Rp 199.000/bln) menambah akun multi-staf.",
   },
   {
-    question: "Do I need to install an app?",
+    question: "Apakah saya perlu instal aplikasi?",
     answer:
-      "No. Tokoflow runs in your mobile browser and works great as a PWA when you add it to your home screen. No download, no App Store review, no install friction.",
+      "Tidak. Tokoflow berjalan di browser HP-mu dan terasa seperti aplikasi (PWA) saat kamu tambahkan ke layar utama. Tanpa download, tanpa review App Store, tanpa ribet instal.",
   },
   {
-    question: "How do customers find Tokoflow merchants?",
+    question: "Bagaimana pelanggan menemukan penjual Tokoflow?",
     answer:
-      "Two ways. First, the direct tokoflow.com/[your-slug] link — share it on WhatsApp, IG, TikTok, anywhere; customers tap and order, 0% commission. Second, the public directory at tokoflow.com/store with per-city pages (tokoflow.com/store/shah-alam, etc.) — listed by default, opt-out anytime in Settings. Both flows route orders to your dashboard with you owning the customer relationship.",
+      "Dua cara. Pertama, link langsung tokoflow.co.id/[slug-mu] — bagikan di WhatsApp, IG, TikTok, di mana saja; pelanggan tap dan pesan, 0% komisi. Kedua, direktori publik di tokoflow.co.id/store dengan halaman per kota (tokoflow.co.id/store/jakarta-selatan, dll.) — terdaftar secara default, bisa dimatikan kapan saja di Pengaturan. Keduanya mengarahkan order ke dashboard-mu dengan kamu yang memiliki hubungan pelanggan.",
   },
   {
-    question: "Is my data secure?",
+    question: "Apakah data saya aman?",
     answer:
-      "Yes. Encrypted servers, per-user data isolation, regular backups. We never sell or share your data. PDPA 2010-compliant with the 2025 amendments.",
+      "Ya. Server terenkripsi, isolasi data per pengguna, backup rutin. Kami tidak pernah menjual atau membagikan datamu. Sesuai UU Perlindungan Data Pribadi (UU PDP No. 27 Tahun 2022).",
   },
   {
-    question: "How do I delete my account?",
+    question: "Bagaimana cara menghapus akun saya?",
     answer:
-      "One tap in Settings. Or email hello@tokoflow.com — your data will be removed permanently within 5 business days. No exit survey, no friction.",
+      "Sekali tap di Pengaturan. Atau email hello@tokoflow.co.id — datamu akan dihapus permanen dalam 5 hari kerja. Tanpa survei keluar, tanpa ribet.",
   },
 ];
 
@@ -73,17 +73,17 @@ export default function ContactPage() {
           <nav className="mb-3 flex items-center gap-1.5 text-sm">
             <Link href="/" className="flex items-center gap-1 text-[#475569] transition-colors hover:text-[#1E293B]">
               <Home className="h-3.5 w-3.5" />
-              <span>Home</span>
+              <span>Beranda</span>
             </Link>
             <ChevronRight className="h-3.5 w-3.5 text-[#475569]/40" />
-            <span className="font-medium text-[#1E293B]">Contact</span>
+            <span className="font-medium text-[#1E293B]">Kontak</span>
           </nav>
 
           <h1 className="text-2xl lg:text-3xl font-semibold tracking-tight text-[#1E293B]">
-            Talk to us.
+            Hubungi kami.
           </h1>
           <p className="mt-1 text-sm lg:text-base text-[#475569]">
-            Real humans, honest answers. WhatsApp or email — both work.
+            Manusia sungguhan, jawaban jujur. WhatsApp atau email — keduanya bisa.
           </p>
         </div>
       </div>
@@ -98,18 +98,18 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="text-base lg:text-lg font-bold text-[#1E293B]">WhatsApp</h3>
-                  <p className="mt-0.5 text-sm text-[#475569]">Chat us for quick help.</p>
+                  <p className="mt-0.5 text-sm text-[#475569]">Chat untuk bantuan cepat.</p>
                   <div className="mt-1.5 flex items-center gap-1 text-xs text-[#475569]">
                     <Clock className="h-3 w-3" strokeWidth={1.5} />
-                    <span>Reply within 24 hours</span>
+                    <span>Balas dalam 24 jam</span>
                   </div>
                   <a
-                    href={`https://wa.me/${siteConfig.supportWhatsapp}?text=Hi%20Tokoflow%2C%20I%20have%20a%20question`}
+                    href={`https://wa.me/${siteConfig.supportWhatsapp}?text=Halo%20Tokoflow%2C%20saya%20ada%20pertanyaan`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-3 inline-flex items-center justify-center rounded-lg bg-[#05A660] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#048C51]"
                   >
-                    WhatsApp chat
+                    Chat WhatsApp
                   </a>
                 </div>
               </div>
@@ -120,31 +120,31 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="text-base lg:text-lg font-bold text-[#1E293B]">Email</h3>
-                  <p className="mt-0.5 text-sm text-[#475569]">For detailed questions or partnerships.</p>
+                  <p className="mt-0.5 text-sm text-[#475569]">Untuk pertanyaan detail atau kerja sama.</p>
                   <div className="mt-1.5 flex items-center gap-1 text-xs text-[#475569]">
                     <Clock className="h-3 w-3" strokeWidth={1.5} />
-                    <span>Reply within 1-2 business days</span>
+                    <span>Balas dalam 1-2 hari kerja</span>
                   </div>
                   <a
-                    href="mailto:hello@tokoflow.com"
+                    href="mailto:hello@tokoflow.co.id"
                     className="mt-3 inline-flex items-center justify-center rounded-lg border border-[#E2E8F0] bg-white px-4 py-2 text-sm font-semibold text-[#1E293B] transition-colors hover:bg-[#E8F6F0] hover:border-[#05A660]/30"
                   >
-                    hello@tokoflow.com
+                    hello@tokoflow.co.id
                   </a>
                 </div>
               </div>
 
               <div className="rounded-[2rem] border border-[#E2E8F0] bg-slate-50 p-6">
-                <h3 className="text-sm lg:text-base font-bold text-[#1E293B]">Other pages</h3>
+                <h3 className="text-sm lg:text-base font-bold text-[#1E293B]">Halaman lain</h3>
                 <div className="mt-3 flex flex-col gap-2">
                   <Link href="/features" className="text-sm text-[#475569] hover:text-[#1E293B] transition-colors">
-                    Features →
+                    Fitur →
                   </Link>
                   <Link href="/pricing" className="text-sm text-[#475569] hover:text-[#1E293B] transition-colors">
-                    Pricing →
+                    Harga →
                   </Link>
                   <Link href="/about" className="text-sm text-[#475569] hover:text-[#1E293B] transition-colors">
-                    About Tokoflow →
+                    Tentang Tokoflow →
                   </Link>
                 </div>
               </div>
@@ -158,10 +158,10 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h2 className="text-lg lg:text-xl font-bold text-[#1E293B]">
-                      Common questions
+                      Pertanyaan umum
                     </h2>
                     <p className="text-sm text-[#475569]">
-                      Answers to things merchants ask most.
+                      Jawaban untuk hal yang paling sering ditanya penjual.
                     </p>
                   </div>
                 </div>

@@ -169,20 +169,20 @@ export default async function TokoPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-baseline justify-between">
             <h1 className="text-xl font-bold text-foreground">
-              Discover sellers
+              Temukan penjual
             </h1>
             {merchants.length > 0 && (
               <span className="text-sm text-muted-foreground">
-                {merchants.length} {merchants.length === 1 ? "shop" : "shops"}
+                {merchants.length} toko
               </span>
             )}
           </div>
           <p className="mt-1 text-sm text-muted-foreground max-w-xl">
-            Independent home bakers, caterers, cooks, and crafters across Malaysia. Order directly — no platform commissions.
+            Penjual rumahan, katering, juru masak, dan pengrajin independen di seluruh Indonesia. Pesan langsung — tanpa komisi platform.
           </p>
           {cities.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-1.5">
-              <span className="text-[11px] uppercase tracking-wider text-muted-foreground/70 self-center mr-1">By city:</span>
+              <span className="text-[11px] uppercase tracking-wider text-muted-foreground/70 self-center mr-1">Per kota:</span>
               {cities.slice(0, 12).map((c) => (
                 <a
                   key={c.city_slug}

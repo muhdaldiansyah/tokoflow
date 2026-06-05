@@ -28,8 +28,8 @@ function paymentChannelLabel(channel: string | null | undefined): string {
   if (!channel) return "online payment";
   const map: Record<string, string> = {
     FPX: "FPX online banking",
-    DUITNOWQR: "DuitNow QR",
-    DUITNOW_QR: "DuitNow QR",
+    DUITNOWQR: "QRIS",
+    DUITNOW_QR: "QRIS",
     BOOST: "Boost",
     GRABPAY: "GrabPay",
     SHOPEEPAY: "ShopeePay",

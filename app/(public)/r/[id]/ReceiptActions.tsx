@@ -348,12 +348,12 @@ export function ReceiptActions({ orderId, orderNumber, waPhone, slug, qrisUrl, t
         </div>
       )}
 
-      {/* DuitNow QR + claim-payment — shown while order is unpaid and QR is available. */}
+      {/* QRIS + claim-payment — shown while order is unpaid and QR is available. */}
       {showPayment && qrisUrl && !paidConfirmed && phoneVerified && (
         <div className="rounded-lg border bg-muted/20 p-4 text-center space-y-3">
           <div className="flex items-center justify-center gap-2 text-xs font-medium text-foreground">
             <QrCode className="w-3.5 h-3.5" />
-            Pay via DuitNow QR
+            Pay via QRIS
           </div>
 
           {total > 0 && (
@@ -365,7 +365,7 @@ export function ReceiptActions({ orderId, orderNumber, waPhone, slug, qrisUrl, t
           <div className="relative mx-auto max-w-[200px] w-full aspect-square">
             <Image
               src={qrisUrl}
-              alt={`DuitNow QR ${businessName}`}
+              alt={`QRIS ${businessName}`}
               fill
               className="object-contain rounded-lg border border-border"
               sizes="200px"

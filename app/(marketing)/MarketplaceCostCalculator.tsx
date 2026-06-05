@@ -11,7 +11,8 @@ const PLATFORM_PRESETS = [
   { label: "Custom", value: -1 },
 ];
 
-function formatMYR(val: number): string {
+// Format a number with Indonesian thousand separators (no symbol): 75000 → "75.000".
+function formatNum(val: number): string {
   return val.toLocaleString("id-ID", {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
@@ -19,7 +20,7 @@ function formatMYR(val: number): string {
 }
 
 export function MarketplaceCostCalculator() {
-  const [avgOrderValue, setAvgOrderValue] = useState(50);
+  const [avgOrderValue, setAvgOrderValue] = useState(75000);
   const [ordersPerMonth, setOrdersPerMonth] = useState(50);
   const [selectedPreset, setSelectedPreset] = useState(15);
   const [isCustom, setIsCustom] = useState(false);
@@ -30,7 +31,7 @@ export function MarketplaceCostCalculator() {
   const results = useMemo(() => {
     const platformCost =
       (avgOrderValue * ordersPerMonth * effectivePct) / 100;
-    const tokoflowCost = 49;
+    const tokoflowCost = 99000;
     const saving = platformCost - tokoflowCost;
     const breakEvenOrders =
       effectivePct > 0 && avgOrderValue > 0
@@ -47,10 +48,10 @@ export function MarketplaceCostCalculator() {
         </div>
         <div>
           <h3 className="font-semibold text-[#1E293B]">
-            Marketplace Cost Calculator
+            Kalkulator Biaya Marketplace
           </h3>
           <p className="text-xs text-[#94A3B8]">
-            Calculate the real cost of selling on marketplaces
+            Hitung biaya nyata jualan di marketplace
           </p>
         </div>
       </div>
@@ -58,11 +59,12 @@ export function MarketplaceCostCalculator() {
       <div className="space-y-5">
         <div>
           <label className="text-sm font-medium text-[#1E293B] block mb-1.5">
-            Average order value (RM)
+            Rata-rata nilai order (Rp)
           </label>
           <input
             type="number"
             min={1}
+            step={1000}
             value={avgOrderValue}
             onChange={(e) =>
               setAvgOrderValue(Math.max(1, Number(e.target.value)))
@@ -73,7 +75,7 @@ export function MarketplaceCostCalculator() {
 
         <div>
           <label className="text-sm font-medium text-[#1E293B] block mb-1.5">
-            Orders per month
+            Order per bulan
           </label>
           <input
             type="number"
@@ -88,11 +90,11 @@ export function MarketplaceCostCalculator() {
 
         <div>
           <label className="text-sm font-medium text-[#1E293B] block mb-1.5">
-            Estimated effective platform cost
+            Perkiraan biaya platform efektif
           </label>
           <p className="text-xs text-[#94A3B8] mb-2.5">
-            Includes commission, transaction fees, vouchers, ads, and other costs.
-            You know your numbers best.
+            Termasuk komisi, biaya transaksi, voucher, iklan, dan biaya lain.
+            Kamu yang paling tahu angkamu.
           </p>
           <div className="flex gap-2 flex-wrap">
             {PLATFORM_PRESETS.map((preset) => (
@@ -116,7 +118,7 @@ export function MarketplaceCostCalculator() {
                     : "bg-white text-[#475569] border-[#E2E8F0] hover:border-warm-green/50"
                 }`}
               >
-                {preset.label}
+                {preset.value === -1 ? "Lainnya" : preset.label}
               </button>
             ))}
           </div>
@@ -131,7 +133,7 @@ export function MarketplaceCostCalculator() {
                   Math.min(100, Math.max(1, Number(e.target.value)))
                 )
               }
-              placeholder="Enter custom %"
+              placeholder="Masukkan % sendiri"
               className="mt-2.5 w-full h-11 px-3 rounded-lg border border-[#E2E8F0] bg-white text-[#1E293B] text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-warm-green/30"
             />
           )}
@@ -142,44 +144,44 @@ export function MarketplaceCostCalculator() {
       <div className="mt-6 rounded-xl bg-slate-50 border border-[#E2E8F0] p-5 space-y-3">
         <div className="flex justify-between items-center">
           <span className="text-sm text-[#475569]">
-            Estimated monthly platform cost
+            Perkiraan biaya platform per bulan
           </span>
           <span className="font-semibold text-[#1E293B]">
-            Rp {formatMYR(results.platformCost)}
+            Rp {formatNum(results.platformCost)}
           </span>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-sm text-[#475569]">Tokoflow cost (Pro)</span>
-          <span className="font-semibold text-[#1E293B]">RM 49</span>
+          <span className="text-sm text-[#475569]">Biaya Tokoflow (Pro)</span>
+          <span className="font-semibold text-[#1E293B]">Rp 99.000</span>
         </div>
         <div className="border-t border-[#E2E8F0] pt-3">
           {results.saving > 0 ? (
             <>
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-warm-green">
-                  Potential monthly saving
+                  Potensi hemat per bulan
                 </span>
                 <span className="font-bold text-warm-green text-lg">
-                  Rp {formatMYR(results.saving)}
+                  Rp {formatNum(results.saving)}
                 </span>
               </div>
               <p className="text-xs text-[#94A3B8] mt-2">
-                At {ordersPerMonth} orders/month, Tokoflow pays for itself after
-                your first {results.breakEvenOrders} orders.
+                Pada {ordersPerMonth} order/bulan, Tokoflow balik modal setelah
+                {" "}{results.breakEvenOrders} order pertamamu.
               </p>
             </>
           ) : (
             <p className="text-xs text-[#94A3B8]">
-              Increase order volume or adjust the platform cost estimate to see
-              the full comparison.
+              Naikkan volume order atau sesuaikan perkiraan biaya platform untuk
+              melihat perbandingan lengkapnya.
             </p>
           )}
         </div>
       </div>
 
       <p className="mt-4 text-xs text-[#94A3B8]">
-        This is an estimate only. Actual costs vary by platform, product
-        category, and selling type.
+        Ini hanya perkiraan. Biaya aktual berbeda-beda tergantung platform,
+        kategori produk, dan jenis jualan.
       </p>
 
       {results.saving > 0 && (
@@ -188,7 +190,7 @@ export function MarketplaceCostCalculator() {
             href="/register"
             className="inline-flex items-center justify-center w-full h-11 rounded-xl text-sm font-semibold bg-warm-green text-white hover:bg-warm-green-hover transition-colors"
           >
-            Build my own order website — RM 49/month
+            Buat website order saya — Rp 99.000/bulan
           </Link>
         </div>
       )}

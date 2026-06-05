@@ -15,31 +15,31 @@ export default function ComingSoon() {
         {/* Heading */}
         <div className="space-y-4">
           <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 tracking-tight">
-            Coming Soon
+            Segera Hadir
           </h1>
           <p className="text-gray-500 leading-relaxed">
-            Take WhatsApp orders, send digital receipts, and recap your day —
-            all in one place.
+            Terima order WhatsApp, kirim struk digital, dan rekap harimu —
+            semua di satu tempat.
           </p>
         </div>
 
         {/* Building message */}
         <div className="bg-gray-50 rounded-2xl p-6">
           <p className="text-sm text-gray-600 leading-relaxed">
-            We're building something special for Malaysian small businesses.
-            Stay tuned.
+            Kami sedang membangun sesuatu yang spesial untuk UMKM Indonesia.
+            Tunggu ya.
           </p>
         </div>
 
         {/* Contact */}
         <div className="space-y-3">
-          <p className="text-xs text-gray-400">Have a question?</p>
+          <p className="text-xs text-gray-400">Ada pertanyaan?</p>
           <a
-            href="mailto:hello@tokoflow.com"
+            href="mailto:hello@tokoflow.co.id"
             className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
           >
             <Mail className="h-4 w-4" />
-            hello@tokoflow.com
+            hello@tokoflow.co.id
           </a>
         </div>
       </div>

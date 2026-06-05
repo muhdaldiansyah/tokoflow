@@ -270,7 +270,7 @@ RULES:
 4. If there's an interesting product pattern, call it out
 5. End with one concrete action for tomorrow
 6. Everyday language, not finance jargon
-7. Currency format: RM 1,000
+7. Currency format: Rp 1.000
 8. IMPORTANT: Every insight MUST be separated by a newline (\\n). Don't merge everything into one paragraph.
 
 Respond as JSON: {"insights": "point 1\\n\\npoint 2\\n\\npoint 3"}`;
@@ -301,7 +301,7 @@ Produce 4 short sections, each separated by two newlines:
 RULES:
 - Maximum 300 words total
 - Everyday language, not finance jargon
-- Currency format: RM 1,000
+- Currency format: Rp 1.000
 - If there's significant unpaid balance, flag it as a priority
 - IMPORTANT: Every section MUST be separated by two newlines (\\n\\n). Don't merge everything into one paragraph.
 

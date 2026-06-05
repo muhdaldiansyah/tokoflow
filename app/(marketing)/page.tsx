@@ -12,23 +12,23 @@ const isMaintenanceMode =
   process.env.NEXT_PUBLIC_MAINTENANCE_MODE === "true";
 
 const homepageTitle = isMaintenanceMode
-  ? "Tokoflow — Coming Soon"
-  : "Tokoflow — Your Own Order Website for Malaysian Businesses";
+  ? "Tokoflow — Segera Hadir"
+  : "Tokoflow — Website Order Sendiri untuk UMKM Indonesia";
 
 const homepageDescription = isMaintenanceMode
-  ? "Tokoflow is coming soon. The simplest way for anyone to start selling — one photo to launch your shop."
-  : "Take orders from your own page, keep your customer data, and reduce dependence on marketplaces. Ready today, from RM49/month. Built for independent Malaysian businesses.";
+  ? "Tokoflow segera hadir. Cara paling simpel untuk mulai jualan — cukup satu foto untuk meluncurkan tokomu."
+  : "Terima order dari halaman tokomu sendiri, data pelanggan tetap milikmu, dan kurangi ketergantungan pada marketplace. Siap hari ini, mulai Rp 99.000/bulan. Dibuat untuk UMKM Indonesia.";
 
 export const metadata: Metadata = {
   title: { absolute: homepageTitle },
   description: homepageDescription,
   alternates: {
-    canonical: "https://tokoflow.com",
+    canonical: "https://tokoflow.co.id",
   },
   openGraph: {
     title: homepageTitle,
     description: homepageDescription,
-    url: "https://tokoflow.com",
+    url: "https://tokoflow.co.id",
   },
   twitter: {
     title: homepageTitle,
@@ -37,34 +37,34 @@ export const metadata: Metadata = {
 };
 
 const ownership = [
-  { lead: "Your customers, your data", tail: "never shared with or locked inside any marketplace" },
-  { lead: "Your prices, your judgment", tail: "we never set them for you" },
-  { lead: "Your repeat buyers, your channel", tail: "they come back to you, not to the platform" },
-  { lead: "Your pace", tail: "no streaks, no badges, no daily-target pressure" },
-  { lead: "Your freedom", tail: "cancel one tap, export everything" },
-  { lead: "0% commission from Tokoflow", tail: "what you earn, you keep" },
+  { lead: "Pelangganmu, datamu", tail: "tidak pernah dibagi atau dikunci di dalam marketplace mana pun" },
+  { lead: "Hargamu, keputusanmu", tail: "kami tidak pernah menentukannya untukmu" },
+  { lead: "Pelanggan setiamu, channelmu", tail: "mereka kembali ke kamu, bukan ke platform" },
+  { lead: "Ritmemu sendiri", tail: "tanpa streak, tanpa badge, tanpa tekanan target harian" },
+  { lead: "Kebebasanmu", tail: "batalkan sekali tap, ekspor semua data" },
+  { lead: "0% komisi dari Tokoflow", tail: "yang kamu hasilkan, kamu simpan" },
 ];
 
 const entryPaths = [
   {
     icon: Building2,
-    heading: "Your product is serious, but your digital channel is still WhatsApp?",
-    body: "You already have stock, branding, and customers — give them an order page that matches the quality of what you sell.",
-    cta: "Build my order website",
+    heading: "Produkmu serius, tapi channel digitalmu masih WhatsApp?",
+    body: "Kamu sudah punya stok, branding, dan pelanggan — beri mereka halaman order yang setara dengan kualitas produk yang kamu jual.",
+    cta: "Buat website order saya",
     href: "/register",
   },
   {
     icon: MessageCircle,
-    heading: "Orders coming in via WhatsApp, getting harder to track?",
-    body: "Let customers choose and order on their own. Orders come in organised, and repeat orders don't start from an empty chat.",
-    cta: "Get my orders organised",
+    heading: "Order masuk lewat WhatsApp, makin susah dilacak?",
+    body: "Biarkan pelanggan memilih dan memesan sendiri. Order masuk rapi, dan order ulang tidak mulai dari chat kosong.",
+    cta: "Rapikan order saya",
     href: "/register",
   },
   {
     icon: BarChart2,
-    heading: "Sales look good, but you're not sure what's actually left?",
-    body: "Platform costs go beyond commission. Calculate the full picture — and compare it against your own order channel.",
-    cta: "Calculate my platform cost",
+    heading: "Omzet kelihatan bagus, tapi tidak yakin sisanya berapa?",
+    body: "Biaya platform bukan cuma komisi. Hitung gambaran lengkapnya — lalu bandingkan dengan channel order milikmu sendiri.",
+    cta: "Hitung biaya platform saya",
     href: "#calculator",
   },
 ];
@@ -72,46 +72,46 @@ const entryPaths = [
 const coreMessages = [
   {
     icon: Store,
-    title: "Look more professional",
-    body: "Customers order from tokoflow.com/yourname — your own branded page. Not a WhatsApp chat, not a marketplace listing.",
+    title: "Tampil lebih profesional",
+    body: "Pelanggan memesan dari tokoflow.co.id/namamu — halaman ber-branding milikmu. Bukan chat WhatsApp, bukan listing marketplace.",
   },
   {
     icon: RefreshCw,
-    title: "Keep your repeat customers",
-    body: "Use TikTok and Shopee to get discovered. When they're ready to reorder, bring them to your own channel — where the next recommendation is yours, not the platform's.",
+    title: "Pertahankan pelanggan setiamu",
+    body: "Pakai TikTok dan Shopee untuk ditemukan. Saat mereka siap order ulang, bawa ke channel milikmu — di sini rekomendasi berikutnya milikmu, bukan platform.",
   },
   {
     icon: Zap,
-    title: "Live today. No IT company needed.",
-    body: "Upload a product photo. AI builds your catalogue. Your order page is ready to share — in minutes, not months.",
+    title: "Jadi hari ini. Tanpa perlu tim IT.",
+    body: "Upload foto produk. AI menyusun katalogmu. Halaman ordermu siap dibagikan — dalam hitungan menit, bukan bulan.",
   },
 ];
 
 const tiers = [
   {
-    name: "Free",
+    name: "Gratis",
     price: "Rp 0",
-    period: "first 50 orders",
-    blurb: "Everything you need to start. No credit card.",
-    cta: "Start free",
+    period: "50 order pertama",
+    blurb: "Semua yang kamu butuh untuk mulai. Tanpa kartu kredit.",
+    cta: "Mulai gratis",
     href: "/register",
     highlight: false,
   },
   {
     name: "Pro",
-    price: "Rp 49",
-    period: "/ month",
-    blurb: "Unlimited orders, voice + photo parsing, invoices, and the full system.",
-    cta: "Try Pro",
+    price: "Rp 99.000",
+    period: "/ bulan",
+    blurb: "Order tanpa batas, parsing suara + foto, faktur, dan sistem lengkap.",
+    cta: "Coba Pro",
     href: "/register",
     highlight: true,
   },
   {
     name: "Business",
-    price: "Rp 99",
-    period: "/ month",
-    blurb: "Everything in Pro plus multi-staff accounts and order assignment for teams.",
-    cta: "Talk to us",
+    price: "Rp 199.000",
+    period: "/ bulan",
+    blurb: "Semua di Pro plus akun multi-staf dan penugasan order untuk tim.",
+    cta: "Hubungi kami",
     href: "/contact",
     highlight: false,
   },
@@ -121,34 +121,34 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "Tokoflow",
-  url: "https://tokoflow.com",
+  url: "https://tokoflow.co.id",
   applicationCategory: "BusinessApplication",
   operatingSystem: "Web",
   offers: {
     "@type": "Offer",
     price: "0",
     priceCurrency: "IDR",
-    description: "Your first 50 orders are free",
+    description: "50 order pertama gratis",
   },
   description:
-    "Your own order website for Malaysian small businesses. Take orders from your own page, keep customer data, and reduce marketplace dependence. Ready today, from RM49/month.",
+    "Website order sendiri untuk UMKM Indonesia. Terima order dari halamanmu sendiri, miliki data pelanggan, dan kurangi ketergantungan marketplace. Siap hari ini, mulai Rp 99.000/bulan.",
   featureList: [
-    "Your own order page — tokoflow.com/yourname",
-    "Customer payments — DuitNow QR, FPX, cards, e-wallets",
-    "0% commission — funds settle direct to your bank",
-    "AI product catalogue from one photo",
-    "Customer data you own and can export",
-    "Repeat customer order history",
-    "Delivery zone pricing",
-    "Inventory tracking and auto-invoice",
-    "Packing list for pending orders",
-    "Works offline",
+    "Halaman order sendiri — tokoflow.co.id/namamu",
+    "Pembayaran pelanggan — QRIS, transfer bank, e-wallet",
+    "0% komisi — dana masuk langsung ke rekeningmu",
+    "Katalog produk dari AI cukup satu foto",
+    "Data pelanggan milikmu dan bisa diekspor",
+    "Riwayat order pelanggan langganan",
+    "Tarif ongkir per zona",
+    "Pelacakan stok dan faktur otomatis",
+    "Daftar packing untuk order pending",
+    "Bisa offline",
   ],
-  inLanguage: "en",
+  inLanguage: "id",
   author: {
     "@type": "Organization",
     name: "Tokoflow",
-    url: "https://tokoflow.com",
+    url: "https://tokoflow.co.id",
   },
 };
 
@@ -174,24 +174,24 @@ export default function HomePage() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-warm-green opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-warm-green"></span>
                 </span>
-                For independent Malaysian businesses
+                Untuk UMKM Indonesia
               </div>
 
               <div className="space-y-5">
                 <H1 className="tracking-tight text-[#1E293B] text-3xl lg:text-4xl lg:leading-tight">
-                  Your own{" "}
+                  Website order{" "}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-warm-green to-warm-green-hover">
-                    order website.
+                    milikmu sendiri.
                   </span>
                   <br className="hidden md:block" />
-                  Not just a marketplace listing.
+                  Bukan sekadar listing marketplace.
                 </H1>
 
                 <Lead className="text-[#475569] leading-relaxed font-normal">
-                  Take orders from your own page, keep your customer data, and reduce dependence on marketplaces — live today, from RM49/month.
+                  Terima order dari halamanmu sendiri, data pelanggan tetap milikmu, dan kurangi ketergantungan pada marketplace — jadi hari ini, mulai Rp 99.000/bulan.
                 </Lead>
                 <P className="text-[#475569] leading-relaxed">
-                  Use TikTok and Shopee to get discovered. Use Tokoflow to bring repeat customers back to your own channel.
+                  Pakai TikTok dan Shopee untuk ditemukan. Pakai Tokoflow untuk membawa pelanggan setia kembali ke channel milikmu.
                 </P>
               </div>
 
@@ -200,16 +200,16 @@ export default function HomePage() {
               </div>
 
               <p className="text-xs text-[#94A3B8]">
-                First 50 orders free · No credit card · Cancel anytime
+                50 order pertama gratis · Tanpa kartu kredit · Batalkan kapan saja
               </p>
 
               <p className="text-xs text-[#64748B] pt-1">
-                Or{" "}
+                Atau{" "}
                 <Link
                   href="/store"
                   className="font-medium text-[#05A660] underline-offset-2 hover:underline"
                 >
-                  browse local sellers on Tokoflow
+                  jelajahi penjual lokal di Tokoflow
                 </Link>
                 .
               </p>
@@ -219,7 +219,7 @@ export default function HomePage() {
               <div className="relative aspect-square w-full max-w-[480px] overflow-hidden rounded-3xl shadow-[0_32px_80px_-8px_rgba(0,0,0,0.18)]">
                 <Image
                   src="/images/marketing/hero-craft.webp"
-                  alt="A Malaysian small business owner checks their Tokoflow order page on a smartphone beside their products."
+                  alt="Pemilik UMKM Indonesia mengecek halaman order Tokoflow-nya di smartphone di samping produk-produknya."
                   fill
                   priority
                   sizes="(max-width: 1024px) 90vw, 480px"
@@ -235,9 +235,9 @@ export default function HomePage() {
       <section className="border-t border-[#E2E8F0] py-12 lg:py-16">
         <div className="max-w-2xl mx-auto px-4">
           <div className="border-l-2 border-red-200 pl-5">
-            <p className="text-[11px] font-semibold text-red-400 uppercase tracking-[0.12em] mb-2">The problem</p>
+            <p className="text-[11px] font-semibold text-red-400 uppercase tracking-[0.12em] mb-2">Masalahnya</p>
             <p className="text-[#475569] leading-relaxed">
-              Every time a customer orders through TikTok or Shopee, the platform takes a cut — and their next recommendation might send that customer to a competitor. You don&apos;t own that relationship.
+              Setiap kali pelanggan memesan lewat TikTok atau Shopee, platform mengambil potongan — dan rekomendasi berikutnya bisa saja mengarahkan pelanggan itu ke kompetitor. Kamu tidak memiliki hubungan itu.
             </p>
           </div>
 
@@ -246,10 +246,10 @@ export default function HomePage() {
           </div>
 
           <div className="border-l-2 border-warm-green pl-5">
-            <p className="text-[11px] font-semibold text-warm-green uppercase tracking-[0.12em] mb-2">With Tokoflow</p>
+            <p className="text-[11px] font-semibold text-warm-green uppercase tracking-[0.12em] mb-2">Dengan Tokoflow</p>
             <p className="text-[#475569] leading-relaxed">
-              Customers order from your link. Payment goes direct to your bank. Their data stays with you. When they&apos;re ready to reorder, they come back to{" "}
-              <em className="not-italic font-medium text-[#1E293B]">your page</em> — not the marketplace.
+              Pelanggan memesan dari link-mu. Pembayaran masuk langsung ke rekeningmu. Data mereka tetap milikmu. Saat siap order ulang, mereka kembali ke{" "}
+              <em className="not-italic font-medium text-[#1E293B]">halamanmu</em> — bukan marketplace.
             </p>
           </div>
         </div>
@@ -260,10 +260,10 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center max-w-2xl mx-auto mb-10">
             <h2 className="text-2xl lg:text-3xl font-bold text-[#1E293B] tracking-tight">
-              Which one sounds like you?
+              Mana yang paling mirip kamu?
             </h2>
             <p className="mt-3 text-[#475569] lg:text-lg">
-              Pick the one that fits your situation.
+              Pilih yang paling sesuai dengan situasimu.
             </p>
           </div>
 
@@ -302,10 +302,10 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center max-w-2xl mx-auto mb-10">
             <h2 className="text-2xl lg:text-3xl font-bold text-[#1E293B] tracking-tight">
-              Built for businesses with real products and real customers
+              Dibuat untuk bisnis dengan produk nyata dan pelanggan nyata
             </h2>
             <p className="mt-3 text-[#475569] lg:text-lg">
-              Not a beginner tool. Not a RM5,000 IT project. The middle ground that didn&apos;t exist until now.
+              Bukan alat untuk pemula. Bukan proyek IT Rp 10 juta. Jalan tengah yang sebelumnya belum ada.
             </p>
           </div>
 
@@ -331,10 +331,10 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center max-w-2xl mx-auto mb-10">
             <h2 className="text-2xl lg:text-3xl font-bold text-[#1E293B] tracking-tight">
-              How much does selling on marketplaces actually cost you?
+              Sebenarnya berapa biaya jualan di marketplace?
             </h2>
             <p className="mt-3 text-[#475569] lg:text-lg">
-              Platform costs go beyond commission. Calculate the full picture.
+              Biaya platform bukan cuma komisi. Hitung gambaran lengkapnya.
             </p>
           </div>
           <MarketplaceCostCalculator />
@@ -346,10 +346,10 @@ export default function HomePage() {
         <div className="max-w-3xl mx-auto px-4">
           <div className="text-center max-w-2xl mx-auto mb-10">
             <h2 className="text-2xl lg:text-3xl font-bold text-[#1E293B] tracking-tight">
-              Yours. All of it.
+              Semuanya milikmu.
             </h2>
             <p className="mt-3 text-[#475569] lg:text-lg">
-              Your customers, your data, your channel — they were yours before Tokoflow, and they stay yours.
+              Pelanggan, data, dan channelmu — sudah milikmu sebelum Tokoflow, dan tetap milikmu.
             </p>
           </div>
 
@@ -373,14 +373,14 @@ export default function HomePage() {
           <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-[#E2E8F0] shadow-sm">
             <Image
               src="/images/marketing/real-shops.webp"
-              alt="A Malaysian small business owner arranges products beside a smartphone showing their Tokoflow order page."
+              alt="Pemilik UMKM Indonesia menata produk di samping smartphone yang menampilkan halaman order Tokoflow-nya."
               fill
               sizes="(max-width: 1024px) 100vw, 1024px"
               className="object-cover"
             />
           </div>
           <p className="mt-4 text-center text-sm text-[#475569]">
-            Your shop. Your channel. Your customers.
+            Tokomu. Channelmu. Pelangganmu.
           </p>
         </div>
       </section>
@@ -390,10 +390,10 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center max-w-2xl mx-auto mb-10">
             <h2 className="text-2xl lg:text-3xl font-bold text-[#1E293B] tracking-tight">
-              Simple pricing. Pay only when you grow.
+              Harga sederhana. Bayar hanya saat kamu berkembang.
             </h2>
             <p className="mt-3 text-[#475569] lg:text-lg">
-              Cancel anytime. Export everything. No credit card to start.
+              Batalkan kapan saja. Ekspor semua data. Tanpa kartu kredit untuk mulai.
             </p>
           </div>
 
@@ -409,7 +409,7 @@ export default function HomePage() {
               >
                 {tier.highlight && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center h-6 px-3 text-[11px] font-semibold rounded-full bg-warm-green text-white">
-                    Most popular
+                    Paling populer
                   </span>
                 )}
                 <p className="text-sm font-semibold text-[#1E293B]">{tier.name}</p>
@@ -434,7 +434,7 @@ export default function HomePage() {
 
           <p className="text-center mt-6 text-xs text-[#94A3B8]">
             <Link href="/pricing" className="underline hover:text-[#475569]">
-              See full pricing details →
+              Lihat detail harga lengkap →
             </Link>
           </p>
         </div>
@@ -445,17 +445,17 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto px-4 text-center">
           <div className="relative z-10">
             <h2 className="mx-auto max-w-2xl text-2xl lg:text-3xl font-bold tracking-tight text-[#1E293B]">
-              Build your own order website today.
+              Bangun website order milikmu hari ini.
             </h2>
 
             <p className="mx-auto mt-4 max-w-xl text-base text-[#475569]">
-              Your first 50 orders are free. No credit card. No commission from Tokoflow. Customer data stays yours.
+              50 order pertamamu gratis. Tanpa kartu kredit. Tanpa komisi dari Tokoflow. Data pelanggan tetap milikmu.
             </p>
 
             <div className="mt-8">
               <Button size="lg" className="h-12 px-8 text-base font-semibold bg-warm-green text-white w-full sm:w-auto hover:bg-warm-green-hover" asChild>
                 <Link href="/register">
-                  Start free
+                  Mulai gratis
                 </Link>
               </Button>
             </div>

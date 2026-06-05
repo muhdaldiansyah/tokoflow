@@ -10,7 +10,7 @@ import { Callout } from '@/components/mdx/Callout'
 
 const components = { CTA, Callout }
 
-const SITE_URL = 'https://tokoflow.com'
+const SITE_URL = 'https://tokoflow.co.id'
 
 export async function generateStaticParams() {
   return getAllPosts().map((post) => ({ slug: post.slug }))

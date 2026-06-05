@@ -29,14 +29,15 @@ interface DirectoryGridProps {
 }
 
 const PRICE_RANGES = [
-  { label: "< RM 50", max: 50 },
-  { label: "Rp 50 — RM 200", min: 50, max: 200 },
-  { label: "Rp 200 — RM 500", min: 200, max: 500 },
-  { label: "> Rp 500", min: 500 },
+  { label: "< Rp 50rb", max: 50000 },
+  { label: "Rp 50rb — 200rb", min: 50000, max: 200000 },
+  { label: "Rp 200rb — 500rb", min: 200000, max: 500000 },
+  { label: "> Rp 500rb", min: 500000 },
 ];
 
 function formatPrice(n: number) {
-  if (n >= 1000) return `Rp ${(n / 1000).toFixed(1)}K`;
+  if (n >= 1000000) return `Rp ${(n / 1000000).toFixed(1)} jt`;
+  if (n >= 1000) return `Rp ${(n / 1000).toLocaleString("id-ID")}rb`;
   return `Rp ${n.toLocaleString("id-ID")}`;
 }
 

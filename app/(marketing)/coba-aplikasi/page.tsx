@@ -5,30 +5,30 @@ import SignupForm from "./SignupForm";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: { absolute: "Try Tokoflow — Early access" },
+  title: { absolute: "Coba Tokoflow — Akses awal" },
   description:
-    "Sell something? Try Tokoflow during early access. Your shop, one photo away. Help shape the product and get a TNG reload as a thank-you.",
+    "Punya jualan? Coba Tokoflow saat akses awal. Tokomu, tinggal satu foto. Bantu bentuk produknya dan dapat saldo e-wallet sebagai terima kasih.",
   alternates: {
-    canonical: "https://tokoflow.com/coba-aplikasi",
+    canonical: "https://tokoflow.co.id/coba-aplikasi",
   },
 };
 
 const faqs = [
   {
-    question: "Is it really free?",
-    answer: "Yes. Your first 50 orders are free — including 1-Photo Onboarding, your shop link, customer payments via your own Billplz (0% commission, funds direct to your bank), and a free listing on the Tokoflow directory.",
+    question: "Benar-benar gratis?",
+    answer: "Ya. 50 order pertamamu gratis — termasuk Onboarding 1-Foto, link tokomu, pembayaran pelanggan via Midtrans (QRIS / transfer / e-wallet, 0% komisi, dana langsung ke rekeningmu), dan listing gratis di direktori Tokoflow.",
   },
   {
-    question: "Will customers find me?",
-    answer: "Your shop appears automatically on tokoflow.com/store and your city page — opt out anytime in Settings. You also get a direct tokoflow.com/[your-slug] link to share on WhatsApp, IG, or anywhere. Both work the same way: orders land in your dashboard, 0% commission.",
+    question: "Apakah pelanggan akan menemukan saya?",
+    answer: "Tokomu otomatis muncul di tokoflow.co.id/store dan halaman kotamu — matikan kapan saja di Pengaturan. Kamu juga dapat link langsung tokoflow.co.id/[slug-mu] untuk dibagikan di WhatsApp, IG, atau di mana saja. Keduanya sama: order masuk ke dashboard-mu, 0% komisi.",
   },
   {
-    question: "Do I need to install anything?",
-    answer: "No. Tokoflow runs in your mobile browser. Install as a PWA if you want an app icon — same speed, no App Store wait.",
+    question: "Apakah saya perlu instal sesuatu?",
+    answer: "Tidak. Tokoflow berjalan di browser HP-mu. Pasang sebagai PWA kalau mau ikon aplikasi — sama cepatnya, tanpa nunggu App Store.",
   },
   {
-    question: "When do I get the reload?",
-    answer: "After 14 days of use plus a short feedback chat with us.",
+    question: "Kapan saya dapat saldonya?",
+    answer: "Setelah 14 hari pemakaian plus obrolan feedback singkat dengan kami.",
   },
 ];
 
@@ -41,8 +41,8 @@ export default function CobaAplikasiPage() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "WebPage",
-            name: "Try Tokoflow — early access",
-            url: "https://tokoflow.com/coba-aplikasi",
+            name: "Coba Tokoflow — akses awal",
+            url: "https://tokoflow.co.id/coba-aplikasi",
           }),
         }}
       />
@@ -58,26 +58,26 @@ export default function CobaAplikasiPage() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#05A660] opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-[#05A660]"></span>
                 </span>
-                Limited spots
+                Slot terbatas
               </div>
 
               <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-[#1E293B] leading-snug">
-                Your shop,
+                Tokomu,
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#05A660] to-[#048C51]">
-                  one photo away.
+                  tinggal satu foto.
                 </span>
               </h1>
 
               <p className="text-[#475569] leading-relaxed">
-                Tokoflow is in early access — we&apos;re looking for sellers who want a tool that respects their time and dignifies their work. Help shape the magic.
+                Tokoflow sedang akses awal — kami mencari penjual yang ingin alat yang menghormati waktu dan memuliakan pekerjaannya. Bantu bentuk keajaibannya.
               </p>
 
               <div className="space-y-2.5">
                 {[
-                  { icon: Gift, text: "Rp 10 mobile top-up after 14 days of use" },
-                  { icon: Smartphone, text: "First 50 orders free" },
-                  { icon: MessageSquare, text: "Your feedback shapes the product" },
+                  { icon: Gift, text: "Pulsa Rp 25.000 setelah 14 hari pakai" },
+                  { icon: Smartphone, text: "50 order pertama gratis" },
+                  { icon: MessageSquare, text: "Feedback-mu membentuk produk" },
                 ].map((item) => (
                   <div key={item.text} className="flex items-center gap-2.5">
                     <item.icon className="h-4 w-4 text-[#05A660] shrink-0" strokeWidth={1.5} />
@@ -90,8 +90,8 @@ export default function CobaAplikasiPage() {
             {/* Right: Form */}
             <div className="lg:sticky lg:top-24">
               <div className="rounded-[2rem] border border-[#E2E8F0] bg-white shadow-lg p-6 lg:p-8">
-                <h2 className="text-lg font-bold text-[#1E293B] mb-1">Get early access</h2>
-                <p className="text-sm text-[#94A3B8] mb-6">We&apos;ll reach you on WhatsApp within 1–2 days.</p>
+                <h2 className="text-lg font-bold text-[#1E293B] mb-1">Dapatkan akses awal</h2>
+                <p className="text-sm text-[#94A3B8] mb-6">Kami akan menghubungimu via WhatsApp dalam 1–2 hari.</p>
                 <SignupForm />
               </div>
             </div>
@@ -112,8 +112,8 @@ export default function CobaAplikasiPage() {
                   </p>
                 ))}
                 <p className="text-sm text-[#475569]">
-                  Other questions?{" "}
-                  <Link href={`https://wa.me/${siteConfig.supportWhatsapp}?text=Hi%2C%20I%27d%20like%20to%20ask%20about%20the%20Tokoflow%20beta`} target="_blank" rel="noopener noreferrer" className="font-semibold text-[#05A660] hover:underline">WhatsApp chat</Link>
+                  Pertanyaan lain?{" "}
+                  <Link href={`https://wa.me/${siteConfig.supportWhatsapp}?text=Halo%2C%20saya%20mau%20tanya%20soal%20beta%20Tokoflow`} target="_blank" rel="noopener noreferrer" className="font-semibold text-[#05A660] hover:underline">Chat WhatsApp</Link>
                 </p>
               </div>
             </div>

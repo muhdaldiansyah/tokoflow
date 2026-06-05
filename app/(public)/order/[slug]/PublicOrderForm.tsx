@@ -455,7 +455,7 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
             addrLine2.trim(),
             [addrPostcode.trim(), addrCity.trim()].filter(Boolean).join(" "),
             addrState,
-            "Malaysia",
+            "Indonesia",
           ].filter(Boolean).join("\n") || undefined : undefined,
           deliveryDate: deliveryDate || undefined,
           deliveryZone: deliveryZone ?? undefined,
@@ -1227,32 +1227,25 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
 
             {/* State dropdown — auto-detects zone */}
             <div className={`rounded-lg border bg-white ${fieldErrors.state ? "border-warm-rose" : ""}`}>
-              <label htmlFor="addrState" className="block px-3 pt-2 text-[11px] font-medium text-muted-foreground">State <span className="text-warm-rose">*</span></label>
+              <label htmlFor="addrState" className="block px-3 pt-2 text-[11px] font-medium text-muted-foreground">Provinsi <span className="text-warm-rose">*</span></label>
               <select
                 id="addrState"
                 value={addrState}
                 onChange={(e) => { setAddrState(e.target.value); setFieldErrors(prev => { const n = { ...prev }; delete n.state; return n; }); }}
                 className="w-full px-3 pb-2.5 pt-0.5 bg-transparent text-sm text-foreground focus:outline-none appearance-none"
               >
-                <option value="">Select state</option>
-                <optgroup label="Peninsular Malaysia">
-                  {["Johor", "Kedah", "Kelantan", "Melaka", "Negeri Sembilan", "Pahang", "Perak", "Perlis", "Pulau Pinang", "Selangor", "Terengganu", "W.P. Kuala Lumpur", "W.P. Putrajaya"].map(s => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </optgroup>
-                <optgroup label="Sabah &amp; Sarawak">
-                  {["Sabah", "Sarawak", "W.P. Labuan"].map(s => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </optgroup>
+                <option value="">Pilih provinsi</option>
+                {["DKI Jakarta", "Jawa Barat", "Jawa Tengah", "Jawa Timur", "Banten", "DI Yogyakarta", "Bali", "Aceh", "Sumatera Utara", "Sumatera Barat", "Riau", "Kepulauan Riau", "Jambi", "Sumatera Selatan", "Bangka Belitung", "Bengkulu", "Lampung", "Kalimantan Barat", "Kalimantan Tengah", "Kalimantan Selatan", "Kalimantan Timur", "Kalimantan Utara", "Sulawesi Utara", "Sulawesi Tengah", "Sulawesi Selatan", "Sulawesi Tenggara", "Gorontalo", "Sulawesi Barat", "Nusa Tenggara Barat", "Nusa Tenggara Timur", "Maluku", "Maluku Utara", "Papua", "Papua Barat", "Papua Selatan", "Papua Tengah", "Papua Pegunungan", "Papua Barat Daya"].map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
               </select>
               {fieldErrors.state && <p className="px-3 pb-2 text-[11px] text-warm-rose">{fieldErrors.state}</p>}
             </div>
 
             {/* Country (fixed) */}
             <div className="rounded-lg border bg-muted/30 px-3 py-2.5 flex items-center justify-between">
-              <span className="text-[11px] font-medium text-muted-foreground">Country</span>
-              <span className="text-sm text-foreground">Malaysia</span>
+              <span className="text-[11px] font-medium text-muted-foreground">Negara</span>
+              <span className="text-sm text-foreground">Indonesia</span>
             </div>
 
             {/* Auto-detected delivery fee based on state. A blank zone rate means

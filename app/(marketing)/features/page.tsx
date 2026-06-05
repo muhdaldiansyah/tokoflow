@@ -14,7 +14,6 @@ import {
   QrCode,
   MessageSquare,
   ClipboardList,
-  ImageIcon,
   Bell,
   BarChart3,
   Users,
@@ -28,11 +27,11 @@ import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: `Features — ${siteConfig.tagline}`,
+  title: `Fitur — ${siteConfig.tagline}`,
   description:
-    "Designed around six iconic moments that make selling humane. The Photo Magic, The Voice Ask, The Vibrate, The Swipe Forward, The Evening Embrace, and The Disappearing Work.",
+    "Dirancang seputar momen-momen yang membuat jualan terasa manusiawi: Photo Magic, Order Suara, Notifikasi Halus, Geser Maju, Rangkulan Malam, dan Pekerjaan yang Menghilang.",
   alternates: {
-    canonical: "https://tokoflow.com/features",
+    canonical: "https://tokoflow.co.id/features",
   },
 };
 
@@ -42,86 +41,83 @@ type Section = {
   label: string;
   intro: string;
   features: Feature[];
-  // Optional anchor image — only the three "iconic moment" sections carry one
-  // (Photo Magic, Storefront, Evening Embrace). Keeping the rest icon-only
-  // preserves scannability and avoids visual fatigue.
   image?: { src: string; alt: string };
 };
 
 const sections: Section[] = [
   {
-    label: "The Photo Magic",
+    label: "Photo Magic",
     image: {
       src: "/images/marketing/feature-photo-magic.webp",
-      alt: "Top-down view of a hand holding a smartphone over a flour-dusted counter, framing a tray of brown sugar kuih and karipap.",
+      alt: "Tampak atas tangan memegang smartphone di atas meja, membingkai nampan kue dan risoles.",
     },
-    intro: "Sixty seconds from snap to live shop. No setup wizards, no business-type dropdowns, no forms. Just the camera you already use.",
+    intro: "Enam puluh detik dari foto ke toko online. Tanpa wizard setup, tanpa dropdown jenis usaha, tanpa formulir. Cukup kamera yang sudah kamu pakai.",
     features: [
-      { icon: Camera, title: "1-photo onboarding", desc: "Point your camera at your kitchen or your bakes. AI reads it and drafts your shop name, story, menu, and prices in seconds — your photo stays exactly as you shot it." },
-      { icon: Sparkles, title: "Smart defaults from context", desc: "Location, time, photo — Tokoflow infers your business type, hours, currency. You never pick anything from a dropdown." },
-      { icon: LinkIcon, title: "One-tap share", desc: "Once your shop is live, share to IG bio, TikTok, WhatsApp status with a single tap." },
+      { icon: Camera, title: "Onboarding 1-foto", desc: "Arahkan kamera ke dagangan atau dapurmu. AI membacanya dan menyusun nama toko, cerita, menu, dan harga dalam hitungan detik — fotomu tetap apa adanya." },
+      { icon: Sparkles, title: "Default cerdas dari konteks", desc: "Lokasi, waktu, foto — Tokoflow menyimpulkan jenis usaha, jam buka, dan mata uangmu. Kamu tidak perlu memilih dari dropdown." },
+      { icon: LinkIcon, title: "Bagikan sekali tap", desc: "Begitu tokomu live, bagikan ke bio IG, TikTok, atau status WhatsApp cukup sekali tap." },
     ],
   },
   {
-    label: "The Storefront",
+    label: "Halaman Toko",
     image: {
       src: "/images/marketing/feature-storefront.webp",
-      alt: "A customer in a kopitiam holds a smartphone showing a clean shop page with a kuih lapis profile photo and a green Add to order button.",
+      alt: "Pelanggan memegang smartphone yang menampilkan halaman toko bersih dengan foto profil kue lapis dan tombol hijau Tambah ke order.",
     },
-    intro: "A link with a face — your story, your menu, your customer's path from curious to confirmed.",
+    intro: "Link dengan wajah — ceritamu, menumu, dan jalur pelanggan dari penasaran ke pesan.",
     features: [
-      { icon: LinkIcon, title: "Beautiful shop page", desc: "Your photo, your story, your menu. Real personality, not a template." },
-      { icon: MessageSquare, title: "Conversational order flow", desc: "Visual menu by default. Customers add items, set quantities, leave notes — and your link captures the order without you typing a single message." },
-      { icon: Heart, title: "Personal story block", desc: "Two or three lines about who you are. Customers feel they're buying from a person, not a faceless seller." },
-      { icon: QrCode, title: "Customer payment, in flow", desc: "DuitNow QR, FPX, cards, e-wallets via Billplz. Funds settle direct to your bank — Tokoflow never touches the money. 0% commission. Optional, default off until you connect." },
-      { icon: ShoppingBag, title: "Delivery or pickup, their choice", desc: "When you offer both, customers choose on the order form and enter a delivery address. You see the preference with every order — no back-and-forth on WhatsApp." },
-      { icon: Heart, title: "Listed on the directory, opt-in", desc: "Your shop appears on tokoflow.com/store and your city page automatically — opt out anytime in Settings. Free. Direct merchant-link orders stay at 0% commission; the direct link works regardless of listing." },
+      { icon: LinkIcon, title: "Halaman toko yang cantik", desc: "Fotomu, ceritamu, menumu. Berkarakter, bukan template." },
+      { icon: MessageSquare, title: "Alur order percakapan", desc: "Menu visual sebagai default. Pelanggan menambah item, atur jumlah, tulis catatan — dan link-mu menangkap order tanpa kamu mengetik satu pesan pun." },
+      { icon: Heart, title: "Blok cerita personal", desc: "Dua-tiga baris tentang siapa kamu. Pelanggan merasa membeli dari seorang manusia, bukan penjual tanpa wajah." },
+      { icon: QrCode, title: "Pembayaran pelanggan, dalam alur", desc: "QRIS, transfer bank (VA), dan e-wallet (GoPay/OVO/DANA/ShopeePay) via Midtrans. Dana masuk langsung ke rekeningmu — Tokoflow tidak pernah menyentuh uangnya. 0% komisi. Opsional, default mati sampai kamu hubungkan." },
+      { icon: ShoppingBag, title: "Antar atau ambil sendiri, pilihan mereka", desc: "Saat kamu menawarkan keduanya, pelanggan memilih di form order dan mengisi alamat pengiriman. Kamu melihat preferensinya di tiap order — tanpa bolak-balik WhatsApp." },
+      { icon: Heart, title: "Tampil di direktori, opt-in", desc: "Tokomu otomatis muncul di tokoflow.co.id/store dan halaman kotamu — matikan kapan saja di Pengaturan. Gratis. Order via link langsung tetap 0% komisi; link langsung berfungsi terlepas dari listing." },
     ],
   },
   {
-    label: "The Vibrate, The Swipe, The Voice",
-    intro: "When work is happening, Tokoflow disappears. When you need it, one gesture is enough.",
+    label: "Notifikasi Halus, Geser, Suara",
+    intro: "Saat pekerjaan sedang berlangsung, Tokoflow menghilang. Saat kamu butuh, satu gerakan sudah cukup.",
     features: [
-      { icon: Heart, title: "Vibrate-only notifications", desc: "Soft buzz when an order arrives. No jarring sound by default. Tokoflow respects the kitchen, the hands, the flow." },
-      { icon: ShoppingBag, title: "Swipe forward", desc: "Swipe right to advance an order: received → cooking → ready → out → done. One gesture per step. That's it." },
-      { icon: Mic, title: "The Voice Ask", desc: "Tap mic and speak the order out loud. \"Add ayam crispy 27 ringgit, kek lapis dua, hantar esok.\" Tokoflow turns your words into a clean order — no typing." },
-      { icon: Bell, title: "Quiet hours by default", desc: "22:00–06:00 silent automatically. Family time stays family time." },
+      { icon: Heart, title: "Notifikasi getar saja", desc: "Getaran lembut saat order masuk. Tanpa suara mengagetkan sebagai default. Tokoflow menghormati dapur, tangan, dan alur kerjamu." },
+      { icon: ShoppingBag, title: "Geser maju", desc: "Geser ke kanan untuk memajukan order: diterima → diproses → siap → dikirim → selesai. Satu gerakan per langkah. Selesai." },
+      { icon: Mic, title: "Order Suara", desc: "Tap mikrofon dan ucapkan ordernya. \"Tambah ayam geprek 27 ribu, kue lapis dua, kirim besok.\" Tokoflow mengubah ucapanmu jadi order rapi — tanpa mengetik." },
+      { icon: Bell, title: "Jam tenang sebagai default", desc: "21:00–05:00 otomatis senyap. Waktu keluarga tetap waktu keluarga." },
     ],
   },
   {
-    label: "The Companion",
-    intro: "A presence that knows when to help, and when to stay quiet.",
+    label: "Sang Pendamping",
+    intro: "Kehadiran yang tahu kapan membantu, dan kapan diam.",
     features: [
-      { icon: MessageSquare, title: "Reply drafts, never autoreply", desc: "When a customer asks about hours, prices, or a custom request, Tokoflow drafts a reply ready for you to send. You always send — your voice, your judgment." },
-      { icon: ClipboardList, title: "Status messages on tap", desc: "\"Your order's ready.\" \"Out for delivery.\" \"Thank you.\" One tap fills the WhatsApp draft — you press send when it feels right." },
-      { icon: PackageCheck, title: "Customer-confirmed delivery", desc: "When an order goes out, send a one-tap confirmation link via WhatsApp. The customer taps when they receive — no more chasing \"is it there yet?\" Tokoflow doesn't track the courier; only the customer's confirmation matters." },
-      { icon: Layers, title: "Stock management with history", desc: "Update all quantities after a production run from one page. Every change is logged — which order consumed stock, when you restocked, and by how much. Exportable as CSV for your own records." },
-      { icon: BarChart3, title: "Pricing whisper", desc: "Once a week, a gentle nudge: \"Peers in Shah Alam sell kuih lapis at RM 6, you're at RM 5. You could go a bit higher.\" Optional, never pushy." },
+      { icon: MessageSquare, title: "Draft balasan, bukan auto-reply", desc: "Saat pelanggan bertanya soal jam buka, harga, atau permintaan khusus, Tokoflow menyiapkan draft balasan untuk kamu kirim. Kamu yang selalu mengirim — suaramu, keputusanmu." },
+      { icon: ClipboardList, title: "Pesan status sekali tap", desc: "\"Pesananmu siap.\" \"Sedang dikirim.\" \"Terima kasih.\" Sekali tap mengisi draft WhatsApp — kamu tekan kirim saat terasa pas." },
+      { icon: PackageCheck, title: "Konfirmasi terima oleh pelanggan", desc: "Saat order dikirim, kirim link konfirmasi sekali tap via WhatsApp. Pelanggan tap saat barang diterima — tak perlu lagi nanya \"sudah sampai belum?\". Tokoflow tidak melacak kurir; hanya konfirmasi pelanggan yang berlaku." },
+      { icon: Layers, title: "Manajemen stok dengan riwayat", desc: "Perbarui semua jumlah setelah produksi dari satu halaman. Setiap perubahan tercatat — order mana yang memakai stok, kapan restock, dan berapa. Bisa diekspor CSV untuk catatanmu." },
+      { icon: BarChart3, title: "Bisikan harga", desc: "Sekali seminggu, dorongan halus: \"Penjual lain di Bandung jual kue lapis Rp 25.000, kamu Rp 20.000. Bisa naik sedikit.\" Opsional, tidak pernah memaksa." },
     ],
   },
   {
-    label: "The Evening Embrace",
+    label: "Rangkulan Malam",
     image: {
       src: "/images/marketing/feature-evening.webp",
-      alt: "A clean wooden counter at dusk with a phone face-up showing a soft summary card glow; a hijab-wearing woman silhouetted at a dining table with teh tarik in the warm tungsten background.",
+      alt: "Meja kayu bersih saat senja dengan ponsel menampilkan kartu ringkasan yang lembut bercahaya.",
     },
-    intro: "Each evening, Tokoflow has something kind to say. Not charts — stories.",
+    intro: "Setiap malam, Tokoflow punya sesuatu yang baik untuk dikatakan. Bukan grafik — cerita.",
     features: [
-      { icon: Sun, title: "Daily summary, told kindly", desc: "\"You did well today. 23 orders, RM 1,247. Pak Andi said your kek lapis was wonderful.\" On slow days: \"Today was quieter. That's okay. Rest up.\"" },
-      { icon: Heart, title: "Monthly story", desc: "\"This month — 12 first-time customers, all loved it. Top item: kek lapis, ordered 84×.\" Numbers told as a narrative." },
-      { icon: Users, title: "Customer recognition", desc: "\"Pak Andi's back! 3rd time this month. Want me to tag him 'regular'?\"" },
-      { icon: CalendarClock, title: "Seasonal awareness", desc: "Two weeks before Ramadan: \"Want help prepping your takjil menu?\" Tokoflow knows the rhythm of Malaysian commerce." },
+      { icon: Sun, title: "Ringkasan harian, disampaikan hangat", desc: "\"Hari ini kamu hebat. 23 order, Rp 1.247.000. Pak Andi bilang kue lapismu enak banget.\" Di hari sepi: \"Hari ini lebih sepi. Tidak apa-apa. Istirahat dulu.\"" },
+      { icon: Heart, title: "Cerita bulanan", desc: "\"Bulan ini — 12 pelanggan baru, semua suka. Item teratas: kue lapis, dipesan 84×.\" Angka diceritakan sebagai narasi." },
+      { icon: Users, title: "Pengenalan pelanggan", desc: "\"Pak Andi balik lagi! Ketiga kalinya bulan ini. Mau saya tandai 'langganan'?\"" },
+      { icon: CalendarClock, title: "Kesadaran musiman", desc: "Dua minggu sebelum Ramadan: \"Mau bantuan siapkan menu takjil?\" Tokoflow paham ritme perdagangan Indonesia." },
     ],
   },
   {
-    label: "Reliability",
-    intro: "Quiet things that just work. So you trust the tool, then forget it.",
+    label: "Keandalan",
+    intro: "Hal-hal senyap yang tinggal jalan. Supaya kamu percaya alatnya, lalu melupakannya.",
     features: [
-      { icon: WifiOff, title: "Works offline", desc: "Lost signal? Keep taking orders. Everything syncs when you're back online." },
-      { icon: ShoppingBag, title: "Stock auto-decrement", desc: "When you sell out, the menu auto-disables that item. No manual updates required." },
-      { icon: Truck, title: "Shipment tracking for customers", desc: "Add a tracking number and courier when you ship. The customer's receipt shows a live 'On the way' card — Pos Laju, J&T, Ninja Van, GDEX, DHL auto-detected, one tap to track." },
-      { icon: ClipboardList, title: "Daily prep list", desc: "Today's totals by product, in one tap. Bring to the kitchen, send to your team via WhatsApp." },
-      { icon: Sparkles, title: "Auto invoice numbering", desc: "Sequential, never duplicated, ready when you need it." },
+      { icon: WifiOff, title: "Bisa offline", desc: "Sinyal hilang? Tetap terima order. Semua tersinkron saat kamu kembali online." },
+      { icon: ShoppingBag, title: "Stok berkurang otomatis", desc: "Saat habis terjual, menu otomatis menonaktifkan item itu. Tanpa update manual." },
+      { icon: Truck, title: "Pelacakan kiriman untuk pelanggan", desc: "Tambahkan nomor resi dan kurir saat kamu kirim. Struk pelanggan menampilkan kartu 'Dalam perjalanan' — JNE, J&T, SiCepat, AnterAja, Ninja Xpress, sekali tap untuk lacak." },
+      { icon: ClipboardList, title: "Daftar persiapan harian", desc: "Total hari ini per produk, sekali tap. Bawa ke dapur, kirim ke timmu via WhatsApp." },
+      { icon: Sparkles, title: "Penomoran faktur otomatis", desc: "Berurutan, tidak pernah ganda, siap saat kamu butuh." },
     ],
   },
 ];
@@ -147,10 +143,10 @@ export default function FeaturesPage() {
       <section className="pt-24 lg:pt-28 pb-10 lg:pb-12">
         <div className="max-w-2xl mx-auto px-4 text-center">
           <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-foreground">
-            Designed around six iconic moments.
+            Dirancang seputar momen-momen yang berarti.
           </h1>
           <p className="mt-3 text-muted-foreground lg:text-lg">
-            The Photo Magic. The Vibrate. The Swipe Forward. The Voice Ask. The Evening Embrace. The Disappearing Work. Everything else exists to support these — quietly.
+            Photo Magic. Notifikasi Halus. Geser Maju. Order Suara. Rangkulan Malam. Pekerjaan yang Menghilang. Semua yang lain ada untuk mendukung ini — dengan tenang.
           </p>
         </div>
       </section>
@@ -187,16 +183,15 @@ export default function FeaturesPage() {
         </section>
       ))}
 
-      {/* Tax compliance — silent footnote, not a featured section. SST and
-          LHDN MyInvois only matter to a small slice of merchants and surface
-          only when the business needs them. Restraint is the point. */}
+      {/* Tax compliance — silent footnote. PPN + e-Faktur only matter to a small
+          slice of merchants and surface only when the business needs them. */}
       <section className="border-t py-10 lg:py-12">
         <div className="max-w-2xl mx-auto px-4 text-center">
           <p className="text-xs font-semibold text-foreground/50 uppercase tracking-wider mb-2">
-            One more thing
+            Satu hal lagi
           </p>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            If you ever cross the SST threshold, Tokoflow handles LHDN MyInvois quietly in the background. You won&rsquo;t notice it until you need it — and you won&rsquo;t need it for a long time.
+            Kalau suatu hari kamu jadi PKP, Tokoflow mengurus PPN dan e-Faktur diam-diam di latar belakang. Kamu tidak akan menyadarinya sampai benar-benar butuh — dan itu masih lama.
           </p>
         </div>
       </section>
@@ -205,10 +200,10 @@ export default function FeaturesPage() {
       <section className="border-t py-12 lg:py-16">
         <div className="max-w-2xl mx-auto px-4 text-center">
           <h2 className="text-xl lg:text-2xl font-bold tracking-tight text-foreground">
-            Your shop. One photo away.
+            Tokomu. Tinggal satu foto.
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Your first 50 orders are free. No credit card. No commission.
+            50 order pertamamu gratis. Tanpa kartu kredit. Tanpa komisi.
           </p>
           <div className="mt-6">
             <Button
@@ -217,7 +212,7 @@ export default function FeaturesPage() {
               asChild
             >
               <Link href="/login">
-                Start free
+                Mulai gratis
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
