@@ -3,67 +3,63 @@ import Link from "next/link";
 import { ArrowRight, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
-import {
-  FREE_STARTER_ORDERS,
-  BISNIS_PRICE,
-  BISNIS_PRICE_MONTHLY,
-  BUSINESS_PRICE,
-} from "@/config/plans";
+import { FREE_STARTER_ORDERS } from "@/config/plans";
 import { PricingTiers } from "./PricingTiers";
 
 export const metadata: Metadata = {
-  title: `Pricing — ${siteConfig.tagline}`,
+  title: `Harga — ${siteConfig.tagline}`,
   description:
-    `50 free orders to start. Pro RM ${BISNIS_PRICE}/month (annual) or RM ${BISNIS_PRICE_MONTHLY}/month unlocks unlimited orders and the full companion. Business RM ${BUSINESS_PRICE}/month adds multi-staff accounts.`,
+    "50 order gratis untuk mulai. Pro Rp 99.000/bulan membuka order tanpa batas dan companion penuh. Business Rp 199.000/bulan menambah akun multi-staf.",
   alternates: {
-    canonical: "https://tokoflow.com/pricing",
+    canonical: "https://tokoflow.co.id/pricing",
   },
 };
 
 const faqs = [
   {
-    question: "Is it really free?",
+    question: "Benar-benar gratis?",
     answer:
-      "Yes. The Free tier gives you 50 orders to start — no credit card, no time limit. The Photo Magic, your shop link, and accepting customer payments are all included.",
+      "Ya. Paket Gratis memberi kamu 50 order untuk mulai — tanpa kartu kredit, tanpa batas waktu. Onboarding 1-Foto, link tokomu, dan menerima pembayaran pelanggan semuanya termasuk.",
   },
   {
-    question: "Can my customers pay through my shop link?",
+    question: "Apakah pelanggan bisa bayar lewat link tokoku?",
     answer:
-      "Yes — connect your own Billplz account in Settings (free for you to open with SSM registration). Customers pay via DuitNow QR, FPX, cards, or e-wallets, and the money settles directly to your bank. Tokoflow never holds your funds and never takes a commission. If you don't want this, you can keep using a static DuitNow QR with manual confirm — the choice is yours.",
+      "Bisa — hubungkan akun Midtrans-mu di Pengaturan. Pelanggan bayar via QRIS, transfer bank (VA), atau e-wallet (GoPay/OVO/DANA/ShopeePay), dan uangnya masuk langsung ke rekeningmu. Tokoflow tidak pernah menahan danamu dan tidak mengambil komisi. Kalau tidak mau, kamu tetap bisa pakai QRIS statis dengan konfirmasi manual — pilihan ada di tanganmu.",
   },
   {
-    question: `What happens after my first ${FREE_STARTER_ORDERS} free orders?`,
-    answer: `Upgrade to Pro at RM ${BISNIS_PRICE}/month for unlimited orders, the full AI companion, and silent LHDN MyInvois + SST compliance. Business at RM ${BUSINESS_PRICE}/month adds multi-staff accounts and order assignment for sellers running with help. Either way, your data stays — no lock-in, cancel any time.`,
+    question: `Apa yang terjadi setelah ${FREE_STARTER_ORDERS} order gratis pertama?`,
+    answer:
+      "Upgrade ke Pro Rp 99.000/bulan untuk order tanpa batas, companion AI penuh, dan kepatuhan e-Faktur + PPN yang senyap. Business Rp 199.000/bulan menambah akun multi-staf dan penugasan order untuk penjual yang jalan dengan tim. Apa pun pilihanmu, datamu tetap milikmu — tanpa lock-in, batalkan kapan saja.",
   },
   {
-    question: "Why upgrade to Pro?",
+    question: "Kenapa upgrade ke Pro?",
     answer:
-      `Pro gives you unlimited orders, smart reminders, pricing whisper, and silent LHDN MyInvois + SST compliance. Your shop page drops the "Made with Tokoflow" footer. Annual plan is RM ${BISNIS_PRICE}/month (RM ${BISNIS_PRICE * 12}/year) — monthly is RM ${BISNIS_PRICE_MONTHLY}/month. Most active sellers move to Pro within a few weeks.`,
+      'Pro memberi order tanpa batas, pengingat cerdas, pricing whisper, dan kepatuhan e-Faktur + PPN yang senyap. Halaman tokomu kehilangan footer "Dibuat dengan Tokoflow". Harga Rp 99.000/bulan. Kebanyakan penjual aktif pindah ke Pro dalam beberapa minggu.',
   },
   {
-    question: "What does Business add?",
+    question: "Apa tambahan di Business?",
     answer:
-      "Business (RM 99/month) is for sellers who run with help. Everything in Pro, plus multi-staff accounts (2 included), order assignment to staff, and priority support (24h response).",
+      "Business (Rp 199.000/bulan) untuk penjual yang jalan dengan tim. Semua di Pro, plus akun multi-staf (2 termasuk), penugasan order ke staf, dan dukungan prioritas (respons 24 jam).",
   },
   {
-    question: "Will Tokoflow file my SST returns?",
+    question: "Apakah Tokoflow yang melaporkan PPN saya?",
     answer:
-      "No — Tokoflow calculates SST and prepares records, but the SST return itself is filed via MySST. Tokoflow keeps your numbers tidy so when filing time comes, the data is ready.",
+      "Tidak — Tokoflow menghitung PPN dan menyiapkan e-Faktur, tetapi pelaporan SPT-nya tetap lewat Coretax/DJP. Tokoflow merapikan angkamu supaya saat waktu lapor, datanya sudah siap.",
   },
   {
-    question: "How do I pay for my Pro / Business plan?",
+    question: "Bagaimana cara bayar paket Pro / Business?",
     answer:
-      "DuitNow QR, FPX online banking, or credit/debit card via Billplz. No hidden fees. No setup charges. Cancel anytime — your data stays accessible.",
+      "QRIS, transfer bank (VA), atau e-wallet via Midtrans. Tanpa biaya tersembunyi. Tanpa biaya setup. Batalkan kapan saja — datamu tetap bisa diakses.",
   },
   {
-    question: "Are AI features (photo, voice, paste) free?",
+    question: "Apakah fitur AI (foto, suara, paste) gratis?",
     answer:
-      "Yes — every tier includes AI order parsing via photo, voice, and pasted WhatsApp chats. Photo Magic onboarding is free for everyone.",
+      "Ya — setiap paket termasuk parsing order via foto, suara, dan paste chat WhatsApp. Onboarding Photo Magic gratis untuk semua.",
   },
   {
-    question: "What if I want to cancel?",
+    question: "Bagaimana kalau saya mau berhenti?",
     answer:
-      "One tap to cancel. No phone calls, no exit survey. Your data remains accessible until your billing period ends. Reactivate anytime within 90 days — everything is still there.",
+      "Sekali tap untuk batalkan. Tanpa telepon, tanpa survei keluar. Datamu tetap bisa diakses sampai periode tagihan berakhir. Aktifkan lagi kapan saja dalam 90 hari — semuanya masih ada.",
   },
 ];
 
@@ -93,10 +89,10 @@ export default function PricingPage() {
       <section className="pt-24 lg:pt-28 pb-12 lg:pb-16">
         <div className="max-w-5xl mx-auto px-4 text-center">
           <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-[#1E293B]">
-            Simple pricing, dignified terms.
+            Harga sederhana, syarat yang adil.
           </h1>
           <p className="mt-3 text-[#475569] lg:text-lg max-w-xl mx-auto">
-            50 free orders to start. Upgrade only when you need more — never because we made you anxious about it.
+            50 order gratis untuk mulai. Upgrade hanya saat kamu butuh lebih — bukan karena kami bikin kamu cemas.
           </p>
         </div>
 
@@ -109,32 +105,32 @@ export default function PricingPage() {
       <section className="border-t border-[#E2E8F0] bg-slate-50 py-12 lg:py-16">
         <div className="max-w-2xl mx-auto px-4">
           <p className="text-xs font-bold text-[#1E293B]/70 uppercase tracking-wider text-center mb-6">
-            Your customers stay yours
+            Pelangganmu tetap milikmu
           </p>
           <div className="space-y-3 text-sm bg-white rounded-2xl border border-[#E2E8F0] p-6">
             <div className="flex items-center justify-between">
-              <span className="text-[#475569]">Foodpanda / GrabFood</span>
+              <span className="text-[#475569]">GoFood / GrabFood</span>
               <span className="font-semibold text-[#1E293B] line-through decoration-[#94A3B8]">
-                20–30% commission
+                komisi 20–30%
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-[#475569]">StoreHub POS</span>
+              <span className="text-[#475569]">POS kasir (Moka / Olsera)</span>
               <span className="font-semibold text-[#1E293B] line-through decoration-[#94A3B8]">
-                RM 150–600/mo
+                Rp 250rb–1jt/bln
               </span>
             </div>
             <div className="border-t border-[#E2E8F0] pt-3">
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-[#05A660]">Tokoflow Pro</span>
-                <span className="font-bold text-[#05A660]">RM {BISNIS_PRICE}/mo</span>
+                <span className="font-bold text-[#05A660]">Rp 99.000/bln</span>
               </div>
               <div className="flex items-center justify-between mt-1">
                 <span className="font-semibold text-[#05A660]">Tokoflow Business</span>
-                <span className="font-bold text-[#05A660]">RM {BUSINESS_PRICE}/mo</span>
+                <span className="font-bold text-[#05A660]">Rp 199.000/bln</span>
               </div>
               <p className="mt-3 text-xs text-[#475569] text-center">
-                0% commission. Customer payments settle direct to your bank — Tokoflow never touches the money. Customers and data stay yours.
+                0% komisi. Pembayaran pelanggan masuk langsung ke rekeningmu — Tokoflow tidak pernah menyentuh uangnya. Pelanggan dan data tetap milikmu.
               </p>
             </div>
           </div>
@@ -151,10 +147,10 @@ export default function PricingPage() {
               </div>
               <div>
                 <h2 className="text-lg lg:text-xl font-bold text-[#1E293B]">
-                  Pricing questions
+                  Pertanyaan soal harga
                 </h2>
                 <p className="text-sm lg:text-base text-[#475569]">
-                  Honest answers, no fine print.
+                  Jawaban jujur, tanpa syarat tersembunyi.
                 </p>
               </div>
             </div>
@@ -182,10 +178,10 @@ export default function PricingPage() {
       <section className="border-t border-[#E2E8F0] py-12 lg:py-16">
         <div className="max-w-3xl mx-auto px-4 text-center">
           <h2 className="text-2xl lg:text-3xl font-bold tracking-tight text-[#1E293B]">
-            Your shop. One photo away.
+            Tokomu. Tinggal satu foto.
           </h2>
           <p className="mt-3 text-base text-[#475569]">
-            No credit card. No commission. Cancel anytime.
+            Tanpa kartu kredit. Tanpa komisi. Batalkan kapan saja.
           </p>
           <div className="mt-8">
             <Button
@@ -194,7 +190,7 @@ export default function PricingPage() {
               asChild
             >
               <Link href="/login">
-                Start free
+                Mulai gratis
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>

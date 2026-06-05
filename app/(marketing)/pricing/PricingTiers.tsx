@@ -1,84 +1,71 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  FREE_STARTER_ORDERS,
-  BISNIS_PRICE,
-  BISNIS_PRICE_MONTHLY,
-  BISNIS_PRICE_ANNUAL_TOTAL,
-  BUSINESS_PRICE,
-} from "@/config/plans";
+import { FREE_STARTER_ORDERS } from "@/config/plans";
 
-type Billing = "annual" | "monthly";
+// Indonesia pricing (mirrors config/plans.ts ID map + migration 096):
+// Gratis Rp 0 / Pro Rp 99.000/bln / Business Rp 199.000/bln.
+const PRO_PRICE = "Rp 99.000";
+const BUSINESS_PRICE = "Rp 199.000";
 
 export function PricingTiers() {
-  const [billing, setBilling] = useState<Billing>("annual");
-
-  const proPrice = billing === "annual" ? BISNIS_PRICE : BISNIS_PRICE_MONTHLY;
-  const proPeriod = billing === "annual" ? "/month" : "/month";
-  const proBadge = billing === "annual" ? `RM ${BISNIS_PRICE_ANNUAL_TOTAL}/year` : null;
-  const proTagline = billing === "annual"
-    ? "Billed annually. Less than 2 coffees a week."
-    : "Month-to-month. Cancel anytime.";
-
   const tiers = [
     {
-      name: "Free",
-      price: "RM 0",
-      period: "forever",
-      tagline: "Start selling with one photo.",
+      name: "Gratis",
+      price: "Rp 0",
+      period: "selamanya",
+      tagline: "Mulai jualan cukup dengan satu foto.",
       badge: null,
       features: [
-        `${FREE_STARTER_ORDERS} free orders to start`,
-        "1-Photo Onboarding magic",
-        "Beautiful shop page with your link",
-        "Customer payments — DuitNow QR / FPX / cards (0% commission, direct to your bank)",
-        "Customer-confirmed delivery — one tap, no chasing",
-        "Reply drafts — you always send",
-        "Daily summary",
-        "Customer auto-directory",
-        "Free listing on tokoflow.com/store",
+        `${FREE_STARTER_ORDERS} order gratis untuk mulai`,
+        "Onboarding 1-Foto",
+        "Halaman toko cantik dengan link sendiri",
+        "Pembayaran pelanggan — QRIS / transfer bank / e-wallet (0% komisi, langsung ke rekeningmu)",
+        "Konfirmasi pengiriman oleh pelanggan — sekali tap, tanpa nagih",
+        "Draft balasan — kamu yang selalu kirim",
+        "Ringkasan harian",
+        "Direktori pelanggan otomatis",
+        "Listing gratis di tokoflow.co.id/store",
       ],
-      cta: "Start free",
+      cta: "Mulai gratis",
       href: "/login",
       highlight: false,
     },
     {
       name: "Pro",
-      price: `RM ${proPrice}`,
-      period: proPeriod,
-      tagline: proTagline,
-      badge: proBadge,
+      price: PRO_PRICE,
+      period: "/bulan",
+      tagline: "Untuk yang sudah jualan rutin.",
+      badge: null,
       features: [
-        "Everything in Free",
-        "Unlimited orders",
-        "No Tokoflow footer on your shop page",
-        "Pricing whisper — weekly peer benchmark nudge",
-        "Customer recognition + smart follow-up",
-        "Monthly story, seasonal awareness (Ramadan, etc.)",
-        "One-tap LHDN MyInvois + SST 0/6% reporting",
-        "No watermark on your shop page",
+        "Semua di Gratis",
+        "Order tanpa batas",
+        "Tanpa footer Tokoflow di halaman tokomu",
+        "Pricing whisper — benchmark harga antar penjual",
+        "Pengenalan pelanggan + follow-up cerdas",
+        "Cerita bulanan, pengingat musiman (Ramadan, dll.)",
+        "e-Faktur + pelaporan PPN sekali tap",
+        "Tanpa watermark di halaman tokomu",
       ],
-      cta: billing === "annual" ? "Get Pro — RM 49/mo" : "Get Pro — RM 79/mo",
+      cta: "Ambil Pro",
       href: "/login",
       highlight: true,
     },
     {
       name: "Business",
-      price: `RM ${BUSINESS_PRICE}`,
-      period: "/month",
-      tagline: "For sellers running with help.",
+      price: BUSINESS_PRICE,
+      period: "/bulan",
+      tagline: "Untuk penjual yang jalan dengan tim.",
       badge: null,
       features: [
-        "Everything in Pro",
-        "Multi-staff accounts (2 included)",
-        "Order assignment to staff",
-        "Priority support (24h response)",
+        "Semua di Pro",
+        "Akun multi-staf (2 termasuk)",
+        "Penugasan order ke staf",
+        "Dukungan prioritas (respons 24 jam)",
       ],
-      cta: "Try Business",
+      cta: "Coba Business",
       href: "/login",
       highlight: false,
     },
@@ -86,31 +73,6 @@ export function PricingTiers() {
 
   return (
     <div className="space-y-8">
-      {/* Billing toggle */}
-      <div className="flex items-center justify-center gap-1 bg-slate-100 rounded-full p-1 w-fit mx-auto">
-        <button
-          onClick={() => setBilling("annual")}
-          className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
-            billing === "annual"
-              ? "bg-white text-[#1E293B] shadow-sm"
-              : "text-[#475569] hover:text-[#1E293B]"
-          }`}
-        >
-          Annual
-          <span className="ml-1.5 text-[11px] font-semibold text-[#05A660]">Save 38%</span>
-        </button>
-        <button
-          onClick={() => setBilling("monthly")}
-          className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
-            billing === "monthly"
-              ? "bg-white text-[#1E293B] shadow-sm"
-              : "text-[#475569] hover:text-[#1E293B]"
-          }`}
-        >
-          Monthly
-        </button>
-      </div>
-
       {/* Tier cards */}
       <div className="grid md:grid-cols-3 gap-6">
         {tiers.map((tier) => (
@@ -132,7 +94,7 @@ export function PricingTiers() {
               </div>
               {tier.badge && (
                 <p className="mt-1 text-xs font-medium text-[#05A660]">
-                  {tier.badge} — billed once
+                  {tier.badge}
                 </p>
               )}
               <p className="mt-2 text-sm text-[#475569]">{tier.tagline}</p>
