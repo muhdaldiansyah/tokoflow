@@ -226,7 +226,7 @@ export function CommunityClient({ initialCommunities, initialAnnouncements, init
                 <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-blue-50 text-blue-700">
                   {a.type === "supplier_alert" ? "Supplier" : a.type === "price_change" ? "Price" : a.type === "deal" ? "Deal" : "Info"}
                 </span>
-                <span className="text-[10px] text-muted-foreground">{a.authorName} · {new Date(a.createdAt).toLocaleDateString("en-MY", { day: "numeric", month: "short" })}</span>
+                <span className="text-[10px] text-muted-foreground">{a.authorName} · {new Date(a.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}</span>
               </div>
               <p className="text-sm font-medium text-foreground">{a.title}</p>
               {a.body && <p className="text-xs text-muted-foreground mt-0.5">{a.body}</p>}

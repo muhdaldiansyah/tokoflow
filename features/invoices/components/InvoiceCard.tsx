@@ -41,7 +41,7 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
             {invoice.due_date && (
               <p className="text-[10px] text-muted-foreground mt-0.5">
                 Due:{" "}
-                {new Date(invoice.due_date).toLocaleDateString("en-MY", {
+                {new Date(invoice.due_date).toLocaleDateString("id-ID", {
                   day: "numeric",
                   month: "short",
                   year: "numeric",
@@ -64,11 +64,11 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
         </div>
         <div className="text-right shrink-0">
           <p className="text-sm font-bold text-foreground">
-            RM {invoice.total.toLocaleString("en-MY")}
+            Rp {invoice.total.toLocaleString("id-ID")}
           </p>
           {remaining > 0 && invoice.status !== "draft" && (
             <p className="text-[10px] text-red-600 font-medium">
-              Balance RM {remaining.toLocaleString("en-MY")}
+              Balance Rp {remaining.toLocaleString("id-ID")}
             </p>
           )}
         </div>

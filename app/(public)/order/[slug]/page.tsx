@@ -132,7 +132,7 @@ export default async function PublicOrderPage({ params }: PageProps) {
           offers: {
             "@type": "Offer",
             price: item.price,
-            priceCurrency: "MYR",
+            priceCurrency: "IDR",
             availability: item.stock === 0
               ? "https://schema.org/OutOfStock"
               : "https://schema.org/InStock",
@@ -141,8 +141,8 @@ export default async function PublicOrderPage({ params }: PageProps) {
       })),
     };
     jsonLd.priceRange = minPrice === maxPrice
-      ? `RM ${minPrice.toLocaleString("en-MY")}`
-      : `RM ${minPrice.toLocaleString("en-MY")} - RM ${maxPrice.toLocaleString("en-MY")}`;
+      ? `Rp ${minPrice.toLocaleString("id-ID")}`
+      : `Rp ${minPrice.toLocaleString("id-ID")} - Rp ${maxPrice.toLocaleString("id-ID")}`;
   }
 
   if (!business.orderFormEnabled) {

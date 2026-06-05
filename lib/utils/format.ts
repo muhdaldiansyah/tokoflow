@@ -4,27 +4,27 @@
  */
 
 /**
- * Format a number as Malaysian Ringgit: 1500 → "RM 1,500".
- * The function is still named `formatRupiah` for backwards-compat with the
- * fork; rename when callers are tidied up.
+ * Format a number as Indonesian Rupiah: 150000 → "Rp 150.000".
+ * IDR has no fractional minor unit, so decimals are dropped.
  */
 export function formatRupiah(amount: number): string {
-  if (amount === 0) return "RM 0";
-  return `RM ${amount.toLocaleString("en-MY")}`;
+  if (amount === 0) return "Rp 0";
+  return `Rp ${Math.round(amount).toLocaleString("id-ID")}`;
 }
 
-/** Format number as MYR currency with Intl: 1500 → "MYR 1,500" */
+/** Format number as IDR currency with Intl: 150000 → "Rp 150.000" */
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("en-MY", {
+  return new Intl.NumberFormat("id-ID", {
     style: "currency",
-    currency: "MYR",
+    currency: "IDR",
     minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   }).format(amount);
 }
 
-/** Format ISO date string to short Malaysia locale: "2026-03-21" → "21 Mar 2026" */
+/** Format ISO date string to short Indonesia locale: "2026-03-21" → "21 Mar 2026" */
 export function formatDate(d: string): string {
-  return new Date(d).toLocaleDateString("en-MY", {
+  return new Date(d).toLocaleDateString("id-ID", {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -34,17 +34,17 @@ export function formatDate(d: string): string {
 /** Format ISO date string to short: "2026-03-21" → "21 Mar" */
 export function formatShortDate(d: string): string {
   const date = new Date(d + (d.includes("T") ? "" : "T00:00:00"));
-  return date.toLocaleDateString("en-MY", { day: "numeric", month: "short" });
+  return date.toLocaleDateString("id-ID", { day: "numeric", month: "short" });
 }
 
 /** Format ISO timestamp to time: "2026-03-21T14:30:00Z" → "14:30" */
 export function formatTime(d: string): string {
-  return new Date(d).toLocaleTimeString("en-MY", { hour: "2-digit", minute: "2-digit" });
+  return new Date(d).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
 }
 
-/** Format ISO date string to long Malaysia locale: "2026-03-21" → "21 March 2026" */
+/** Format ISO date string to long Indonesia locale: "2026-03-21" → "21 Maret 2026" */
 export function formatDateLong(d: string): string {
-  return new Date(d).toLocaleDateString("en-MY", {
+  return new Date(d).toLocaleDateString("id-ID", {
     day: "numeric",
     month: "long",
     year: "numeric",

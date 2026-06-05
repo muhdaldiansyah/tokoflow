@@ -312,7 +312,7 @@ export function SuccessActions({
           ctx.fillStyle = "#1a1a1a";
           ctx.font = `${fontSize}px -apple-system, sans-serif`;
           ctx.fillText(`${item.name}  x${item.qty}`, pad, y + fontSize);
-          const subtotal = `RM ${(item.price * item.qty).toLocaleString("en-MY")}`;
+          const subtotal = `Rp ${(item.price * item.qty).toLocaleString("id-ID")}`;
           ctx.textAlign = "right";
           ctx.fillText(subtotal, w - pad, y + fontSize);
           ctx.textAlign = "left";
@@ -327,13 +327,13 @@ export function SuccessActions({
         ctx.fillStyle = "#1a1a1a";
         ctx.font = `bold ${totalFont}px -apple-system, sans-serif`;
         ctx.textAlign = "center";
-        ctx.fillText(`RM ${displayTotal.toLocaleString("en-MY")}`, w / 2, y + totalFont);
+        ctx.fillText(`Rp ${displayTotal.toLocaleString("id-ID")}`, w / 2, y + totalFont);
         y += totalFont + 4 * scale;
       } else if (displayTotal > 0) {
         ctx.fillStyle = "#1a1a1a";
         ctx.font = `bold ${totalFont}px -apple-system, sans-serif`;
         ctx.textAlign = "center";
-        ctx.fillText(`RM ${displayTotal.toLocaleString("en-MY")}`, w / 2, y + totalFont);
+        ctx.fillText(`Rp ${displayTotal.toLocaleString("id-ID")}`, w / 2, y + totalFont);
         y += totalFont + 4 * scale;
       }
 
@@ -350,7 +350,7 @@ export function SuccessActions({
         y += 2 * scale;
         ctx.fillStyle = "#888888";
         ctx.font = `${smallFont}px -apple-system, sans-serif`;
-        const dateStr = new Date(orderDetails.deliveryDate).toLocaleDateString("en-MY", {
+        const dateStr = new Date(orderDetails.deliveryDate).toLocaleDateString("id-ID", {
           weekday: "long", day: "numeric", month: "long", year: "numeric",
         });
         ctx.fillText(`Date: ${dateStr}`, pad, y + smallFont);
@@ -464,7 +464,7 @@ export function SuccessActions({
           {displayTotal > 0 && (
             <div className="text-center">
               <p className="text-3xl font-bold text-foreground tabular-nums">
-                RM {displayTotal.toLocaleString("en-MY")}
+                Rp {displayTotal.toLocaleString("id-ID")}
               </p>
               {itemsLabel && (
                 <p className="mt-0.5 text-xs text-muted-foreground truncate">{itemsLabel}</p>
@@ -515,7 +515,7 @@ export function SuccessActions({
             </button>
 
             <p className="text-[11px] text-muted-foreground leading-relaxed">
-              Open your banking or e-wallet app, choose <span className="font-medium text-foreground">Scan QR</span> → upload the saved image, then pay{displayTotal > 0 ? ` RM ${displayTotal.toLocaleString("en-MY")}` : ""}.
+              Open your banking or e-wallet app, choose <span className="font-medium text-foreground">Scan QR</span> → upload the saved image, then pay{displayTotal > 0 ? ` Rp ${displayTotal.toLocaleString("id-ID")}` : ""}.
             </p>
           </div>
 
@@ -655,7 +655,7 @@ export function SuccessActions({
                   {item.name} <span className="text-muted-foreground">x{item.qty}</span>
                 </span>
                 <span className="shrink-0 text-foreground tabular-nums">
-                  RM {(item.price * item.qty).toLocaleString("en-MY")}
+                  Rp {(item.price * item.qty).toLocaleString("id-ID")}
                 </span>
               </div>
             ))}
@@ -663,11 +663,11 @@ export function SuccessActions({
               <>
                 <div className="flex items-center justify-between text-xs pt-1 border-t border-border">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span className="text-muted-foreground tabular-nums">RM {orderSubtotal.toLocaleString("en-MY")}</span>
+                  <span className="text-muted-foreground tabular-nums">Rp {orderSubtotal.toLocaleString("id-ID")}</span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">Delivery</span>
-                  <span className="text-muted-foreground tabular-nums">RM {deliveryFee.toLocaleString("en-MY")}</span>
+                  <span className="text-muted-foreground tabular-nums">Rp {deliveryFee.toLocaleString("id-ID")}</span>
                 </div>
               </>
             )}
@@ -677,7 +677,7 @@ export function SuccessActions({
         {displayTotal > 0 && (
           <div className="flex items-center justify-between border-t border-border pt-2">
             <span className="text-sm font-medium text-foreground">Total</span>
-            <span className="text-sm font-bold text-foreground">RM {displayTotal.toLocaleString("en-MY")}</span>
+            <span className="text-sm font-bold text-foreground">Rp {displayTotal.toLocaleString("id-ID")}</span>
           </div>
         )}
 
@@ -692,7 +692,7 @@ export function SuccessActions({
                 : pickupEnabled && !deliveryEnabled ? "Pickup:"
                 : "Date:"
               : "Date:"}{" "}
-            {new Date(orderDetails.deliveryDate).toLocaleDateString("en-MY", {
+            {new Date(orderDetails.deliveryDate).toLocaleDateString("id-ID", {
               weekday: "long", day: "numeric", month: "long", year: "numeric",
             })}
           </p>
@@ -709,7 +709,7 @@ export function SuccessActions({
 
           {displayTotal > 0 && (
             <p className="text-2xl font-bold text-foreground">
-              RM {displayTotal.toLocaleString("en-MY")}
+              Rp {displayTotal.toLocaleString("id-ID")}
             </p>
           )}
 

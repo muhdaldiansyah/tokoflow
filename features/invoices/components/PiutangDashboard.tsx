@@ -42,7 +42,7 @@ export function PiutangDashboard() {
       {/* Summary cards */}
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-xl border bg-card shadow-sm p-4 text-center">
-          <p className="text-2xl font-bold text-foreground">RM {summary.totalOutstanding.toLocaleString("en-MY")}</p>
+          <p className="text-2xl font-bold text-foreground">Rp {summary.totalOutstanding.toLocaleString("id-ID")}</p>
           <p className="text-xs text-muted-foreground mt-0.5">Total Piutang</p>
         </div>
         <div className="rounded-xl border bg-card shadow-sm p-4 text-center">
@@ -66,7 +66,7 @@ export function PiutangDashboard() {
                   <p className="text-sm font-semibold">{customer.buyerName}</p>
                   <p className="text-xs text-muted-foreground">{customer.invoiceCount} invoice{customer.invoiceCount === 1 ? "" : "s"}</p>
                 </div>
-                <p className="text-sm font-bold text-red-600">RM {customer.totalOutstanding.toLocaleString("en-MY")}</p>
+                <p className="text-sm font-bold text-red-600">Rp {customer.totalOutstanding.toLocaleString("id-ID")}</p>
               </div>
               {/* Aging bars */}
               <div className="flex gap-1 h-2 rounded-full overflow-hidden bg-muted">

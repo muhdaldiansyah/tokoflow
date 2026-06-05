@@ -77,8 +77,8 @@ function formatRelativeDate(dateStr: string, now: Date): string {
   const diffDays = Math.round((d.getTime() - new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()) / 86400000);
   if (diffDays === 1) return "Tomorrow";
   if (diffDays === 2) return "In 2 days";
-  if (diffDays <= 7) return d.toLocaleDateString("en-MY", { weekday: "short" });
-  return d.toLocaleDateString("en-MY", { day: "numeric", month: "short" });
+  if (diffDays <= 7) return d.toLocaleDateString("id-ID", { weekday: "short" });
+  return d.toLocaleDateString("id-ID", { day: "numeric", month: "short" });
 }
 
 function itemsLine(items: Order["items"]): string {
@@ -90,7 +90,7 @@ function itemsLine(items: Order["items"]): string {
 }
 
 function formatMYR(amount: number): string {
-  return `RM ${(amount ?? 0).toFixed(0)}`;
+  return `Rp ${(amount ?? 0).toFixed(0)}`;
 }
 
 // Time-aware salutation. Asia/Kuala_Lumpur is the merchant context; we use
@@ -183,11 +183,11 @@ export function TodayView({
   const bannerSinceLabel = useMemo(() => {
     if (!snapshotSeenAt) return "";
     const d = new Date(snapshotSeenAt);
-    return d.toLocaleTimeString("en-MY", { hour: "numeric", minute: "2-digit" });
+    return d.toLocaleTimeString("id-ID", { hour: "numeric", minute: "2-digit" });
   }, [snapshotSeenAt]);
 
   const nowDate = new Date();
-  const dateLabel = nowDate.toLocaleDateString("en-MY", { weekday: "long", day: "numeric", month: "long" });
+  const dateLabel = nowDate.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long" });
 
   // Capacity meter — only when merchant set a daily cap. 80%+ = warm-amber,
   // 100% = full strip below the header.

@@ -159,7 +159,7 @@ export const OrderCard = memo(function OrderCard({
         {/* Row 3: Total + grouped badges */}
         <div className="flex items-center justify-between gap-2">
           <span className="text-sm font-bold text-foreground">
-            RM {order.total.toLocaleString("en-MY")}
+            Rp {order.total.toLocaleString("id-ID")}
           </span>
           <div className="flex items-center gap-1.5 flex-nowrap shrink-0">
             <OrderStatusBadge status={order.status} />
@@ -168,7 +168,7 @@ export const OrderCard = memo(function OrderCard({
                 {hasClaim
                   ? "Paid?"
                   : order.payment_status === "partial"
-                    ? `DP RM ${(order.paid_amount || 0).toLocaleString("en-MY")}`
+                    ? `DP Rp ${(order.paid_amount || 0).toLocaleString("id-ID")}`
                     : "Unpaid"}
               </span>
             )}

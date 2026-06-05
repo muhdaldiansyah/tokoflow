@@ -198,7 +198,7 @@ export function RemindersClient({ initialReminders }: { initialReminders: Remind
       open: true,
       name: info.name,
       phone: info.phone,
-      message: reminder.message_text || `Halo ${info.name}, ada sisa pembayaran sebesar RM ${info.amount.toLocaleString("en-MY")}.`,
+      message: reminder.message_text || `Halo ${info.name}, ada sisa pembayaran sebesar Rp ${info.amount.toLocaleString("id-ID")}.`,
       reminderId: reminder.id,
     });
   }
@@ -245,7 +245,7 @@ export function RemindersClient({ initialReminders }: { initialReminders: Remind
         </div>
         {totalOutstanding > 0 && (
           <p className="text-xs font-medium text-red-600">
-            Total RM {totalOutstanding.toLocaleString("en-MY")}
+            Total Rp {totalOutstanding.toLocaleString("id-ID")}
           </p>
         )}
       </div>
@@ -293,8 +293,8 @@ export function RemindersClient({ initialReminders }: { initialReminders: Remind
                 <CalendarDays className="w-3 h-3" />
                 {dateFilter
                   ? dateFilter.startsWith("range:")
-                    ? (() => { const [, from, to] = dateFilter.split(":"); return `${new Date(from + "T00:00").toLocaleDateString("en-MY", { day: "numeric", month: "short" })} - ${new Date(to + "T00:00").toLocaleDateString("en-MY", { day: "numeric", month: "short" })}`; })()
-                    : new Date(dateFilter + "T00:00").toLocaleDateString("en-MY", { day: "numeric", month: "short" })
+                    ? (() => { const [, from, to] = dateFilter.split(":"); return `${new Date(from + "T00:00").toLocaleDateString("id-ID", { day: "numeric", month: "short" })} - ${new Date(to + "T00:00").toLocaleDateString("id-ID", { day: "numeric", month: "short" })}`; })()
+                    : new Date(dateFilter + "T00:00").toLocaleDateString("id-ID", { day: "numeric", month: "short" })
                   : "Date"}
               </button>
 
@@ -546,7 +546,7 @@ function ReminderCard({
         <div className="text-right shrink-0 flex items-start gap-1.5">
           <div>
             <p className="text-sm font-semibold text-foreground">
-              RM {info.amount.toLocaleString("en-MY")}
+              Rp {info.amount.toLocaleString("id-ID")}
             </p>
             <p className={`text-xs font-medium ${isOverdue ? "text-red-500" : isToday ? "text-amber-600" : "text-muted-foreground"}`}>
               {label}

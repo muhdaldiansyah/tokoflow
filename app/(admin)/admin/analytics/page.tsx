@@ -38,7 +38,7 @@ function formatDuration(hours: number): string {
 import { formatShortDate } from "@/lib/utils/format";
 
 function formatDateTime(d: string) {
-  return new Date(d).toLocaleString("en-MY", {
+  return new Date(d).toLocaleString("id-ID", {
     day: "numeric",
     month: "short",
     hour: "2-digit",

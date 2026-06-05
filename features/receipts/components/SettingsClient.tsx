@@ -53,8 +53,9 @@ export function SettingsClient({
   const [tinInput, setTinInput] = useState(initialProfile.tin || initialProfile.npwp || "");
   const [brnInput, setBrnInput] = useState(initialProfile.brn || "");
   const [sstIdInput, setSstIdInput] = useState(initialProfile.sst_registration_id || "");
-  const [defaultSstRate, setDefaultSstRate] = useState<0 | 6>(
-    (initialProfile.default_sst_rate === 6 ? 6 : 0) as 0 | 6,
+  // Tax rate options: ID PPN (0/11) active; 6 kept for the dormant MY SST path.
+  const [defaultSstRate, setDefaultSstRate] = useState<0 | 6 | 11 | 12>(
+    (initialProfile.default_sst_rate as 0 | 6 | 11 | 12) || 0,
   );
   const [isSavingTax, setIsSavingTax] = useState(false);
   const [isSavingRates, setIsSavingRates] = useState(false);
@@ -248,7 +249,7 @@ export function SettingsClient({
   if (!profile.logo_url) missingItems.push({ label: "Add a profile photo / logo", href: "/profil/edit" });
   if (!profile.business_address) missingItems.push({ label: "Add your business address", href: "/profil/edit" });
   if (!profile.business_phone) missingItems.push({ label: "Add your business WhatsApp number", href: "/profil/edit" });
-  if (!profile.qris_url) missingItems.push({ label: "Upload your DuitNow QR", href: "/profil/edit" });
+  if (!profile.qris_url) missingItems.push({ label: "Upload your QRIS", href: "/profil/edit" });
   if (productCount === 0) missingItems.push({ label: "Add your first product", href: "/products" });
   if (productCount > 0 && productsWithImage < productCount) missingItems.push({ label: `${productCount - productsWithImage} products missing a photo`, href: "/products" });
 
@@ -564,8 +565,9 @@ export function SettingsClient({
           <p className="text-[10px] text-muted-foreground">Switch any time. Past orders aren&rsquo;t affected.</p>
         </div>
 
-        {/* Delivery rates — only shown when delivery is enabled */}
-        {(profile.delivery_enabled) && (
+        {/* Delivery rates — MY zone-rate matrix (peninsular/Sabah-Sarawak); hidden for ID
+            (Indonesian provinces don't map to MY zones — pending an ID delivery-zone model) */}
+        {(profile.delivery_enabled && profile.country !== "ID") && (
           <div className="border-t px-4 py-4 space-y-3">
             <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Delivery rates</p>
             <p className="text-[10px] text-muted-foreground -mt-1">Caj auto-detect ikut negeri customer. Isi 0 untuk percuma; biarkan kosong kalau anda tak hantar ke zon itu.</p>
@@ -788,7 +790,7 @@ export function SettingsClient({
             <div className="flex items-center gap-2">
               <span className="inline-flex h-6 px-2.5 text-xs font-medium rounded-full border border-blue-200 bg-blue-50 text-blue-700 items-center">Active</span>
               <span className="text-xs text-muted-foreground">
-                until {new Date(profile.bisnis_until!).toLocaleDateString("en-MY", { day: "numeric", month: "long", year: "numeric" })}
+                until {new Date(profile.bisnis_until!).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
               </span>
             </div>
             <Link href="/invoices" className="text-xs text-blue-600 font-medium hover:underline">
@@ -806,9 +808,10 @@ export function SettingsClient({
               <p className="flex items-center gap-1.5">✅ Pricing whisper from peer benchmarks</p>
               <p className="flex items-center gap-1.5">✅ Formal invoice + A4 PDF + WhatsApp send</p>
               <p className="flex items-center gap-1.5">✅ Receivables tracking + monthly recap</p>
-              <p className="flex items-center gap-1.5 text-muted-foreground/80">✅ One-tap LHDN MyInvois submit when you&rsquo;re ready</p>
+              <p className="flex items-center gap-1.5 text-muted-foreground/80">✅ One-tap e-Faktur submit when you&rsquo;re ready</p>
             </div>
-            {/* Annual — hero option */}
+            {/* Annual — hero option (MY only; ID has no annual pricing tier) */}
+            {profile.country !== "ID" && (
             <button
               onClick={handleBuyBisnisAnnual}
               disabled={isBuyingBisnis}
@@ -824,7 +827,7 @@ export function SettingsClient({
                       <p className="text-sm font-semibold text-foreground">Pro · 1 year</p>
                       <span className="text-[10px] font-semibold text-warm-green bg-warm-green/10 px-1.5 py-0.5 rounded-full">Save 38%</span>
                     </div>
-                    <p className="text-[10px] text-muted-foreground">RM {BISNIS_PRICE}/month · billed once</p>
+                    <p className="text-[10px] text-muted-foreground">Rp {BISNIS_PRICE}/month · billed once</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -832,13 +835,14 @@ export function SettingsClient({
                     <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
                   ) : (
                     <>
-                      <p className="text-sm font-bold text-warm-green">RM {BISNIS_PRICE_ANNUAL_TOTAL}</p>
+                      <p className="text-sm font-bold text-warm-green">Rp {BISNIS_PRICE_ANNUAL_TOTAL}</p>
                       <p className="text-[10px] text-muted-foreground">Billplz</p>
                     </>
                   )}
                 </div>
               </div>
             </button>
+            )}
             {/* Monthly — flexible option */}
             <button
               onClick={handleBuyBisnis}
@@ -860,8 +864,8 @@ export function SettingsClient({
                     <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
                   ) : (
                     <>
-                      <p className="text-sm font-bold text-foreground">RM {BISNIS_PRICE_MONTHLY}</p>
-                      <p className="text-[10px] text-muted-foreground">Billplz</p>
+                      <p className="text-sm font-bold text-foreground">{profile.country === "ID" ? "Rp 99.000" : `Rp ${BISNIS_PRICE_MONTHLY}`}</p>
+                      <p className="text-[10px] text-muted-foreground">{profile.country === "ID" ? "Midtrans" : "Billplz"}</p>
                     </>
                   )}
                 </div>
@@ -879,20 +883,20 @@ export function SettingsClient({
             <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">Tax identity</p>
           </div>
           <p className="text-xs text-muted-foreground">
-            Used for the formal invoice and LHDN submission — leave blank if you don&rsquo;t file e-invoices yet.
+            Used for the formal invoice and e-Faktur — leave blank if you don&rsquo;t issue e-invoices yet.
           </p>
           <div className="space-y-2">
             <input
               type="text"
-              placeholder="TIN (LHDN Taxpayer ID) — e.g. C25805324050"
+              placeholder="NPWP — e.g. 09.254.294.3-407.000"
               value={tinInput}
               onChange={(e) => setTinInput(e.target.value)}
-              maxLength={20}
+              maxLength={25}
               className="w-full h-11 px-3 bg-card border rounded-lg shadow-sm text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-colors"
             />
             <input
               type="text"
-              placeholder="BRN (Sdn Bhd registration) — e.g. 202301012345"
+              placeholder="NIB (Nomor Induk Berusaha) — e.g. 1234567890123"
               value={brnInput}
               onChange={(e) => setBrnInput(e.target.value)}
               maxLength={20}
@@ -900,7 +904,7 @@ export function SettingsClient({
             />
             <input
               type="text"
-              placeholder="SST registration id (only if you're SST-registered)"
+              placeholder="Nomor PKP (hanya jika sudah PKP)"
               value={sstIdInput}
               onChange={(e) => setSstIdInput(e.target.value)}
               maxLength={30}
@@ -909,10 +913,10 @@ export function SettingsClient({
           </div>
           <div className="space-y-1.5">
             <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-              Default SST rate on new invoices
+              Default PPN rate on new invoices
             </label>
             <div className="flex items-center gap-1 bg-muted rounded-md p-0.5 w-fit">
-              {([0, 6] as const).map((rate) => (
+              {([0, 11] as const).map((rate) => (
                 <button
                   key={rate}
                   type="button"
@@ -929,8 +933,8 @@ export function SettingsClient({
             </div>
             <p className="text-[10px] text-muted-foreground">
               {defaultSstRate === 0
-                ? "Exempt / zero-rated goods (most retail)."
-                : "Service tax (F&B, services, digital)."}
+                ? "Non-PKP / tidak memungut PPN (mayoritas UMKM)."
+                : "PPN 11% (untuk PKP)."}
             </p>
           </div>
           <button
@@ -970,8 +974,8 @@ export function SettingsClient({
             <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">Referral</p>
           </div>
           <p className="text-xs text-muted-foreground">
-            Invite fellow Malaysian SMBs to Tokoflow. Earn{" "}
-            <span className="font-semibold text-foreground">RM 2</span> when they ship their first
+            Invite fellow Indonesian UMKM to Tokoflow. Earn{" "}
+            <span className="font-semibold text-foreground">Rp 10.000</span> when they ship their first
             order + a <span className="font-semibold text-foreground">30% commission</span> on
             every payment they make for 6 months.
           </p>
@@ -1017,7 +1021,7 @@ export function SettingsClient({
                       {u.business_name && <p className="text-[10px] text-muted-foreground truncate">{u.business_name}</p>}
                     </div>
                     <span className="text-[10px] text-muted-foreground shrink-0 ml-2">
-                      {new Date(u.created_at).toLocaleDateString("en-MY", { day: "numeric", month: "short", year: "numeric" })}
+                      {new Date(u.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
                     </span>
                   </div>
                 ))}
@@ -1164,7 +1168,7 @@ export function SettingsClient({
                   <p className="text-xs text-muted-foreground">
                     Upgrade to{" "}
                     <span className="font-semibold text-foreground">Pro</span>
-                    {" "}for LHDN MyInvois, unlimited orders, and more.
+                    {" "}for e-Faktur, unlimited orders, and more.
                   </p>
                 </div>
               )}

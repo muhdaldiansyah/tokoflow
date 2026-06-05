@@ -65,7 +65,7 @@ export default async function PublicReceiptPage({ params }: PageProps) {
   const items = (order.items || []) as { name: string; qty: number; price: number }[];
   const status = (order.status || "new") as string;
   const statusConfig = STATUS_CONFIG[status] || STATUS_CONFIG.new;
-  const createdAt = new Date(order.created_at).toLocaleDateString("en-MY", {
+  const createdAt = new Date(order.created_at).toLocaleDateString("id-ID", {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -88,7 +88,7 @@ export default async function PublicReceiptPage({ params }: PageProps) {
 
   // Delivery date
   const deliveryDate = order.delivery_date
-    ? new Date(order.delivery_date).toLocaleDateString("en-MY", {
+    ? new Date(order.delivery_date).toLocaleDateString("id-ID", {
         weekday: "long",
         day: "numeric",
         month: "long",
@@ -296,11 +296,11 @@ export default async function PublicReceiptPage({ params }: PageProps) {
               <div className="min-w-0">
                 <p className="text-sm text-foreground break-words">{item.name}</p>
                 <p className="text-xs text-muted-foreground">
-                  {item.qty} x RM {item.price.toLocaleString("en-MY")}
+                  {item.qty} x Rp {item.price.toLocaleString("id-ID")}
                 </p>
               </div>
               <p className="text-sm font-medium text-foreground shrink-0 tabular-nums">
-                RM {(item.qty * item.price).toLocaleString("en-MY")}
+                Rp {(item.qty * item.price).toLocaleString("id-ID")}
               </p>
             </div>
           ))}
@@ -311,29 +311,29 @@ export default async function PublicReceiptPage({ params }: PageProps) {
           {(order.discount > 0 || deliveryFee > 0) && (
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">Subtotal</span>
-              <span className="text-xs text-muted-foreground">RM {order.subtotal.toLocaleString("en-MY")}</span>
+              <span className="text-xs text-muted-foreground">Rp {order.subtotal.toLocaleString("id-ID")}</span>
             </div>
           )}
           {order.discount > 0 && (
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">Discount</span>
-              <span className="text-xs text-warm-green">-RM {order.discount.toLocaleString("en-MY")}</span>
+              <span className="text-xs text-warm-green">-Rp {order.discount.toLocaleString("id-ID")}</span>
             </div>
           )}
           {deliveryFee > 0 && (
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">Delivery</span>
-              <span className="text-xs text-muted-foreground">RM {deliveryFee.toLocaleString("en-MY")}</span>
+              <span className="text-xs text-muted-foreground">Rp {deliveryFee.toLocaleString("id-ID")}</span>
             </div>
           )}
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold text-foreground">Total</span>
-            <span className="text-sm font-bold text-foreground">RM {order.total.toLocaleString("en-MY")}</span>
+            <span className="text-sm font-bold text-foreground">Rp {order.total.toLocaleString("id-ID")}</span>
           </div>
           {isPartial && (
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">Paid</span>
-              <span className="text-xs text-foreground">RM {paidAmount.toLocaleString("en-MY")}</span>
+              <span className="text-xs text-foreground">Rp {paidAmount.toLocaleString("id-ID")}</span>
             </div>
           )}
         </div>

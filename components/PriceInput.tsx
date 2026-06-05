@@ -15,7 +15,7 @@ interface PriceInputProps {
 function formatPrice(value: string): string {
   const digits = value.replace(/\D/g, "");
   if (!digits) return "";
-  return parseInt(digits).toLocaleString("en-MY");
+  return parseInt(digits).toLocaleString("id-ID");
 }
 
 // Parse: "25.000" → "25000"

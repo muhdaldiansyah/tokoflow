@@ -12,7 +12,7 @@ const PLATFORM_PRESETS = [
 ];
 
 function formatMYR(val: number): string {
-  return val.toLocaleString("en-MY", {
+  return val.toLocaleString("id-ID", {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   });
@@ -145,7 +145,7 @@ export function MarketplaceCostCalculator() {
             Estimated monthly platform cost
           </span>
           <span className="font-semibold text-[#1E293B]">
-            RM {formatMYR(results.platformCost)}
+            Rp {formatMYR(results.platformCost)}
           </span>
         </div>
         <div className="flex justify-between items-center">
@@ -160,7 +160,7 @@ export function MarketplaceCostCalculator() {
                   Potential monthly saving
                 </span>
                 <span className="font-bold text-warm-green text-lg">
-                  RM {formatMYR(results.saving)}
+                  Rp {formatMYR(results.saving)}
                 </span>
               </div>
               <p className="text-xs text-[#94A3B8] mt-2">

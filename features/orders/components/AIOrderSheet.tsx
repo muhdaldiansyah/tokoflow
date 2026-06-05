@@ -68,7 +68,7 @@ export function AIOrderSheet({
     start: startVoice,
     stop: stopVoice,
     reset: resetVoice,
-  } = useSpeechRecognition({ lang: "en-MY" });
+  } = useSpeechRecognition({ lang: "id-ID" });
 
   // Shared state
   const [previewItems, setPreviewItems] = useState<OrderItem[]>([]);
@@ -512,10 +512,10 @@ export function AIOrderSheet({
                   {extraData.customer_phone && <p className="text-xs text-foreground">Phone: {extraData.customer_phone}</p>}
                   {extraData.delivery_date && <p className="text-xs text-foreground">Date: {extraData.delivery_date}</p>}
                   {extraData.notes && <p className="text-xs text-foreground">Note: {extraData.notes}</p>}
-                  {extraData.discount && <p className="text-xs text-foreground">Discount: RM {extraData.discount.toLocaleString("en-MY")}</p>}
+                  {extraData.discount && <p className="text-xs text-foreground">Discount: Rp {extraData.discount.toLocaleString("id-ID")}</p>}
                   {extraData.payment_status && (
                     <p className="text-xs text-foreground">
-                      Payment: {extraData.payment_status === "paid" ? "Paid" : extraData.payment_status === "dp" ? `DP${extraData.dp_amount ? ` RM ${extraData.dp_amount.toLocaleString("en-MY")}` : ""}` : "Unpaid"}
+                      Payment: {extraData.payment_status === "paid" ? "Paid" : extraData.payment_status === "dp" ? `DP${extraData.dp_amount ? ` Rp ${extraData.dp_amount.toLocaleString("id-ID")}` : ""}` : "Unpaid"}
                     </p>
                   )}
                 </div>

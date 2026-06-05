@@ -90,7 +90,7 @@ function ProofAiVerdict({ result }: { result: AiCheckResult }) {
         ? { wrap: "border-warm-rose/40 bg-warm-rose-light", label: "Looks invalid", labelClass: "text-warm-rose" }
         : { wrap: "border-border bg-muted/40", label: "Needs review", labelClass: "text-foreground" };
 
-  const rm = (n: number) => `RM ${n.toLocaleString("en-MY")}`;
+  const rm = (n: number) => `Rp ${n.toLocaleString("id-ID")}`;
   const chip = (state: "ok" | "bad" | "neutral", text: string) => (
     <span
       className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${

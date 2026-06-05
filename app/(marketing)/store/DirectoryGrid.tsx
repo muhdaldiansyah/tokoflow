@@ -30,14 +30,14 @@ interface DirectoryGridProps {
 
 const PRICE_RANGES = [
   { label: "< RM 50", max: 50 },
-  { label: "RM 50 — RM 200", min: 50, max: 200 },
-  { label: "RM 200 — RM 500", min: 200, max: 500 },
-  { label: "> RM 500", min: 500 },
+  { label: "Rp 50 — RM 200", min: 50, max: 200 },
+  { label: "Rp 200 — RM 500", min: 200, max: 500 },
+  { label: "> Rp 500", min: 500 },
 ];
 
 function formatPrice(n: number) {
-  if (n >= 1000) return `RM ${(n / 1000).toFixed(1)}K`;
-  return `RM ${n.toLocaleString("en-MY")}`;
+  if (n >= 1000) return `Rp ${(n / 1000).toFixed(1)}K`;
+  return `Rp ${n.toLocaleString("id-ID")}`;
 }
 
 export function DirectoryGrid({ merchants, cities, categories, categoryLabels }: DirectoryGridProps) {

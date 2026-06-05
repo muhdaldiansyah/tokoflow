@@ -166,7 +166,7 @@ export function CustomerList({ initialCustomers, initialPiutang }: CustomerListP
                     </div>
                     <div className="text-right shrink-0 ml-3">
                       <p className="text-sm font-bold text-red-600">
-                        RM {customer.total_debt.toLocaleString("en-MY")}
+                        Rp {customer.total_debt.toLocaleString("id-ID")}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {customer.order_count} orders
@@ -230,7 +230,7 @@ export function CustomerList({ initialCustomers, initialPiutang }: CustomerListP
                       </div>
                       <div className="text-right">
                         <p className={`text-sm font-bold ${debt && debt.total_debt > 0 ? "text-red-600" : "text-foreground"}`}>
-                          RM {(debt && debt.total_debt > 0 ? debt.total_debt : customer.total_spent).toLocaleString("en-MY")}
+                          Rp {(debt && debt.total_debt > 0 ? debt.total_debt : customer.total_spent).toLocaleString("id-ID")}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {customer.total_orders} orders
@@ -260,14 +260,14 @@ export function CustomerList({ initialCustomers, initialPiutang }: CustomerListP
               {totalRevenue > 0 && (
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Total revenue</span>
-                  <span className="tabular-nums text-foreground font-medium">RM {totalRevenue.toLocaleString("en-MY")}</span>
+                  <span className="tabular-nums text-foreground font-medium">Rp {totalRevenue.toLocaleString("id-ID")}</span>
                 </div>
               )}
               {totalDebt > 0 && (
                 <div className="border-t pt-3 mt-1.5 space-y-1.5">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-warm-rose">Unpaid</span>
-                    <span className="tabular-nums text-warm-rose font-medium">RM {totalDebt.toLocaleString("en-MY")}</span>
+                    <span className="tabular-nums text-warm-rose font-medium">Rp {totalDebt.toLocaleString("id-ID")}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Customers with debt</span>

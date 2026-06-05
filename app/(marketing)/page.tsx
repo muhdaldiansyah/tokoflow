@@ -90,7 +90,7 @@ const coreMessages = [
 const tiers = [
   {
     name: "Free",
-    price: "RM 0",
+    price: "Rp 0",
     period: "first 50 orders",
     blurb: "Everything you need to start. No credit card.",
     cta: "Start free",
@@ -99,7 +99,7 @@ const tiers = [
   },
   {
     name: "Pro",
-    price: "RM 49",
+    price: "Rp 49",
     period: "/ month",
     blurb: "Unlimited orders, voice + photo parsing, invoices, and the full system.",
     cta: "Try Pro",
@@ -108,7 +108,7 @@ const tiers = [
   },
   {
     name: "Business",
-    price: "RM 99",
+    price: "Rp 99",
     period: "/ month",
     blurb: "Everything in Pro plus multi-staff accounts and order assignment for teams.",
     cta: "Talk to us",
@@ -127,7 +127,7 @@ const jsonLd = {
   offers: {
     "@type": "Offer",
     price: "0",
-    priceCurrency: "MYR",
+    priceCurrency: "IDR",
     description: "Your first 50 orders are free",
   },
   description:

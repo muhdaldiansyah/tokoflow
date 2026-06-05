@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
         : "-";
 
       return {
-        tanggal: new Date(order.created_at).toLocaleDateString("en-MY", { timeZone: "Asia/Kuala_Lumpur" }),
+        tanggal: new Date(order.created_at).toLocaleDateString("id-ID", { timeZone: "Asia/Kuala_Lumpur" }),
         nomor_pesanan: order.order_number || "",
         pelanggan: order.customer_name || "-",
         telepon: order.customer_phone || "-",
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
         dibayar: order.paid_amount || 0,
         sisa: (order.total || 0) - (order.paid_amount || 0),
         pengiriman: order.delivery_date
-          ? new Date(order.delivery_date).toLocaleDateString("en-MY", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kuala_Lumpur" })
+          ? new Date(order.delivery_date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kuala_Lumpur" })
           : "-",
         status: statusLabels[order.status] || order.status,
         pembayaran: paymentLabels[order.payment_status] || order.payment_status,

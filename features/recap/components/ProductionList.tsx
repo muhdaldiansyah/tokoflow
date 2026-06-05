@@ -103,7 +103,7 @@ export function ProductionList({ dateStr, selectedDate, exportTrigger, waTrigger
 
       const XLSX = await import("xlsx");
 
-      const dateFormatted = selectedDate.toLocaleDateString("en-MY", {
+      const dateFormatted = selectedDate.toLocaleDateString("id-ID", {
         weekday: "long", day: "numeric", month: "long", year: "numeric",
       });
 
@@ -136,7 +136,7 @@ export function ProductionList({ dateStr, selectedDate, exportTrigger, waTrigger
       XLSX.utils.book_append_sheet(workbook, summarySheet, "Prep");
 
       const buffer = await workbookToArrayBuffer(workbook);
-      const dayLabel = selectedDate.toLocaleDateString("en-MY", { day: "numeric", month: "short", year: "numeric" }).replace(/ /g, "-");
+      const dayLabel = selectedDate.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }).replace(/ /g, "-");
       const filename = `Prep-${dayLabel}.xlsx`;
       downloadBlob(buffer, filename, "xlsx");
       track("production_exported", { date: dateStr });
@@ -151,7 +151,7 @@ export function ProductionList({ dateStr, selectedDate, exportTrigger, waTrigger
   function handleSendWA() {
     if (!production) return;
 
-    const dateLabel = selectedDate.toLocaleDateString("en-MY", {
+    const dateLabel = selectedDate.toLocaleDateString("id-ID", {
       weekday: "long", day: "numeric", month: "long", year: "numeric",
     });
 
@@ -176,7 +176,7 @@ ${itemLines}
 
 *ORDER DETAILS:*
 ${orderLines}
-${piutang > 0 ? `\n💰 Unpaid: RM ${piutang.toLocaleString("en-MY")}` : ""}
+${piutang > 0 ? `\n💰 Unpaid: Rp ${piutang.toLocaleString("id-ID")}` : ""}
 _${businessName} · Tokoflow_`;
 
     const encoded = encodeURIComponent(message);
@@ -261,12 +261,12 @@ _${businessName} · Tokoflow_`;
                 </div>
                 <div className="text-right shrink-0 ml-3">
                   <p className="text-sm font-medium text-foreground">
-                    RM {order.total.toLocaleString("en-MY")}
+                    Rp {order.total.toLocaleString("id-ID")}
                   </p>
                   <p className={`text-xs ${PAYMENT_COLORS[order.paymentStatus] || "text-muted-foreground"}`}>
                     {PAYMENT_LABELS[order.paymentStatus] || order.paymentStatus}
                     {order.paymentStatus === "partial" && order.paidAmount > 0 && (
-                      <> RM {order.paidAmount.toLocaleString("en-MY")}</>
+                      <> Rp {order.paidAmount.toLocaleString("id-ID")}</>
                     )}
                   </p>
                 </div>
@@ -283,19 +283,19 @@ _${businessName} · Tokoflow_`;
           <div className="divide-y">
             <div className="flex justify-between text-sm py-2">
               <span className="text-muted-foreground">Total</span>
-              <span className="font-medium text-foreground">RM {production.totalRevenue.toLocaleString("en-MY")}</span>
+              <span className="font-medium text-foreground">Rp {production.totalRevenue.toLocaleString("id-ID")}</span>
             </div>
             <div className="flex justify-between text-sm py-2">
               <span className="text-muted-foreground">Collected</span>
               <span className={`font-medium ${production.collectedRevenue > 0 ? "text-green-600" : "text-foreground"}`}>
-                RM {production.collectedRevenue.toLocaleString("en-MY")}
+                Rp {production.collectedRevenue.toLocaleString("id-ID")}
               </span>
             </div>
             {production.totalRevenue - production.collectedRevenue > 0 && (
               <div className="flex justify-between text-sm py-2">
                 <span className="text-muted-foreground">Unpaid</span>
                 <span className="font-medium text-red-600">
-                  RM {(production.totalRevenue - production.collectedRevenue).toLocaleString("en-MY")}
+                  Rp {(production.totalRevenue - production.collectedRevenue).toLocaleString("id-ID")}
                 </span>
               </div>
             )}

@@ -99,7 +99,7 @@ export function BatchOrderCard({
               {item.name} <span className="text-muted-foreground">x{item.qty}</span>
             </span>
             <span className="text-foreground shrink-0 ml-2">
-              RM {(item.price * item.qty).toLocaleString("en-MY")}
+              Rp {(item.price * item.qty).toLocaleString("id-ID")}
             </span>
           </div>
         ))}
@@ -109,7 +109,7 @@ export function BatchOrderCard({
       <div className="flex items-center justify-between mt-2 pt-2 border-t border-border">
         <span className="text-xs text-muted-foreground">{items.length} item</span>
         <span className="text-sm font-semibold text-foreground">
-          RM {total.toLocaleString("en-MY")}
+          Rp {total.toLocaleString("id-ID")}
         </span>
       </div>
     </div>

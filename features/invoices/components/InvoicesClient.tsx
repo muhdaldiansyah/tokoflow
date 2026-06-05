@@ -145,7 +145,7 @@ export function InvoicesClient({ initialInvoices, bisnisActive }: InvoicesClient
             disabled={isBuying}
             className="shrink-0 h-7 px-3 text-xs font-medium rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors disabled:opacity-50"
           >
-            {isBuying ? <Loader2 className="w-3 h-3 animate-spin" /> : `RM ${BISNIS_PRICE}/mo`}
+            {isBuying ? <Loader2 className="w-3 h-3 animate-spin" /> : `Rp ${BISNIS_PRICE}/mo`}
           </button>
         </div>
       )}
@@ -224,19 +224,19 @@ export function InvoicesClient({ initialInvoices, bisnisActive }: InvoicesClient
               {totalValue > 0 && (
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Total value</span>
-                  <span className="tabular-nums text-foreground font-medium">RM {totalValue.toLocaleString("en-MY")}</span>
+                  <span className="tabular-nums text-foreground font-medium">Rp {totalValue.toLocaleString("id-ID")}</span>
                 </div>
               )}
               {totalCollected > 0 && (
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Collected</span>
-                  <span className="tabular-nums text-foreground">RM {totalCollected.toLocaleString("en-MY")}</span>
+                  <span className="tabular-nums text-foreground">Rp {totalCollected.toLocaleString("id-ID")}</span>
                 </div>
               )}
               {totalOutstanding > 0 && (
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-warm-rose">Outstanding</span>
-                  <span className="tabular-nums text-warm-rose font-medium">RM {totalOutstanding.toLocaleString("en-MY")}</span>
+                  <span className="tabular-nums text-warm-rose font-medium">Rp {totalOutstanding.toLocaleString("id-ID")}</span>
                 </div>
               )}
               {overdueCount > 0 && (

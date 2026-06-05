@@ -30,7 +30,7 @@ interface AIInsightsProps {
 
 type State = "empty" | "loading" | "result";
 
-// Highlight currency amounts in AI insight text. Catches "RM 1,500" / "RM1500"
+// Highlight currency amounts in AI insight text. Catches "Rp 1,500" / "RM1500"
 // (MY market). Legacy "Rp 1500" patterns are caught too since some cached
 // pre-MY analyses may still contain them — kept for backwards compat with
 // pre-2026-04 ai_analyses rows.
@@ -108,8 +108,8 @@ export function AIInsights({ type, periodKey, hasData, totalOrders, businessName
     const { jsPDF } = await import("jspdf");
 
     const periodLabel = type === "daily"
-      ? new Date(periodKey + "T00:00:00").toLocaleDateString("en-MY", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
-      : new Date(`${periodKey}-01T00:00:00`).toLocaleDateString("en-MY", { month: "long", year: "numeric" });
+      ? new Date(periodKey + "T00:00:00").toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
+      : new Date(`${periodKey}-01T00:00:00`).toLocaleDateString("id-ID", { month: "long", year: "numeric" });
 
     const typeLabel = type === "daily" ? "Daily" : "Monthly";
     const dateSlug = periodKey.replace(/\//g, "-");
@@ -209,7 +209,7 @@ export function AIInsights({ type, periodKey, hasData, totalOrders, businessName
     doc.setTextColor(160, 160, 160);
     doc.text("Generated with Tokoflow — tokoflow.com", margin, footerY);
     doc.text(
-      now.toLocaleDateString("en-MY", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" }),
+      now.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" }),
       pageWidth - margin,
       footerY,
       { align: "right" }

@@ -209,7 +209,7 @@ export function ReceiptActions({ orderId, orderNumber, waPhone, slug, qrisUrl, t
           ctx.font = `${fontSize}px -apple-system, sans-serif`;
           ctx.fillText(`${item.name}  x${item.qty}`, pad, y + fontSize);
           ctx.textAlign = "right";
-          ctx.fillText(`RM ${(item.price * item.qty).toLocaleString("en-MY")}`, w - pad, y + fontSize);
+          ctx.fillText(`Rp ${(item.price * item.qty).toLocaleString("id-ID")}`, w - pad, y + fontSize);
           ctx.textAlign = "left";
           y += lineH;
         }
@@ -218,12 +218,12 @@ export function ReceiptActions({ orderId, orderNumber, waPhone, slug, qrisUrl, t
           ctx.font = `${smallFont}px -apple-system, sans-serif`;
           ctx.fillText("Subtotal", pad, y + smallFont);
           ctx.textAlign = "right";
-          ctx.fillText(`RM ${subtotal.toLocaleString("en-MY")}`, w - pad, y + smallFont);
+          ctx.fillText(`Rp ${subtotal.toLocaleString("id-ID")}`, w - pad, y + smallFont);
           ctx.textAlign = "left";
           y += lineH;
           ctx.fillText("Delivery", pad, y + smallFont);
           ctx.textAlign = "right";
-          ctx.fillText(`RM ${fee.toLocaleString("en-MY")}`, w - pad, y + smallFont);
+          ctx.fillText(`Rp ${fee.toLocaleString("id-ID")}`, w - pad, y + smallFont);
           ctx.textAlign = "left";
           y += lineH;
         }
@@ -234,7 +234,7 @@ export function ReceiptActions({ orderId, orderNumber, waPhone, slug, qrisUrl, t
       ctx.fillStyle = "#1a1a1a";
       ctx.font = `bold ${totalFont}px -apple-system, sans-serif`;
       ctx.textAlign = "center";
-      ctx.fillText(`RM ${total.toLocaleString("en-MY")}`, w / 2, y + totalFont);
+      ctx.fillText(`Rp ${total.toLocaleString("id-ID")}`, w / 2, y + totalFont);
       y += totalFont + 4 * scale;
 
       ctx.textAlign = "left";
@@ -249,7 +249,7 @@ export function ReceiptActions({ orderId, orderNumber, waPhone, slug, qrisUrl, t
         y += 2 * scale;
         ctx.fillStyle = "#888888";
         ctx.font = `${smallFont}px -apple-system, sans-serif`;
-        const dateStr = new Date(deliveryDate).toLocaleDateString("en-MY", {
+        const dateStr = new Date(deliveryDate).toLocaleDateString("id-ID", {
           weekday: "long", day: "numeric", month: "long", year: "numeric",
         });
         ctx.fillText(`Date: ${dateStr}`, pad, y + smallFont);
@@ -358,7 +358,7 @@ export function ReceiptActions({ orderId, orderNumber, waPhone, slug, qrisUrl, t
 
           {total > 0 && (
             <p className="text-lg font-bold text-foreground">
-              RM {total.toLocaleString("en-MY")}
+              Rp {total.toLocaleString("id-ID")}
             </p>
           )}
 

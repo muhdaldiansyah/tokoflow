@@ -696,7 +696,7 @@ export function OrderForm({ initialOrder, statusLogs, assignedStaffId, onAssigne
       setDpAmount(String(updated.paid_amount));
       const newRemaining = Math.max(0, updated.total - updated.paid_amount);
       toast.success(
-        `Payment recorded · RM ${newRemaining.toLocaleString("en-MY")} remaining`,
+        `Payment recorded · Rp ${newRemaining.toLocaleString("id-ID")} remaining`,
         { duration: 4000 },
       );
     }
@@ -963,7 +963,7 @@ export function OrderForm({ initialOrder, statusLogs, assignedStaffId, onAssigne
         setPriceChip(null);
         clearItemSuggestionsCache();
         hapticSuccess();
-        toast.success(`Order created — RM ${order.total.toLocaleString("en-MY")}`, { duration: 3000 });
+        toast.success(`Order created — Rp ${order.total.toLocaleString("id-ID")}`, { duration: 3000 });
         setTimeout(() => itemNameRef.current?.focus(), 100);
       } else if (ordersUsedBefore === 0 && sessionCount === 0) {
         setCelebrationOrder(order);
@@ -1037,10 +1037,10 @@ export function OrderForm({ initialOrder, statusLogs, assignedStaffId, onAssigne
     let dayLabel: string;
     if (dMidnight.getTime() === todayMidnight.getTime()) dayLabel = "Today";
     else if (dMidnight.getTime() === tomorrowMidnight.getTime()) dayLabel = "Tomorrow";
-    else dayLabel = d.toLocaleDateString("en-MY", { day: "numeric", month: "short" });
+    else dayLabel = d.toLocaleDateString("id-ID", { day: "numeric", month: "short" });
     const timePart = dateStr.includes("T") ? dateStr.split("T")[1] : "";
     if (timePart && timePart !== "00:00") {
-      return `${dayLabel} · ${d.toLocaleTimeString("en-MY", { hour: "2-digit", minute: "2-digit", hour12: false })}`;
+      return `${dayLabel} · ${d.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false })}`;
     }
     return dayLabel;
   }
@@ -1068,7 +1068,7 @@ export function OrderForm({ initialOrder, statusLogs, assignedStaffId, onAssigne
                   )}
                 </h1>
                 <p className="text-xs text-muted-foreground">
-                  {initialOrder.order_number} · {new Date(initialOrder.created_at).toLocaleDateString("en-MY", {
+                  {initialOrder.order_number} · {new Date(initialOrder.created_at).toLocaleDateString("id-ID", {
                     day: "numeric",
                     month: "short",
                     hour: "2-digit",
@@ -1191,7 +1191,7 @@ export function OrderForm({ initialOrder, statusLogs, assignedStaffId, onAssigne
             <div className="flex items-center gap-2">
               {items.length > 0 && (
                 <p className="text-xs text-muted-foreground">
-                  {items.reduce((sum, i) => sum + i.qty, 0)} item · RM {items.reduce((sum, i) => sum + i.price * i.qty, 0).toLocaleString("en-MY")}
+                  {items.reduce((sum, i) => sum + i.qty, 0)} item · Rp {items.reduce((sum, i) => sum + i.price * i.qty, 0).toLocaleString("id-ID")}
                 </p>
               )}
               {frequentItems.length > 0 && !isFormLocked && (
@@ -1294,7 +1294,7 @@ export function OrderForm({ initialOrder, statusLogs, assignedStaffId, onAssigne
                       </p>
                       <div className="flex items-center gap-1 mt-0.5">
                         <p className="text-xs text-muted-foreground">
-                          RM {fi.price.toLocaleString("en-MY")}
+                          Rp {fi.price.toLocaleString("id-ID")}
                           {fi.unit && <span> / {fi.unit}</span>}
                         </p>
                         {isLowStock && !isOutOfStock && (
@@ -1368,7 +1368,7 @@ export function OrderForm({ initialOrder, statusLogs, assignedStaffId, onAssigne
                           className={`text-xs mt-0.5 cursor-pointer ${item.price === 0 ? "text-warm-rose font-medium" : "text-muted-foreground"}`}
                           onClick={(e) => { e.stopPropagation(); setEditingIndex(index); }}
                         >
-                          {item.price === 0 ? "Set price" : `RM ${item.price.toLocaleString("en-MY")}`}
+                          {item.price === 0 ? "Set price" : `Rp ${item.price.toLocaleString("id-ID")}`}
                         </p>
                       )}
                       <div className="flex items-center gap-2 mt-1.5 pt-1.5 border-t border-border/50">
@@ -1691,7 +1691,7 @@ export function OrderForm({ initialOrder, statusLogs, assignedStaffId, onAssigne
                   }`}
                 >
                   {activeChip === "other"
-                    ? new Date(datePartOfValue + "T00:00").toLocaleDateString("en-MY", { day: "numeric", month: "short" })
+                    ? new Date(datePartOfValue + "T00:00").toLocaleDateString("id-ID", { day: "numeric", month: "short" })
                     : "Other date"
                   }
                 </button>
@@ -1817,7 +1817,7 @@ export function OrderForm({ initialOrder, statusLogs, assignedStaffId, onAssigne
                 <input
                   type="text"
                   inputMode="numeric"
-                  value={discount ? parseInt(discount).toLocaleString("en-MY") : ""}
+                  value={discount ? parseInt(discount).toLocaleString("id-ID") : ""}
                   onChange={(e) => setDiscount(e.target.value.replace(/\D/g, ""))}
                   placeholder="0"
                   className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none"
@@ -2099,13 +2099,13 @@ export function OrderForm({ initialOrder, statusLogs, assignedStaffId, onAssigne
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">DP received</span>
                   <span className="font-semibold text-foreground tabular-nums">
-                    RM {dpReceived.toLocaleString("en-MY")}
+                    Rp {dpReceived.toLocaleString("id-ID")}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">Remaining</span>
                   <span className="font-semibold text-warm-amber tabular-nums">
-                    RM {remaining.toLocaleString("en-MY")}
+                    Rp {remaining.toLocaleString("id-ID")}
                   </span>
                 </div>
 
@@ -2115,7 +2115,7 @@ export function OrderForm({ initialOrder, statusLogs, assignedStaffId, onAssigne
                       type="number"
                       value={addPaymentInput}
                       onChange={(e) => setAddPaymentInput(e.target.value)}
-                      placeholder={`How much (max RM ${remaining.toLocaleString("en-MY")})`}
+                      placeholder={`How much (max Rp ${remaining.toLocaleString("id-ID")})`}
                       autoFocus
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
@@ -2219,10 +2219,10 @@ export function OrderForm({ initialOrder, statusLogs, assignedStaffId, onAssigne
                     <div key={i} className="flex items-start justify-between gap-2">
                       <div className="min-w-0 flex-1">
                         <p className="text-sm text-foreground leading-tight">{item.name}</p>
-                        <p className="text-xs text-muted-foreground">×{item.qty} @ RM {item.price.toLocaleString("en-MY")}</p>
+                        <p className="text-xs text-muted-foreground">×{item.qty} @ Rp {item.price.toLocaleString("id-ID")}</p>
                       </div>
                       <p className="text-sm font-medium text-foreground shrink-0 tabular-nums">
-                        RM {(item.price * item.qty).toLocaleString("en-MY")}
+                        Rp {(item.price * item.qty).toLocaleString("id-ID")}
                       </p>
                     </div>
                   ))}
@@ -2233,24 +2233,24 @@ export function OrderForm({ initialOrder, statusLogs, assignedStaffId, onAssigne
                   {(discountAmount > 0 || deliveryFee > 0) && (
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Subtotal</span>
-                      <span className="tabular-nums">RM {subtotal.toLocaleString("en-MY")}</span>
+                      <span className="tabular-nums">Rp {subtotal.toLocaleString("id-ID")}</span>
                     </div>
                   )}
                   {discountAmount > 0 && (
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Discount</span>
-                      <span className="text-warm-rose tabular-nums">-RM {discountAmount.toLocaleString("en-MY")}</span>
+                      <span className="text-warm-rose tabular-nums">-Rp {discountAmount.toLocaleString("id-ID")}</span>
                     </div>
                   )}
                   {deliveryFee > 0 && (
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Delivery</span>
-                      <span className="tabular-nums">RM {deliveryFee.toLocaleString("en-MY")}</span>
+                      <span className="tabular-nums">Rp {deliveryFee.toLocaleString("id-ID")}</span>
                     </div>
                   )}
                   <div className="flex justify-between font-semibold">
                     <span>Total</span>
-                    <span className="tabular-nums">RM {total.toLocaleString("en-MY")}</span>
+                    <span className="tabular-nums">Rp {total.toLocaleString("id-ID")}</span>
                   </div>
                 </div>
 
@@ -2336,12 +2336,12 @@ export function OrderForm({ initialOrder, statusLogs, assignedStaffId, onAssigne
                 {items.length} item
                 {discountAmount > 0 && (
                   <span className="text-warm-rose ml-1">
-                    -RM {discountAmount.toLocaleString("en-MY")}
+                    -Rp {discountAmount.toLocaleString("id-ID")}
                   </span>
                 )}
               </span>
               <span className="text-sm font-bold text-foreground">
-                RM {total.toLocaleString("en-MY")}
+                Rp {total.toLocaleString("id-ID")}
               </span>
             </div>
             {!isEdit && (

@@ -113,7 +113,7 @@ export default function UserDetailPage() {
         </Link>
         <div>
           <h1 className="text-lg font-semibold">{p.business_name || p.full_name || "User"}</h1>
-          <p className="text-xs text-muted-foreground">{p.email} · Joined {new Date(p.created_at).toLocaleDateString("en-MY")}</p>
+          <p className="text-xs text-muted-foreground">{p.email} · Joined {new Date(p.created_at).toLocaleDateString("id-ID")}</p>
         </div>
         {p.slug && (
           <a href={`https://tokoflow.com/${p.slug}`} target="_blank" rel="noopener" className="ml-auto h-8 px-3 flex items-center gap-1.5 rounded-lg text-xs font-medium bg-card border hover:bg-muted">

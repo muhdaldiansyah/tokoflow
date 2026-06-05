@@ -164,7 +164,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
           if (diffMs < 7 * 24 * 60 * 60 * 1000) {
             cards.anniversary = {
               years: yrs,
-              sinceLabel: joined.toLocaleDateString("en-MY", { month: "long", year: "numeric" }),
+              sinceLabel: joined.toLocaleDateString("id-ID", { month: "long", year: "numeric" }),
             };
             break;
           }
@@ -218,7 +218,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
         };
 
         const summaryData: (string | number)[][] = [
-          [`RECAP SUMMARY — ${selectedDate.toLocaleDateString("en-MY", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}`],
+          [`RECAP SUMMARY — ${selectedDate.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}`],
           [],
           ["REVENUE"],
           ["Customers served", recap.totalOrders],
@@ -269,7 +269,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
       const buffer = await workbookToArrayBuffer(workbook);
       const now = new Date();
       const time = `${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}`;
-      const dayLabel = selectedDate.toLocaleDateString("en-MY", { day: "numeric", month: "short", year: "numeric" }).replace(/ /g, "-");
+      const dayLabel = selectedDate.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }).replace(/ /g, "-");
       const filename = `Daily-Recap-${dayLabel}-${time}.xlsx`;
       downloadBlob(buffer, filename, "xlsx");
       track("recap_exported", { date: dateStr, order_count: rows.length });
@@ -311,22 +311,22 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
             </div>
             <div className="flex justify-between text-sm py-2">
               <span className="text-muted-foreground">Total revenue</span>
-              <span className="font-medium text-foreground">RM {(recap?.totalRevenue || 0).toLocaleString("en-MY")}</span>
+              <span className="font-medium text-foreground">Rp {(recap?.totalRevenue || 0).toLocaleString("id-ID")}</span>
             </div>
             <div className="flex justify-between text-sm py-2">
               <span className="text-muted-foreground">Collected</span>
-              <span className={`font-medium ${(recap?.collectedRevenue || 0) > 0 ? "text-green-600" : "text-foreground"}`}>RM {(recap?.collectedRevenue || 0).toLocaleString("en-MY")}</span>
+              <span className={`font-medium ${(recap?.collectedRevenue || 0) > 0 ? "text-green-600" : "text-foreground"}`}>Rp {(recap?.collectedRevenue || 0).toLocaleString("id-ID")}</span>
             </div>
             {(recap?.piutang || 0) > 0 && (
               <div className="flex justify-between text-sm py-2">
                 <span className="text-muted-foreground">Unpaid</span>
-                <span className="font-medium text-red-600">RM {(recap?.piutang || 0).toLocaleString("en-MY")}</span>
+                <span className="font-medium text-red-600">Rp {(recap?.piutang || 0).toLocaleString("id-ID")}</span>
               </div>
             )}
             {(recap?.totalDiscount || 0) > 0 && (
               <div className="flex justify-between text-sm py-2">
                 <span className="text-muted-foreground">Discount</span>
-                <span className="font-medium text-muted-foreground">RM {(recap?.totalDiscount || 0).toLocaleString("en-MY")}</span>
+                <span className="font-medium text-muted-foreground">Rp {(recap?.totalDiscount || 0).toLocaleString("id-ID")}</span>
               </div>
             )}
           </div>
@@ -342,7 +342,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
               {memoryCards.milestone.threshold} orders milestone
             </p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              {memoryCards.milestone.count.toLocaleString("en-MY")} customers served all-time. That&rsquo;s real work — well done.
+              {memoryCards.milestone.count.toLocaleString("id-ID")} customers served all-time. That&rsquo;s real work — well done.
             </p>
           </div>
           <button
@@ -387,7 +387,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
           if (piutangPct > 50) {
             insights.push({
               icon: "💰",
-              text: `RM ${recap.piutang.toLocaleString("en-MY")} not yet collected (${piutangPct}% of today's sales). The longer you wait, the harder it gets.`,
+              text: `Rp ${recap.piutang.toLocaleString("id-ID")} not yet collected (${piutangPct}% of today's sales). The longer you wait, the harder it gets.`,
               color: "bg-red-50 border-red-100 text-red-800",
               actionLabel: "Send reminders",
               actionHref: "/pengingat",
@@ -400,7 +400,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
           const totalLate = recap.lateOrders.reduce((sum, o) => sum + o.total, 0);
           insights.push({
             icon: "⏰",
-            text: `${recap.lateOrders.length} orders past delivery date — RM ${totalLate.toLocaleString("en-MY")} held up. Update status to keep things flowing.`,
+            text: `${recap.lateOrders.length} orders past delivery date — Rp ${totalLate.toLocaleString("id-ID")} held up. Update status to keep things flowing.`,
             color: "bg-orange-50 border-orange-100 text-orange-800",
             actionLabel: "View order",
             actionHref: "/orders",
@@ -531,7 +531,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
                   </div>
                   <div className="text-right shrink-0 ml-3">
                     <p className="text-sm font-medium text-foreground">
-                      RM {item.revenue.toLocaleString("en-MY")}
+                      Rp {item.revenue.toLocaleString("id-ID")}
                     </p>
                     {item.profit !== undefined && (
                       <p className={`text-[11px] font-medium ${
@@ -539,7 +539,7 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
                         item.margin !== undefined && item.margin >= 30 ? "text-amber-600" :
                         "text-rose-500"
                       }`}>
-                        +RM {item.profit.toLocaleString("en-MY")} ({item.margin}%)
+                        +Rp {item.profit.toLocaleString("id-ID")} ({item.margin}%)
                       </p>
                     )}
                   </div>
@@ -557,19 +557,19 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
               {recap.paidCount > 0 && (
                 <div className="flex justify-between text-sm py-2">
                   <span className="text-muted-foreground">Paid ({recap.paidCount})</span>
-                  <span className="font-medium text-green-600">RM {recap.paidRevenue.toLocaleString("en-MY")}</span>
+                  <span className="font-medium text-green-600">Rp {recap.paidRevenue.toLocaleString("id-ID")}</span>
                 </div>
               )}
               {recap.partialCount > 0 && (
                 <div className="flex justify-between text-sm py-2">
                   <span className="text-muted-foreground">DP ({recap.partialCount})</span>
-                  <span className="font-medium text-yellow-600">RM {recap.partialRevenue.toLocaleString("en-MY")}</span>
+                  <span className="font-medium text-yellow-600">Rp {recap.partialRevenue.toLocaleString("id-ID")}</span>
                 </div>
               )}
               {recap.unpaidCount > 0 && (
                 <div className="flex justify-between text-sm py-2">
                   <span className="text-muted-foreground">Unpaid ({recap.unpaidCount})</span>
-                  <span className="font-medium text-red-600">RM {recap.unpaidRevenue.toLocaleString("en-MY")}</span>
+                  <span className="font-medium text-red-600">Rp {recap.unpaidRevenue.toLocaleString("id-ID")}</span>
                 </div>
               )}
             </div>
@@ -603,11 +603,11 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
                   <div className="min-w-0">
                     <p className="text-sm text-foreground truncate">{order.customerName}</p>
                     <p className="text-xs text-muted-foreground">
-                      {order.orderNumber} · Delivery {new Date(order.deliveryDate).toLocaleDateString("en-MY", { day: "numeric", month: "short", timeZone: "Asia/Kuala_Lumpur" })}
+                      {order.orderNumber} · Delivery {new Date(order.deliveryDate).toLocaleDateString("id-ID", { day: "numeric", month: "short", timeZone: "Asia/Kuala_Lumpur" })}
                     </p>
                   </div>
                   <span className="text-sm font-medium text-red-600 shrink-0 ml-3">
-                    RM {order.total.toLocaleString("en-MY")}
+                    Rp {order.total.toLocaleString("id-ID")}
                   </span>
                 </div>
               ))}
@@ -696,12 +696,12 @@ export function DailyRecap({ dateStr, selectedDate, exportTrigger, onExportingCh
           <button
             onClick={() => {
               const date = new Date(selectedDate);
-              const dateLabel = date.toLocaleDateString("en-MY", { weekday: "long", day: "numeric", month: "long" });
+              const dateLabel = date.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long" });
               const text = [
                 `Recap for ${dateLabel}`,
                 `${recap.totalOrders} customers served`,
-                `RM ${recap.totalRevenue.toLocaleString("en-MY")} revenue`,
-                recap.collectedRevenue > 0 ? `RM ${recap.collectedRevenue.toLocaleString("en-MY")} collected` : "",
+                `Rp ${recap.totalRevenue.toLocaleString("id-ID")} revenue`,
+                recap.collectedRevenue > 0 ? `Rp ${recap.collectedRevenue.toLocaleString("id-ID")} collected` : "",
                 "",
                 "From selling to a real business",
                 "https://tokoflow.com",

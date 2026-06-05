@@ -318,7 +318,7 @@ export function ProductList({ initialProducts, initialSales }: ProductListProps)
                         )}
                         <div className="flex items-center gap-1.5 mt-1">
                           <span className="text-sm font-bold text-foreground">
-                            RM {product.price.toLocaleString("en-MY")}
+                            Rp {product.price.toLocaleString("id-ID")}
                           </span>
                           {product.unit && (
                             <span className="text-xs text-muted-foreground">/ {product.unit}</span>

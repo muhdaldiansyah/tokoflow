@@ -59,8 +59,8 @@ export async function GET(request: NextRequest) {
         previousLabel = "yesterday";
       } else {
         const d = new Date(targetStr + "T12:00:00+08:00");
-        periodLabel = d.toLocaleDateString("en-MY", { day: "numeric", month: "short", timeZone: "Asia/Kuala_Lumpur" });
-        previousLabel = prevDate.toLocaleDateString("en-MY", { day: "numeric", month: "short", timeZone: "Asia/Kuala_Lumpur" });
+        periodLabel = d.toLocaleDateString("id-ID", { day: "numeric", month: "short", timeZone: "Asia/Kuala_Lumpur" });
+        previousLabel = prevDate.toLocaleDateString("id-ID", { day: "numeric", month: "short", timeZone: "Asia/Kuala_Lumpur" });
       }
     }
 

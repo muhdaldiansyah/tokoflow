@@ -40,7 +40,7 @@ export function VoiceOrderSheet({
     start,
     stop,
     reset,
-  } = useSpeechRecognition({ lang: "en-MY" });
+  } = useSpeechRecognition({ lang: "id-ID" });
 
   const [phase, setPhase] = useState<"listening" | "preview">("listening");
   const [previewItems, setPreviewItems] = useState<OrderItem[]>([]);

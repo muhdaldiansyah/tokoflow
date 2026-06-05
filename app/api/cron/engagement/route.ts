@@ -218,7 +218,7 @@ export async function POST(request: NextRequest) {
       const revenue = (monthRevenue || []).reduce((sum: number, o: { total: number }) => sum + (o.total || 0), 0);
 
       if (orderCount > 0) {
-        const revenueStr = revenue > 0 ? `RM ${revenue.toLocaleString("en-MY")}` : "";
+        const revenueStr = revenue > 0 ? `Rp ${revenue.toLocaleString("id-ID")}` : "";
         pushMessages.push({
           to: profile.push_token,
           title: `${monthName} recap`,

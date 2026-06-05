@@ -255,7 +255,7 @@ export async function POST(request: NextRequest) {
     };
 
     // Build prompt
-    const fmtRp = (n: number) => `RM ${n.toLocaleString("en-MY")}`;
+    const fmtRp = (n: number) => `Rp ${n.toLocaleString("id-ID")}`;
 
     let systemPrompt: string;
     let userPrompt: string;

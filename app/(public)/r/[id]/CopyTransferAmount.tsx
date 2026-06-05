@@ -20,7 +20,7 @@ export function CopyTransferAmount({ amount }: { amount: number }) {
       onClick={handleCopy}
       className="inline-flex items-center gap-1.5 text-sm font-bold text-foreground hover:text-muted-foreground transition-colors"
     >
-      RM {amount.toLocaleString("en-MY")}
+      Rp {amount.toLocaleString("id-ID")}
       {copied ? (
         <Check className="w-3.5 h-3.5 text-warm-green" />
       ) : (

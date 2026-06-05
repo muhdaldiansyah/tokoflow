@@ -325,11 +325,11 @@ export function PasteOrderSheet({
                     <p className="text-xs text-foreground">Note: {extraData.notes}</p>
                   )}
                   {extraData.discount && (
-                    <p className="text-xs text-foreground">Diskon: RM {extraData.discount.toLocaleString("en-MY")}</p>
+                    <p className="text-xs text-foreground">Diskon: Rp {extraData.discount.toLocaleString("id-ID")}</p>
                   )}
                   {extraData.payment_status && (
                     <p className="text-xs text-foreground">
-                      Bayar: {extraData.payment_status === "paid" ? "Paid" : extraData.payment_status === "dp" ? `DP${extraData.dp_amount ? ` RM ${extraData.dp_amount.toLocaleString("en-MY")}` : ""}` : "Unpaid"}
+                      Bayar: {extraData.payment_status === "paid" ? "Paid" : extraData.payment_status === "dp" ? `DP${extraData.dp_amount ? ` Rp ${extraData.dp_amount.toLocaleString("id-ID")}` : ""}` : "Unpaid"}
                     </p>
                   )}
                 </div>

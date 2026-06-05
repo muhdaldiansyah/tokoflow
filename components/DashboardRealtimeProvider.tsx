@@ -194,7 +194,7 @@ export function DashboardRealtimeProvider({ children }: { children: React.ReactN
             ) {
               const name = payload.new.customer_name || "Customer";
               const amount = payload.new.total
-                ? ` · RM ${payload.new.total.toLocaleString("en-MY")}`
+                ? ` · Rp ${payload.new.total.toLocaleString("id-ID")}`
                 : "";
               toast.success(`Payment received — ${name}${amount}`, {
                 description: payload.new.order_number,

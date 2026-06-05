@@ -117,7 +117,7 @@ export function VisitorAnalytics({ period = "daily", month, year, dateStr }: Pro
           </div>
           <div className="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t">
             <span>Total: {stats.periodCount} visitors</span>
-            <span>All-time: {stats.total.toLocaleString("en-MY")}</span>
+            <span>All-time: {stats.total.toLocaleString("id-ID")}</span>
           </div>
         </div>
       )}

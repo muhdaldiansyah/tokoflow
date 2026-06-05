@@ -84,7 +84,9 @@ export interface Profile {
   nitku?: string;
   wp_type?: string;
   wp_registered_year?: number;
-  // MY tax identity (migration 077).
+  // Country axis (migration 094). Defaults to ID for Tokoflow merchants.
+  country?: "MY" | "ID" | string | null;
+  // Tax identity (migration 077). MY: TIN/BRN/SST. ID: reuses these columns as NPWP/NIB/PKP.
   tin?: string | null;
   brn?: string | null;
   sst_registration_id?: string | null;

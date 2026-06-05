@@ -70,7 +70,7 @@ export function WAPreviewSheet({
   const displayName = customerName || customerPhone || "No phone";
   const initials = (customerName || "?")[0].toUpperCase();
   const now = new Date();
-  const timeStr = now.toLocaleTimeString("en-MY", { hour: "2-digit", minute: "2-digit" });
+  const timeStr = now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
 
   function handleSend() {
     if (!message.trim()) return;

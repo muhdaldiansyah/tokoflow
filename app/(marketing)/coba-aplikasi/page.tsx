@@ -75,7 +75,7 @@ export default function CobaAplikasiPage() {
 
               <div className="space-y-2.5">
                 {[
-                  { icon: Gift, text: "RM 10 mobile top-up after 14 days of use" },
+                  { icon: Gift, text: "Rp 10 mobile top-up after 14 days of use" },
                   { icon: Smartphone, text: "First 50 orders free" },
                   { icon: MessageSquare, text: "Your feedback shapes the product" },
                 ].map((item) => (

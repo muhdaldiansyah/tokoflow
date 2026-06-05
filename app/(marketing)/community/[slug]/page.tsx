@@ -160,8 +160,8 @@ export default async function CommunityPage({
               {isEvent && community.event_date_start && (
                 <span className="inline-flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
-                  {new Date(community.event_date_start).toLocaleDateString("en-MY", { day: "numeric", month: "long", year: "numeric" })}
-                  {community.event_date_end && ` — ${new Date(community.event_date_end).toLocaleDateString("en-MY", { day: "numeric", month: "long", year: "numeric" })}`}
+                  {new Date(community.event_date_start).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
+                  {community.event_date_end && ` — ${new Date(community.event_date_end).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}`}
                 </span>
               )}
             </div>

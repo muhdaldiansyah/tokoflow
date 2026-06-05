@@ -240,7 +240,7 @@ export default function PendingOrdersPage() {
                     {order.delivery_date && (
                       <p className="flex items-center gap-1 text-xs text-warm-amber">
                         <Calendar className="w-3 h-3" />
-                        {new Date(order.delivery_date).toLocaleDateString("en-MY", { weekday: "short", day: "numeric", month: "short" })}
+                        {new Date(order.delivery_date).toLocaleDateString("id-ID", { weekday: "short", day: "numeric", month: "short" })}
                       </p>
                     )}
                     {order.notes && (

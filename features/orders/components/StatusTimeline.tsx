@@ -29,7 +29,7 @@ function dotClass(toStatus: string): string {
 
 function formatChangedAt(iso: string): string {
   const d = new Date(iso);
-  return d.toLocaleDateString("en-MY", {
+  return d.toLocaleDateString("id-ID", {
     day: "numeric",
     month: "short",
     hour: "2-digit",

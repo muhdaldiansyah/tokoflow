@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
       const parts: string[] = [];
       if (topItems) parts.push(topItems);
       if (unpaidAmount > 0) {
-        parts.push(`${unpaidCount || 0} still to be paid (RM ${unpaidAmount.toLocaleString("en-MY")}).`);
+        parts.push(`${unpaidCount || 0} still to be paid (Rp ${unpaidAmount.toLocaleString("id-ID")}).`);
       }
       body = parts.join("\n");
     } else if ((unpaidCount || 0) > 0) {

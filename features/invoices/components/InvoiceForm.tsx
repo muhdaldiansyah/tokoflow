@@ -352,7 +352,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
     }
     if (requiresIndividualWithoutTin) {
       toast.error(
-        `Invoices ≥ RM ${MYINVOIS_INDIVIDUAL_THRESHOLD_MYR.toLocaleString("en-MY")} need the buyer's TIN for LHDN submission`,
+        `Invoices ≥ Rp ${MYINVOIS_INDIVIDUAL_THRESHOLD_MYR.toLocaleString("id-ID")} need the buyer's TIN for LHDN submission`,
       );
       return;
     }
@@ -492,7 +492,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
             <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
             <span>
               LHDN requires the buyer&apos;s TIN for any invoice at or above RM{" "}
-              {MYINVOIS_INDIVIDUAL_THRESHOLD_MYR.toLocaleString("en-MY")}.
+              {MYINVOIS_INDIVIDUAL_THRESHOLD_MYR.toLocaleString("id-ID")}.
             </span>
           </div>
         )}
@@ -527,7 +527,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
                 >
                   <p className="text-sm font-medium truncate text-foreground">{product.name}</p>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    RM {product.price.toLocaleString("en-MY")}
+                    Rp {product.price.toLocaleString("id-ID")}
                     {product.unit && <span> / {product.unit}</span>}
                   </p>
                   <div
@@ -613,7 +613,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-muted-foreground">Subtotal</span>
-            <span className="font-medium">RM {subtotal.toLocaleString("en-MY")}</span>
+            <span className="font-medium">Rp {subtotal.toLocaleString("id-ID")}</span>
           </div>
           <div className="flex items-center justify-between gap-3">
             <span className="text-muted-foreground">Discount</span>
@@ -627,7 +627,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Taxable</span>
-            <span className="font-medium">RM {taxable.toLocaleString("en-MY")}</span>
+            <span className="font-medium">Rp {taxable.toLocaleString("id-ID")}</span>
           </div>
           <div className="space-y-1.5">
             <div className="flex items-center justify-between gap-3">
@@ -650,7 +650,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
                   ))}
                 </div>
                 <span className="text-sm font-medium w-28 text-right">
-                  RM {sstAmount.toLocaleString("en-MY")}
+                  Rp {sstAmount.toLocaleString("id-ID")}
                 </span>
               </div>
             </div>
@@ -660,7 +660,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
           </div>
           <div className="flex justify-between pt-2 border-t">
             <span className="font-semibold">Total</span>
-            <span className="font-bold text-base">RM {total.toLocaleString("en-MY")}</span>
+            <span className="font-bold text-base">Rp {total.toLocaleString("id-ID")}</span>
           </div>
         </div>
       </div>

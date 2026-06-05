@@ -188,8 +188,8 @@ export default function InterviewsPage() {
               options={[
                 { value: "", label: "—" },
                 { value: "<5k", label: "Under RM 5K/mo" },
-                { value: "5-15k", label: "RM 5-15K/mo" },
-                { value: "15-50k", label: "RM 15-50K/mo" },
+                { value: "5-15k", label: "Rp 5-15K/mo" },
+                { value: "15-50k", label: "Rp 15-50K/mo" },
                 { value: ">50k", label: "Over RM 50K/mo" },
               ]}
             />
@@ -366,7 +366,7 @@ export default function InterviewsPage() {
                           : "—"}
                   </td>
                   <td className="px-3 py-2 font-mono">
-                    {i.wtp_rm_per_month != null ? `RM ${i.wtp_rm_per_month}` : "—"}
+                    {i.wtp_rm_per_month != null ? `Rp ${i.wtp_rm_per_month}` : "—"}
                   </td>
                   <td className="px-3 py-2 font-mono">{i.brand_friction ?? "—"}</td>
                 </tr>

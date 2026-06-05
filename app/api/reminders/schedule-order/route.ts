@@ -10,7 +10,7 @@ function buildReminderMessage(
   orderNumber: string,
   dayOffset: number
 ): string {
-  const amount = `RM ${outstanding.toLocaleString("en-MY")}`;
+  const amount = `Rp ${outstanding.toLocaleString("id-ID")}`;
   const urgency =
     dayOffset === 1 ? "A friendly reminder"
     : dayOffset === 3 ? "Second reminder"

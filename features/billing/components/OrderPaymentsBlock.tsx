@@ -109,14 +109,14 @@ export function OrderPaymentsBlock({ orderId }: OrderPaymentsBlockProps) {
                         {visual.label} · {channelLabel(p.provider, p.payment_method)}
                       </p>
                       <p className="text-xs font-semibold text-foreground tabular-nums">
-                        RM {Number(p.amount).toLocaleString("en-MY")}
+                        Rp {Number(p.amount).toLocaleString("id-ID")}
                       </p>
                     </div>
                     <div className="text-[11px] text-muted-foreground space-y-0.5">
                       {p.paid_at && (
                         <p>
                           Settled{" "}
-                          {new Date(p.paid_at).toLocaleString("en-MY", {
+                          {new Date(p.paid_at).toLocaleString("id-ID", {
                             day: "numeric",
                             month: "short",
                             hour: "2-digit",
@@ -148,8 +148,8 @@ export function OrderPaymentsBlock({ orderId }: OrderPaymentsBlockProps) {
                       )}
                       {p.fee_amount != null && Number(p.fee_amount) > 0 && (
                         <p>
-                          Billplz fee: RM {Number(p.fee_amount).toLocaleString("en-MY")}{" "}
-                          · You receive RM {(Number(p.amount) - Number(p.fee_amount)).toLocaleString("en-MY")}
+                          Billplz fee: Rp {Number(p.fee_amount).toLocaleString("id-ID")}{" "}
+                          · You receive Rp {(Number(p.amount) - Number(p.fee_amount)).toLocaleString("id-ID")}
                         </p>
                       )}
                     </div>

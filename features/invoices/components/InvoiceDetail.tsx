@@ -212,7 +212,7 @@ export function InvoiceDetail({ invoice: initialInvoice, isBisnisActive }: Invoi
     }
     if (requiresIndividualWithoutTin) {
       toast.error(
-        `Invoices ≥ RM ${MYINVOIS_INDIVIDUAL_THRESHOLD_MYR.toLocaleString("en-MY")} need the buyer's TIN`,
+        `Invoices ≥ Rp ${MYINVOIS_INDIVIDUAL_THRESHOLD_MYR.toLocaleString("id-ID")} need the buyer's TIN`,
       );
       return;
     }
@@ -407,7 +407,7 @@ export function InvoiceDetail({ invoice: initialInvoice, isBisnisActive }: Invoi
           <div className="flex items-center gap-2">
             <input
               type="number"
-              placeholder={`Max RM ${remaining.toLocaleString("en-MY")}`}
+              placeholder={`Max Rp ${remaining.toLocaleString("id-ID")}`}
               value={paymentAmount}
               onChange={(e) => setPaymentAmount(e.target.value)}
               className="flex-1 h-11 px-3 bg-card border rounded-lg shadow-sm text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-colors"
@@ -483,7 +483,7 @@ export function InvoiceDetail({ invoice: initialInvoice, isBisnisActive }: Invoi
           <div>
             <p className="text-xs text-muted-foreground">Date</p>
             <p className="font-medium">
-              {new Date(invoice.created_at).toLocaleDateString("en-MY", {
+              {new Date(invoice.created_at).toLocaleDateString("id-ID", {
                 day: "numeric",
                 month: "long",
                 year: "numeric",
@@ -498,7 +498,7 @@ export function InvoiceDetail({ invoice: initialInvoice, isBisnisActive }: Invoi
                   new Date(invoice.due_date) < new Date() && remaining > 0 ? "text-red-600" : ""
                 }`}
               >
-                {new Date(invoice.due_date).toLocaleDateString("en-MY", {
+                {new Date(invoice.due_date).toLocaleDateString("id-ID", {
                   day: "numeric",
                   month: "long",
                   year: "numeric",
@@ -524,11 +524,11 @@ export function InvoiceDetail({ invoice: initialInvoice, isBisnisActive }: Invoi
               <div>
                 <p className="text-sm font-medium">{item.name}</p>
                 <p className="text-xs text-muted-foreground">
-                  {item.qty} x RM {item.price.toLocaleString("en-MY")}
+                  {item.qty} x Rp {item.price.toLocaleString("id-ID")}
                 </p>
               </div>
               <p className="text-sm font-medium">
-                RM {(item.price * item.qty).toLocaleString("en-MY")}
+                Rp {(item.price * item.qty).toLocaleString("id-ID")}
               </p>
             </div>
           ))}
@@ -537,25 +537,25 @@ export function InvoiceDetail({ invoice: initialInvoice, isBisnisActive }: Invoi
         <div className="border-t pt-3 space-y-1.5 text-sm">
           <div className="flex justify-between">
             <span className="text-muted-foreground">Subtotal</span>
-            <span>RM {invoice.subtotal.toLocaleString("en-MY")}</span>
+            <span>Rp {invoice.subtotal.toLocaleString("id-ID")}</span>
           </div>
           {invoice.discount > 0 && (
             <div className="flex justify-between">
               <span className="text-muted-foreground">Discount</span>
-              <span>-RM {invoice.discount.toLocaleString("en-MY")}</span>
+              <span>-Rp {invoice.discount.toLocaleString("id-ID")}</span>
             </div>
           )}
           <div className="flex justify-between">
             <span className="text-muted-foreground">Taxable</span>
-            <span>RM {(invoice.subtotal - invoice.discount).toLocaleString("en-MY")}</span>
+            <span>Rp {(invoice.subtotal - invoice.discount).toLocaleString("id-ID")}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">SST {effectiveSstRate}%</span>
-            <span>RM {effectiveSstAmount.toLocaleString("en-MY")}</span>
+            <span>Rp {effectiveSstAmount.toLocaleString("id-ID")}</span>
           </div>
           <div className="flex justify-between font-bold text-base pt-1 border-t">
             <span>Total</span>
-            <span>RM {invoice.total.toLocaleString("en-MY")}</span>
+            <span>Rp {invoice.total.toLocaleString("id-ID")}</span>
           </div>
         </div>
 
@@ -565,14 +565,14 @@ export function InvoiceDetail({ invoice: initialInvoice, isBisnisActive }: Invoi
             <div className="flex justify-between">
               <span className="text-muted-foreground">Paid</span>
               <span className="text-warm-green font-medium">
-                RM {invoice.paid_amount.toLocaleString("en-MY")}
+                Rp {invoice.paid_amount.toLocaleString("id-ID")}
               </span>
             </div>
             {remaining > 0 && (
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Balance</span>
                 <span className="text-red-600 font-medium">
-                  RM {remaining.toLocaleString("en-MY")}
+                  Rp {remaining.toLocaleString("id-ID")}
                 </span>
               </div>
             )}
@@ -625,7 +625,7 @@ export function InvoiceDetail({ invoice: initialInvoice, isBisnisActive }: Invoi
               <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
               <span>
                 LHDN requires the buyer&apos;s TIN for any invoice at or above RM{" "}
-                {MYINVOIS_INDIVIDUAL_THRESHOLD_MYR.toLocaleString("en-MY")}. Edit the invoice to add
+                {MYINVOIS_INDIVIDUAL_THRESHOLD_MYR.toLocaleString("id-ID")}. Edit the invoice to add
                 it before submitting.
               </span>
             </div>
@@ -657,7 +657,7 @@ export function InvoiceDetail({ invoice: initialInvoice, isBisnisActive }: Invoi
               {invoice.myinvois_submitted_at && (
                 <div>
                   <span className="uppercase tracking-wider">Submitted</span> ·{" "}
-                  {new Date(invoice.myinvois_submitted_at).toLocaleString("en-MY")}
+                  {new Date(invoice.myinvois_submitted_at).toLocaleString("id-ID")}
                 </div>
               )}
             </div>

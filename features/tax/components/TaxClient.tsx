@@ -14,7 +14,7 @@ const MONTH_NAMES = [
 ];
 
 function rm(n: number) {
-  return `RM ${n.toLocaleString("en-MY", { maximumFractionDigits: 2 })}`;
+  return `Rp ${n.toLocaleString("id-ID", { maximumFractionDigits: 2 })}`;
 }
 
 interface TaxClientProps {
@@ -285,7 +285,7 @@ export function TaxClient({
             <button
               onClick={() => {
                 const [y, m] = sstMonth.split("-").map(Number);
-                const monthName = new Date(y, m - 1).toLocaleDateString("en-MY", {
+                const monthName = new Date(y, m - 1).toLocaleDateString("id-ID", {
                   month: "long",
                 });
                 const lines = [

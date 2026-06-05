@@ -103,7 +103,7 @@ export function RecapPageClient({ businessName, profileCreatedAt }: RecapPageCli
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  const dateLabel = selectedDate.toLocaleDateString("en-MY", {
+  const dateLabel = selectedDate.toLocaleDateString("id-ID", {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -366,16 +366,16 @@ export function RecapPageClient({ businessName, profileCreatedAt }: RecapPageCli
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Revenue</span>
-                    <span className="tabular-nums text-foreground font-medium">RM {monthSummary.totalRevenue.toLocaleString("en-MY")}</span>
+                    <span className="tabular-nums text-foreground font-medium">Rp {monthSummary.totalRevenue.toLocaleString("id-ID")}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Collected</span>
-                    <span className="tabular-nums text-foreground">RM {monthSummary.collectedRevenue.toLocaleString("en-MY")}</span>
+                    <span className="tabular-nums text-foreground">Rp {monthSummary.collectedRevenue.toLocaleString("id-ID")}</span>
                   </div>
                   {monthSummary.piutang > 0 && (
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-warm-rose">Unpaid</span>
-                      <span className="tabular-nums text-warm-rose">RM {monthSummary.piutang.toLocaleString("en-MY")}</span>
+                      <span className="tabular-nums text-warm-rose">Rp {monthSummary.piutang.toLocaleString("id-ID")}</span>
                     </div>
                   )}
                 </div>

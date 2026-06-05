@@ -279,22 +279,22 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
               </div>
               <div className="flex justify-between text-sm py-2">
                 <span className="text-muted-foreground">Total revenue</span>
-                <span className="font-medium text-foreground">RM {(report.totalRevenue || 0).toLocaleString("en-MY")}</span>
+                <span className="font-medium text-foreground">Rp {(report.totalRevenue || 0).toLocaleString("id-ID")}</span>
               </div>
               <div className="flex justify-between text-sm py-2">
                 <span className="text-muted-foreground">Collected</span>
-                <span className={`font-medium ${report.collectedRevenue > 0 ? "text-green-600" : "text-foreground"}`}>RM {(report.collectedRevenue || 0).toLocaleString("en-MY")}</span>
+                <span className={`font-medium ${report.collectedRevenue > 0 ? "text-green-600" : "text-foreground"}`}>Rp {(report.collectedRevenue || 0).toLocaleString("id-ID")}</span>
               </div>
               {report.piutang > 0 && (
                 <div className="flex justify-between text-sm py-2">
                   <span className="text-muted-foreground">Unpaid</span>
-                  <span className="font-medium text-red-600">RM {report.piutang.toLocaleString("en-MY")}</span>
+                  <span className="font-medium text-red-600">Rp {report.piutang.toLocaleString("id-ID")}</span>
                 </div>
               )}
               {report.totalDiscount > 0 && (
                 <div className="flex justify-between text-sm py-2">
                   <span className="text-muted-foreground">Discount given</span>
-                  <span className="font-medium text-muted-foreground">RM {report.totalDiscount.toLocaleString("en-MY")}</span>
+                  <span className="font-medium text-muted-foreground">Rp {report.totalDiscount.toLocaleString("id-ID")}</span>
                 </div>
               )}
             </div>
@@ -310,7 +310,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
             if (piutangPct > 30) {
               insights.push({
                 icon: "💰",
-                text: `${piutangPct}% of this month's sales aren't collected yet (RM ${report.piutang.toLocaleString("en-MY")}).`,
+                text: `${piutangPct}% of this month's sales aren't collected yet (Rp ${report.piutang.toLocaleString("id-ID")}).`,
                 color: "bg-red-50 border-red-100 text-red-800",
                 actionLabel: "Send reminders",
                 actionHref: "/pengingat",
@@ -323,7 +323,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
             const totalLate = report.lateOrders.reduce((sum: number, o: { total: number }) => sum + o.total, 0);
             insights.push({
               icon: "⏰",
-              text: `${report.lateOrders.length} orders past delivery date (RM ${totalLate.toLocaleString("en-MY")}).`,
+              text: `${report.lateOrders.length} orders past delivery date (Rp ${totalLate.toLocaleString("id-ID")}).`,
               color: "bg-orange-50 border-orange-100 text-orange-800",
               actionLabel: "View order",
               actionHref: "/orders",
@@ -337,7 +337,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
             if (topPct > 20) {
               insights.push({
                 icon: "⭐",
-                text: `${top.name} contributed ${topPct}% of revenue this month (${top.orderCount} orders, RM ${top.totalSpent.toLocaleString("en-MY")}).`,
+                text: `${top.name} contributed ${topPct}% of revenue this month (${top.orderCount} orders, Rp ${top.totalSpent.toLocaleString("id-ID")}).`,
                 color: "bg-blue-50 border-blue-100 text-blue-800",
               });
             }
@@ -358,7 +358,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
             if (oldDebt) {
               insights.push({
                 icon: "🚨",
-                text: `${oldDebt.count} orders unpaid for over 30 days (RM ${oldDebt.amount.toLocaleString("en-MY")}). Follow up soon.`,
+                text: `${oldDebt.count} orders unpaid for over 30 days (Rp ${oldDebt.amount.toLocaleString("id-ID")}). Follow up soon.`,
                 color: "bg-red-50 border-red-100 text-red-800",
                 actionLabel: "View details",
                 actionHref: "/orders",
@@ -413,7 +413,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                     </div>
                     <div className="text-right shrink-0 ml-3">
                       <p className="text-sm font-medium text-foreground">
-                        RM {item.revenue.toLocaleString("en-MY")}
+                        Rp {item.revenue.toLocaleString("id-ID")}
                       </p>
                       {item.profit !== undefined && (
                         <p className={`text-[11px] font-medium ${
@@ -421,7 +421,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                           item.margin !== undefined && item.margin >= 30 ? "text-amber-600" :
                           "text-rose-500"
                         }`}>
-                          Profit RM {item.profit.toLocaleString("en-MY")} ({item.margin}%)
+                          Profit Rp {item.profit.toLocaleString("id-ID")} ({item.margin}%)
                         </p>
                       )}
                     </div>
@@ -439,25 +439,25 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                 {report.paidCount > 0 && (
                   <div className="flex justify-between text-sm py-2">
                     <span className="text-muted-foreground">Paid ({report.paidCount})</span>
-                    <span className="font-medium text-green-600">RM {report.paidRevenue.toLocaleString("en-MY")}</span>
+                    <span className="font-medium text-green-600">Rp {report.paidRevenue.toLocaleString("id-ID")}</span>
                   </div>
                 )}
                 {report.partialCount > 0 && (
                   <div className="flex justify-between text-sm py-2">
                     <span className="text-muted-foreground">DP ({report.partialCount})</span>
-                    <span className="font-medium text-yellow-600">RM {report.partialRevenue.toLocaleString("en-MY")}</span>
+                    <span className="font-medium text-yellow-600">Rp {report.partialRevenue.toLocaleString("id-ID")}</span>
                   </div>
                 )}
                 {report.unpaidCount > 0 && (
                   <div className="flex justify-between text-sm py-2">
                     <span className="text-muted-foreground">Unpaid ({report.unpaidCount})</span>
-                    <span className="font-medium text-red-600">RM {report.unpaidRevenue.toLocaleString("en-MY")}</span>
+                    <span className="font-medium text-red-600">Rp {report.unpaidRevenue.toLocaleString("id-ID")}</span>
                   </div>
                 )}
                 {report.cancelledCount > 0 && (
                   <div className="flex justify-between text-sm py-2">
                     <span className="text-muted-foreground">Cancelled ({report.cancelledCount})</span>
-                    <span className="font-medium text-muted-foreground">RM {report.cancelledValue.toLocaleString("en-MY")}</span>
+                    <span className="font-medium text-muted-foreground">Rp {report.cancelledValue.toLocaleString("id-ID")}</span>
                   </div>
                 )}
               </div>
@@ -476,7 +476,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                       <span className="font-medium text-foreground">{count} orders</span>
                       {report.revenueBySource[source] > 0 && (
                         <span className="text-xs text-muted-foreground ml-2">
-                          · RM {report.revenueBySource[source].toLocaleString("en-MY")}
+                          · Rp {report.revenueBySource[source].toLocaleString("id-ID")}
                         </span>
                       )}
                     </div>
@@ -511,7 +511,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                     </div>
                     <div className="text-right shrink-0 ml-3">
                       <p className="text-sm font-medium text-foreground">
-                        RM {customer.totalSpent.toLocaleString("en-MY")}
+                        Rp {customer.totalSpent.toLocaleString("id-ID")}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {customer.orderCount} orders
@@ -532,7 +532,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                   <div key={bucket.label} className="flex justify-between text-sm py-2">
                     <span className="text-muted-foreground">{bucket.label}</span>
                     <div className="text-right">
-                      <span className="font-medium text-red-600">RM {bucket.amount.toLocaleString("en-MY")}</span>
+                      <span className="font-medium text-red-600">Rp {bucket.amount.toLocaleString("id-ID")}</span>
                       <span className="text-xs text-muted-foreground ml-2">· {bucket.count} orders</span>
                     </div>
                   </div>
@@ -541,7 +541,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
               <div className="flex justify-between text-xs text-muted-foreground pt-1 border-t">
                 <span>Total Unpaid</span>
                 <span className="font-medium text-red-600">
-                  RM {report.piutangAging.reduce((sum, b) => sum + b.amount, 0).toLocaleString("en-MY")}
+                  Rp {report.piutangAging.reduce((sum, b) => sum + b.amount, 0).toLocaleString("id-ID")}
                 </span>
               </div>
             </div>
@@ -589,11 +589,11 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                     <div className="min-w-0">
                       <p className="text-sm text-foreground truncate">{order.customerName}</p>
                       <p className="text-xs text-muted-foreground">
-                        {order.orderNumber} · Delivery {new Date(order.deliveryDate).toLocaleDateString("en-MY", { day: "numeric", month: "short", timeZone: "Asia/Kuala_Lumpur" })}
+                        {order.orderNumber} · Delivery {new Date(order.deliveryDate).toLocaleDateString("id-ID", { day: "numeric", month: "short", timeZone: "Asia/Kuala_Lumpur" })}
                       </p>
                     </div>
                     <span className="text-sm font-medium text-red-600 shrink-0 ml-3">
-                      RM {order.total.toLocaleString("en-MY")}
+                      Rp {order.total.toLocaleString("id-ID")}
                     </span>
                   </div>
                 ))}
@@ -637,7 +637,7 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                       <tr key={day.date} className="border-b border-border/50">
                         <td className="py-2 pr-2 text-foreground">
                           {new Date(day.date + "T00:00:00").toLocaleDateString(
-                            "en-MY",
+                            "id-ID",
                             { day: "numeric", month: "short" }
                           )}
                         </td>
@@ -645,10 +645,10 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                           {day.orders}
                         </td>
                         <td className="py-2 px-2 text-right text-foreground">
-                          RM {day.revenue.toLocaleString("en-MY")}
+                          Rp {day.revenue.toLocaleString("id-ID")}
                         </td>
                         <td className={`py-2 px-2 text-right ${day.collectedRevenue > 0 ? "text-green-600" : "text-foreground"}`}>
-                          RM {day.collectedRevenue.toLocaleString("en-MY")}
+                          Rp {day.collectedRevenue.toLocaleString("id-ID")}
                         </td>
                       </tr>
                     ))}
@@ -668,13 +668,13 @@ export function MonthlyReport({ month, year, exportTrigger, onExportingChange, o
                         RM{" "}
                         {report.dailyBreakdown
                           .reduce((sum, d) => sum + d.revenue, 0)
-                          .toLocaleString("en-MY")}
+                          .toLocaleString("id-ID")}
                       </td>
                       <td className={`py-2 px-2 text-right font-semibold ${report.dailyBreakdown.reduce((sum, d) => sum + d.collectedRevenue, 0) > 0 ? "text-green-600" : "text-foreground"}`}>
                         RM{" "}
                         {report.dailyBreakdown
                           .reduce((sum, d) => sum + d.collectedRevenue, 0)
-                          .toLocaleString("en-MY")}
+                          .toLocaleString("id-ID")}
                       </td>
                     </tr>
                   </tfoot>

@@ -59,7 +59,7 @@ export default async function CustomerAckPage({ params }: PageProps) {
     : `${itemCount} item${itemCount > 1 ? "s" : ""}`;
   const acked = order.customer_ack_at !== null;
   const ackedAt = acked
-    ? new Date(order.customer_ack_at).toLocaleString("en-MY", {
+    ? new Date(order.customer_ack_at).toLocaleString("id-ID", {
         weekday: "long",
         day: "numeric",
         month: "long",
@@ -136,7 +136,7 @@ export default async function CustomerAckPage({ params }: PageProps) {
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">Total</span>
                 <span className="text-xs font-bold text-foreground">
-                  RM {(order.total || 0).toLocaleString("en-MY")}
+                  Rp {(order.total || 0).toLocaleString("id-ID")}
                 </span>
               </div>
               {order.delivery_address && (

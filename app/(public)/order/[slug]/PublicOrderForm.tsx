@@ -311,7 +311,7 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
 
   function formatSelectedDate(dateStr: string) {
     const d = new Date(dateStr + "T00:00");
-    return d.toLocaleDateString("en-MY", { day: "numeric", month: "long", year: "numeric" });
+    return d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
   }
 
   const hasMenuItems = frequentItems.length > 0;
@@ -565,7 +565,7 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
             <div className="min-w-0">
               <p className="text-sm font-medium text-foreground truncate">{fi.name}</p>
               <p className="text-xs text-muted-foreground">
-                RM {fi.price.toLocaleString("en-MY")}
+                Rp {fi.price.toLocaleString("id-ID")}
                 {fi.unit && <span> / {fi.unit}</span>}
                 {isLowStock && !isOutOfStock && <span className="text-warm-rose ml-2">{fi.stock} left</span>}
                 {isOutOfStock && <span className="text-muted-foreground ml-2">Out</span>}
@@ -631,7 +631,7 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
             <div className="flex items-center gap-1 mt-1">
               {fi.price > 0 && (
                 <p className="text-xs text-muted-foreground">
-                  RM {fi.price.toLocaleString("en-MY")}
+                  Rp {fi.price.toLocaleString("id-ID")}
                   {fi.unit && <span> / {fi.unit}</span>}
                 </p>
               )}
@@ -903,23 +903,23 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
                   {fi.name} <span className="text-muted-foreground">×{itemQtys[itemKey(fi)]}</span>
                 </span>
                 <span className="text-foreground font-medium shrink-0 ml-2">
-                  RM {(fi.price * (itemQtys[itemKey(fi)] || 0)).toLocaleString("en-MY")}
+                  Rp {(fi.price * (itemQtys[itemKey(fi)] || 0)).toLocaleString("id-ID")}
                 </span>
               </div>
             ))}
             {deliveryFee > 0 && (
               <div className="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t">
-                <span>Subtotal</span><span>RM {subtotal.toLocaleString("en-MY")}</span>
+                <span>Subtotal</span><span>Rp {subtotal.toLocaleString("id-ID")}</span>
               </div>
             )}
             {deliveryFee > 0 && (
               <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>Delivery</span><span>RM {deliveryFee.toLocaleString("en-MY")}</span>
+                <span>Delivery</span><span>Rp {deliveryFee.toLocaleString("id-ID")}</span>
               </div>
             )}
             <div className="flex items-center justify-between text-sm font-bold pt-1 border-t">
               <span>Total</span>
-              <span>RM {grandTotal.toLocaleString("en-MY")}</span>
+              <span>Rp {grandTotal.toLocaleString("id-ID")}</span>
             </div>
           </div>
         )}
@@ -1011,7 +1011,7 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
             </label>
             {preorderEnabled && !langgananEnabled && (
               <p className="text-[11px] text-muted-foreground/60 mb-1.5">
-                Earliest: {minDate.toLocaleDateString("en-MY", { weekday: "short", day: "numeric", month: "short" })}
+                Earliest: {minDate.toLocaleDateString("id-ID", { weekday: "short", day: "numeric", month: "short" })}
               </p>
             )}
             {/* Hidden input for form validation */}
@@ -1298,7 +1298,7 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
                   <p className="text-[10px] text-muted-foreground">{deliveryZone === "peninsular" ? "Peninsular Malaysia" : "Sabah & Sarawak"}</p>
                 </div>
                 <span className="text-sm font-semibold text-warm-green">
-                  {deliveryFee === 0 ? "Free" : `RM ${deliveryFee.toLocaleString("en-MY")}`}
+                  {deliveryFee === 0 ? "Free" : `Rp ${deliveryFee.toLocaleString("id-ID")}`}
                 </span>
               </div>
             ) : null}
@@ -1427,7 +1427,7 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
                   {grandTotal > 0 && (
                     <>
                       <span className="w-px h-5 bg-white/30" />
-                      <span className="text-sm">RM {grandTotal.toLocaleString("en-MY")}</span>
+                      <span className="text-sm">Rp {grandTotal.toLocaleString("id-ID")}</span>
                     </>
                   )}
                 </>

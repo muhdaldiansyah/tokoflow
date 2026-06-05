@@ -86,7 +86,7 @@ function groupOrdersByDate(orders: Order[]): { key: string; label: string; count
     else if (key === yesterdayStr) label = "Yesterday";
     else {
       const d = new Date(key + "T00:00");
-      label = d.toLocaleDateString("en-MY", { weekday: "short", day: "numeric", month: "short" });
+      label = d.toLocaleDateString("id-ID", { weekday: "short", day: "numeric", month: "short" });
     }
     return { key, label, count: groupOrders.length, orders: groupOrders };
   });
@@ -528,7 +528,7 @@ export function OrderList({ initialData }: { initialData?: OrderListInitialData 
     const diffHours = Math.floor(diffMins / 60);
     if (diffHours < 24) return `${diffHours}h ago`;
 
-    return date.toLocaleTimeString("en-MY", {
+    return date.toLocaleTimeString("id-ID", {
       hour: "2-digit",
       minute: "2-digit",
     });
@@ -542,12 +542,12 @@ export function OrderList({ initialData }: { initialData?: OrderListInitialData 
     const deliveryDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
     const hasTime = date.getHours() !== 0 || date.getMinutes() !== 0;
-    const timeStr = hasTime ? ` ${date.toLocaleTimeString("en-MY", { hour: "2-digit", minute: "2-digit" })}` : "";
+    const timeStr = hasTime ? ` ${date.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}` : "";
 
     if (deliveryDay.getTime() === today.getTime()) return `Today${timeStr}`;
     if (deliveryDay.getTime() === tomorrow.getTime()) return `Tomorrow${timeStr}`;
 
-    return date.toLocaleDateString("en-MY", { day: "numeric", month: "short" }) + timeStr;
+    return date.toLocaleDateString("id-ID", { day: "numeric", month: "short" }) + timeStr;
   }, []);
 
   useEffect(() => {
@@ -587,7 +587,7 @@ export function OrderList({ initialData }: { initialData?: OrderListInitialData 
 
       const rows = allOrders.map((o) => ({
         "Order no.": o.order_number,
-        "Date": new Date(o.created_at).toLocaleDateString("en-MY", { day: "numeric", month: "short", year: "numeric" }),
+        "Date": new Date(o.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
         "Customer": o.customer_name || "-",
         "Phone": o.customer_phone || "-",
         "Item": o.items.map((it) => `${it.name} x${it.qty}`).join(", "),
@@ -603,7 +603,7 @@ export function OrderList({ initialData }: { initialData?: OrderListInitialData 
         "Subscription": o.is_langganan ? "Yes" : "-",
         "Walk-in": o.is_dine_in ? "Yes" : "-",
         "Table": o.table_number || "-",
-        "Delivery date": o.delivery_date ? new Date(o.delivery_date).toLocaleDateString("en-MY", { day: "numeric", month: "short", year: "numeric" }) : "-",
+        "Delivery date": o.delivery_date ? new Date(o.delivery_date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }) : "-",
         "Note": o.notes || "-",
       }));
 
@@ -718,7 +718,7 @@ export function OrderList({ initialData }: { initialData?: OrderListInitialData 
           >
             <div className="min-w-0">
               <p className="text-sm font-medium text-foreground">
-                Today: {deliverySummary.count} order{deliverySummary.count === 1 ? "" : "s"} · RM {deliverySummary.revenue.toLocaleString("en-MY")}
+                Today: {deliverySummary.count} order{deliverySummary.count === 1 ? "" : "s"} · Rp {deliverySummary.revenue.toLocaleString("id-ID")}
               </p>
               <p className="text-xs text-muted-foreground truncate">
                 {deliverySummary.items.slice(0, 3).map(i => `${i.name} (${i.qty})`).join(", ")}
@@ -826,7 +826,7 @@ export function OrderList({ initialData }: { initialData?: OrderListInitialData 
                   {dateFilter
                     ? `${dateMode === "delivery" ? "Delivery" : "Order"}: ${DATE_CHIPS.find(c => c.value === dateFilter)?.label
                       || (dateFilter.startsWith("custom:")
-                        ? new Date(dateFilter.slice(7) + "T00:00").toLocaleDateString("en-MY", { day: "numeric", month: "short" })
+                        ? new Date(dateFilter.slice(7) + "T00:00").toLocaleDateString("id-ID", { day: "numeric", month: "short" })
                         : "")}`
                     : "Date"
                   }
@@ -1203,7 +1203,7 @@ export function OrderList({ initialData }: { initialData?: OrderListInitialData 
                 </div>
                 <div className="rounded-lg bg-muted/50 px-3 py-2">
                   <p className="text-[11px] text-muted-foreground">Revenue</p>
-                  <p className="text-lg font-semibold text-foreground">RM {(todaySummary?.todayRevenue ?? 0).toLocaleString("en-MY")}</p>
+                  <p className="text-lg font-semibold text-foreground">Rp {(todaySummary?.todayRevenue ?? 0).toLocaleString("id-ID")}</p>
                 </div>
               </div>
               <div className="mt-3 space-y-2 text-xs">

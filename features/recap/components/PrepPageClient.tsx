@@ -67,7 +67,7 @@ export function PrepPageClient({ initialProduction, initialDateStr, businessName
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  const dateLabel = selectedDate.toLocaleDateString("en-MY", {
+  const dateLabel = selectedDate.toLocaleDateString("id-ID", {
     day: "numeric",
     month: "short",
     year: "numeric",

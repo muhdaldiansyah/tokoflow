@@ -121,7 +121,7 @@ export function CustomerDetailClient({
       else if (key === yesterdayStr) label = "Yesterday";
       else {
         const d = new Date(key + "T00:00");
-        label = d.toLocaleDateString("en-MY", { weekday: "short", day: "numeric", month: "short" });
+        label = d.toLocaleDateString("id-ID", { weekday: "short", day: "numeric", month: "short" });
       }
       return { key, label, count: groupOrders.length, orders: groupOrders };
     });
@@ -209,19 +209,19 @@ export function CustomerDetailClient({
                       <div className="flex items-start justify-between gap-2 mb-0.5">
                         <span className="text-sm font-semibold text-foreground">{order.order_number}</span>
                         <span className="text-xs text-muted-foreground shrink-0 pt-0.5">
-                          {new Date(order.created_at).toLocaleTimeString("en-MY", { hour: "2-digit", minute: "2-digit" })}
+                          {new Date(order.created_at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
                         </span>
                       </div>
                       {itemsSummary && <p className="text-xs text-muted-foreground truncate">{itemsSummary}</p>}
                       {order.delivery_date && (
                         <p className="flex items-center gap-1 text-xs text-warm-amber mt-0.5">
                           <Calendar className="w-3 h-3" />
-                          {new Date(order.delivery_date).toLocaleDateString("en-MY", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                          {new Date(order.delivery_date).toLocaleDateString("id-ID", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
                         </p>
                       )}
                       <div className="h-1.5" />
                       <div className="flex items-center justify-between gap-2">
-                        <span className="text-sm font-bold text-foreground">RM {order.total.toLocaleString("en-MY")}</span>
+                        <span className="text-sm font-bold text-foreground">Rp {order.total.toLocaleString("id-ID")}</span>
                         <div className="flex items-center gap-1.5 flex-nowrap shrink-0">
                           {order.source === "order_link" && (
                             <span className="inline-flex h-5 px-1.5 text-[10px] font-medium rounded-full border items-center bg-sky-50 text-sky-700 border-sky-200">Store link</span>
@@ -268,12 +268,12 @@ export function CustomerDetailClient({
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Total spent</span>
-                  <span className="font-semibold text-foreground tabular-nums">RM {totalSpent.toLocaleString("en-MY")}</span>
+                  <span className="font-semibold text-foreground tabular-nums">Rp {totalSpent.toLocaleString("id-ID")}</span>
                 </div>
                 {totalUnpaid > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-warm-rose">Unpaid</span>
-                    <span className="font-semibold text-warm-rose tabular-nums">RM {totalUnpaid.toLocaleString("en-MY")}</span>
+                    <span className="font-semibold text-warm-rose tabular-nums">Rp {totalUnpaid.toLocaleString("id-ID")}</span>
                   </div>
                 )}
                 {(customer.address || customer.notes) && (

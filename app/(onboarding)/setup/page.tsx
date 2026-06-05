@@ -290,7 +290,7 @@ export default function SetupPage() {
                       type="text"
                       inputMode="numeric"
                       placeholder="25"
-                      value={product.price ? parseInt(product.price).toLocaleString("en-MY") : ""}
+                      value={product.price ? parseInt(product.price).toLocaleString("id-ID") : ""}
                       onChange={(e) => {
                         const updated = [...products];
                         updated[i] = { ...updated[i], price: e.target.value.replace(/\D/g, "") };

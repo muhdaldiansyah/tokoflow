@@ -172,7 +172,7 @@ export default async function OrderSuccessPage({ params, searchParams }: PagePro
             <p className="font-medium text-foreground">Paid via {channelLabel}</p>
             {displayPaidAmount > 0 && (
               <p className="text-muted-foreground mt-0.5">
-                RM {displayPaidAmount.toLocaleString("en-MY")} settled directly to {businessName || "the business"}.
+                Rp {displayPaidAmount.toLocaleString("id-ID")} settled directly to {businessName || "the business"}.
               </p>
             )}
           </div>

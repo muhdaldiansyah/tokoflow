@@ -284,7 +284,7 @@ export async function PUT(
           source_table: "orders",
           source_id: id,
           idempotency_key: `manual_payment:${id}:${Date.now()}`,
-          reason: `Manual payment update: RM ${oldPaidAmount} → RM ${data.paid_amount}`,
+          reason: `Manual payment update: Rp ${oldPaidAmount} → Rp ${data.paid_amount}`,
         }).then(() => {});
       }
     }

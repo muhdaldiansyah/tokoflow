@@ -47,11 +47,11 @@ function formatDate(iso: string): string {
   const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const yestMidnight = new Date(todayMidnight.getTime() - 86_400_000);
   const dMidnight = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const time = date.toLocaleTimeString("en-MY", { hour: "2-digit", minute: "2-digit" });
+  const time = date.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
 
   if (dMidnight.getTime() === todayMidnight.getTime()) return `Today ${time}`;
   if (dMidnight.getTime() === yestMidnight.getTime()) return `Yesterday ${time}`;
-  return date.toLocaleDateString("en-MY", { day: "numeric", month: "short" }) + ` ${time}`;
+  return date.toLocaleDateString("id-ID", { day: "numeric", month: "short" }) + ` ${time}`;
 }
 
 // ── main component ─────────────────────────────────────────────────────────
@@ -187,7 +187,7 @@ export function InventoryPageClient({ initialProducts, initialSales, businessNam
       .join("\n");
     const now = new Date();
     const day = now.getDate();
-    const month = now.toLocaleString("en-MY", { month: "short" });
+    const month = now.toLocaleString("id-ID", { month: "short" });
     const year = now.getFullYear();
     const datePart = `${day}-${month}-${year}`;
     const namePart = businessName
@@ -322,7 +322,7 @@ export function InventoryPageClient({ initialProducts, initialSales, businessNam
                           <p className="text-sm font-medium text-foreground truncate">{product.name}</p>
                           <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                             <span className="text-xs text-muted-foreground">
-                              RM {product.price.toLocaleString("en-MY")}
+                              Rp {product.price.toLocaleString("id-ID")}
                               {product.unit ? ` / ${product.unit}` : ""}
                             </span>
                             {sold > 0 && (
@@ -550,7 +550,7 @@ export function InventoryPageClient({ initialProducts, initialSales, businessNam
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-foreground truncate">{product.name}</p>
                           <p className="text-xs text-muted-foreground mt-0.5">
-                            RM {product.price.toLocaleString("en-MY")}
+                            Rp {product.price.toLocaleString("id-ID")}
                             {product.unit ? ` / ${product.unit}` : ""}
                           </p>
                         </div>

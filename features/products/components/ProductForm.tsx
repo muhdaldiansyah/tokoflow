@@ -383,7 +383,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
               <label className={labelClass}>Price <span className="text-warm-rose">*</span></label>
               <div className="flex items-center px-3 pb-2 pt-0 gap-1.5">
                 <span className="text-sm text-muted-foreground shrink-0 select-none">RM</span>
-                <input type="text" inputMode="numeric" value={price ? parseInt(price).toLocaleString("en-MY") : ""} onChange={(e) => setPrice(e.target.value.replace(/\D/g, ""))} placeholder="25" className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none" />
+                <input type="text" inputMode="numeric" value={price ? parseInt(price).toLocaleString("id-ID") : ""} onChange={(e) => setPrice(e.target.value.replace(/\D/g, ""))} placeholder="25" className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none" />
               </div>
             </div>
         </div>
@@ -464,7 +464,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
                   <input
                     type="text"
                     inputMode="numeric"
-                    value={costPrice ? parseInt(costPrice).toLocaleString("en-MY") : ""}
+                    value={costPrice ? parseInt(costPrice).toLocaleString("id-ID") : ""}
                     onChange={(e) => setCostPrice(e.target.value.replace(/\D/g, ""))}
                     placeholder="10"
                     className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none"
@@ -496,7 +496,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Gross margin</span>
-                      <span className="font-semibold text-foreground">RM {profit.toLocaleString("en-MY")}</span>
+                      <span className="font-semibold text-foreground">Rp {profit.toLocaleString("id-ID")}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Food cost</span>
@@ -504,11 +504,11 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
                     </div>
                     <div className="flex justify-between text-sm pt-1 border-t border-current/10">
                       <span className="text-muted-foreground">Overhead estimate ({overheadPct}%)</span>
-                      <span className="text-muted-foreground">−RM {overheadEstimate.toLocaleString("en-MY")}</span>
+                      <span className="text-muted-foreground">−Rp {overheadEstimate.toLocaleString("id-ID")}</span>
                     </div>
                     <div className="flex justify-between text-sm font-semibold">
                       <span className="text-foreground">Net margin</span>
-                      <span className={color}>{netMargin}% (RM {netProfit.toLocaleString("en-MY")})</span>
+                      <span className={color}>{netMargin}% (Rp {netProfit.toLocaleString("id-ID")})</span>
                     </div>
                     <p className="text-[10px] text-muted-foreground/70 pt-0.5">
                       *Overhead = operating costs beyond raw materials (transport, rent, utilities, packaging). Edit in Settings.
@@ -528,11 +528,11 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
             </p>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Average</span>
-              <span className="font-semibold text-foreground">RM {benchmark.price.avg.toLocaleString("en-MY")}</span>
+              <span className="font-semibold text-foreground">Rp {benchmark.price.avg.toLocaleString("id-ID")}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Range</span>
-              <span className="text-muted-foreground">RM {benchmark.price.min.toLocaleString("en-MY")} — RM {benchmark.price.max.toLocaleString("en-MY")}</span>
+              <span className="text-muted-foreground">Rp {benchmark.price.min.toLocaleString("id-ID")} — Rp {benchmark.price.max.toLocaleString("id-ID")}</span>
             </div>
             {benchmark.avgFoodCostPct !== null && (
               <div className="flex justify-between text-sm">
@@ -546,7 +546,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
               if (diff < -benchmark.price.avg * 0.1) {
                 return (
                   <p className="text-xs text-red-600 font-medium pt-1 border-t border-blue-200">
-                    Your price RM {Math.abs(diff).toLocaleString("en-MY")} below average. You&apos;re leaving margin on the table.
+                    Your price Rp {Math.abs(diff).toLocaleString("id-ID")} below average. You&apos;re leaving margin on the table.
                   </p>
                 );
               } else if (diff > benchmark.price.avg * 0.2) {
@@ -572,7 +572,7 @@ export function ProductForm({ initialProduct }: ProductFormProps) {
             onClick={() => setPrice(String(benchmark.price.median))}
             className="w-full text-left rounded-lg border border-dashed border-blue-300 bg-blue-50/50 px-3 py-2 text-xs text-blue-600 hover:bg-blue-50 transition-colors"
           >
-            💡 Suggested price based on {benchmark.usersInCluster} businesses in {benchmark.city}: <span className="font-semibold">RM {benchmark.price.median.toLocaleString("en-MY")}</span> — tap to apply
+            💡 Suggested price based on {benchmark.usersInCluster} businesses in {benchmark.city}: <span className="font-semibold">Rp {benchmark.price.median.toLocaleString("id-ID")}</span> — tap to apply
           </button>
         )}
 
