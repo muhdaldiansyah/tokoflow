@@ -85,7 +85,7 @@ export function InvoiceDetail({ invoice: initialInvoice, isBisnisActive }: Invoi
     invoice.total >= MYINVOIS_INDIVIDUAL_THRESHOLD_MYR
     && !(invoice.buyer_tin || invoice.buyer_npwp);
 
-  // Poll the LHDN status endpoint while the submission is in flight.
+  // Poll the DJP status endpoint while the submission is in flight.
   useEffect(() => {
     if (!myInvoisPolling) return;
     if (!invoice.myinvois_uuid) return;
@@ -112,7 +112,7 @@ export function InvoiceDetail({ invoice: initialInvoice, isBisnisActive }: Invoi
             if (terminal(data.status as MyInvoisStatus)) {
               setMyInvoisPolling(false);
               if (data.status === "valid") {
-                toast.success("MyInvois validated by LHDN");
+                toast.success("MyInvois validated by DJP");
               } else if (data.status === "invalid" || data.status === "rejected") {
                 toast.error(`MyInvois ${data.status}`);
               }
@@ -212,7 +212,7 @@ export function InvoiceDetail({ invoice: initialInvoice, isBisnisActive }: Invoi
     }
     if (requiresIndividualWithoutTin) {
       toast.error(
-        `Invoices ≥ Rp ${MYINVOIS_INDIVIDUAL_THRESHOLD_MYR.toLocaleString("id-ID")} need the buyer's TIN`,
+        `Invoices ≥ Rp ${MYINVOIS_INDIVIDUAL_THRESHOLD_MYR.toLocaleString("id-ID")} need the buyer's NPWP`,
       );
       return;
     }
@@ -236,7 +236,7 @@ export function InvoiceDetail({ invoice: initialInvoice, isBisnisActive }: Invoi
       }));
       setMyInvoisPolling(true);
       track("myinvois_submitted", { invoiceId: invoice.id });
-      toast.success("Submitted to LHDN — awaiting validation");
+      toast.success("Submitted to DJP — awaiting validation");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "MyInvois submission failed");
     } finally {
@@ -439,15 +439,15 @@ export function InvoiceDetail({ invoice: initialInvoice, isBisnisActive }: Invoi
             )}
             {(invoice.seller_tin || invoice.seller_npwp) && (
               <p className="text-xs text-muted-foreground">
-                TIN: {invoice.seller_tin || invoice.seller_npwp}
+                NPWP: {invoice.seller_tin || invoice.seller_npwp}
               </p>
             )}
             {invoice.seller_brn && (
-              <p className="text-xs text-muted-foreground">BRN: {invoice.seller_brn}</p>
+              <p className="text-xs text-muted-foreground">NIB: {invoice.seller_brn}</p>
             )}
             {invoice.seller_sst_registration_id && (
               <p className="text-xs text-muted-foreground">
-                SST: {invoice.seller_sst_registration_id}
+                PPN: {invoice.seller_sst_registration_id}
               </p>
             )}
           </div>
@@ -464,14 +464,14 @@ export function InvoiceDetail({ invoice: initialInvoice, isBisnisActive }: Invoi
             )}
             {(invoice.buyer_tin || invoice.buyer_npwp) && (
               <p className="text-xs text-muted-foreground">
-                TIN: {invoice.buyer_tin || invoice.buyer_npwp}
+                NPWP: {invoice.buyer_tin || invoice.buyer_npwp}
               </p>
             )}
             {invoice.buyer_brn && (
-              <p className="text-xs text-muted-foreground">BRN: {invoice.buyer_brn}</p>
+              <p className="text-xs text-muted-foreground">NIB: {invoice.buyer_brn}</p>
             )}
             {invoice.buyer_sst_id && (
-              <p className="text-xs text-muted-foreground">SST: {invoice.buyer_sst_id}</p>
+              <p className="text-xs text-muted-foreground">PPN: {invoice.buyer_sst_id}</p>
             )}
           </div>
         </div>
@@ -550,7 +550,7 @@ export function InvoiceDetail({ invoice: initialInvoice, isBisnisActive }: Invoi
             <span>Rp {(invoice.subtotal - invoice.discount).toLocaleString("id-ID")}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-muted-foreground">SST {effectiveSstRate}%</span>
+            <span className="text-muted-foreground">PPN {effectiveSstRate}%</span>
             <span>Rp {effectiveSstAmount.toLocaleString("id-ID")}</span>
           </div>
           <div className="flex justify-between font-bold text-base pt-1 border-t">
@@ -587,7 +587,7 @@ export function InvoiceDetail({ invoice: initialInvoice, isBisnisActive }: Invoi
             <div className="flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-warm-green" />
               <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">
-                LHDN MyInvois
+                DJP MyInvois
               </p>
             </div>
             {myInvoisStatus && (
@@ -611,7 +611,7 @@ export function InvoiceDetail({ invoice: initialInvoice, isBisnisActive }: Invoi
             <div className="flex items-start gap-2 text-[11px] text-muted-foreground bg-muted rounded-md p-2">
               <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
               <span>
-                MyInvois submission requires the Pro plan (RM 49/mo).{" "}
+                MyInvois submission requires the Pro plan (Rp 99.000/mo).{" "}
                 <Link href="/settings" className="underline">
                   Upgrade
                 </Link>
@@ -624,7 +624,7 @@ export function InvoiceDetail({ invoice: initialInvoice, isBisnisActive }: Invoi
             <div className="flex items-start gap-2 text-[11px] text-warm-rose bg-rose-50 rounded-md p-2">
               <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
               <span>
-                LHDN requires the buyer&apos;s TIN for any invoice at or above RM{" "}
+                DJP requires the buyer&apos;s NPWP for any invoice at or above RM{" "}
                 {MYINVOIS_INDIVIDUAL_THRESHOLD_MYR.toLocaleString("id-ID")}. Edit the invoice to add
                 it before submitting.
               </span>
@@ -684,7 +684,7 @@ export function InvoiceDetail({ invoice: initialInvoice, isBisnisActive }: Invoi
           {myInvoisPolling && !terminal(myInvoisStatus) && (
             <p className="text-[11px] text-muted-foreground flex items-center gap-1">
               <Loader2 className="w-3 h-3 animate-spin" />
-              Checking LHDN validation status…
+              Checking DJP validation status…
             </p>
           )}
 
@@ -726,7 +726,7 @@ export function InvoiceDetail({ invoice: initialInvoice, isBisnisActive }: Invoi
           <div className="w-full max-w-md bg-card rounded-xl shadow-lg p-4 space-y-3">
             <h2 className="text-sm font-semibold">Cancel MyInvois document</h2>
             <p className="text-xs text-muted-foreground">
-              LHDN requires a reason for cancellation (min. 5 characters). This action is final and
+              DJP requires a reason for cancellation (min. 5 characters). This action is final and
               cannot be undone.
             </p>
             <textarea

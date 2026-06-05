@@ -94,7 +94,7 @@ export function InvoicesClient({ initialInvoices, bisnisActive }: InvoicesClient
         <div>
           <h1 className="text-lg font-semibold text-foreground">Invoices</h1>
           <p className="text-xs text-muted-foreground">
-            Invoices, receivables, and LHDN MyInvois submissions
+            Invoices, receivables, and DJP MyInvois submissions
           </p>
         </div>
         <Link
@@ -136,7 +136,7 @@ export function InvoicesClient({ initialInvoices, bisnisActive }: InvoicesClient
           <p className="text-xs text-blue-800 flex items-start gap-1.5">
             <ShieldCheck className="w-3.5 h-3.5 mt-0.5 shrink-0" />
             <span>
-              Upgrade to <span className="font-semibold">Pro</span> to submit invoices to LHDN
+              Upgrade to <span className="font-semibold">Pro</span> to submit invoices to DJP
               MyInvois with one click.
             </span>
           </p>

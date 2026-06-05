@@ -103,7 +103,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
     prefill?.discount ?? existingInvoice?.discount ?? 0,
   );
 
-  // SST rate resolution — request → existing invoice → profile default → 0.
+  // PPN rate resolution — request → existing invoice → profile default → 0.
   const [sstRate, setSstRate] = useState<0 | 6>(() => {
     const existing = existingInvoice?.sst_rate ?? existingInvoice?.ppn_rate;
     if (existing === 0 || existing === 6) return existing;
@@ -141,7 +141,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
   const [myInvoisPolling, setMyInvoisPolling] = useState(false);
 
   // Load profile once — gives us default_sst_rate + bisnis_until for Pro gate
-  // + the merchant's own TIN / BRN (used to validate MyInvois prerequisites).
+  // + the merchant's own NPWP / NIB (used to validate MyInvois prerequisites).
   useEffect(() => {
     let cancelled = false;
     async function load() {
@@ -151,7 +151,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
         const data = (await res.json()) as ProfileSnapshot;
         if (cancelled) return;
         setProfile(data);
-        // Seed the SST rate from the merchant default only when the form has
+        // Seed the PPN rate from the merchant default only when the form has
         // no opinion yet (new invoice with no prefill rate, no existing row).
         const hasExplicitRate =
           existingInvoice?.sst_rate !== undefined
@@ -193,7 +193,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.qty, 0);
   const taxable = Math.max(0, subtotal - discount);
-  // SST to 2 decimals (MYR sen) — keeps the shown total in step with the server.
+  // PPN to 2 decimals (MYR sen) — keeps the shown total in step with the server.
   const sstAmount = Math.round(taxable * sstRate) / 100;
   const total = taxable + sstAmount;
 
@@ -233,7 +233,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
             clearInterval(timer);
             setMyInvoisPolling(false);
             if (data.status === "valid") {
-              toast.success("MyInvois validated by LHDN");
+              toast.success("MyInvois validated by DJP");
             } else if (data.status === "invalid" || data.status === "rejected") {
               toast.error(`MyInvois ${data.status}`);
             }
@@ -352,7 +352,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
     }
     if (requiresIndividualWithoutTin) {
       toast.error(
-        `Invoices ≥ Rp ${MYINVOIS_INDIVIDUAL_THRESHOLD_MYR.toLocaleString("id-ID")} need the buyer's TIN for LHDN submission`,
+        `Invoices ≥ Rp ${MYINVOIS_INDIVIDUAL_THRESHOLD_MYR.toLocaleString("id-ID")} need the buyer's NPWP for DJP submission`,
       );
       return;
     }
@@ -373,7 +373,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
       setMyInvoisLongId(data.longId ?? null);
       setMyInvoisPolling(true);
       track("myinvois_submitted", { invoiceId: existingInvoice.id });
-      toast.success("Submitted to LHDN — awaiting validation");
+      toast.success("Submitted to DJP — awaiting validation");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "MyInvois submission failed");
     } finally {
@@ -450,7 +450,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
           </div>
           <div className="rounded-lg border bg-card transition-colors focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/30">
             <label className="block px-3 pt-1.5 text-[10px] font-medium text-muted-foreground">
-              TIN
+              NPWP
             </label>
             <input
               type="text"
@@ -464,7 +464,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
         <div className="grid grid-cols-2 gap-3">
           <div className="rounded-lg border bg-card transition-colors focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/30">
             <label className="block px-3 pt-1.5 text-[10px] font-medium text-muted-foreground">
-              BRN (Sdn Bhd no.)
+              NIB
             </label>
             <input
               type="text"
@@ -476,7 +476,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
           </div>
           <div className="rounded-lg border bg-card transition-colors focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/30">
             <label className="block px-3 pt-1.5 text-[10px] font-medium text-muted-foreground">
-              SST registration
+              PKP status
             </label>
             <input
               type="text"
@@ -491,7 +491,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
           <div className="flex items-start gap-2 text-[11px] text-warm-rose bg-rose-50 rounded-md p-2">
             <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
             <span>
-              LHDN requires the buyer&apos;s TIN for any invoice at or above RM{" "}
+              DJP requires the buyer&apos;s NPWP for any invoice at or above RM{" "}
               {MYINVOIS_INDIVIDUAL_THRESHOLD_MYR.toLocaleString("id-ID")}.
             </span>
           </div>
@@ -631,7 +631,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
           </div>
           <div className="space-y-1.5">
             <div className="flex items-center justify-between gap-3">
-              <span className="text-muted-foreground">SST</span>
+              <span className="text-muted-foreground">PPN</span>
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1 bg-muted rounded-md p-0.5">
                   {SST_OPTIONS.map((opt) => (
@@ -716,7 +716,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
             <div className="flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-warm-green" />
               <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">
-                LHDN MyInvois
+                DJP MyInvois
               </p>
             </div>
             {myInvoisStatus && (
@@ -740,7 +740,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
             <div className="flex items-start gap-2 text-[11px] text-muted-foreground bg-muted rounded-md p-2">
               <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
               <span>
-                MyInvois submission requires the Pro plan (RM 49/mo). Upgrade in{" "}
+                MyInvois submission requires the Pro plan (Rp 99.000/mo). Upgrade in{" "}
                 <Link href="/settings" className="underline">
                   Settings
                 </Link>
@@ -753,7 +753,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
             <div className="flex items-start gap-2 text-[11px] text-warm-rose bg-rose-50 rounded-md p-2">
               <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
               <span>
-                Your TIN and BRN are missing. Set them in{" "}
+                Your NPWP and NIB are missing. Set them in{" "}
                 <Link href="/settings" className="underline">
                   Settings → Tax identity
                 </Link>{" "}
@@ -807,7 +807,7 @@ export function InvoiceForm({ prefill, existingInvoice }: InvoiceFormProps) {
           {myInvoisPolling && !terminalMyInvoisStatus(myInvoisStatus) && (
             <p className="text-[11px] text-muted-foreground flex items-center gap-1">
               <Loader2 className="w-3 h-3 animate-spin" />
-              Checking LHDN validation status…
+              Checking DJP validation status…
             </p>
           )}
         </div>
