@@ -1,0 +1,239 @@
+# Mobile UX Overhaul — 19 Maret 2026
+
+> Audit lengkap semua masalah yang ditemukan dan diperbaiki di Tokoflow Mobile App
+
+**Tanggal:** 19 Maret 2026
+**Status:** 32 issues ditemukan, 30 fixed, 2 open
+
+---
+
+## A. Tempel Chat & AI Parsing (7 issues)
+
+### A1. Tempel Chat langsung ke Detail Pesanan
+**Masalah:** Setelah Tempel Chat di home screen, pesanan langsung dibuat dan user diarahkan ke halaman detail — tanpa kesempatan mengisi pelanggan, tanggal kirim, atau status bayar.
+**Penyebab:** `handleAIParsedItems()` di home screen langsung memanggil `createOrder.mutate()`.
+**Fix:** Navigasi ke `/orders/new?prefillOrder=<JSON>` — user bisa review dan edit sebelum submit.
+**Status:** FIXED
+
+### A2. AI hanya parse item, tidak parse metadata
+**Masalah:** `parseTextToItems()` hanya return `OrderItem[]` (nama, qty, harga). Tidak ada customer name, tanggal, status bayar, diskon, catatan.
+**Penyebab:** Endpoint salah (`/api/recap/analyze` yang tidak handle `parse_order`) dan tidak ada logic metadata.
+**Fix:** Ganti ke `/api/voice/parse` yang sudah extract semua metadata. Tambah `fallbackParseOrder()` untuk local parsing.
+**Status:** FIXED
+
+### A3. Image parsing endpoint salah
+**Masalah:** `parseImageToItems()` call `/api/recap/analyze` dengan `type: "parse_order_image"` — endpoint ini tidak exist.
+**Penyebab:** Copy-paste dari text parsing, endpoint tidak diupdate.
+**Fix:** Ganti ke `/api/image/parse` dengan format payload yang benar (`data:image/jpeg;base64,...`).
+**Status:** FIXED
+
+### A4. Backend image parse tidak extract metadata
+**Masalah:** `/api/image/parse` di web backend hanya return `{ items }`, tidak extract customer/tanggal/bayar.
+**Penyebab:** Prompt Gemini hanya minta items.
+**Fix:** Update prompt untuk extract semua metadata (sama seperti `/api/voice/parse`). Response sekarang return full `ParsedOrder`.
+**Status:** FIXED
+
+### A5. Parsed items tidak dicocokkan dengan katalog produk
+**Masalah:** AI bisa return item yang tidak ada di katalog toko — harga 0, nama tidak sesuai.
+**Penyebab:** Tidak ada post-processing setelah AI parse.
+**Fix:** Tambah `matchItemsToProducts()` — exact match dulu, lalu fuzzy match. Item yang tidak cocok dibuang.
+**Status:** FIXED
+
+### A6. Fallback parser return item non-katalog
+**Masalah:** `fallbackParse()` menambah item dengan `price: 0` jika tidak cocok di katalog.
+**Penyebab:** Ada `else if` yang push item tanpa match.
+**Fix:** Hapus `else if` — hanya item yang cocok katalog yang ditambahkan.
+**Status:** FIXED
+
+### A7. Customer name tidak terparse di fallback
+**Masalah:** Input "kue coklat 3, rano karno tanggal 24 mar, lunas" → nama "rano karno" tidak terdeteksi.
+**Penyebab:** Fallback regex terlalu ketat (hanya "nama:", "an.", dll). "rano karno tanggal 24 mar" dianggap satu segment.
+**Fix:** 3 layer detection: (1) keyword explicit, (2) prefix bu/pak/mbak, (3) smart guess — strip tanggal/bayar phrases, sisa text = nama.
+**Status:** FIXED
+
+---
+
+## B. Rekap UX (10 issues)
+
+### B1. "AOV" tidak dipahami UMKM
+**Masalah:** Label "AOV Rp68.676" — AOV (Average Order Value) adalah istilah marketing.
+**Fix:** Ganti ke "Rata-rata Rp68.676".
+**Status:** FIXED
+
+### B2. "Umur Belum Dibayar" membingungkan
+**Masalah:** Section title "Umur Belum Dibayar" dengan rows "0-7 hari: 16 · Rp1.074.000" — tidak jelas apa artinya.
+**Fix:** Ganti ke "Yang Belum Bayar" dengan format: "Minggu ini (12 Mar – 19 Mar)" / "1 minggu lalu (5 Mar – 12 Mar)". Setiap row: title + count pesanan belum lunas + date range. Hanya tampil di bulan sekarang.
+**Status:** FIXED
+
+### B3. Rincian Harian format tidak intuitif
+**Masalah:** "03-04 | 1 | Rp60.000" — tanggal format MM-DD, angka tanpa label.
+**Fix:** Ganti ke "Rabu, 4 Mar | 1 pesanan | Rp60.000". Full day name, label "pesanan", 2-column layout.
+**Status:** FIXED
+
+### B4. Rincian Harian hidden by default
+**Masalah:** Section collapsible dan default collapsed — data penting tersembunyi.
+**Fix:** Default expanded, hapus collapsible.
+**Status:** FIXED
+
+### B5. Progress bar redundan
+**Masalah:** Progress bar di hero daily dan monthly — sudah ada angka Terkumpul/Belum Bayar/Penagihan.
+**Fix:** Hapus progress bar dari kedua hero.
+**Status:** FIXED
+
+### B6. Mini bar chart tidak informatif
+**Masalah:** Bar chart kecil di hero monthly tanpa label/axis — tidak bisa dibaca.
+**Fix:** Hapus. Data sudah ada di "Penjualan per Hari".
+**Status:** FIXED
+
+### B7. Anomaly alert misleading
+**Masalah:** "Revenue hari ini 39% di bawah rata-rata" — hanya based on 1-day comparison, unreliable.
+**Fix:** Hapus anomaly banner. TODO note sudah bilang "Replace with proper 7-day average".
+**Status:** FIXED
+
+### B8. Produk Terlaris tidak ada di Bulanan
+**Masalah:** Monthly recap tidak menampilkan top products — padanya data sudah tersedia.
+**Fix:** Tambah section "Produk Terlaris" dengan top 5 products (rank, nama, qty terjual, revenue).
+**Status:** FIXED
+
+### B9. Download/Share/AI tersebar di berbagai tempat
+**Masalah:** Download icon di header, share button inline, AI di FAB — tidak konsisten.
+**Fix:** Ganti semua ke three-dot menu di header. Menu items: Unduh CSV, Bagikan via WA, Analisis AI.
+**Status:** FIXED
+
+### B10. Filename export tidak informatif
+**Masalah:** `rekap-2026-03-19.csv` — tidak ada info kapan didownload.
+**Fix:** `rekap-2026-03-19_diunduh-20260319-0530.csv` — include download timestamp.
+**Status:** FIXED
+
+---
+
+## C. Home Screen (3 issues)
+
+### C1. Metric pills dengan emoji sulit dibaca
+**Masalah:** "📦 1 Pesanan", "🔵 1 Baru", "🔴 23 Belum Bayar" — emoji blend dengan dark green.
+**Fix:** Ganti ke unified metric bar: angka besar + label kecil, divider antar section, semi-transparent background.
+**Status:** FIXED
+
+### C2. Tidak ada ringkasan bulanan
+**Masalah:** Home screen hanya tampil data hari ini. Tidak ada context berapa bulan ini.
+**Fix:** Tambah monthly summary card: "Maret 2026 | Lihat Rekap > | Rp2.3jt | 34 pesanan · 67% terkumpul | progress bar".
+**Status:** FIXED
+
+### C3. Subtitle "X pesanan hari ini" redundan
+**Masalah:** "📦 1 pesanan hari ini" sudah ditunjukkan di metric bar "1 Pesanan".
+**Fix:** Ganti ke "Pendapatan hari ini" — label untuk angka besar di atasnya.
+**Status:** FIXED
+
+---
+
+## D. Page Headers & Navigation (5 issues)
+
+### D1. Halaman tanpa deskripsi
+**Masalah:** Produk, Rekap, Pelanggan, Pengaturan, Faktur, Struk, Persiapan, Pengingat — semua hanya title, tanpa subtitle penjelasan.
+**Fix:** Tambah subtitle di dalam green header untuk semua halaman.
+**Status:** FIXED
+
+### D2. "Pesanan Terlambat" tidak jelas
+**Masalah:** Label "Pesanan Terlambat" dengan "franky · CO-260312-004600 · 11 Mar 2026" — tidak jelas apa yang terlambat.
+**Fix:** Ganti ke "Belum Dikirim" + subtitle "X pesanan sudah lewat tanggal kirim" + per row "Seharusnya kirim 11 Mar · 8 hari lalu".
+**Status:** FIXED
+
+### D3. Late orders click → "not found"
+**Masalah:** Click late order → `/orders/undefined` → 404.
+**Penyebab:** Kode pakai `o.orderId` tapi field bernama `o.id`. Backend tidak return `id` field.
+**Fix:** Backend tambah `id` ke select query. Frontend pakai `o.id`. Type `LateOrder` tambah `id: string`.
+**Status:** FIXED
+
+### D4. Tab "Akun" kurang deskriptif
+**Masalah:** Tab label "Akun" tidak menggambarkan semua settings yang ada.
+**Fix:** Ganti ke "Pengaturan" dengan subtitle "Profil bisnis, link toko, dan preferensi".
+**Status:** FIXED
+
+### D5. Rekap menu "Analisis AI" tidak berfungsi
+**Masalah:** Click menu item → nothing happens. Menu overlay mencuri tap event.
+**Penyebab:** Overlay `Pressable` wrapping menu items — parent tap handler fires first.
+**Fix:** Pisah overlay dan dropdown sebagai siblings, bukan parent-child. Dropdown z-index > overlay.
+**Status:** FIXED
+
+---
+
+## E. Settings & Profile (2 issues)
+
+### E1. Settings page terlalu panjang
+**Masalah:** Profil edit (logo, QRIS, nama, alamat), link toko, mode pesanan, kuota, pajak, referral, akun — semua di 1 halaman scroll panjang.
+**Fix:** Split ke 2 halaman: (1) Settings index — profile card + settings, (2) Edit Profil — dedicated page untuk edit foto/nama/alamat.
+**Status:** FIXED
+
+### E2. AI Insights tidak auto-generate
+**Masalah:** Buka Analisis AI → "Belum ada analisis" → harus klik "Mulai Analisis".
+**Fix:** Auto-generate saat buka modal jika belum ada cache. Tambah "Bagikan via WA" button.
+**Status:** FIXED
+
+---
+
+## F. Pelanggan UI (1 issue)
+
+### F1. Tampilan list pelanggan flat dan sulit di-scan
+**Masalah:** Semua customer di grouped card flat, no avatar, phone numbers menghabiskan space, "—" untuk zero amount, WA + chevron bersaing.
+**Fix:** Redesign: avatar circle (warna konsisten per nama), individual cards dengan shadow, 3-line layout (nama+badge / amount+orders / relative time), WA button saja tanpa chevron. Hapus phone dari list (ada di detail page).
+**Status:** FIXED
+
+---
+
+## G. Database & API (5 issues)
+
+### G1. Customer stats tidak otomatis sync
+**Masalah:** `total_orders`, `total_spent`, `last_order_at` di customers table tidak update saat order di-edit/hapus/bayar.
+**Penyebab:** Stats hanya di-recalculate saat order CREATE, tidak saat UPDATE atau DELETE.
+**Fix:** Database trigger `trg_recalculate_customer_stats` — auto-recalculate pada setiap INSERT/UPDATE/DELETE di orders table.
+**Status:** FIXED (migration 053)
+
+### G2. Duplicate customers (case mismatch)
+**Masalah:** "zorro" dan "Zorro" jadi 2 customer berbeda. "luffy" ada 2 record (phone berbeda).
+**Penyebab:** Customer matching hanya by phone exact match. Tidak ada case-insensitive name matching.
+**Fix:** (1) Order creation sekarang match by phone first, then by name case-insensitive. (2) Cleanup migration merge duplicates. (3) Name normalized saat matching.
+**Status:** FIXED (migration 054 + order API update)
+
+### G3. Orphan orders (no customer linked)
+**Masalah:** 7+ orders dengan `customer_name` tapi `customer_id = null`.
+**Penyebab:** Jika tidak ada phone, customer tidak dicreate/dilink.
+**Fix:** Order creation sekarang juga match by name jika tidak ada phone. Cleanup migration link orphan orders ke existing customers atau create baru.
+**Status:** FIXED
+
+### G4. `/api/recap/analyze` pakai cookie-only auth
+**Masalah:** Mobile app kirim Bearer token → 401 Unauthorized.
+**Penyebab:** Endpoint pakai `createClient()` (cookies) bukan `getAuthenticatedClient(req)` (Bearer + cookies).
+**Fix:** Ganti ke `getAuthenticatedClient(request)` di GET dan POST handler.
+**Status:** FIXED
+
+### G5. `/api/orders/summary` timezone dan unpaid count salah
+**Masalah:** "Belum Bayar" count 15 padahal seharusnya 16. "Today" pakai UTC bukan WIB.
+**Penyebab:** (1) `unpaidCount` query exclude status "done" dan pakai `paid_amount = 0`. (2) `startOfDay`/`endOfDay` pakai UTC `new Date().toISOString()`.
+**Fix:** (1) Ganti ke `payment_status IN ('unpaid', 'partial')` tanpa status filter. (2) Pakai WIB timezone untuk "today".
+**Status:** FIXED
+
+---
+
+## H. Masalah yang Masih OPEN
+
+### H1. Monthly card di home screen menampilkan 30 pesanan, bukan 31
+**Masalah:** Database punya 31 orders, tapi monthly recap API return 30. Service role query return 31, tapi user JWT query mungkin return 30.
+**Kemungkinan penyebab:** RLS policy issue pada 1 order yang dibuat via public order link atau service role context.
+**Status:** OPEN — resolved by clean slate (delete all test data). Perlu monitor di production data.
+**Severity:** Low — hanya terjadi pada legacy test data.
+
+### H2. Date parsing edge cases di fallback parser
+**Masalah:** "tanggal 1" di bulan Februari bisa resolve ke 1 Februari (bulan ini) atau 1 Maret (bulan depan). Logic saat ini: jika bulan < current month → year + 1.
+**Status:** OPEN — acceptable for now, AI handles most cases correctly.
+**Severity:** Low
+
+---
+
+## Catatan
+
+- Semua fix sudah deployed ke mobile app codebase (`catatorder-apps`)
+- Backend fixes deployed ke web app codebase (`catatorder`) + Supabase migrations applied
+- Test data untuk `muhamadaldiansyah24@gmail.com` dan `demo@tokoflow.com` sudah di-reset (clean slate)
+- Database trigger akan menjaga konsistensi data ke depan
+
+*Last updated: 19 Maret 2026*

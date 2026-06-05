@@ -33,9 +33,6 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
-# lock files (let Vercel generate its own)
-package-lock.json
-
 # vercel
 .vercel
 
@@ -43,4 +40,3 @@ package-lock.json
 *.tsbuildinfo
 next-env.d.ts
 .playwright-mcp/
-.claude/

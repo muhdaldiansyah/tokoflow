@@ -1,0 +1,302 @@
+import type { Order } from "@/features/orders/types/order.types";
+import { ORDER_STATUS_LABELS } from "@/features/orders/types/order.types";
+import { detectCourier } from "./courier";
+
+const DIVIDER = "─".repeat(20);
+const BRANDING = "_Sent via Tokoflow — https://tokoflow.com_";
+
+function formatItemsDash(items: Order["items"]): string {
+  return items
+    .map((item) => `- ${item.name} x${item.qty}: RM ${(item.price * item.qty).toLocaleString("en-MY")}`)
+    .join("\n");
+}
+
+function formatItemsBullet(items: Order["items"]): string {
+  return items
+    .map((item) => `• ${item.name} x${item.qty}: RM ${(item.price * item.qty).toLocaleString("en-MY")}`)
+    .join("\n");
+}
+
+function paymentLine(order: Order): string {
+  const remaining = order.total - (order.paid_amount || 0);
+  if (order.paid_amount > 0 && order.paid_amount < order.total) {
+    return `\nPaid: RM ${order.paid_amount.toLocaleString("en-MY")}\n*Balance: RM ${remaining.toLocaleString("en-MY")}*`;
+  }
+  return "";
+}
+
+function deliveryLine(order: Order): string {
+  if (!order.delivery_date) return "";
+  return `\nDate: ${new Date(order.delivery_date).toLocaleDateString("en-MY", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}`;
+}
+
+// Dine-in orders skip address rendering — they're not going anywhere.
+// Pickup orders (delivery_address NULL) also skip; "Pickup at store" is
+// implied by the order context.
+function addressLine(order: Order): string {
+  if (order.is_dine_in) return "";
+  if (!order.delivery_address) return "";
+  return `\nAddress: ${order.delivery_address}`;
+}
+
+// Renders tracking as "Tracking: <number> (<courier>)" when both are known.
+// Prefers the courier the merchant picked; falls back to detecting from the
+// number prefix; if neither, prints the number alone.
+function trackingLine(order: Order): string {
+  if (!order.tracking_number) return "";
+  const trimmed = order.tracking_number.trim();
+  if (!trimmed) return "";
+  const detected = detectCourier(trimmed);
+  const courier = order.courier_name?.trim() || detected?.name || null;
+  return courier
+    ? `\nTracking: ${trimmed} (${courier})`
+    : `\nTracking: ${trimmed}`;
+}
+
+function notesLine(order: Order): string {
+  if (!order.notes) return "";
+  return `\nNote: ${order.notes}`;
+}
+
+function chargeLines(order: Order): string {
+  const deliveryFee = Math.max(0, Number(order.delivery_fee ?? 0) || 0);
+  const lines: string[] = [];
+  if ((order.discount && order.discount > 0) || deliveryFee > 0) {
+    lines.push(`Subtotal: RM ${order.subtotal.toLocaleString("en-MY")}`);
+  }
+  if (order.discount && order.discount > 0) {
+    lines.push(`Discount: -RM ${order.discount.toLocaleString("en-MY")}`);
+  }
+  if (deliveryFee > 0) {
+    lines.push(`Delivery: RM ${deliveryFee.toLocaleString("en-MY")}`);
+  }
+  return lines.length > 0 ? `\n${lines.join("\n")}` : "";
+}
+
+// Tokoflow MY does not use the IDR-style unique_code mechanism. Payment
+// matching is handled by Billplz refs + the reconciliation engine. The
+// transfer-amount line is a no-op kept for legacy callers.
+function transferLine(_order: Order): string {
+  return "";
+}
+
+export function buildOrderConfirmation(order: Order): string {
+  return `*Order ${order.order_number}*${deliveryLine(order)}
+${DIVIDER}
+${formatItemsDash(order.items)}
+${DIVIDER}${chargeLines(order)}
+*Total: RM ${order.total.toLocaleString("en-MY")}*${transferLine(order)}${paymentLine(order)}${notesLine(order)}
+
+Thank you!
+
+${BRANDING}`;
+}
+
+export function buildOrderWithStatus(order: Order): string {
+  const statusText = ORDER_STATUS_LABELS[order.status];
+  return `*Order ${order.order_number}*
+Status: ${statusText}${deliveryLine(order)}${addressLine(order)}${trackingLine(order)}
+${DIVIDER}
+${formatItemsDash(order.items)}
+${DIVIDER}${chargeLines(order)}
+*Total: RM ${order.total.toLocaleString("en-MY")}*${transferLine(order)}${paymentLine(order)}${notesLine(order)}
+
+Thank you!
+
+${BRANDING}`;
+}
+
+export function buildPaymentReminder(order: Order): string {
+  const remaining = order.total - (order.paid_amount || 0);
+  const dpLine = order.paid_amount > 0 && order.paid_amount < order.total
+    ? `\nAlready paid: RM ${order.paid_amount.toLocaleString("en-MY")}`
+    : "";
+
+  return `Hi ${order.customer_name || "there"},
+
+Friendly reminder for order *${order.order_number}*:
+
+${formatItemsBullet(order.items)}
+
+Total: RM ${order.total.toLocaleString("en-MY")}${dpLine}
+*Balance due: RM ${remaining.toLocaleString("en-MY")}*
+
+Please make payment when you can. Thank you! 🙏
+
+${BRANDING}`;
+}
+
+export function buildCustomerOrderMessage(params: {
+  orderNumber: string;
+  orderId?: string;
+  items: { name: string; qty: number; price: number }[];
+  total: number;
+  deliveryFee?: number;
+  customerName: string;
+  notes?: string;
+}): string {
+  const itemLines = params.items
+    .map((item) => `• ${item.name} x${item.qty} — RM ${(item.price * item.qty).toLocaleString("en-MY")}`)
+    .join("\n");
+
+  const deliveryFee = Math.max(0, Number(params.deliveryFee ?? 0) || 0);
+  const subtotal = params.items.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const deliveryText = deliveryFee > 0
+    ? `\nSubtotal: RM ${subtotal.toLocaleString("en-MY")}\nDelivery: RM ${deliveryFee.toLocaleString("en-MY")}`
+    : "";
+  const notesText = params.notes ? `\n_Note: ${params.notes}_` : "";
+  const receiptLink = params.orderId ? `\n\nReceipt: https://tokoflow.com/r/${params.orderId}` : "";
+
+  return `Hi, I'm *${params.customerName}*. I just placed an order:
+
+*${params.orderNumber}*
+${itemLines}
+${deliveryText}
+
+*Total: RM ${params.total.toLocaleString("en-MY")}*${notesText}${receiptLink}
+
+Please confirm — thanks!
+
+${BRANDING}`;
+}
+
+export function buildQrisConfirmationMessage(params: {
+  orderNumber: string;
+  orderId?: string;
+  items?: { name: string; qty: number; price: number }[];
+  total?: number;
+  deliveryFee?: number;
+  customerName: string;
+  notes?: string;
+}): string {
+  if (params.items && params.items.length > 0) {
+    const itemLines = params.items
+      .map((item) => `• ${item.name} x${item.qty} — RM ${(item.price * item.qty).toLocaleString("en-MY")}`)
+      .join("\n");
+
+    const deliveryFee = Math.max(0, Number(params.deliveryFee ?? 0) || 0);
+    const subtotal = params.items.reduce((sum, item) => sum + item.price * item.qty, 0);
+    const deliveryText = deliveryFee > 0
+      ? `\nSubtotal: RM ${subtotal.toLocaleString("en-MY")}\nDelivery: RM ${deliveryFee.toLocaleString("en-MY")}`
+      : "";
+    const notesText = params.notes ? `\n_Note: ${params.notes}_` : "";
+    const receiptLink = params.orderId ? `\n\nReceipt: https://tokoflow.com/r/${params.orderId}` : "";
+
+    return `Hi, I'm *${params.customerName}*. I've paid via DuitNow QR for this order:
+
+*${params.orderNumber}*
+${itemLines}
+${deliveryText}
+
+*Total: RM ${(params.total || 0).toLocaleString("en-MY")}*${notesText}${receiptLink}
+
+Please confirm — thanks!
+
+${BRANDING}`;
+  }
+
+  return `Hi, I'm ${params.customerName}. I've paid via DuitNow QR for order *${params.orderNumber}*. Please confirm — thanks!
+
+${BRANDING}`;
+}
+
+export function buildPreorderConfirmation(order: Order): string {
+  return `*Order ${order.order_number}*${deliveryLine(order)}
+${DIVIDER}
+${formatItemsDash(order.items)}
+${DIVIDER}${chargeLines(order)}
+*Total: RM ${order.total.toLocaleString("en-MY")}*${transferLine(order)}${paymentLine(order)}${notesLine(order)}
+
+Order received! We'll reach out before delivery. Thank you! 🙏
+
+${BRANDING}`;
+}
+
+export function buildInvoiceMessage(invoice: {
+  invoice_number: string;
+  buyer_name?: string;
+  items: { name: string; qty: number; price: number }[];
+  subtotal: number;
+  discount: number;
+  sst_rate?: number;
+  sst_amount?: number;
+  ppn_rate?: number;
+  ppn_amount?: number;
+  total: number;
+  paid_amount: number;
+  due_date?: string | null;
+  payment_terms?: string;
+  notes?: string;
+}): string {
+  const sstRate = invoice.sst_rate ?? invoice.ppn_rate ?? 0;
+  const sstAmount = invoice.sst_amount ?? invoice.ppn_amount ?? 0;
+  const itemLines = invoice.items
+    .map((item) => `- ${item.name} x${item.qty}: RM ${(item.price * item.qty).toLocaleString("en-MY")}`)
+    .join("\n");
+
+  const remaining = invoice.total - (invoice.paid_amount || 0);
+  const netAmount = invoice.subtotal - invoice.discount;
+
+  let paymentInfo = "";
+  if (invoice.paid_amount > 0 && remaining > 0) {
+    paymentInfo = `\nPaid: RM ${invoice.paid_amount.toLocaleString("en-MY")}\n*Balance: RM ${remaining.toLocaleString("en-MY")}*`;
+  }
+
+  const dueLine = invoice.due_date
+    ? `\nDue date: ${new Date(invoice.due_date).toLocaleDateString("en-MY", { day: "numeric", month: "long", year: "numeric" })}`
+    : "";
+
+  const notesText = invoice.notes ? `\nNote: ${invoice.notes}` : "";
+
+  return `*INVOICE ${invoice.invoice_number}*
+${DIVIDER}
+${itemLines}
+${DIVIDER}
+Subtotal: RM ${invoice.subtotal.toLocaleString("en-MY")}${invoice.discount > 0 ? `\nDiscount: -RM ${invoice.discount.toLocaleString("en-MY")}` : ""}
+Taxable: RM ${netAmount.toLocaleString("en-MY")}
+SST ${sstRate}%: RM ${sstAmount.toLocaleString("en-MY")}
+*Total: RM ${invoice.total.toLocaleString("en-MY")}*${paymentInfo}${dueLine}${notesText}
+
+Please make payment at your earliest convenience. Thank you! 🙏
+
+${BRANDING}`;
+}
+
+export function buildDeliveryAckRequest(params: {
+  order: Pick<Order, "order_number" | "customer_name" | "items" | "total">;
+  ackUrl: string;
+  businessName?: string;
+}): string {
+  const { order, ackUrl, businessName } = params;
+  const itemCount = order.items.reduce((sum, it) => sum + (it.qty || 0), 0);
+  const itemSummary =
+    order.items.length === 1
+      ? `${order.items[0].name}${order.items[0].qty > 1 ? ` x${order.items[0].qty}` : ""}`
+      : `${itemCount} item${itemCount > 1 ? "s" : ""}`;
+  const greeting = order.customer_name ? `Hi ${order.customer_name}` : "Hi";
+  const fromLine = businessName ? ` from *${businessName}*` : "";
+
+  return `${greeting}, your order${fromLine} is on the way.
+
+*${order.order_number}*
+${itemSummary} — RM ${order.total.toLocaleString("en-MY")}
+
+Tap to confirm when it arrives:
+${ackUrl}
+
+Thank you! 🙏
+
+${BRANDING}`;
+}
+
+export function buildCelebrationConfirmation(order: Order, businessName?: string): string {
+  return `*Order ${order.order_number}*${deliveryLine(order)}
+${DIVIDER}
+${formatItemsDash(order.items)}
+${DIVIDER}${chargeLines(order)}
+*Total: RM ${order.total.toLocaleString("en-MY")}*${transferLine(order)}${paymentLine(order)}${notesLine(order)}
+
+Thank you!
+${businessName ? `\n- ${businessName}\n` : ""}
+${BRANDING}`;
+}

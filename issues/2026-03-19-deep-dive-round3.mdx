@@ -1,0 +1,102 @@
+# Deep Dive Round 3 — RLS, Indexes, Deploy, Webhooks, Regressions
+
+> Areas NOT covered in Round 1-2. Focus: database security, deployment, webhook integrity.
+> Tanggal: 19 Maret 2026
+
+**Total: 20 new issues — 2 CRITICAL, 3 HIGH, 9 MEDIUM, 6 LOW**
+
+---
+
+## CRITICAL (2)
+
+### R3-01. page_views & product_views ZERO RLS policies
+Tables created tanpa `ENABLE ROW LEVEL SECURITY`. Combined with `GRANT ALL TO anon`, **siapapun bisa baca semua analytics semua toko**.
+- **Fix:** Tambah RLS: INSERT open (public), SELECT user-scoped
+
+### R3-12. Mobile .env has localhost:3000
+`EXPO_PUBLIC_API_URL=http://localhost:3000` — production EAS build akan embed localhost. Semua API call gagal di production.
+- **Fix:** EAS env override atau `.env.production`
+
+## HIGH (3)
+
+### R3-02. payment_orders/transactions/webhook_logs USING(true)
+Policy `FOR ALL USING (true)` applies ke SEMUA roles, bukan hanya service_role. Semua authenticated user bisa baca payment data user lain.
+- **Fix:** Drop USING(true), tambah user-scoped SELECT
+
+### R3-03. wa_connections USING(true) exposes WA API token
+`access_token` (WA Cloud API credential) bisa dibaca oleh SEMUA authenticated users.
+- **Fix:** Drop USING(true), hanya user-scoped SELECT
+
+### R3-13. EAS projectId kosong
+`app.json` → `eas.projectId: ""`. Build akan gagal.
+- **Fix:** Run `npx eas init`
+
+## MEDIUM (9)
+
+### R3-04. Soft-deleted orders bisa di-"undelete"
+UPDATE policy tidak cek `deleted_at IS NULL`. User bisa set `deleted_at = null`.
+
+### R3-05. Products RLS tidak filter soft-delete
+Policy dari migration 018 belum diupdate setelah `deleted_at` ditambah.
+
+### R3-06. Missing index orders(user_id, payment_status)
+Query filter by payment_status tanpa composite index.
+
+### R3-08. Trigger 3 subqueries tanpa optimal index
+`recalculate_customer_stats()` run COUNT + SUM + MAX tanpa composite index.
+
+### R3-14. Supabase anon key committed to git
+`.env` ada di git — best practice: `.gitignore` + `.env.example`
+
+### R3-16. Midtrans webhook log sebelum verify signature
+Fake webhook masih create "success" log entry.
+
+### R3-17. Midtrans webhook no replay protection
+Valid payload bisa di-replay tanpa timestamp check.
+
+### R3-20. WA bot masih manual customer stats
+`order-creator.ts:106-125` duplicate trigger work. Perlu dihapus.
+
+### R3-24. Mobile order detail no edit navigation
+Tidak ada tombol "Edit" untuk ubah items/customer/tanggal.
+
+### R3-27. Mobile payment amount no max validation
+User bisa input payment lebih dari sisa tagihan.
+
+## LOW (6)
+
+### R3-07. Missing composite index delivery_date+status
+### R3-09. dangerouslySetInnerHTML (safe but fragile)
+### R3-11. No loading skeletons on settings page
+### R3-15. No Vercel function timeout config
+### R3-19. generateOrderNumber() JS is dead code
+### R3-25. Edit screen is actually status screen
+### R3-26. Customer detail perpetual spinner on not-found
+
+---
+
+## Positive Findings
+- WhatsApp webhook security is solid (HMAC-SHA256, constant-time compare)
+- Item validation backward compatible
+- billing/payments NextRequest change correct
+- acquireSyncLock change correct
+
+---
+
+## Grand Total Across All 3 Rounds
+
+| Round | Issues | Fixed | Remaining |
+|-------|--------|-------|-----------|
+| Round 1 | 34 | 30 | 4 deferred |
+| Round 2 | 22 | 15 | 7 deferred |
+| Round 3 | 20 | 0 | 20 new |
+| **Total** | **76** | **45** | **31 remaining** |
+
+### Priority Order for Remaining
+1. R3-01, R3-02, R3-03 — RLS security (CRITICAL/HIGH)
+2. R3-12 — Mobile production env (CRITICAL)
+3. R3-20 — WA bot redundant stats (MEDIUM, quick fix)
+4. R3-04, R3-05 — Soft-delete RLS (MEDIUM)
+5. R3-06, R3-08 — Database indexes (MEDIUM)
+
+*Analysis by Claude Opus 4.6 — 19 Maret 2026*

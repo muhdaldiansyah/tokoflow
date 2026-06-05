@@ -1,31 +1,25 @@
 {
-  "framework": "nextjs",
-  "buildCommand": "npm run build",
-  "installCommand": "npm install --force",
-  "functions": {
-    "app/**/*.js": {
-      "maxDuration": 30
-    },
-    "app/api/marketplace/sync/[id]/route.js": {
-      "maxDuration": 60
-    },
-    "app/api/cron/marketplace-sync/route.js": {
-      "maxDuration": 300
-    },
-    "app/api/cron/webhook-events-process/route.js": {
-      "maxDuration": 300
-    },
-    "app/api/cron/marketplace-fee-reconcile/route.js": {
-      "maxDuration": 300
-    }
-  },
+  "regions": ["sin1"],
   "crons": [
     {
-      "path": "/api/cron/marketplace-fee-reconcile",
-      "schedule": "0 3 * * *"
+      "path": "/api/cron/invoice-overdue",
+      "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/cron/morning-brief",
+      "schedule": "0 22 * * *"
+    },
+    {
+      "path": "/api/cron/engagement",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/alerts",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/tax-reminder",
+      "schedule": "0 2 10 * *"
     }
-  ],
-  "env": {
-    "NODE_OPTIONS": "--max-old-space-size=4096"
-  }
+  ]
 }

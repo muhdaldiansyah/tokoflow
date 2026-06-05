@@ -1,0 +1,86 @@
+# Deep Dive Round 2 — Invoice, Billing, WhatsApp, Validation, Storage
+
+> Areas NOT covered in Round 1. Focus: business logic, payment flows, security gaps.
+> Tanggal: 19 Maret 2026
+
+**Total: 22 new issues — 1 CRITICAL, 6 HIGH, 8 MEDIUM, 7 LOW**
+
+---
+
+## CRITICAL (1)
+
+### 9.1 Production export route NO auth check
+`/api/production/export` tidak panggil `getAuthenticatedClient`. Rely on header forwarding ke internal fetch — fragile.
+- **Fix:** Tambah explicit auth check
+
+## HIGH (6)
+
+### 1.4 Receipt number collision risk
+Receipt pakai 4-digit random — no uniqueness check, no DB constraint. Collision 1/10000 per second.
+- **Fix:** Sequential counter atau UNIQUE constraint + retry
+
+### 2.1 Referral commission race condition
+Read-modify-write pattern: read balance → add → write. Two simultaneous payments = lost commission.
+- **Fix:** Atomic increment: `referral_balance = referral_balance + commission`
+
+### 3.1 WA bot no rate limit on outgoing messages
+Meta API punya rate limit. Bot reply tanpa throttle bisa kena block.
+- **Fix:** Per-customer rate limiter (max 10 msg/min)
+
+### 4.1 Order items no server-side price/qty validation
+Client bisa submit `price: -1000, qty: 0`. Server terima tanpa validasi.
+- **Fix:** Validate per item: name non-empty, price >= 0, qty >= 1
+
+### 4.3 Slug update no format/reserved word validation
+`isValidSlug()` dan `isReservedSlug()` exist di utils tapi TIDAK dipakai di API route. Slug bisa diset ke "api", "login", "admin".
+- **Fix:** Import dan panggil validasi functions
+
+### 8.1 Storage signed URL no bucket allowlist
+Client bisa request signed URL untuk ANY bucket. Service role bypasses policies.
+- **Fix:** Allowlist: `['product-images', 'order-images', 'avatars', 'qris']`
+
+## MEDIUM (8)
+
+### 1.2 Invoice payment tidak sync ke linked order
+Invoice dibayar → invoice status "paid", tapi linked order tetap "unpaid".
+
+### 1.6 Receipt update accepts arbitrary payment_status
+No enum validation — bisa diset ke string apapun.
+
+### 2.2 Webhook log "success" sebelum verify signature
+Spoofed webhooks masih create "success" log entry.
+
+### 2.3 Transaction error silently ignored
+createSnapTransaction fail → still return snapToken → user bayar → webhook can't find transaction → plan never activated.
+
+### 3.4 WA bot phone format inconsistency
+WA phone "6281..." vs web "081..." bisa create duplicate customers.
+
+### 3.5 WA bot tidak check quota sebelum confirmation
+Order masuk ke "menunggu" tapi customer message bilang "Tercatat!" tanpa warning.
+
+### 4.4 Invoice ppn_rate change tanpa items tidak recalculate
+ppn_rate berubah tapi ppn_amount dan total tetap pakai rate lama.
+
+### 8.3 Storage no image type validation
+Client bisa upload `.exe` file via signed URL.
+
+## LOW (7)
+
+### 1.3 PPN_RATE hardcoded 11% (should be 12%)
+### 3.2 WA session TTL 10 min (too short?)
+### 3.3 AI parsing failure no error logging
+### 4.2 Customer name no length limit
+### 9.2 Production item name casing lost
+### 10.1 Piutang totalInvoices includes fully-paid
+### 10.3 Overdue filter doesn't check paid_amount
+
+---
+
+## Regression Check — Today's Fixes: ALL OK
+- Sync lock async→sync: ✅ callers updated
+- PendingOrder expanded: ✅ callers compatible
+- Trigger via service client: ✅ PostgreSQL fires triggers regardless of role
+- derivePaymentStatus(0,0): ✅ no regressions
+
+*Analysis by Claude Opus 4.6 — 19 Maret 2026*

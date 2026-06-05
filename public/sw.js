@@ -1,111 +1,83 @@
-// public/sw.js
-//
-// Tokoflow service worker — minimal offline shell.
-//
-// Strategy:
-//   - API requests (/api/*)            → network-first, cache as fallback
-//   - Navigations (HTML)               → network-first, cache as fallback
-//   - Static assets (/_next/static/*)  → cache-first (immutable)
-//   - Images / icons                   → stale-while-revalidate
-//
-// This isn't a full offline-first implementation (that needs a sync queue,
-// IndexedDB for mutations, conflict resolution — see lib/services/offline-queue.js
-// in CatatOrder for the reference design). It IS enough to keep the app
-// usable on a flaky mobile connection: previously-loaded pages render
-// instantly, and stale data is shown if the network drops mid-fetch.
+// Bump this version whenever a JS bundle change must invalidate the SW cache.
+// The fetch handler caches *.js cache-first, so stale ProductForm chunks (the
+// most recent culprit: file picker not opening after deploy) survive forever
+// otherwise. The activate handler nukes any cache whose name doesn't match.
+const CACHE_NAME = "tokoflow-v3";
+const OFFLINE_URL = "/offline";
+const PRECACHE_URLS = [OFFLINE_URL];
 
-const CACHE_VERSION = 'tokoflow-v1';
-const STATIC_CACHE = `${CACHE_VERSION}-static`;
-const API_CACHE = `${CACHE_VERSION}-api`;
-const PAGE_CACHE = `${CACHE_VERSION}-pages`;
-
-const PRECACHE = [
-  '/dashboard',
-  '/inventory',
-  '/sales',
-  '/scanner',
-  '/site.webmanifest',
-];
-
-self.addEventListener('install', (event) => {
+// Pre-cache the offline page on install
+self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(STATIC_CACHE)
-      .then((cache) => cache.addAll(PRECACHE).catch(() => {/* don't block install */}))
-      .then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then((cache) =>
+      Promise.all(
+        PRECACHE_URLS.map((url) =>
+          cache.add(url).catch(() => {
+            // Non-critical — the app still works online if this misses.
+          })
+        )
+      )
+    )
   );
+  self.skipWaiting();
 });
 
-self.addEventListener('activate', (event) => {
+// Clean old caches on activate
+self.addEventListener("activate", (event) => {
   event.waitUntil(
-    (async () => {
-      const keys = await caches.keys();
-      await Promise.all(
-        keys
-          .filter((k) => !k.startsWith(CACHE_VERSION))
-          .map((k) => caches.delete(k))
-      );
-      await self.clients.claim();
-    })()
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+      )
+    )
   );
+  self.clients.claim();
 });
 
-self.addEventListener('fetch', (event) => {
+// Fetch strategy
+self.addEventListener("fetch", (event) => {
   const { request } = event;
 
-  // Only handle GETs — POST/PATCH/DELETE need to fail loudly when offline
-  // so the user knows their action didn't go through.
-  if (request.method !== 'GET') return;
+  // Skip non-GET, API routes, and non-http(s)
+  if (request.method !== "GET") return;
+  if (!request.url.startsWith("http")) return;
 
   const url = new URL(request.url);
-
-  // Same-origin only
   if (url.origin !== self.location.origin) return;
+  if (url.pathname.startsWith("/api/")) return;
 
-  // API: network-first
-  if (url.pathname.startsWith('/api/')) {
-    event.respondWith(networkFirst(request, API_CACHE));
-    return;
-  }
+  // App Router navigations fetch RSC payloads on the current page URL. Let
+  // Next handle those directly; caching/cloning them competes with route loads
+  // and can serve stale authenticated dashboard payloads.
+  const isRscRequest =
+    url.searchParams.has("_rsc") ||
+    request.headers.get("RSC") === "1" ||
+    request.headers.has("Next-Router-State-Tree");
+  if (isRscRequest) return;
 
-  // Navigation requests: network-first with cached fallback
-  if (request.mode === 'navigate') {
-    event.respondWith(networkFirst(request, PAGE_CACHE));
-    return;
-  }
+  const isStaticAsset = /\.(js|css|png|jpg|jpeg|svg|ico|woff2?|ttf|webp)$/.test(url.pathname);
 
-  // Static assets: cache-first
-  if (
-    url.pathname.startsWith('/_next/static/') ||
-    url.pathname.startsWith('/images/') ||
-    /\.(png|jpg|jpeg|svg|webp|woff2?|ttf|css|js)$/i.test(url.pathname)
-  ) {
-    event.respondWith(cacheFirst(request, STATIC_CACHE));
-    return;
+  if (isStaticAsset) {
+    // Cache-first for static assets
+    event.respondWith(
+      caches.match(request).then((cached) => {
+        if (cached) return cached;
+        return fetch(request).then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return response;
+        });
+      })
+    );
+  } else if (request.mode === "navigate") {
+    // Network-first for pages, with offline fallback only. Avoid storing
+    // authenticated dashboard HTML in Cache Storage on every navigation.
+    event.respondWith(
+      fetch(request).catch(async () => {
+        return (await caches.match(OFFLINE_URL)) || Response.error();
+      })
+    );
   }
 });
-
-async function networkFirst(request, cacheName) {
-  try {
-    const response = await fetch(request);
-    if (response.ok) {
-      const cache = await caches.open(cacheName);
-      cache.put(request, response.clone());
-    }
-    return response;
-  } catch (err) {
-    const cached = await caches.match(request);
-    if (cached) return cached;
-    throw err;
-  }
-}
-
-async function cacheFirst(request, cacheName) {
-  const cached = await caches.match(request);
-  if (cached) return cached;
-  const response = await fetch(request);
-  if (response.ok) {
-    const cache = await caches.open(cacheName);
-    cache.put(request, response.clone());
-  }
-  return response;
-}

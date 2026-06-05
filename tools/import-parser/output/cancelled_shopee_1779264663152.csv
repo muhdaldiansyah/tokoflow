@@ -1,2 +1,0 @@
-channel,order_date,order_id,product_name,variant_name,channel_sku,quantity,unit_price,gross_sales,seller_discount,marketplace_fee,shipping_fee,refund_amount,net_settlement,status,confidence,notes
-shopee,2026-04-02,250402ABCD004,Toner Hydra 150ml,,TON-HYDRA-150,1,70000,70000,0,0,0,70000,0,cancelled,100,

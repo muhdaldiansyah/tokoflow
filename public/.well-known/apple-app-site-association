@@ -1,0 +1,15 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "TEAMID.id.catatorder.app",
+        "paths": [
+          "/r/*",
+          "/pesanan/*",
+          "/faktur/*"
+        ]
+      }
+    ]
+  }
+}
