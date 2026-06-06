@@ -3,7 +3,9 @@ import { createClient, getUser } from "@/lib/supabase/server";
 import { TaxClient } from "@/features/tax/components/TaxClient";
 import type { TaxSummary, SstMonthlySummary } from "@/features/tax/types/tax.types";
 
-const SST_REGISTRATION_THRESHOLD_MYR = 500_000;
+// Indonesia PKP (PPN) registration threshold: Rp 4.8 billion/year omzet.
+// (Field is still named *_myr for backward-compat with the TaxSummary type.)
+const SST_REGISTRATION_THRESHOLD_MYR = 4_800_000_000;
 
 export default async function TaxPage() {
   const user = await getUser();

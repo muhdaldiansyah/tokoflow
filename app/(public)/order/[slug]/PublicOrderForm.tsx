@@ -1219,7 +1219,7 @@ export function PublicOrderForm({ slug, businessName, frequentItems, logoUrl, bu
                   type="text"
                   value={addrCity}
                   onChange={(e) => setAddrCity(e.target.value.slice(0, 100))}
-                  placeholder="Shah Alam"
+                  placeholder="Jakarta Selatan"
                   className="w-full px-3 pb-2.5 pt-0.5 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none"
                 />
               </div>

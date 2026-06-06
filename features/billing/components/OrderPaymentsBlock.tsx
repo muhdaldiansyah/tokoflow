@@ -29,7 +29,7 @@ interface OrderPaymentsBlockProps {
 // the channel mapper since payment_method is null for them.
 function channelLabel(provider: OrderPayment["provider"], channel: string | null): string {
   if (provider === "cash") return "Cash";
-  if (provider === "duitnow_manual") return "DuitNow transfer";
+  if (provider === "duitnow_manual") return "Transfer bank";
   if (!channel) return "Online payment";
   const map: Record<string, string> = {
     FPX: "FPX online banking",

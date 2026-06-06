@@ -1788,7 +1788,7 @@ export function OrderForm({ initialOrder, statusLogs, assignedStaffId, onAssigne
               <textarea
                 value={deliveryAddress}
                 onChange={(e) => setDeliveryAddress(e.target.value.slice(0, 500))}
-                placeholder="e.g. 12, Jalan Mawar, Section 2, 40150 Shah Alam"
+                placeholder="mis. Jl. Mawar No. 12, RT 02/RW 05, Kebayoran, Jakarta Selatan 12120"
                 rows={2}
                 className="w-full px-3 py-2.5 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 resize-none focus:outline-none"
               />

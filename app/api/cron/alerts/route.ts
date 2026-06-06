@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
       pushMessages.push({
         to: profile.push_token,
         title: "Free orders used",
-        body: "You've used your first 50 free orders. When you're ready, Pro lifts the cap for RM 49/month.",
+        body: "You've used your first 50 free orders. When you're ready, Pro lifts the cap for Rp 99.000/bulan.",
         sound: "default",
         data: { screen: "settings" },
       });

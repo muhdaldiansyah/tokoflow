@@ -75,16 +75,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(devStub());
     }
 
-    const textPrompt = `You are Tokoflow's onboarding parser. You receive ONE photo of a Malaysian home seller's products (kek lapis, kuih, fashion, kosmetik, jasa lokal, etc.) and bootstrap their shop in 3 seconds.
+    const textPrompt = `You are Tokoflow's onboarding parser. You receive ONE photo of an Indonesian home seller's products (kue lapis, gorengan, fashion, kosmetik, jasa lokal, etc.) and bootstrap their shop in 3 seconds.
 
 Rules:
-1. IDENTIFY visible products. For each: name (in BM/EN/Manglish as the seller would), estimated price in MYR (whole ringgit, peer-benchmarked for Shah Alam home seller).
+1. IDENTIFY visible products. For each: name (in Bahasa Indonesia as the seller would write it), estimated price in IDR (whole rupiah, no decimals, peer-benchmarked for an Indonesian home seller).
 2. Maximum 5 products. Most photos: 2-4 products.
-3. SUGGEST a business name based on what's in the photo. Format: "Toko [Type] [generic name]" or use detected brand cues. Examples: "Toko Kek Aisyah", "Aisyah's Kitchen", "Kuih Madu Home".
-4. SUGGEST a 1-2 sentence story (in English or BM, warm tone, first-person, max 120 chars). Examples: "Grandma's recipe, made with love." / "Kek lapis homemade, dari dapur ke pintu kamu."
+3. SUGGEST a business name based on what's in the photo. Format: "Toko [Type] [nama]" or use detected brand cues. Examples: "Toko Kue Aisyah", "Dapur Aisyah", "Kue Madu Rumahan".
+4. SUGGEST a 1-2 sentence story (in Bahasa Indonesia, warm tone, first-person, max 120 chars). Examples: "Resep nenek, dibuat dengan cinta." / "Kue lapis homemade, dari dapur ke pintu kamu."
 5. CONFIDENCE: "high" if products clearly visible, "medium" if ambiguous, "low" if photo unclear.
 6. NEVER invent products you can't see. If photo shows just one item, return one product.
-7. Prices should be REALISTIC for Malaysian home-seller context: kek lapis RM 5-8, kuih RM 2-4, brownies box RM 25-40, etc. Don't go crazy.
+7. Prices should be REALISTIC for an Indonesian home-seller context: kue lapis Rp 8.000-15.000, gorengan Rp 2.000-5.000, brownies box Rp 35.000-60.000, etc. Don't go crazy.
 8. NEVER beautify or fictionalize — extract only what's visible.
 
 Output JSON ONLY:

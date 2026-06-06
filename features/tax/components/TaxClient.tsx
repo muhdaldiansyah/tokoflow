@@ -14,7 +14,7 @@ const MONTH_NAMES = [
 ];
 
 function rm(n: number) {
-  return `Rp ${n.toLocaleString("id-ID", { maximumFractionDigits: 2 })}`;
+  return `Rp ${n.toLocaleString("id-ID", { maximumFractionDigits: 0 })}`;
 }
 
 interface TaxClientProps {
@@ -85,7 +85,7 @@ export function TaxClient({
         <div>
           <h1 className="text-lg font-semibold text-foreground">Tax</h1>
           <p className="text-sm text-muted-foreground">
-            Revenue, SST, and LHDN MyInvois submissions for {year}
+            Revenue, PPN, and e-Faktur submissions for {year}
           </p>
         </div>
         <select
@@ -108,11 +108,11 @@ export function TaxClient({
           <div className="flex-1 text-sm text-amber-900">
             <p className="font-semibold">Tax identity incomplete</p>
             <p className="text-xs mt-1">
-              Add your TIN and BRN in{" "}
+              Add your NPWP and NIB in{" "}
               <Link href="/settings" className="underline font-medium">
                 Settings → Tax identity
               </Link>{" "}
-              to enable LHDN MyInvois submission.
+              to enable e-Faktur submission.
             </p>
           </div>
         </div>
@@ -124,11 +124,11 @@ export function TaxClient({
           <p className="text-sm font-semibold">Revenue {year}</p>
           {summary.sst_threshold_reached ? (
             <span className="text-xs font-medium text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
-              SST registration threshold crossed
+              PKP (PPN) threshold crossed
             </span>
           ) : (
             <span className="text-xs font-medium text-green-700 bg-green-100 px-2 py-0.5 rounded-full">
-              Below SST threshold
+              Below PKP threshold
             </span>
           )}
         </div>
@@ -149,7 +149,7 @@ export function TaxClient({
           {!summary.sst_threshold_reached && (
             <p className="text-xs text-muted-foreground">
               {rm(summary.sst_registration_threshold_myr - summary.revenue_ytd)} remaining before
-              the SST registration threshold
+              the PKP registration threshold
             </p>
           )}
         </div>
@@ -169,13 +169,13 @@ export function TaxClient({
         </div>
 
         <p className="text-xs text-muted-foreground pt-1">
-          Threshold applies to taxable services (RMCD). Goods thresholds differ by category.
+          PKP registration is required once annual omzet exceeds Rp 4,8 billion (DJP).
         </p>
 
         {summary.sst_registration_required && (
           <div className="rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-xs text-red-700">
-            You&apos;ve crossed RM 500,000 in annual revenue but haven&apos;t added an SST
-            registration id yet. Register with RMCD and update{" "}
+            You&apos;ve crossed Rp 4,8 billion in annual revenue but haven&apos;t added a PKP (NPWP)
+            registration yet. Register as PKP with DJP and update{" "}
             <Link href="/settings" className="underline">
               Settings → Tax identity
             </Link>
@@ -186,7 +186,7 @@ export function TaxClient({
 
       {/* SST YTD */}
       <div className="rounded-xl border bg-card shadow-sm p-4 space-y-2">
-        <p className="text-sm font-semibold">SST collected {year}</p>
+        <p className="text-sm font-semibold">PPN collected {year}</p>
         <p className="text-2xl font-bold">{rm(summary.sst_collected_ytd)}</p>
         <p className="text-xs text-muted-foreground">
           Only includes invoices issued this year. Adjust the default rate in Settings.
@@ -197,7 +197,7 @@ export function TaxClient({
       <div className="rounded-xl border bg-card shadow-sm p-4 space-y-3">
         <div className="flex items-center gap-1.5">
           <ShieldCheck className="w-4 h-4 text-warm-green" />
-          <p className="text-sm font-semibold">LHDN MyInvois {year}</p>
+          <p className="text-sm font-semibold">e-Faktur {year}</p>
         </div>
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="rounded-lg bg-muted/50 p-3">
@@ -227,10 +227,10 @@ export function TaxClient({
         </Link>
       </div>
 
-      {/* Monthly SST summary (RMCD SST-02 reference) */}
+      {/* Monthly PPN summary (SPT Masa PPN reference) */}
       <div className="rounded-xl border bg-card shadow-sm p-4 space-y-3">
         <div className="flex items-center justify-between">
-          <p className="text-sm font-semibold">Monthly SST summary</p>
+          <p className="text-sm font-semibold">Monthly PPN summary</p>
           <input
             type="month"
             value={sstMonth}
@@ -255,7 +255,7 @@ export function TaxClient({
                 <span className="font-medium">{rm(monthlySst.taxable_total)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">SST collected</span>
+                <span className="text-muted-foreground">PPN collected</span>
                 <span className="font-medium">{rm(monthlySst.sst_total)}</span>
               </div>
               <div className="flex justify-between font-bold">
@@ -275,7 +275,7 @@ export function TaxClient({
                 </div>
               )}
               <div className="flex justify-between text-xs border-t pt-1.5">
-                <span className="text-muted-foreground">MyInvois submitted</span>
+                <span className="text-muted-foreground">e-Faktur submitted</span>
                 <span className="font-medium">
                   {monthlySst.myinvois_submitted_count}/{monthlySst.invoice_count}
                 </span>
@@ -289,31 +289,31 @@ export function TaxClient({
                   month: "long",
                 });
                 const lines = [
-                  `Tokoflow — SST summary ${monthName} ${y}`,
-                  `Merchant TIN: ${summary.merchant.tin || "-"}`,
-                  `SST registration: ${summary.merchant.sst_registration_id || "-"}`,
+                  `Tokoflow — PPN summary ${monthName} ${y}`,
+                  `Merchant NPWP: ${summary.merchant.tin || "-"}`,
+                  `PKP (NPWP): ${summary.merchant.sst_registration_id || "-"}`,
                   ``,
                   `Invoices: ${monthlySst.invoice_count}`,
                   `Taxable value: ${rm(monthlySst.taxable_total)}`,
-                  `SST collected: ${rm(monthlySst.sst_total)}`,
+                  `PPN collected: ${rm(monthlySst.sst_total)}`,
                   `Gross total: ${rm(monthlySst.gross_total)}`,
                   `Collected (paid): ${rm(monthlySst.paid_total)}`,
                   `Outstanding: ${rm(monthlySst.outstanding_total)}`,
-                  `MyInvois submitted: ${monthlySst.myinvois_submitted_count}/${monthlySst.invoice_count}`,
+                  `e-Faktur submitted: ${monthlySst.myinvois_submitted_count}/${monthlySst.invoice_count}`,
                 ];
                 navigator.clipboard.writeText(lines.join("\n"));
-                toast.success("SST summary copied — paste into MySST / RMCD SST-02");
+                toast.success("PPN summary copied — for SPT Masa PPN / Coretax");
                 track("sst_summary_copied", { year: y, month: m });
               }}
               className="w-full h-10 rounded-lg border bg-card hover:bg-muted transition-colors text-sm font-medium flex items-center justify-center gap-1.5"
             >
               <Copy className="w-3.5 h-3.5" />
-              Copy for RMCD SST-02
+              Copy for SPT Masa PPN
             </button>
 
             <div className="rounded-lg bg-blue-50 border border-blue-200 px-3 py-2 text-xs text-blue-700">
-              File your SST-02 return at <span className="font-semibold">mysst.customs.gov.my</span>
-              {" "}— SST is filed bi-monthly in Malaysia.
+              Report PPN (SPT Masa PPN) at <span className="font-semibold">coretaxdjp.pajak.go.id</span>
+              {" "}— filed monthly.
             </div>
           </>
         )}

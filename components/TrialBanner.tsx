@@ -16,7 +16,7 @@ export function TrialBanner({ nudgeLevel }: TrialBannerProps) {
     <div className="bg-warm-green-light border-b border-warm-green/20 px-4 py-2 text-center text-sm text-warm-green">
       You&rsquo;ve used your first 50 free orders.{" "}
       <Link href="/settings" className="font-semibold underline">
-        Go unlimited from RM 49 &rarr;
+        Go unlimited from Rp 99.000 &rarr;
       </Link>
     </div>
   );

@@ -28,9 +28,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "lat and lon must be valid numbers" }, { status: 400 });
   }
 
-  // Sanity-check: coordinates must be within or near Malaysia
-  if (parsedLat < 0.8 || parsedLat > 7.5 || parsedLon < 99.5 || parsedLon > 119.5) {
-    return NextResponse.json({ error: "Coordinates out of range for Malaysia" }, { status: 400 });
+  // Sanity-check: coordinates must be within or near Indonesia
+  // (lat ~6°N Sabang to ~11°S Rote; lon ~95°E Aceh to ~141°E Papua).
+  if (parsedLat < -11.5 || parsedLat > 6.5 || parsedLon < 94.5 || parsedLon > 141.5) {
+    return NextResponse.json({ error: "Coordinates out of range for Indonesia" }, { status: 400 });
   }
 
   const hereApiKey = process.env.HERE_API_KEY;
@@ -102,7 +103,7 @@ async function geocodeWithNominatim(lat: number, lon: number): Promise<NextRespo
 
   const postCity = [postcode, city].filter(Boolean).join(" ");
   const parts = [line1Full, postCity, state].filter(Boolean);
-  const address = parts.join(", ") || data.display_name?.replace(/, Malaysia$/, "") || "";
+  const address = parts.join(", ") || data.display_name?.replace(/, Indonesia$/, "") || "";
 
   return NextResponse.json({ address, line1: line1Full, postcode, city, state }, {
     headers: { "Cache-Control": "private, max-age=300" },

@@ -118,12 +118,12 @@ export function ProfileEditClient({
       const updated = await updateProfile({ qris_url: url });
       if (updated) {
         setQrisUrl(url);
-        toast.success("DuitNow QR uploaded");
+        toast.success("QRIS uploaded");
       } else {
-        toast.error("Failed to save DuitNow QR");
+        toast.error("Failed to save QRIS");
       }
     } catch {
-      toast.error("Failed to upload DuitNow QR");
+      toast.error("Failed to upload QRIS");
     }
     setIsUploadingQris(false);
     if (qrisInputRef.current) qrisInputRef.current.value = "";
@@ -135,12 +135,12 @@ export function ProfileEditClient({
       const updated = await updateProfile({ qris_url: "" as string });
       if (updated) {
         setQrisUrl(null);
-        toast.success("DuitNow QR removed");
+        toast.success("QRIS removed");
       } else {
-        toast.error("Failed to remove DuitNow QR");
+        toast.error("Failed to remove QRIS");
       }
     } catch {
-      toast.error("Failed to remove DuitNow QR");
+      toast.error("Failed to remove QRIS");
     }
     setIsUploadingQris(false);
   }
@@ -329,11 +329,11 @@ export function ProfileEditClient({
           <p className="text-[11px] text-muted-foreground/70 mt-1">{form.business_description.length}/160 characters</p>
         </div>
 
-        {/* DuitNow QR Upload */}
+        {/* QRIS Upload */}
         <div>
-          <label className="text-xs text-muted-foreground mb-1 block">DuitNow QR (payment)</label>
+          <label className="text-xs text-muted-foreground mb-1 block">QRIS (payment)</label>
           <p className="text-[11px] text-muted-foreground/70 mb-2">
-            Upload your DuitNow QR from bank or e-wallet.
+            Upload your QRIS from bank or e-wallet.
             {preorderEnabled && " While Pre-order mode or Subscription is active, the QR isn't shown to customers after ordering."}
           </p>
           <input ref={qrisInputRef} type="file" accept="image/*" onChange={handleQrisUpload} className="hidden" />
@@ -344,7 +344,7 @@ export function ProfileEditClient({
                 onClick={() => setPreviewImage(qrisUrl)}
                 className="relative w-28 h-28 rounded-lg border border-border bg-white p-1 flex-shrink-0 hover:border-primary/30 transition-colors cursor-zoom-in"
               >
-                <Image src={qrisUrl} alt="DuitNow QR" fill className="object-contain rounded" sizes="112px" />
+                <Image src={qrisUrl} alt="QRIS" fill className="object-contain rounded" sizes="112px" />
               </button>
               <div className="flex flex-col gap-2 pt-1">
                 <button
@@ -380,7 +380,7 @@ export function ProfileEditClient({
                 <QrCode className="w-5 h-5 text-muted-foreground" />
               )}
               <span className="text-xs text-muted-foreground">
-                {isUploadingQris ? "Uploading..." : "Upload DuitNow QR"}
+                {isUploadingQris ? "Uploading..." : "Upload QRIS"}
               </span>
             </button>
           )}
