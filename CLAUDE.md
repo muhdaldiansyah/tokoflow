@@ -57,23 +57,27 @@ Full list in [`00-manifesto.md` What We REFUSE to Do](./docs/positioning/00-mani
 
 ---
 
-## Stack differences from CatatOrder (Indonesia)
+## Country axis — Tokoflow (ID, active) vs the dormant MY path
 
-| Dimension | CatatOrder (ID) | Tokoflow (MY) |
+Tokoflow runs the **ID** side of `lib/country/resolve.ts`. The "MY path" column is the
+**dormant** Malaysia config (kept in-tree, never the active deployment).
+
+| Dimension | Tokoflow — **ID (active)** | MY path (dormant) |
 |---|---|---|
-| Currency | IDR | MYR (whole ringgit) |
-| Locale | id-ID | en-MY |
-| Payment | Midtrans Snap QRIS | Billplz (FPX / DuitNow QR) — `lib/billplz/` · ToyyibPay (FPX / DuitNow QR / TNG / ShopeePay / GrabPay / Boost) — **planned next** · Static DuitNow QR fallback (zero setup) |
-| Tax | e-Faktur / NPWP / NITKU / DJP XML | SST 0%/6% · MyInvois UBL 2.1 JSON · TIN · BRN · SST reg |
-| e-Invoice | DJP Coretax upload | LHDN MyInvois API — `lib/myinvois/` |
-| Pricing tiers | Rp15K/25K/39K/99K | Free / Pro RM 49 / Business RM 99 (legacy RM 5/8/13 pack model `@deprecated` in `config/plans.ts`, kept for API+DB compat) |
-| Timezone | WIB (UTC+7), quiet hours 21:00–05:00 | MYT (UTC+8), quiet hours 22:00–06:00 |
-| Language | Bahasa Indonesia | English (BM = Phase 4, not shipped) |
-| Cities | 27 ID cities | 44 MY cities × 16 states (DB `cities` + `provinces`, seeded by migration 080) |
-| Phone prefix | +62 | +60 (normalised in `lib/utils/phone.ts`) |
-| Marketplace integration | Shipped into CatatOrder (commit `f81e083`) | Not ported — Phase 4 item |
+| Currency | **IDR — `Rp`** (no fractional) | MYR — `RM` |
+| Locale / TZ | **id-ID · WIB**, quiet hours 21:00–05:00 | en-MY · MYT, 22:00–06:00 |
+| Payment | **Midtrans Snap** (QRIS / VA / GoPay / OVO / DANA / ShopeePay) — `lib/payment/midtrans-adapter.ts` · static QRIS upload (zero setup) | Billplz — `lib/payment/billplz-adapter.ts` |
+| Tax | **PPN** (0 / 11 / 12%) · NPWP / NIB / PKP · PKP threshold Rp 4.8 M/yr | SST 0/6% · TIN / BRN |
+| e-Invoice | **e-Faktur / Coretax** — `lib/einvoice/efaktur-adapter.ts` (submit flow = follow-up) | LHDN MyInvois — `lib/myinvois/` |
+| Pricing | **Gratis / Pro Rp 99.000 / Business Rp 199.000** (`pricing_tiers`, country-keyed) | Free / RM 49 / RM 99 |
+| Cities | **38 provinces + 88 cities** (migration 111) | 16 states + 44 cities (migration 080, deactivated) |
+| Phone | **+62** (`lib/utils/phone.ts`, default ID) | +60 |
+| Couriers | JNE / J&T / SiCepat / AnterAja / Ninja Xpress / Pos Indonesia / TIKI / Lion Parcel (`lib/utils/courier.ts`) | Pos Laju / Ninja Van / GDEX |
+| Copy | **Bahasa Indonesia** (marketing + customer flow; dashboard core still EN) | English |
+| Marketplace (Shopee/TikTok) | **Dropped** (was in old Tokoflow; archive branch only) | — |
 
-Tokoflow and CatatOrder are **sister products**, not a unified codebase. See HANDOFF.md for the multi-country decision rationale.
+Everything country-coupled flows through `resolveCountry()` — no `if (country === …)`
+outside `lib/country/`. Lineage: CatatOrder (ID) → Tokoflow → Kedaiflow (MY) → Tokoflow (ID).
 
 ---
 
@@ -213,7 +217,17 @@ Legacy paths: `/pembayaran` (payment result), `/pengingat` (reminders), `/profil
 
 ## Integrations
 
-### Payment architecture — 4-level roadmap (decided 2026-05-22)
+> **Indonesia (ACTIVE):** payment = **Midtrans** (`lib/payment/midtrans-adapter.ts`, selected
+> by the country axis — `getPaymentGateway(ctx)` returns midtrans for ID; needs `MIDTRANS_SERVER_KEY`)
+> + static **QRIS** upload (merchant uploads in Profile, customer scans + uploads proof, AI receipt
+> triage assists). e-invoice = **e-Faktur / Coretax** (`lib/einvoice/efaktur-adapter.ts`; the invoice
+> *submit* flow is still MyInvois-shaped — a documented follow-up). The Billplz / MyInvois / ToyyibPay /
+> CHIP material below is the **dormant MY path**, kept for reference.
+
+### Payment architecture — MY 4-level roadmap (DORMANT · decided 2026-05-22)
+
+> MY-legacy. For Indonesia, payment is Midtrans (above). The 4-level Billplz/ToyyibPay/CHIP
+> roadmap applies only to the dormant Malaysia deployment.
 
 Payment smoothness has four levels. Current code supports Level 1 + Level 2 (Billplz only). Roadmap toward Level 4.
 
@@ -242,7 +256,7 @@ Payment smoothness has four levels. Current code supports Level 1 + Level 2 (Bil
 - **CHIP preferred**: modern API (Stripe-like), fastest onboarding (~1 day), no setup/annual fee, BNM-licensed
 - See [`docs/ops/sdn-bhd-roadmap.md`](./docs/ops/sdn-bhd-roadmap.md) for full incorporation + gateway sequence
 
-### Billplz (payment — ACTIVE, sandbox pending real KYB)
+### Billplz (payment — MY path, DORMANT; ID uses Midtrans)
 
 - `lib/billplz/` — zero-SDK adapter: `types.ts`, `client.ts`, `verify.ts`, `index.ts`
 - Merchant redirects to Billplz-hosted payment page. No Snap popup, no client SDK.
@@ -260,7 +274,7 @@ Payment smoothness has four levels. Current code supports Level 1 + Level 2 (Bil
 - Architecture: `lib/toyyibpay/` adapter (copy Billplz pattern) + `/api/public/orders/toyyibpay-callback/route.ts` webhook handler.
 - Settings page: ToyyibPay section alongside existing Billplz section.
 
-### MyInvois (tax — ACTIVE, awaits LHDN production certification)
+### MyInvois (tax — MY path, DORMANT; ID uses e-Faktur/Coretax)
 
 - `lib/myinvois/` — UBL 2.1 JSON builder + OAuth client_credentials + submit/status/cancel/reject.
 - `features/invoices/services/myinvois-adapter.ts` — bridges DB invoice → MyInvois document (proportional discount allocation, walk-in buyer fallback, >RM 10K rule detection).
@@ -364,27 +378,34 @@ Payment smoothness has four levels. Current code supports Level 1 + Level 2 (Bil
 
 ```
 # App
-NEXT_PUBLIC_APP_URL=https://tokoflow.com      # required — logout redirect + billing callback
+NEXT_PUBLIC_APP_URL=https://tokoflow.co.id    # required — logout redirect + billing callback
 NEXT_PUBLIC_APP_NAME=Tokoflow
-NEXT_PUBLIC_APP_DESCRIPTION=…
+NEXT_PUBLIC_APP_DESCRIPTION=Resi kami urus. Resep kamu.
 NEXT_PUBLIC_APP_SCHEMA=public                 # optional — defaults to public
 
-# Supabase
+# Supabase (project yhwjvdwmwboasehznlfv)
 NEXT_PUBLIC_SUPABASE_URL=https://yhwjvdwmwboasehznlfv.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=…
 SUPABASE_SERVICE_ROLE_KEY=…
+SUPABASE_ACCESS_TOKEN=…                       # CLI / Management API only (migrations)
 
-# Billplz (payment)
+# Midtrans (payment — Indonesia, ACTIVE path)
+MIDTRANS_SERVER_KEY=                           # SB-Mid-server-… (sandbox) | Mid-server-… (prod)
+MIDTRANS_SNAP_URL=                             # optional — defaults by key prefix
+MIDTRANS_API_URL=                              # optional
+
+# Billplz (payment — MY path, DORMANT; leave empty for ID)
 BILLPLZ_API_KEY=
 BILLPLZ_COLLECTION_ID=
 BILLPLZ_X_SIGNATURE_KEY=
 BILLPLZ_BASE_URL=                             # optional — defaults by NODE_ENV
 
-# MyInvois (e-Invoice, Pro plan)
+# MyInvois (e-Invoice — MY path, DORMANT; ID uses e-Faktur. Leave empty for ID)
 MYINVOIS_CLIENT_ID=
 MYINVOIS_CLIENT_SECRET=
 MYINVOIS_BASE_URL=                            # optional — defaults to preprod in dev
 MYINVOIS_IDENTITY_BASE=
+MYINVOIS_SECRET_KEY=                          # at-rest encryption for gateway/e-invoice creds
 
 # AI
 OPENROUTER_API_KEY=
@@ -462,7 +483,7 @@ Phase 0 = 8-week adversarial validation. **No Phase 1 build until Gate 0 passes.
 
 ## Recent strategic passes
 
-### 2026-06-05 · Indonesia localization — Kedaiflow (MY) codebase → Tokoflow (ID)
+### 2026-06-05 → 06-06 · Indonesia localization — Kedaiflow (MY) codebase → Tokoflow (ID)
 
 Replaced the old Tokoflow codebase (Next 15 / JS / marketplace-era) with the
 newer Kedaiflow codebase (Next 16 / React 19 / TS / Tailwind 4) and pointed the
@@ -499,18 +520,38 @@ working tree is preserved on `archive/pre-kedaiflow-id-migration-2026-06-05`.
   placeholders (`MIDTRANS_SERVER_KEY=` etc.) pending real accounts.
 - **Build:** `next build` green (Next 16.1.4, TS pass, 150 static pages).
 
-**Known follow-ups (not done this pass):**
-- **Bahasa Indonesia UI copy.** The UI/marketing copy is still English (MY-era);
-  `lib/copy`, marketing pages, and component strings need a full ID pass. No i18n
-  scaffold exists yet.
-- **AI prompts** in `lib/ai/twin-prompts.ts` + the per-route `ctx.code === "MY"`
-  prompt branches are written for MY (Malay/Manglish, +60). The ID branch exists
-  but its prompt quality for Indonesian SMB vocab should be reviewed.
-- **Midtrans + e-Faktur** integrations: adapters exist (`lib/payment/midtrans-adapter.ts`,
-  `lib/einvoice/efaktur-adapter.ts`) but are untested end-to-end and need real creds.
-- **Strategy/positioning docs** (`docs/`, much of this CLAUDE.md below) still carry
-  Malaysia market context (Sdn Bhd, RM, Phase 0 personas) — pending ID rewrite.
-- **Vercel production env** for the `tokoflow` project not re-synced in this pass.
+**Follow-on passes (2026-06-06) — localized the rest + synced prod:**
+- **Currency app-wide.** `lib/utils/format.ts` `formatRupiah`/`formatCurrency` were
+  emitting **RM** despite the name → fixed to Rp/IDR (id-ID); 60-file sweep of inline
+  `RM ${x.toLocaleString("en-MY")}` → Rp + `id-ID` (orders, products, customers,
+  recap, invoices, receipts, crons, public flow); JSON-LD `priceCurrency` → IDR.
+- **Functional layer → ID:** `PhoneInput` (was rejecting `08xx` numbers, stored `60xxx`)
+  → `+62`/`62xxx`; `wa-messages.ts` (RM/SST/`tokoflow.com` → Rp/PPN/QRIS/`tokoflow.co.id`,
+  Bahasa Indonesia); `courier.ts` → ID couriers; API phone validation (`62`/`08x`);
+  `geocode` coordinate bounds were Malaysia-only (rejected ID coords) → widened to ID;
+  Photo-Magic onboarding prompt → Bahasa Indonesia + IDR.
+- **Marketing site + tax dashboard + settings → Bahasa Indonesia / ID:** landing,
+  features, about, contact, terms, privacy, blog, mitra, coba-aplikasi, pricing,
+  MarketplaceCostCalculator (UU PDP, DJP/Coretax, Jakarta, UMKM/IKM, QRIS/Midtrans,
+  PPN/NPWP/NIB/PKP, Rp pricing). `/tax` dashboard: SST→PPN, MyInvois→e-Faktur, PKP
+  threshold Rp 4.8 M. Settings: single **Pro Rp 99.000/bulan via Midtrans** button
+  (MY annual tier + per-merchant Billplz card removed; ID note added). `billing/payments`
+  charges the country-aware tier (ID Pro = Rp 99.000, not the RM 79 constant).
+- **AI prompts** confirmed: voice/image/twin/assist already have solid ID branches
+  (Bahasa Indonesia, +62, Rp, BCA/GoPay/QRIS) — the MY branches stay for the dormant path.
+- **Vercel production env synced** (REST; the CLI token refreshes on `whoami`): the
+  previously-empty `NEXT_PUBLIC_APP_NAME/URL/SITE_URL/DESCRIPTION`, `OPENROUTER_API_KEY`,
+  `CRON_SECRET` set; Supabase + Gmail were already valid.
+
+**Remaining follow-ups (need creds / decisions, not code):**
+- **Midtrans** — set `MIDTRANS_SERVER_KEY` (needs a Midtrans account; code + UI ready).
+- **e-Faktur / Coretax** — the invoice e-invoice *submit* backend is still MyInvois-shaped;
+  the ID adapter exists but the Coretax submit flow + DJP creds are a dedicated project.
+- **Dashboard BI copy** — core dashboard strings are still English (currency/labels are
+  ID-correct; full Bahasa Indonesia copy is a follow-up; no i18n scaffold yet).
+- **Strategy/positioning docs** (`docs/`, the deeper sections of this file) + `/admin`
+  phase-0 tooling still carry the Malaysia market context — pending an ID rewrite.
+- **Domain** `tokoflow.co.id` DNS → Vercel (APP_URL already set to it).
 
 ### 2026-05-28 · Security hardening + customer order flow UX overhaul (17 commits)
 
@@ -854,4 +895,4 @@ Vault at `~/base/vault/credentials/tokoflow.md`:
 
 ---
 
-*Last updated: 2026-06-04 · Launch-readiness polish sweep (15 commits, d9130cf). Per-area pre-launch tidy: reject-loop wired into the live edit page (`OrderForm`) + dead `OrderDetail` deleted; `awaiting_payment` ghost-order filter extended to every merchant aggregate read (37 filters, 21 files); referral hidden behind `REFERRAL_ENABLED`; shipment "On the way" fallback for no-tracking-number shipped state + courier links keyed off the merchant's selected courier (GDEX added) + unpriced-zone delivery blocked; AI model centralized in `lib/ai/model.ts` and switched to Gemini 3.5 Flash (`gemini-2.5-flash` fallback), AI cost re-measured ~RM 2.65/merchant/month (PASS_AMPLE); invoice SST computed to 2 decimals (was whole-ringgit, an IDR-port leftover); marketing honesty sweep across all 21 pages (removed unshipped voice-Q&A / weekly-story / photo-generation claims); onboarding migrated to `warm-green` + English. 109 migrations total on live Singapore Supabase. Deferred backlog (in memory): referral commission calc (wrong amount), reject-not-logged-to-timeline, SST 8%/goods-sales-tax options, EasyParcel, enable 2FA on Supabase. Launch-blocked on Phase 0 adversarial validation + Sdn Bhd + Billplz KYB.*
+*Last updated: 2026-06-06 · Indonesia localization (Kedaiflow MY codebase → Tokoflow ID). Codebase swapped + run as Indonesia via the country axis (default ID): currency Rp app-wide, Midtrans payment, e-Faktur/PPN tax, +62 phone, WIB, ID couriers, 38 provinces/88 cities. DB `yhwjvdwmwboasehznlfv` reset + 111 migrations re-applied (110 = ID defaults, 111 = ID geo + Bahasa labels). Marketing site + tax dashboard + settings rewritten to Bahasa Indonesia / ID; Settings Pro = Rp 99.000/bulan via Midtrans. Vercel prod env synced. Build green. See the `2026-06-05 → 06-06 · Indonesia localization` entry above for detail. Remaining (creds/decisions, not code): Midtrans key, e-Faktur/Coretax integration, full dashboard BI copy, strategy-docs ID rewrite, `tokoflow.co.id` DNS. The deeper strategy/positioning sections of this file are MY-legacy.*
