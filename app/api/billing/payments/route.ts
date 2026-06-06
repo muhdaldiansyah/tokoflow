@@ -62,7 +62,8 @@ export async function POST(request: NextRequest) {
     let name: string;
     let amount: number;
 
-    if (planCode === BISNIS_CODE_ANNUAL) {
+    if (ctx.code === "MY" && planCode === BISNIS_CODE_ANNUAL) {
+      // Annual tier is MY-only (no ID annual pricing row).
       code = BISNIS_CODE_ANNUAL;
       name = "Pro · 1 year";
       amount = BISNIS_PRICE_ANNUAL_TOTAL;
@@ -73,7 +74,9 @@ export async function POST(request: NextRequest) {
       }
       code = tier.planCode;
       name = planCode === BISNIS_CODE ? "Pro · 1 month" : `${tier.displayName} — 1 month`;
-      amount = planCode === BISNIS_CODE ? BISNIS_PRICE_MONTHLY : tier.amount;
+      // MY Pro-monthly uses the flexible RM 79 price; everything else (incl. all
+      // ID plans) uses the country-aware pricing tier (e.g. ID Pro = Rp 99.000).
+      amount = ctx.code === "MY" && planCode === BISNIS_CODE ? BISNIS_PRICE_MONTHLY : tier.amount;
     } else if (ctx.code === "MY" && planCode === PACK_CODE) {
       code = PACK_CODE;
       name = `${PACK_ORDERS} orders top-up`;

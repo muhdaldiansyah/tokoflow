@@ -28,20 +28,28 @@ interface OrderPaymentsBlockProps {
 // terminology. Manual rows (cash, duitnow_manual) take precedence over
 // the channel mapper since payment_method is null for them.
 function channelLabel(provider: OrderPayment["provider"], channel: string | null): string {
-  if (provider === "cash") return "Cash";
+  if (provider === "cash") return "Tunai";
   if (provider === "duitnow_manual") return "Transfer bank";
-  if (!channel) return "Online payment";
+  if (!channel) return "Pembayaran online";
   const map: Record<string, string> = {
-    FPX: "FPX online banking",
-    DUITNOWQR: "DuitNow QR",
-    DUITNOW_QR: "DuitNow QR",
-    BOOST: "Boost",
-    GRABPAY: "GrabPay",
+    QRIS: "QRIS",
+    GOPAY: "GoPay",
+    OVO: "OVO",
+    DANA: "DANA",
     SHOPEEPAY: "ShopeePay",
-    TNG: "Touch ’n Go eWallet",
-    CARD: "Card",
-    CREDITCARD: "Card",
-    DEBITCARD: "Card",
+    LINKAJA: "LinkAja",
+    GRABPAY: "GrabPay",
+    BANK_TRANSFER: "Transfer bank (VA)",
+    ECHANNEL: "Mandiri Bill",
+    PERMATA_VA: "Permata VA",
+    BCA_VA: "BCA VA",
+    BNI_VA: "BNI VA",
+    BRI_VA: "BRI VA",
+    CIMB_VA: "CIMB VA",
+    CARD: "Kartu",
+    CREDIT_CARD: "Kartu",
+    CREDITCARD: "Kartu",
+    DEBITCARD: "Kartu",
   };
   return map[channel.toUpperCase()] ?? channel;
 }
@@ -142,14 +150,14 @@ export function OrderPaymentsBlock({ orderId }: OrderPaymentsBlockProps) {
                       )}
                       {p.payer_name && (
                         <p className="truncate">
-                          From {p.payer_name}
+                          Dari {p.payer_name}
                           {p.payer_email ? ` · ${p.payer_email}` : ""}
                         </p>
                       )}
                       {p.fee_amount != null && Number(p.fee_amount) > 0 && (
                         <p>
-                          Billplz fee: Rp {Number(p.fee_amount).toLocaleString("id-ID")}{" "}
-                          · You receive Rp {(Number(p.amount) - Number(p.fee_amount)).toLocaleString("id-ID")}
+                          Biaya gateway: Rp {Number(p.fee_amount).toLocaleString("id-ID")}{" "}
+                          · Kamu terima Rp {(Number(p.amount) - Number(p.fee_amount)).toLocaleString("id-ID")}
                         </p>
                       )}
                     </div>

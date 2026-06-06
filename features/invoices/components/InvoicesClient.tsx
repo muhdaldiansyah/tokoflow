@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { Plus, FileText, Loader2, Search, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
-import { isBisnis as _isBisnis, BISNIS_CODE, BISNIS_PRICE } from "@/config/plans";
+import { isBisnis as _isBisnis, BISNIS_CODE } from "@/config/plans";
 import { getInvoices } from "@/features/invoices/services/invoice.service";
 import { InvoiceCard } from "@/features/invoices/components/InvoiceCard";
 import { PiutangDashboard } from "@/features/invoices/components/PiutangDashboard";
@@ -145,7 +145,7 @@ export function InvoicesClient({ initialInvoices, bisnisActive }: InvoicesClient
             disabled={isBuying}
             className="shrink-0 h-7 px-3 text-xs font-medium rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors disabled:opacity-50"
           >
-            {isBuying ? <Loader2 className="w-3 h-3 animate-spin" /> : `Rp ${BISNIS_PRICE}/mo`}
+            {isBuying ? <Loader2 className="w-3 h-3 animate-spin" /> : "Rp 99.000/bln"}
           </button>
         </div>
       )}

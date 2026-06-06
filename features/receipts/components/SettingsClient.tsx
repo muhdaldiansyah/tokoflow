@@ -3,15 +3,14 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { Loader2, Pencil, KeyRound, LinkIcon, Copy, Check, Zap, Shield, ChevronRight, FileText, Trash2, Users } from "lucide-react";
+import { Loader2, Pencil, KeyRound, LinkIcon, Copy, Check, Zap, Shield, ChevronRight, FileText, Trash2, Users, CreditCard } from "lucide-react";
 import { formatRupiah } from "@/lib/utils/format";
 import { toast } from "sonner";
 import { updateProfile, updateSlug, updateOrderFormEnabled, updateIsListed, updateDailyOrderCapacity, updateQuietHours } from "@/features/receipts/services/receipt.service";
-import { AcceptPaymentsCard } from "@/features/billing/components/AcceptPaymentsCard";
 import { isValidSlug, isReservedSlug, generateSlug } from "@/lib/utils/slug";
 import { track } from "@/lib/analytics";
 import { REFERRAL_ENABLED } from "@/lib/utils/constants";
-import { getOrdersRemaining, isOrderQuotaExhausted, isUnlimited, BISNIS_CODE, BISNIS_CODE_ANNUAL, BISNIS_PRICE, BISNIS_PRICE_MONTHLY, BISNIS_PRICE_ANNUAL_TOTAL, isBisnis } from "@/config/plans";
+import { getOrdersRemaining, isOrderQuotaExhausted, isUnlimited, BISNIS_CODE, isBisnis } from "@/config/plans";
 import type { Profile } from "@/features/receipts/types/receipt.types";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
@@ -204,11 +203,6 @@ export function SettingsClient({
   const handleBuyBisnis = useCallback(() => {
     track("bisnis_purchase_started", { billing: "monthly" });
     startBillplzCheckout(BISNIS_CODE, setIsBuyingBisnis);
-  }, [startBillplzCheckout]);
-
-  const handleBuyBisnisAnnual = useCallback(() => {
-    track("bisnis_purchase_started", { billing: "annual" });
-    startBillplzCheckout(BISNIS_CODE_ANNUAL, setIsBuyingBisnis);
   }, [startBillplzCheckout]);
 
   async function handleSaveTax() {
@@ -810,10 +804,9 @@ export function SettingsClient({
               <p className="flex items-center gap-1.5">✅ Receivables tracking + monthly recap</p>
               <p className="flex items-center gap-1.5 text-muted-foreground/80">✅ One-tap e-Faktur submit when you&rsquo;re ready</p>
             </div>
-            {/* Annual — hero option (MY only; ID has no annual pricing tier) */}
-            {profile.country !== "ID" && (
+            {/* Pro — monthly (Indonesia: Rp 99.000/bulan via Midtrans) */}
             <button
-              onClick={handleBuyBisnisAnnual}
+              onClick={handleBuyBisnis}
               disabled={isBuyingBisnis}
               className="w-full rounded-xl border-2 border-warm-green bg-warm-green/5 px-3.5 py-3 text-left hover:bg-warm-green/10 transition-colors disabled:opacity-50"
             >
@@ -823,11 +816,8 @@ export function SettingsClient({
                     <Zap className="w-4 h-4 text-warm-green" />
                   </div>
                   <div>
-                    <div className="flex items-center gap-1.5">
-                      <p className="text-sm font-semibold text-foreground">Pro · 1 year</p>
-                      <span className="text-[10px] font-semibold text-warm-green bg-warm-green/10 px-1.5 py-0.5 rounded-full">Save 38%</span>
-                    </div>
-                    <p className="text-[10px] text-muted-foreground">Rp {BISNIS_PRICE}/month · billed once</p>
+                    <p className="text-sm font-semibold text-foreground">Pro · bulanan</p>
+                    <p className="text-[10px] text-muted-foreground">Fleksibel — batalkan kapan saja</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -835,37 +825,8 @@ export function SettingsClient({
                     <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
                   ) : (
                     <>
-                      <p className="text-sm font-bold text-warm-green">Rp {BISNIS_PRICE_ANNUAL_TOTAL}</p>
-                      <p className="text-[10px] text-muted-foreground">Billplz</p>
-                    </>
-                  )}
-                </div>
-              </div>
-            </button>
-            )}
-            {/* Monthly — flexible option */}
-            <button
-              onClick={handleBuyBisnis}
-              disabled={isBuyingBisnis}
-              className="w-full rounded-xl border border-border bg-card px-3.5 py-3 text-left hover:bg-muted/50 transition-colors disabled:opacity-50"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center shrink-0">
-                    <Zap className="w-4 h-4 text-muted-foreground" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">Pro · 1 month</p>
-                    <p className="text-[10px] text-muted-foreground">Flexible — cancel anytime</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  {isBuyingBisnis ? (
-                    <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-                  ) : (
-                    <>
-                      <p className="text-sm font-bold text-foreground">{profile.country === "ID" ? "Rp 99.000" : `Rp ${BISNIS_PRICE_MONTHLY}`}</p>
-                      <p className="text-[10px] text-muted-foreground">{profile.country === "ID" ? "Midtrans" : "Billplz"}</p>
+                      <p className="text-sm font-bold text-warm-green">Rp 99.000</p>
+                      <p className="text-[10px] text-muted-foreground">/bulan · Midtrans</p>
                     </>
                   )}
                 </div>
@@ -947,11 +908,20 @@ export function SettingsClient({
         </div>
       )}
 
-      {/* ── SECTION: ACCEPT PAYMENTS ── */}
-      <AcceptPaymentsCard
-        profile={profile}
-        onProfileChange={(next) => setProfile((prev) => ({ ...prev, ...next }))}
-      />
+      {/* ── SECTION: ACCEPT PAYMENTS (Indonesia) ── */}
+      <div className="rounded-lg border bg-card px-4 py-4 shadow-sm space-y-2">
+        <div className="flex items-center gap-2">
+          <CreditCard className="w-4 h-4 text-muted-foreground" />
+          <p className="text-xs font-bold text-foreground/80 uppercase tracking-wider">Terima pembayaran</p>
+        </div>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Upload QRIS-mu di{" "}
+          <Link href="/profil/edit" className="underline font-medium">Profil</Link>{" "}
+          supaya pelanggan bisa scan &amp; bayar langsung ke rekeningmu (konfirmasi manual).
+          Pembayaran via Midtrans (QRIS / transfer bank / e-wallet, konfirmasi otomatis) aktif di
+          link order — Tokoflow tidak pernah menyentuh uangmu, 0% komisi.
+        </p>
+      </div>
 
       {/* ── SECTION: STAFF ── */}
       <Link
